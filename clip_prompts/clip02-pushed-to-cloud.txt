@@ -1,0 +1,13 @@
+CONTINUITY: Direct unbroken continuation of the previous shot, where the camera pushed forward through an airliner window into open night sky. Begins ALREADY IN MOTION at the same speed, direction and altitude that shot ended on — no reset, no pause, no change of pace. Match its look exactly: cool moonlight from above, deep indigo sky, silver-blue cloud crests, charcoal troughs, wide lens, deep focus, filmic low-key grade, fine 35mm grain.
+
+The camera IS a fast FPV racing drone flying freely through open night air — not mounted on any aircraft, not a passenger view, not a passive aerial glide.
+
+[0-1.5s] Carrying forward speed high above a moonlit cloud deck. The silhouetted aircraft wing sits upper left and sweeps steadily past and out of frame to the upper left, revealing open sky. Sharp stars above, rolling cloud tops far below, vapour wisps streaking past the lens.
+
+[1.5-3.5s] The drone pitches nose-down into one smooth continuous dive toward the cloud deck, banking gently as it drops, horizon tilting with the roll then levelling. Speed builds steadily. The star field rises out of frame as the horizon climbs. Cloud crests and hollows resolve into three-dimensional relief. Nearer clouds sweep past faster than distant ones, giving true depth parallax.
+
+[3.5-5s] The drone passes through the cloud surface. Dense vapour rushes in from every edge and fills the frame completely, edge to edge, no horizon or sky visible. Moonlight filters through thinning upper vapour, catching crests in silver-blue, deeper folds falling to near-black. Camera settles into steady forward drift inside the cloud.
+
+MOTION AND GEOMETRY: one smooth continuous arc obeying real physics and momentum — gradual acceleration and descent with consistent inertia, never teleporting, never jumping, never reversing. Perspective, scale and proportion stay geometrically correct. The wing holds its true rigid shape and correct perspective as it exits and never bends, warps, stretches or morphs. Clouds hold consistent volumetric shape and mass as the camera nears them, growing naturally rather than mutating. Correct parallax between near and far layers. Stable horizon responding naturally to pitch and roll. Natural FPV dynamics with subtle micro-corrections and slight roll, no violent shake, no jitter.
+
+Single continuous shot, no cuts, no scene change. No drone body, no propellers, no cockpit, no cabin interior, no people, no text, no logos, no watermark.

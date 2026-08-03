@@ -136,6 +136,12 @@
     "approve": "اعتماد",
     "reject": "رفض"
   },
+  "palette": {
+    "gold": "ذهبي",
+    "sand": "رملي",
+    "clay": "طيني",
+    "oasis": "واحة"
+  },
   "footer": {
     "about": "عن لقطة",
     "contact": "تواصل معنا",

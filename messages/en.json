@@ -136,6 +136,12 @@
     "approve": "Approve",
     "reject": "Reject"
   },
+  "palette": {
+    "gold": "Gold",
+    "sand": "Sand",
+    "clay": "Clay",
+    "oasis": "Oasis"
+  },
   "footer": {
     "about": "About Laqta",
     "contact": "Contact",

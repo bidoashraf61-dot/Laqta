@@ -19,6 +19,10 @@ function Toaster({ locale }: { locale: Locale }) {
     <SonnerToaster
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
       position={locale === 'ar' ? 'bottom-right' : 'bottom-left'}
+      // Sonner labels its live region "Notifications" by default. That string
+      // is never drawn, so it survives any visual review — but a screen reader
+      // on an Arabic page announces the toast container in English.
+      containerAriaLabel={locale === 'ar' ? 'الإشعارات' : 'Notifications'}
       theme="dark"
       closeButton
       toastOptions={{

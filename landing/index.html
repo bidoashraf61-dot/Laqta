@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <!-- ============ SEO (Arabic-first) ============ -->
+  <title>لقطة | مكتبة اللقطات السعودية — ألبومات فيديو ستوك بجودة سينمائية</title>
+  <meta name="description" content="لقطة: أول مكتبة لقطات فيديو ستوك سعودية بجودة سينمائية. اشترِ الألبوم مرة واحدة وامتلكه للأبد — بدون اشتراكات. الرياض، العُلا، البحر الأحمر، الربع الخالي والمزيد." />
+  <meta name="keywords" content="لقطات فيديو, ستوك فوتيج, فيديو سعودي, لقطات سعودية, مكتبة فيديو, العلا, الرياض, البحر الأحمر, فيديو ستوك عربي, ألبومات فيديو" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://laqta.sa/" />
+  <link rel="alternate" hreflang="ar" href="https://laqta.sa/" />
+  <link rel="alternate" hreflang="x-default" href="https://laqta.sa/" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ar_SA" />
+  <meta property="og:site_name" content="لقطة — Laqta" />
+  <meta property="og:title" content="لقطة | مكتبة اللقطات السعودية بجودة سينمائية" />
+  <meta property="og:description" content="اشترِ الألبوم مرة واحدة وامتلكه للأبد. لقطات سعودية بجودة سينمائية — بدون اشتراكات." />
+  <meta property="og:image" content="https://laqta.sa/assets/01-riyadh.jpg" />
+  <meta property="og:url" content="https://laqta.sa/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="لقطة | مكتبة اللقطات السعودية" />
+  <meta name="twitter:description" content="ألبومات فيديو ستوك سعودية — اشترِ مرة واحدة وامتلكه للأبد." />
+  <meta name="twitter:image" content="https://laqta.sa/assets/01-riyadh.jpg" />
+  <meta name="theme-color" content="#14141a" />
+
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "لقطة — Laqta",
+    "alternateName": "Laqta Stock Footage",
+    "url": "https://laqta.sa/",
+    "inLanguage": "ar",
+    "description": "أول مكتبة لقطات فيديو ستوك سعودية بجودة سينمائية. ألبومات تُشترى مرة واحدة وتُمتلك للأبد.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://laqta.sa/footage?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "لقطة — Laqta",
+    "url": "https://laqta.sa/",
+    "logo": "https://laqta.sa/assets/logo.png",
+    "description": "سوق لقطات الفيديو الأول للمحتوى السعودي والعربي: ألبومات فيديو ستوك تُشترى مرة واحدة، مع سوق للمبدعين."
+  }
+  </script>
+
+  <!-- Arabic web font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ---------- Brand theme (overrides engine @layer sw cleanly) ---------- */
+    :root, .sw-root {
+      --sw-bg: #0f0e13;           /* dark = premium for photoreal full-bleed */
+      --sw-ink: #f5f1e8;          /* light ink on dark */
+      --sw-ink-soft: #b9b2a4;
+      --sw-accent: #c8a24a;       /* desert gold; per-section accents override */
+      --sw-font-sans: "IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif;
+    }
+    html, body { margin:0; background:#0f0e13; }
+    body { font-family: var(--sw-font-sans); }
+
+    /* ---------- RTL flips (my CSS is unlayered → beats @layer sw) ---------- */
+    /* Copy block: engine anchors it left; move to the right for Arabic */
+    .sw-copy{
+      left:auto !important;
+      right:clamp(18px,5vw,64px) !important;
+      text-align:right;
+    }
+    @media (max-width:860px){
+      .sw-copy{ left:clamp(18px,5vw,64px) !important; right:clamp(18px,5vw,64px) !important; }
+    }
+    /* Route rail: engine pins it right; move to the left in RTL */
+    .sw-route{ right:auto !important; left:clamp(14px,2.4vw,30px) !important; }
+    .sw-route__label{ right:auto !important; left:24px; }
+    @media (max-width:860px){ .sw-route{ left:6px !important; } }
+
+    /* Typography polish for Arabic */
+    .sw-copy__title{ font-weight:700; line-height:1.25; letter-spacing:0; }
+    .sw-copy__eyebrow{ font-weight:600; letter-spacing:0; }
+    .sw-copy__num{ direction:ltr; unicode-bidi:isolate; }   /* keep "01 / 06" order in RTL */
+    .sw-copy__body{ font-weight:400; }
+    .sw-brand__name{ font-weight:700; }
+
+    /* Email capture on the finale */
+    .laqta-notify{ display:flex; gap:8px; margin-top:14px; max-width:360px; }
+    .laqta-notify input{
+      flex:1; padding:11px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.06); color:#f5f1e8; font-family:inherit; font-size:.95rem;
+      text-align:right;
+    }
+    .laqta-notify input::placeholder{ color:#b9b2a4; }
+    .laqta-notify button{
+      padding:11px 18px; border-radius:999px; border:none; cursor:pointer;
+      background:#c8a24a; color:#14141a; font-family:inherit; font-weight:700; font-size:.95rem;
+    }
+    .laqta-msg{ margin-top:8px; font-size:.82rem; color:#c8a24a; min-height:1em; }
+  </style>
+</head>
+<body>
+  <div id="top"></div>
+  <div id="world"></div>
+
+  <script src="scrub-engine.js"></script>
+  <script>
+    mountScrollWorld(document.getElementById('world'), {
+      brand: { name: 'لقطة', href: '#top' },
+      cta:   { label: 'تصفّح الألبومات', href: '#finale' },
+      hint:  'مرّر للأسفل لتطير داخل المشهد',
+      diveScroll: 1.35,
+      connScroll: 0.9,
+      crossfade: 0.10,
+      sections: [
+        {
+          id: 'riyadh', label: 'الرياض',
+          still: 'assets/01-riyadh.jpg',
+          clip:  'assets/vid/01-riyadh.mp4',
+          clipMobile: 'assets/vid/01-riyadh-m.mp4',
+          stillMobile: 'assets/01-riyadh-m.jpg',
+          accent: '#c8a24a',
+          scroll: 1.7, linger: 0.4,
+          eyebrow: 'من قلب الجزيرة',
+          title: 'لقطات سعودية بجودة سينمائية.',
+          body: 'أول مكتبة لقطات فيديو صُنعت في السعودية — للعرب. اشترِ الألبوم مرة واحدة، وامتلكه للأبد. بلا اشتراكات.',
+          tags: ['4K و 6K', 'بدون اشتراك', 'مرخّصة تجارياً'],
+        },
+        {
+          id: 'alula', label: 'العُلا',
+          still: 'assets/02-alula.jpg',
+          clip:  'assets/vid/02-alula.mp4',
+          clipMobile: 'assets/vid/02-alula-m.mp4',
+          stillMobile: 'assets/02-alula-m.jpg',
+          accent: '#e9c98a',
+          eyebrow: 'تراثٌ يتنفّس',
+          title: 'العُلا كما لم ترها من قبل.',
+          body: 'ألبومات جوية وأرضية للحِجر والمناظر الصخرية في ساعة الغروب الذهبية.',
+          tags: ['جوي / درون', 'الساعة الذهبية'],
+        },
+        {
+          id: 'redsea', label: 'البحر الأحمر',
+          still: 'assets/03-redsea.jpg',
+          clip:  'assets/vid/03-redsea.mp4',
+          clipMobile: 'assets/vid/03-redsea-m.mp4',
+          stillMobile: 'assets/03-redsea-m.jpg',
+          accent: '#3fb6c4',
+          eyebrow: 'ساحلٌ بلا حدود',
+          title: 'البحر الأحمر بعدسةٍ عربية.',
+          body: 'مياهٌ فيروزية وشواطئ ومشاهد جوية ساحلية — جاهزة لأعمالك.',
+          tags: ['جوي ساحلي', 'تحت الماء'],
+        },
+        {
+          id: 'desert', label: 'الربع الخالي',
+          still: 'assets/04-desert.jpg',
+          clip:  'assets/vid/04-desert.mp4',
+          clipMobile: 'assets/vid/04-desert-m.mp4',
+          stillMobile: 'assets/04-desert-m.jpg',
+          accent: '#f0d9a0',
+          eyebrow: 'صمت الرمال',
+          title: 'الربع الخالي… اتساعٌ لا ينتهي.',
+          body: 'كثبانٌ ذهبية عند الفجر والغروب، بحركة كاميرا هادئة وواسعة.',
+          tags: ['كثبان', 'فجر / غروب'],
+        },
+        {
+          id: 'diriyah', label: 'الدرعية',
+          still: 'assets/05-diriyah.jpg',
+          clip:  'assets/vid/05-diriyah.mp4',
+          clipMobile: 'assets/vid/05-diriyah-m.mp4',
+          stillMobile: 'assets/05-diriyah-m.jpg',
+          accent: '#c89b6a',
+          eyebrow: 'حيث بدأت الحكاية',
+          title: 'الدرعية والطين الذي صنع تاريخاً.',
+          body: 'حي الطُّريف ومبانيه الطينية — تفاصيلٌ تراثية بجودة عالية.',
+          tags: ['تراث', 'عمارة طينية'],
+        },
+        {
+          id: 'finale', label: 'الاستوديو',
+          still: 'assets/06-studio.jpg',
+          clip:  'assets/vid/06-studio.mp4',
+          clipMobile: 'assets/vid/06-studio-m.mp4',
+          stillMobile: 'assets/06-studio-m.jpg',
+          accent: '#c8a24a',
+          scroll: 1.8, linger: 0.5,
+          eyebrow: 'من اللقطة إلى العمل',
+          title: 'اشترِ الألبوم. امتلكه للأبد.',
+          body: 'كل ألبوم مجموعة لقطات متناسقة، جاهزة للمونتاج. ادفع مرة واحدة وحمّلها متى شئت.',
+          tags: [],
+          cta: {
+            primary:   { label: 'تصفّح الألبومات', href: '#' },
+            secondary: { label: 'بِع لقطاتك معنا',  href: '#' },
+          },
+        },
+      ],
+      connectors: [],          // walkthrough (architecture A) → legs chain forward, no connectors
+      connectorsMobile: [],
+    });
+
+    /* ---- notify-me email capture injected into the finale copy ---- */
+    (function () {
+      function inject() {
+        var finale = document.querySelectorAll('.sw-copy');
+        if (!finale.length) { return setTimeout(inject, 300); }
+        var last = finale[finale.length - 1];
+        if (last.querySelector('.laqta-notify')) return;
+        var wrap = document.createElement('div');
+        wrap.innerHTML =
+          '<form class="laqta-notify" onsubmit="return laqtaNotify(event)">' +
+          '<input type="email" required placeholder="بريدك الإلكتروني للتنبيه عند الإطلاق" aria-label="البريد الإلكتروني">' +
+          '<button type="submit">أعلِمني</button></form>' +
+          '<div class="laqta-msg" id="laqta-msg"></div>';
+        last.appendChild(wrap);
+      }
+      inject();
+      window.laqtaNotify = function (e) {
+        e.preventDefault();
+        document.getElementById('laqta-msg').textContent = 'شكراً! سنراسلك عند الإطلاق.';
+        e.target.reset();
+        return false;
+      };
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Large media — keep out of git
+final_stills_4K/
+final_stills/
+final_stills_v2/
+references/
+Examples/
+landing/assets/vid/
+*.mp4
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.webp
+!landing/assets/logo*.png
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node
+node_modules/
+dist/
+.next/
+build/
+*.log
+
+# Env
+.env
+.env.*
+!.env.example

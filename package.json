@@ -17,7 +17,8 @@
     "db:reset": "prisma migrate reset --force",
     "typecheck": "tsc --noEmit",
     "verify:auth": "tsx scripts/verify-auth.ts",
-    "verify:i18n": "tsx scripts/verify-i18n.ts"
+    "verify:i18n": "tsx scripts/verify-i18n.ts",
+    "verify:arabic": "tsx scripts/verify-arabic.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

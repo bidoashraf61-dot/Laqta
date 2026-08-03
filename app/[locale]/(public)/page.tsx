@@ -51,22 +51,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
       <section className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {(
-          [
-            ['--gold', 'gold'],
-            ['--sand', 'sand'],
-            ['--clay', 'clay'],
-            ['--oasis', 'oasis'],
-          ] as const
-        ).map(([token, name]) => (
+        {(['gold', 'sand', 'clay', 'oasis'] as const).map((name) => (
           <Card key={name}>
             <CardHeader>
-              <CardTitle className="ltr-island text-sm uppercase tracking-wide">{name}</CardTitle>
+              <CardTitle className="flex items-baseline gap-2 text-sm">
+                {t(`palette.${name}`)}
+                {/* The CSS custom property is an identifier, not copy — it stays
+                    Latin, but must be isolated so it reads correctly in Arabic. */}
+                <span className="ltr-island text-xs font-normal text-muted-foreground">
+                  --{name}
+                </span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div
                 className="h-16 w-full rounded-md"
-                style={{ backgroundColor: `hsl(var(${token}))` }}
+                style={{ backgroundColor: `hsl(var(--${name}))` }}
               />
             </CardContent>
           </Card>

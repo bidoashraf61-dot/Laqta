@@ -31,6 +31,7 @@ the same `DATABASE_URL`** so you are all developing against one catalogue.
 | `npm run db:migrate` / `db:seed` / `db:studio` | Prisma |
 | `npm run lint` / `typecheck` | ESLint / tsc |
 | `npm run verify:i18n` | locale switching, dictionary parity, formatting |
+| `npm run verify:arabic` | **no English leaking into any `/ar` route** — run before merging |
 | `npm run verify:auth` | both sign-in rails + 2FA, against a running server |
 
 ### Seeded accounts
@@ -198,6 +199,28 @@ formatHijri(new Date())                       // → "21 صفر 1448 هـ"
 Strings live in `messages/ar.json` and `messages/en.json`. **Arabic is the
 source of truth** — write it first. Add keys to both files; `npm run verify:i18n`
 fails the build of your patience otherwise.
+
+### Arabic is not negotiable — and it is enforced
+
+`npm run verify:arabic` crawls every `/ar` route as a signed-in admin and fails
+on any visible Latin text that is not deliberately marked as an isolated
+foreign run. **Run it before you merge.** Add your new routes to `ROUTES` in
+`scripts/verify-arabic.ts`.
+
+The rule it enforces: on an Arabic page, Latin is allowed only inside
+`.ltr-island`, `.numeric` or `<code>`. That is not cosmetic — those wrappers
+set `unicode-bidi: isolate`, and without it a Latin run drags its punctuation
+and numerals to the wrong end of the Arabic sentence around it. So "is it
+translated?" and "is it correctly isolated?" are the same question.
+
+It checks attributes too — `placeholder`, `aria-label`, `title`, `alt`. That is
+where English actually survives: it caught the toast container announcing
+itself as "Notifications" to screen readers on every Arabic page, which no
+visual review would ever surface. Assume the same class of bug in anything you
+render but never look at.
+
+Legitimately-Latin proper nouns (SAR, ZATCA, mada, NEOM, IBAN…) are
+allowlisted in the script — extend the list rather than working around it.
 
 `getTranslator` runs on the server. Pass the finished strings into client
 components as props rather than shipping the dictionaries to the browser — see

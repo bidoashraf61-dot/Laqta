@@ -1,0 +1,1230 @@
+// Laqta (لقطة) — Arabic-first stock-footage marketplace.
+//
+// OWNED BY FOUNDATION (Brief 01). Other sessions must not edit this file —
+// record schema requests in your own brief's "Schema requests" section.
+//
+// Two non-negotiables, both on OrderItem:
+//   1. clipManifestSnapshot — the exact clips owned at purchase time, frozen.
+//      Entitlement is NEVER computed from the live album.
+//   2. licenceVersionId + frozen commission fields — licence terms and
+//      commission rate are snapshotted at purchase and never recomputed.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum Role {
+  buyer
+  creator
+  admin
+}
+
+enum UserStatus {
+  active
+  suspended
+  pending_verification
+}
+
+enum BillingEntityType {
+  individual
+  business
+}
+
+enum CreatorStatus {
+  pending
+  approved
+  suspended
+  rejected
+}
+
+enum CreatorTier {
+  standard // 35% platform take
+  silver //  30% — SAR 50k lifetime
+  gold //    25% — SAR 200k lifetime
+}
+
+enum AlbumStatus {
+  draft
+  in_review
+  changes_requested
+  live
+  paused
+  delisted
+}
+
+enum AlbumTier {
+  mini
+  standard
+  pro
+  signature
+}
+
+enum ClearanceStatus {
+  full // releases + permits complete → "cleared for commercial use ✅"
+  editorial_only
+  pending
+}
+
+enum LicenceTier {
+  standard
+  extended // 3× standard price
+}
+
+enum ReleaseType {
+  model
+  property
+  permit
+}
+
+enum ReleaseVerification {
+  pending
+  verified
+  rejected
+}
+
+enum IngestStatus {
+  uploaded
+  probing
+  transcoding
+  ready
+  failed
+}
+
+enum OrderStatus {
+  pending
+  paid
+  failed
+  refunded
+  partially_refunded
+}
+
+enum ReviewStatus {
+  unassigned
+  assigned
+  in_progress
+  approved
+  changes_requested
+  rejected
+}
+
+enum ReviewDecision {
+  approve
+  request_changes
+  reject
+}
+
+enum CheckState {
+  pending
+  pass
+  fail
+  not_applicable
+}
+
+enum LedgerEntryType {
+  sale
+  refund
+  adjustment
+  payout
+  withholding
+}
+
+enum PayoutStatus {
+  requested
+  approved
+  processing
+  paid
+  failed
+}
+
+enum PayoutMethod {
+  iban // Saudi / local bank transfer
+  payoneer
+  wise
+}
+
+enum DisputeType {
+  dmca
+  ip_claim
+  takedown
+  content_complaint
+}
+
+enum DisputeStatus {
+  open
+  investigating
+  content_disabled
+  resolved
+  rejected
+}
+
+enum ZatcaStatus {
+  not_reported
+  reported
+  cleared
+  failed
+}
+
+enum TaxonomyKind {
+  category
+  location
+  tag
+  theme
+}
+
+enum PromoKind {
+  percent
+  fixed
+}
+
+enum CmsKind {
+  blog_post
+  help_article
+  landing_copy
+  legal
+}
+
+enum CmsStatus {
+  draft
+  published
+  archived
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Identity
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String     @id @default(cuid())
+  email         String?    @unique
+  emailVerified DateTime?
+  phone         String?    @unique
+  phoneVerified DateTime?
+  passwordHash  String?
+  name          String?
+  image         String?
+  locale        String     @default("ar")
+  role          Role       @default(buyer)
+  status        UserStatus @default(active)
+
+  // Business account — required for a compliant ZATCA tax invoice.
+  billingEntityType BillingEntityType @default(individual)
+  legalName         String?
+  crNumber          String? // Commercial Registration
+  vatNumber         String?
+  billingAddress    Json? // { line1, line2, city, region, postalCode, country }
+
+  // 2FA — mandatory for creator and admin.
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  creator        Creator?
+  boards         Board[]
+  cart           Cart?
+  orders         Order[]
+  entitlements   Entitlement[]
+  downloads      Download[]
+  reviewTasks    ReviewTask[]    @relation("ReviewTaskReviewer")
+  verifiedRels   Release[]       @relation("ReleaseVerifier")
+  auditLogs      AuditLog[]      @relation("AuditActor")
+  impersonations Impersonation[] @relation("ImpersonationAdmin")
+  impersonated   Impersonation[] @relation("ImpersonationTarget")
+  disputes       Dispute[]       @relation("DisputeAssignee")
+  cmsEntries     CmsEntry[]      @relation("CmsAuthor")
+
+  @@index([role, status])
+}
+
+// Auth.js adapter models.
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/// Short-lived phone OTP challenge. Codes are hashed, never stored in clear.
+model PhoneOtp {
+  id        String    @id @default(cuid())
+  phone     String
+  codeHash  String
+  attempts  Int       @default(0)
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([phone, expiresAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Supply side
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Creator {
+  id            String        @id @default(cuid())
+  userId        String        @unique
+  handle        String        @unique
+  displayNameAr String
+  displayNameEn String
+  bioAr         String?
+  bioEn         String?
+  showreelUrl   String?
+  country       String        @default("EG") // ISO-3166-1 alpha-2
+  city          String?
+  status        CreatorStatus @default(pending)
+  tier          CreatorTier   @default(standard)
+
+  /// Per-creator override of the tier rate, as a fraction (0.30 = 30%).
+  /// Null means "derive from tier". Admin-set only; see lib/commission.ts.
+  commissionRateOverride Decimal? @db.Decimal(5, 4)
+
+  isExclusive Boolean @default(false)
+
+  // Payout rail. Foreign creators use payoneer/wise; KSA creators use IBAN.
+  payoutMethod      PayoutMethod @default(iban)
+  iban              String?
+  bankName          String?
+  beneficiaryName   String?
+  payoneerEmail     String?
+  wiseEmail         String?
+  taxResidency      String? // ISO country — drives withholding tax
+  withholdingRate   Decimal? @db.Decimal(5, 4)
+  taxFormOnFile     Boolean  @default(false)
+
+  lifetimeGmv  Decimal @default(0) @db.Decimal(14, 2)
+  balanceHeld  Decimal @default(0) @db.Decimal(14, 2)
+  balanceAvail Decimal @default(0) @db.Decimal(14, 2)
+
+  appliedAt   DateTime  @default(now())
+  approvedAt  DateTime?
+  suspendedAt DateTime?
+  notes       String? // internal admin notes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  albums   Album[]
+  releases Release[]
+  ledger   CreatorLedger[]
+  payouts  Payout[]
+  orderItems OrderItem[]
+
+  @@index([status, tier])
+}
+
+model Album {
+  id     String @id @default(cuid())
+  slug   String @unique
+  creatorId String
+
+  titleAr       String
+  titleEn       String
+  descriptionAr String?
+  descriptionEn String?
+
+  status AlbumStatus @default(draft)
+  tier   AlbumTier   @default(standard)
+
+  priceStandard Decimal @db.Decimal(10, 2)
+  priceExtended Decimal @db.Decimal(10, 2)
+  currency      String  @default("SAR")
+
+  coverClipId    String?
+  trailerUrl     String?
+  clipCount      Int     @default(0)
+  totalRuntimeS  Int     @default(0)
+  totalSizeBytes BigInt  @default(0)
+
+  clearanceStatus ClearanceStatus @default(pending)
+  isExclusive     Boolean         @default(false)
+
+  /// Set by the review queue when every clip's releases and permits verify.
+  /// Drives the buyer-facing "cleared for commercial use ✅" filter.
+  clearedForCommercial Boolean @default(false)
+
+  isFeatured  Boolean   @default(false)
+  featureRank Int?
+  publishedAt DateTime?
+  delistedAt  DateTime?
+  salesCount  Int       @default(0)
+  ratingAvg   Decimal?  @db.Decimal(3, 2)
+  viewCount   Int       @default(0)
+
+  /// Licence text in force. Frozen onto every OrderItem at purchase.
+  licenceVersionId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator        Creator          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  licenceVersion LicenceVersion?  @relation(fields: [licenceVersionId], references: [id])
+  clips          Clip[]
+  taxonomy       AlbumTaxonomy[]
+  collections    CollectionAlbum[]
+  reviewTasks    ReviewTask[]
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  entitlements   Entitlement[]
+  disputes       Dispute[]
+
+  @@index([status, publishedAt])
+  @@index([creatorId, status])
+  @@index([isFeatured, featureRank])
+}
+
+model Clip {
+  id         String @id @default(cuid())
+  albumId    String
+  orderIndex Int    @default(0)
+  slug       String @unique
+
+  titleAr       String
+  titleEn       String
+  descriptionAr String?
+  descriptionEn String?
+
+  // Technical metadata — extracted by FFmpeg probe at ingest, not typed by hand.
+  durationS     Decimal @db.Decimal(8, 3)
+  width         Int
+  height        Int
+  fps           Decimal @db.Decimal(6, 3)
+  codec         String?
+  bitrateKbps   Int?
+  colourProfile String? // LOG / Rec.709 / RAW
+  aspectRatio   String? // 16:9 / 9:16 / 1:1 / 2.39:1
+
+  camera         String?
+  lens           String?
+  hasPeople      Boolean @default(false)
+  identifiableFaces Boolean @default(false)
+  cameraMovement String? // Drone / Gimbal / Handheld / Static / Slider / Crane
+  shotSize       String? // Wide / Medium / Close-up / Macro / Aerial
+  timeOfDay      String?
+  season         String?
+
+  locationId String?
+  geoLat     Decimal? @db.Decimal(9, 6)
+  geoLng     Decimal? @db.Decimal(9, 6)
+
+  // Object storage keys. Masters are never publicly addressable.
+  masterKey     String?
+  proxyKey      String?
+  previewHlsKey String?
+  thumbnailKeys String[] @default([])
+  spriteKey     String?
+
+  checksum     String?
+  /// Perceptual hash (64-bit dHash, hex). Drives duplicate / re-upload
+  /// detection in the admin review queue.
+  perceptualHash String?
+  ingestStatus IngestStatus @default(uploaded)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  album        Album           @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  location     Taxonomy?       @relation("ClipLocation", fields: [locationId], references: [id])
+  taxonomy     ClipTaxonomy[]
+  releaseLinks ReleaseClip[]
+  boardClips   BoardClip[]
+  downloads    Download[]
+
+  @@index([albumId, orderIndex])
+  @@index([perceptualHash])
+  @@index([locationId])
+}
+
+model Release {
+  id        String      @id @default(cuid())
+  creatorId String
+  type      ReleaseType
+
+  fileKey       String
+  subjectName   String? // model / property owner
+  /// Issuing authority for permits — RCU (AlUla), Diriyah Gate, NEOM,
+  /// Red Sea Global, GCAM, municipality, airport authority…
+  authority     String?
+  referenceNumber String?
+  validFrom     DateTime?
+  validTo       DateTime?
+  notes         String?
+
+  verification   ReleaseVerification @default(pending)
+  verifiedById   String?
+  verifiedAt     DateTime?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator    Creator       @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  verifiedBy User?         @relation("ReleaseVerifier", fields: [verifiedById], references: [id])
+  clipLinks  ReleaseClip[]
+
+  @@index([creatorId, type, verification])
+}
+
+model ReleaseClip {
+  releaseId String
+  clipId    String
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  clip    Clip    @relation(fields: [clipId], references: [id], onDelete: Cascade)
+
+  @@id([releaseId, clipId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Taxonomy — one table, discriminated by `kind`, so the admin taxonomy editor
+// and the search synonym layer have a single surface to manage.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Taxonomy {
+  id       String       @id @default(cuid())
+  kind     TaxonomyKind
+  parentId String?
+  slug     String
+  nameAr   String
+  nameEn   String
+
+  /// Search synonym layer. Arabic side carries morphological and
+  /// hamza/alef variants; English side carries transliterations
+  /// ("AlUla" ↔ "العلا"). Consumed by the Meilisearch index build.
+  synonymsAr String[] @default([])
+  synonymsEn String[] @default([])
+
+  heroImage String?
+  seoTitleAr String?
+  seoTitleEn String?
+  seoDescAr  String?
+  seoDescEn  String?
+
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   Taxonomy?       @relation("TaxonomyTree", fields: [parentId], references: [id])
+  children Taxonomy[]      @relation("TaxonomyTree")
+  albums   AlbumTaxonomy[]
+  clips    ClipTaxonomy[]
+  clipsAtLocation Clip[]   @relation("ClipLocation")
+
+  @@unique([kind, slug])
+  @@index([kind, parentId, sortOrder])
+}
+
+model AlbumTaxonomy {
+  albumId    String
+  taxonomyId String
+
+  album    Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  taxonomy Taxonomy @relation(fields: [taxonomyId], references: [id], onDelete: Cascade)
+
+  @@id([albumId, taxonomyId])
+}
+
+model ClipTaxonomy {
+  clipId     String
+  taxonomyId String
+
+  clip     Clip     @relation(fields: [clipId], references: [id], onDelete: Cascade)
+  taxonomy Taxonomy @relation(fields: [taxonomyId], references: [id], onDelete: Cascade)
+
+  @@id([clipId, taxonomyId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Merchandising
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Collection {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  titleAr       String
+  titleEn       String
+  descriptionAr String?
+  descriptionEn String?
+  heroMedia     String?
+  isFeatured    Boolean @default(false)
+  sortOrder     Int     @default(0)
+  isPublished   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  albums CollectionAlbum[]
+}
+
+model CollectionAlbum {
+  collectionId String
+  albumId      String
+  sortOrder    Int    @default(0)
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  album      Album      @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, albumId])
+}
+
+/// Homepage / landing slots driven from /admin/merchandising.
+model MerchandisingSlot {
+  id        String  @id @default(cuid())
+  key       String  @unique // hero, featured_albums, banner_top, locations_rail…
+  titleAr   String?
+  titleEn   String?
+  subtitleAr String?
+  subtitleEn String?
+  mediaUrl  String?
+  linkUrl   String?
+  ctaLabelAr String?
+  ctaLabelEn String?
+  payload   Json? // slot-specific config (album ids, ordering…)
+  isActive  Boolean @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Demand side
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Board {
+  id         String  @id @default(cuid())
+  userId     String
+  name       String
+  isPublic   Boolean @default(false)
+  shareToken String  @unique @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clips BoardClip[]
+
+  @@index([userId])
+}
+
+model BoardClip {
+  boardId String
+  clipId  String
+  addedAt DateTime @default(now())
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  clip  Clip  @relation(fields: [clipId], references: [id], onDelete: Cascade)
+
+  @@id([boardId, clipId])
+}
+
+model Cart {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id          String      @id @default(cuid())
+  cartId      String
+  albumId     String
+  licenceTier LicenceTier @default(standard)
+  unitPrice   Decimal     @db.Decimal(10, 2)
+  vatAmount   Decimal     @db.Decimal(10, 2)
+
+  addedAt DateTime @default(now())
+
+  cart  Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, albumId])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  userId      String
+  status      OrderStatus @default(pending)
+
+  subtotal  Decimal @db.Decimal(12, 2)
+  vatRate   Decimal @db.Decimal(5, 4)
+  vatAmount Decimal @db.Decimal(12, 2)
+  total     Decimal @db.Decimal(12, 2)
+  currency  String  @default("SAR")
+
+  refundedAmount Decimal @default(0) @db.Decimal(12, 2)
+
+  paymentMethod String? // mada / apple_pay / card / stc_pay / tabby / tamara / bank_transfer
+  gatewayRef    String?
+
+  /// Billing entity as it stood at purchase. Never re-read from User —
+  /// the tax invoice must reflect what was agreed at the time.
+  billingEntitySnapshot Json?
+  poNumber              String?
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  items      OrderItem[]
+  invoice    Invoice?
+  refunds    Refund[]
+  chargeback Chargeback?
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  albumId   String
+  creatorId String
+
+  licenceTier LicenceTier
+
+  /// ── FROZEN AT PURCHASE ──────────────────────────────────────────────────
+  /// Licence text version in force at purchase. Never repoint this.
+  licenceVersionId String?
+
+  grossAmount Decimal @db.Decimal(12, 2)
+  vatAmount   Decimal @db.Decimal(12, 2)
+
+  /// Commission rate as a fraction (0.35 = 35%), frozen at purchase.
+  /// NEVER recompute from the creator's current tier — see lib/commission.ts.
+  commissionRate   Decimal @db.Decimal(5, 4)
+  commissionAmount Decimal @db.Decimal(12, 2)
+  creatorNetAmount Decimal @db.Decimal(12, 2)
+
+  /// Human-readable trace of how the rate was derived, for admin/audit:
+  /// { tier, baseRate, exclusiveBonus, override, effectiveRate }
+  commissionBasis Json?
+
+  /// The exact clip IDs owned at purchase, with their titles and keys.
+  /// Entitlement is served from this, never from the live album.
+  clipManifestSnapshot Json
+  /// ────────────────────────────────────────────────────────────────────────
+
+  refundedAmount Decimal @default(0) @db.Decimal(12, 2)
+  refundedAt     DateTime?
+
+  createdAt DateTime @default(now())
+
+  order          Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  album          Album              @relation(fields: [albumId], references: [id])
+  creator        Creator            @relation(fields: [creatorId], references: [id])
+  licenceVersion LicenceVersion?    @relation(fields: [licenceVersionId], references: [id])
+  entitlement    Entitlement?
+  certificate    LicenceCertificate?
+  ledgerEntries  CreatorLedger[]
+  refundLines    RefundLine[]
+
+  @@index([creatorId, createdAt])
+  @@index([albumId])
+}
+
+model Entitlement {
+  id          String      @id @default(cuid())
+  userId      String
+  albumId     String
+  orderItemId String      @unique
+  licenceTier LicenceTier
+
+  /// Mirror of OrderItem.clipManifestSnapshot — the clips actually owned.
+  clipIdsSnapshot String[] @default([])
+
+  grantedAt DateTime  @default(now())
+  revokedAt DateTime?
+  revokeReason String?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  album     Album     @relation(fields: [albumId], references: [id])
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+  downloads Download[]
+
+  @@unique([userId, albumId, licenceTier])
+  @@index([userId])
+}
+
+model Download {
+  id            String  @id @default(cuid())
+  entitlementId String
+  userId        String
+  clipId        String? // null = whole-album ZIP
+  isAlbumZip    Boolean @default(false)
+  ip            String?
+  userAgent     String?
+  bytes         BigInt  @default(0)
+
+  createdAt DateTime @default(now())
+
+  entitlement Entitlement @relation(fields: [entitlementId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clip        Clip?       @relation(fields: [clipId], references: [id])
+
+  @@index([entitlementId, createdAt])
+  @@index([userId, createdAt])
+}
+
+/// Versioned licence text. OrderItem points at the version in force at
+/// purchase; revising the text creates a new row, never an update.
+model LicenceVersion {
+  id        String  @id @default(cuid())
+  version   String  @unique // e.g. "standard-v1", "extended-v2"
+  tier      LicenceTier
+  titleAr   String
+  titleEn   String
+  bodyAr    String
+  bodyEn    String
+  isCurrent Boolean @default(false)
+
+  effectiveFrom DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  albums     Album[]
+  orderItems OrderItem[]
+}
+
+model LicenceCertificate {
+  id                String   @id @default(cuid())
+  orderItemId       String   @unique
+  certificateNumber String   @unique
+  pdfKey            String?
+  issuedAt          DateTime @default(now())
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+}
+
+/// ZATCA Fatoora e-invoice.
+model Invoice {
+  id            String      @id @default(cuid())
+  orderId       String      @unique
+  invoiceNumber String      @unique
+  uuid          String      @unique
+  previousHash  String?
+  qrCode        String?
+  xmlKey        String?
+  pdfKey        String?
+  zatcaStatus   ZatcaStatus @default(not_reported)
+  zatcaResponse Json?
+  isManual      Boolean     @default(false) // raised by admin for enterprise/Net-30
+
+  issuedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Refunds & chargebacks
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Refund {
+  id      String @id @default(cuid())
+  orderId String
+
+  amount    Decimal @db.Decimal(12, 2)
+  vatAmount Decimal @db.Decimal(12, 2)
+  reason    String
+  /// Policy path taken: no_download_within_7d | technical_defect |
+  /// discretionary | chargeback. Recorded because the policy is contested.
+  policyBasis String
+  isPartial   Boolean @default(false)
+
+  processedById String?
+  gatewayRef    String?
+
+  createdAt DateTime @default(now())
+
+  order Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  lines RefundLine[]
+
+  @@index([orderId])
+}
+
+model RefundLine {
+  id          String  @id @default(cuid())
+  refundId    String
+  orderItemId String
+
+  grossAmount Decimal @db.Decimal(12, 2)
+  vatAmount   Decimal @db.Decimal(12, 2)
+  /// Commission reversed using the FROZEN rate on the OrderItem.
+  commissionReversed Decimal @db.Decimal(12, 2)
+  creatorNetReversed Decimal @db.Decimal(12, 2)
+
+  refund    Refund    @relation(fields: [refundId], references: [id], onDelete: Cascade)
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+}
+
+model Chargeback {
+  id      String @id @default(cuid())
+  orderId String @unique
+
+  amount     Decimal  @db.Decimal(12, 2)
+  reasonCode String?
+  status     String   @default("open") // open | represented | lost | won
+  openedAt   DateTime @default(now())
+  dueBy      DateTime?
+  resolvedAt DateTime?
+  notes      String?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Creator money
+// ─────────────────────────────────────────────────────────────────────────────
+
+model CreatorLedger {
+  id        String          @id @default(cuid())
+  creatorId String
+  entryType LedgerEntryType
+
+  /// Signed. Sales are positive; refunds, payouts and withholding negative.
+  amount       Decimal @db.Decimal(14, 2)
+  currency     String  @default("SAR")
+  balanceAfter Decimal @db.Decimal(14, 2)
+
+  orderItemId String?
+  payoutId    String?
+  memo        String?
+
+  /// Sale date + 30-day hold. Only entries past this date are payable.
+  availableAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  creator   Creator    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
+  payout    Payout?    @relation(fields: [payoutId], references: [id])
+
+  @@index([creatorId, createdAt])
+  @@index([creatorId, availableAt])
+}
+
+model Payout {
+  id        String       @id @default(cuid())
+  creatorId String
+  runId     String?
+
+  amount   Decimal      @db.Decimal(14, 2)
+  currency String       @default("SAR")
+  status   PayoutStatus @default(requested)
+  method   PayoutMethod
+
+  /// Destination frozen at approval — bank details may change afterwards.
+  destinationSnapshot Json?
+
+  withholdingAmount Decimal @default(0) @db.Decimal(14, 2)
+  netAmount         Decimal @db.Decimal(14, 2)
+
+  reference   String?
+  periodStart DateTime?
+  periodEnd   DateTime?
+  /// Creator self-billing invoice generated per payout.
+  invoiceKey  String?
+
+  approvedById String?
+  approvedAt   DateTime?
+  paidAt       DateTime?
+  failureReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator Creator         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  run     PayoutRun?      @relation(fields: [runId], references: [id])
+  ledger  CreatorLedger[]
+
+  @@index([status, createdAt])
+  @@index([creatorId, status])
+}
+
+model PayoutRun {
+  id     String @id @default(cuid())
+  label  String
+  status String @default("draft") // draft | approved | exported | closed
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  totalAmount Decimal @default(0) @db.Decimal(14, 2)
+  payoutCount Int     @default(0)
+
+  /// Generated export artefacts, keyed by rail: { iban: key, payoneer: key }
+  exportKeys Json?
+
+  approvedById String?
+  approvedAt   DateTime?
+  exportedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payouts Payout[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Review queue — the operational heart
+// ─────────────────────────────────────────────────────────────────────────────
+
+model ReviewTask {
+  id         String       @id @default(cuid())
+  albumId    String
+  reviewerId String?
+  status     ReviewStatus @default(unassigned)
+
+  /// Structured checklist, one row per check. See lib/review-checklist.ts for
+  /// the canonical key list — stored as JSON so checks can be added without a
+  /// migration, but always written through the helper.
+  checklist Json?
+
+  notes            String?
+  /// Note sent to the creator on request-changes / reject.
+  decisionNote     String?
+  decision         ReviewDecision?
+  /// SLA target is 3 business days from submission.
+  submittedAt      DateTime  @default(now())
+  slaDueAt         DateTime?
+  assignedAt       DateTime?
+  startedAt        DateTime?
+  decidedAt        DateTime?
+
+  /// Snapshot of the automated reports at decision time.
+  duplicateReport Json?
+  technicalReport Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  album    Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  reviewer User? @relation("ReviewTaskReviewer", fields: [reviewerId], references: [id])
+
+  @@index([status, slaDueAt])
+  @@index([albumId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pricing
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PriceBand {
+  id        String    @id @default(cuid())
+  tier      AlbumTier @unique
+  labelAr   String
+  labelEn   String
+  minClips  Int
+  maxClips  Int?
+  priceStandard Decimal @db.Decimal(10, 2)
+  /// Extended is 3× standard by policy; kept explicit so it can be tuned.
+  extendedMultiplier Decimal @default(3) @db.Decimal(5, 2)
+  currency  String    @default("SAR")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PromoCode {
+  id       String    @id @default(cuid())
+  code     String    @unique
+  kind     PromoKind @default(percent)
+  value    Decimal   @db.Decimal(10, 2)
+  currency String    @default("SAR")
+
+  maxRedemptions Int?
+  redemptions    Int  @default(0)
+  minOrderTotal  Decimal? @db.Decimal(10, 2)
+  /// Restrict to specific albums / collections; empty = everything.
+  albumIds       String[] @default([])
+
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isActive  Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Disputes
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Dispute {
+  id      String        @id @default(cuid())
+  type    DisputeType
+  status  DisputeStatus @default(open)
+  albumId String?
+
+  claimantName    String
+  claimantEmail   String
+  claimantOrg     String?
+  /// Sworn statement / good-faith declaration text for DMCA.
+  statement       String
+  evidenceKeys    String[] @default([])
+  /// Free-text list of the specific clips complained of.
+  affectedClipIds String[] @default([])
+
+  assigneeId  String?
+  resolution  String?
+  contentDisabledAt DateTime?
+  resolvedAt  DateTime?
+  /// Counter-notice from the creator, if any.
+  counterNotice String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  album    Album? @relation(fields: [albumId], references: [id])
+  assignee User?  @relation("DisputeAssignee", fields: [assigneeId], references: [id])
+
+  @@index([status, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Search telemetry — feeds the zero-result report, the single most valuable
+// content-acquisition signal the business has.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SearchQueryLog {
+  id          String   @id @default(cuid())
+  query       String
+  normalized  String
+  locale      String   @default("ar")
+  resultCount Int      @default(0)
+  filtersJson Json?
+  userId      String?
+  sessionId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([normalized, createdAt])
+  @@index([resultCount, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CMS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model CmsEntry {
+  id     String    @id @default(cuid())
+  kind   CmsKind
+  slug   String
+  status CmsStatus @default(draft)
+
+  titleAr String
+  titleEn String
+  bodyAr  String?
+  bodyEn  String?
+  excerptAr String?
+  excerptEn String?
+  heroImage String?
+
+  seoTitleAr String?
+  seoTitleEn String?
+  seoDescAr  String?
+  seoDescEn  String?
+
+  authorId    String?
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author User? @relation("CmsAuthor", fields: [authorId], references: [id])
+
+  @@unique([kind, slug])
+  @@index([kind, status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Audit
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id       String @id @default(cuid())
+  actorId  String?
+  action   String // album.approve, order.refund, user.impersonate…
+  entity   String // Album, Order, User…
+  entityId String?
+  /// Before/after or free-form context.
+  detail   Json?
+  ip       String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([entity, entityId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+/// Support impersonation. Every session is opened and closed explicitly and
+/// is always audit-logged — required by the brief.
+model Impersonation {
+  id           String    @id @default(cuid())
+  adminId      String
+  targetUserId String
+  reason       String
+  ticketRef    String?
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  ip           String?
+
+  admin  User @relation("ImpersonationAdmin", fields: [adminId], references: [id])
+  target User @relation("ImpersonationTarget", fields: [targetUserId], references: [id])
+
+  @@index([adminId, startedAt])
+  @@index([targetUserId, startedAt])
+}

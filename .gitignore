@@ -26,6 +26,9 @@ dist/
 build/
 *.log
 
+# Local development Postgres cluster (npm run db:start)
+.pgdata/
+
 # Env
 .env
 .env.*

@@ -217,8 +217,7 @@ Widen the margins. Content should occupy roughly the middle 60–70% at desktop,
 ### Typography, as shipped
 
 Thmanyah, three families, each in the role it was drawn for — Sans for UI, Serif Text for
-editorial prose, Serif Display for the big type. See the note at the top of globals.css: the
-web-embedding permission is still outstanding.
+editorial prose, Serif Display for the big type. Confirmed clear for web embedding.
 
 ### Still open
 

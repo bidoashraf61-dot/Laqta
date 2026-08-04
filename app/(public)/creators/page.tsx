@@ -26,7 +26,7 @@ export default async function CreatorsPage() {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 text-headline font-semibold">{t('catalogue.creatorsTitle')}</h1>
+      <h1 className="mb-6 font-display text-headline font-semibold">{t('catalogue.creatorsTitle')}</h1>
 
       {creators.length === 0 ? (
         <EmptyState title={t('state.empty')} />

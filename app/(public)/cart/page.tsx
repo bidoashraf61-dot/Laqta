@@ -22,7 +22,7 @@ export default async function CartPage() {
 
   return (
     <div className="container max-w-4xl py-10">
-      <h1 className="mb-6 text-headline font-semibold">{t('cart.title')}</h1>
+      <h1 className="mb-6 font-display text-headline font-semibold">{t('cart.title')}</h1>
 
       {cart.items.length === 0 ? (
         <EmptyState

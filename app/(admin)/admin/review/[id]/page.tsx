@@ -63,7 +63,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
       </Link>
 
       <header className="space-y-2">
-        <h1 className="text-headline font-semibold">
+        <h1 className="font-display text-headline font-semibold">
           <Bilingual ar={task.album.titleAr} en={task.album.titleEn} />
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -110,7 +110,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
       ) : null}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold">{t('catalogue.clearance')}</h2>
+        <h2 className="mb-3 font-display text-xl font-semibold">{t('catalogue.clearance')}</h2>
         {uniqueReleases.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t('state.empty')}</p>
         ) : (
@@ -137,7 +137,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold">{t('studio.clips')}</h2>
+        <h2 className="mb-3 font-display text-xl font-semibold">{t('studio.clips')}</h2>
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {task.album.clips.map((clip) => (
             <div key={clip.id} className="overflow-hidden rounded-md border bg-card">

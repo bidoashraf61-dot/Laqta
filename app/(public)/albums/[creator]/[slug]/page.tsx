@@ -185,7 +185,7 @@ export default async function AlbumPage({
           <Separator />
 
           <section>
-            <h2 className="mb-4 text-lg font-semibold">
+            <h2 className="mb-4 font-display text-xl font-semibold">
               {t('catalogue.clipsInAlbum')}{' '}
               <span className="numeric text-muted-foreground">({album.clips.length})</span>
             </h2>
@@ -223,7 +223,7 @@ export default async function AlbumPage({
           <Separator />
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">{t('catalogue.specs')}</h2>
+            <h2 className="font-display text-xl font-semibold">{t('catalogue.specs')}</h2>
             <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
               <Spec label={t('catalogue.clipCountLabel')} value={String(album.clipCount)} numeric />
               <Spec
@@ -254,7 +254,7 @@ export default async function AlbumPage({
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">{t('catalogue.clearance')}</h2>
+            <h2 className="font-display text-xl font-semibold">{t('catalogue.clearance')}</h2>
             <div className="flex flex-wrap gap-2">
               {album.clearedForCommercial ? (
                 <Badge variant="success" className="gap-1">
@@ -276,7 +276,7 @@ export default async function AlbumPage({
 
           {others.length > 0 ? (
             <section>
-              <h2 className="mb-4 text-lg font-semibold">{t('catalogue.byCreatorOther')}</h2>
+              <h2 className="mb-4 font-display text-xl font-semibold">{t('catalogue.byCreatorOther')}</h2>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {others.map((other) => (
                   <AlbumCard

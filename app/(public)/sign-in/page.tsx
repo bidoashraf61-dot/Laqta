@@ -21,7 +21,7 @@ export default async function SignInPage({
     <div className="container flex min-h-[70vh] items-center justify-center py-12">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{t('auth.signInTitle')}</CardTitle>
+          <CardTitle className="font-display text-2xl">{t('auth.signInTitle')}</CardTitle>
           <CardDescription>{t('brand.promise')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

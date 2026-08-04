@@ -15,7 +15,7 @@ export default async function AccountPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-headline font-semibold">{t('nav.account')}</h1>
+        <h1 className="font-display text-headline font-semibold">{t('nav.account')}</h1>
         <Badge variant="neutral">{t(`role.${session?.user?.role ?? 'buyer'}`)}</Badge>
       </div>
 

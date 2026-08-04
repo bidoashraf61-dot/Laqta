@@ -15,7 +15,7 @@ export default async function SecurityPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-headline font-semibold">{t('security.title')}</h1>
+      <h1 className="font-display text-headline font-semibold">{t('security.title')}</h1>
       <TwoFactorCard
         enabled={Boolean(user?.twoFactorEnabled)}
         mandatory={twoFactorRequired(user?.role ?? 'buyer')}

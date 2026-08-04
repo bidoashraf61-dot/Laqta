@@ -47,7 +47,7 @@ export default async function StudioPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-headline font-semibold">{t('studio.title')}</h1>
+      <h1 className="font-display text-headline font-semibold">{t('studio.title')}</h1>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label={t('studio.available')} value={formatMoney(earnings.available)} accent />
@@ -58,7 +58,7 @@ export default async function StudioPage() {
 
       <section>
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">{t('studio.albums')}</h2>
+          <h2 className="font-display text-xl font-semibold">{t('studio.albums')}</h2>
           <Button asChild variant="outline" size="sm">
             <Link href="/studio/earnings">
               <Wallet />

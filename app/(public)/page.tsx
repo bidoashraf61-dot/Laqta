@@ -10,6 +10,7 @@ import {
   TrustStrip,
 } from '@/components/landing/sections'
 import { EmailCapture } from '@/components/landing/email-capture'
+import { Clearance, TheProblem, WhoItsFor } from '@/components/landing/positioning'
 import {
   getCatalogueStats,
   getFeaturedAlbums,
@@ -26,12 +27,17 @@ export const metadata: Metadata = {
   description: `${t('brand.promise')} ${t('landing.featuredSubtitle')}`,
   keywords: [
     'لقطات فيديو سعودية',
-    'مكتبة فيديو عربية',
+    'مكتبة لقطات سعودية',
     'فوتاج سعودي',
     'لقطات الرياض',
     'لقطات العلا',
+    'لقطات الدرعية',
+    'لقطات جدة',
     'تصوير جوي السعودية',
+    'لقطات للحملات الإعلانية السعودية',
+    'مواد فيديو للجهات الحكومية',
     'stock footage Saudi Arabia',
+    'Saudi b-roll',
     'Arabic stock video',
   ],
   alternates: { canonical: '/' },
@@ -74,7 +80,11 @@ export default async function HomePage() {
       <StructuredData />
       <HeroCinematic />
       <TrustStrip stats={stats} />
+      {/* The pitch, before the catalogue: why the library they already pay for
+          is not enough, and that this one is for them specifically. */}
+      <TheProblem />
       <FeaturedAlbums albums={featured} />
+      <WhoItsFor />
       <BrowseTiles
         title={t('landing.locationsTitle')}
         subtitle={t('landing.locationsSubtitle')}
@@ -88,6 +98,7 @@ export default async function HomePage() {
         tiles={categories}
       />
       <NewThisWeek albums={fresh} />
+      <Clearance />
       <TopCreators creators={creators} />
       <HowItWorks />
       <CreatorCta />

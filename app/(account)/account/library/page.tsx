@@ -22,7 +22,7 @@ export default async function LibraryPage() {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-headline font-semibold">{t('library.title')}</h1>
+        <h1 className="font-display text-headline font-semibold">{t('library.title')}</h1>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <InfinityIcon className="size-4 text-gold" />
           {t('library.ownedForever')}

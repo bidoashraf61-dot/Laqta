@@ -64,7 +64,7 @@ export default async function FootagePage({
   return (
     <div className="container py-10">
       <header className="mb-6 space-y-1">
-        <h1 className="text-headline font-semibold">{t('catalogue.footageTitle')}</h1>
+        <h1 className="font-display text-headline font-semibold">{t('catalogue.footageTitle')}</h1>
         <p className="text-muted-foreground">{t('catalogue.footageSubtitle')}</p>
       </header>
 

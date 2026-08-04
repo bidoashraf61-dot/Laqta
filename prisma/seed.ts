@@ -39,6 +39,36 @@ function round2(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100
 }
 
+/**
+ * Demo posters.
+ *
+ * Development data points at the real hero stills in public/hero rather than
+ * invented `thumbs/demo/*.jpg` keys, so the catalogue renders as a product
+ * instead of a grid of grey boxes. In production these are object-storage keys
+ * resolved through the media pipeline; here they are plain public paths, which
+ * is why they start with a slash.
+ */
+const POSTERS = {
+  alula: ['/hero/06-alula.jpg', '/hero/07-qasr-al-farid.jpg'],
+  desert: ['/hero/08-empty-quarter.jpg', '/hero/09-edge-of-the-world.jpg'],
+  riyadh: ['/hero/03-riyadh-NIGHT.jpg'],
+} as const
+
+const poster = (set: keyof typeof POSTERS, index: number) =>
+  POSTERS[set][index % POSTERS[set].length]
+
+/** Location hubs that have a matching hero still. The rest fall back to type. */
+const LOCATION_HERO: Record<string, string> = {
+  riyadh: '/hero/03-riyadh-NIGHT.jpg',
+  makkah: '/hero/04-makkah-NIGHT.jpg',
+  alula: '/hero/06-alula.jpg',
+  'rub-al-khali': '/hero/08-empty-quarter.jpg',
+  'edge-of-the-world': '/hero/09-edge-of-the-world.jpg',
+  'red-sea': '/hero/10-red-sea.jpg',
+  jeddah: '/hero/11-jeddah.jpg',
+  diriyah: '/hero/12-diriyah.jpg',
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Taxonomy
 //
@@ -131,10 +161,20 @@ const TAGS: Array<[string, string, string]> = [
 
 async function seedTaxonomy() {
   for (const [index, [slug, nameAr, nameEn, synonymsAr, synonymsEn]] of LOCATIONS.entries()) {
+    const heroImage = LOCATION_HERO[slug] ?? null
     await db.taxonomy.upsert({
       where: { kind_slug: { kind: 'location', slug } },
-      update: { nameAr, nameEn, synonymsAr, synonymsEn },
-      create: { kind: 'location', slug, nameAr, nameEn, synonymsAr, synonymsEn, sortOrder: index },
+      update: { nameAr, nameEn, synonymsAr, synonymsEn, heroImage },
+      create: {
+        kind: 'location',
+        slug,
+        nameAr,
+        nameEn,
+        synonymsAr,
+        synonymsEn,
+        heroImage,
+        sortOrder: index,
+      },
     })
   }
   for (const [index, [slug, nameAr, nameEn, synonymsEn]] of CATEGORIES.entries()) {
@@ -589,7 +629,7 @@ async function main() {
           masterKey: `masters/demo/alula-${i + 1}.mov`,
           proxyKey: `proxies/demo/alula-${i + 1}.mp4`,
           previewHlsKey: `previews/demo/alula-${i + 1}/index.m3u8`,
-          thumbnailKeys: [`thumbs/demo/alula-${i + 1}.jpg`],
+          thumbnailKeys: [poster('alula', i)],
           spriteKey: `sprites/demo/alula-${i + 1}.jpg`,
           ingestStatus: 'ready',
           checksum: `demo-checksum-alula-${i}`,
@@ -625,7 +665,7 @@ async function main() {
           timeOfDay: i > 6 ? 'night' : 'dawn',
           locationId: locRub?.id ?? null,
           masterKey: `masters/demo/rub-${i + 1}.mov`,
-          thumbnailKeys: [`thumbs/demo/rub-${i + 1}.jpg`],
+          thumbnailKeys: [poster('desert', i)],
           ingestStatus: 'ready',
         },
       })
@@ -653,9 +693,30 @@ async function main() {
           timeOfDay: 'night',
           locationId: locRiyadh?.id ?? null,
           masterKey: `masters/demo/riyadh-${i + 1}.mov`,
-          thumbnailKeys: [`thumbs/demo/riyadh-${i + 1}.jpg`],
+          thumbnailKeys: [poster('riyadh', i)],
           ingestStatus: 'ready',
         },
+      })
+    }
+  }
+
+  // Demo posters are refreshed on every run, not just on first create: clip
+  // rows are guarded by a count, so without this an existing database keeps
+  // whatever keys it was first seeded with and the catalogue stays grey.
+  for (const [albumId, set] of [
+    [liveAlbum.id, 'alula'],
+    [draftAlbum.id, 'desert'],
+    [reviewAlbum.id, 'riyadh'],
+  ] as const) {
+    const existing = await db.clip.findMany({
+      where: { albumId },
+      orderBy: { orderIndex: 'asc' },
+      select: { id: true },
+    })
+    for (const [index, clip] of existing.entries()) {
+      await db.clip.update({
+        where: { id: clip.id },
+        data: { thumbnailKeys: [poster(set, index)] },
       })
     }
   }

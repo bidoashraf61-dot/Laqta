@@ -1,45 +1,144 @@
-import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import type { Metadata } from 'next'
+import { HeroCinematic } from '@/components/landing/hero-cinematic'
+import {
+  BrowseTiles,
+  CreatorCta,
+  FeaturedAlbums,
+  HowItWorks,
+  NewThisWeek,
+  TopCreators,
+  TrustStrip,
+} from '@/components/landing/sections'
+import { EmailCapture } from '@/components/landing/email-capture'
+import {
+  getCatalogueStats,
+  getFeaturedAlbums,
+  getNewAlbums,
+  getTaxonomyTiles,
+  getTopCreators,
+} from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 
+const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+
+export const metadata: Metadata = {
+  title: `${t('brand.name')} — ${t('brand.tagline')}`,
+  description: `${t('brand.promise')} ${t('landing.featuredSubtitle')}`,
+  keywords: [
+    'لقطات فيديو سعودية',
+    'مكتبة فيديو عربية',
+    'فوتاج سعودي',
+    'لقطات الرياض',
+    'لقطات العلا',
+    'تصوير جوي السعودية',
+    'stock footage Saudi Arabia',
+    'Arabic stock video',
+  ],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'ar_SA',
+    url: '/',
+    title: `${t('brand.name')} — ${t('brand.tagline')}`,
+    description: t('brand.promise'),
+    images: [{ url: '/hero/06-alula.jpg', width: 1920, height: 1080, alt: t('brand.tagline') }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${t('brand.name')} — ${t('brand.tagline')}`,
+    description: t('brand.promise'),
+    images: ['/hero/06-alula.jpg'],
+  },
+}
+
 /**
- * Temporary home. Brief 02 replaces this with the scroll cinematic.
+ * The landing page.
+ *
+ * Server-rendered end to end. Organic search is the cheapest acquisition
+ * channel this business has, and the location hubs it links to are the main
+ * differentiator against the global libraries — so nothing here may depend on
+ * client JS to become visible.
  */
-export default function HomePage() {
-  const promises = [
-    t('commerce.oneTimePurchase'),
-    t('commerce.ownForever'),
-    t('commerce.instantDownload'),
-    t('commerce.taxInvoice'),
-    t('commerce.arabicSupport'),
-  ]
+export default async function HomePage() {
+  const [stats, featured, fresh, locations, categories, creators] = await Promise.all([
+    getCatalogueStats(),
+    getFeaturedAlbums(8),
+    getNewAlbums(4),
+    getTaxonomyTiles('location', 8),
+    getTaxonomyTiles('category', 8),
+    getTopCreators(6),
+  ])
 
   return (
-    <div className="container py-20">
-      <section className="max-w-3xl space-y-6">
-        <Badge variant="gold">{t('state.scaffold')}</Badge>
-        <h1 className="text-display font-bold text-gold">{t('brand.name')}</h1>
-        <p className="text-balance text-headline">{t('brand.tagline')}</p>
-        <p className="text-lg text-muted-foreground">{t('brand.promise')}</p>
+    <>
+      <StructuredData />
+      <HeroCinematic />
+      <TrustStrip stats={stats} />
+      <FeaturedAlbums albums={featured} />
+      <BrowseTiles
+        title={t('landing.locationsTitle')}
+        subtitle={t('landing.locationsSubtitle')}
+        base="/locations"
+        tiles={locations}
+      />
+      <BrowseTiles
+        title={t('landing.categoriesTitle')}
+        subtitle={t('landing.categoriesSubtitle')}
+        base="/categories"
+        tiles={categories}
+      />
+      <NewThisWeek albums={fresh} />
+      <TopCreators creators={creators} />
+      <HowItWorks />
+      <CreatorCta />
+      <EmailCapture />
+    </>
+  )
+}
 
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="gold" size="lg">
-            <Link href="/footage">{t('nav.footage')}</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/sell">{t('nav.sell')}</Link>
-          </Button>
-        </div>
+/**
+ * JSON-LD. `SearchAction` is what lets Google render a search box directly in
+ * the result for the brand query — worth more than any amount of meta tuning.
+ */
+function StructuredData() {
+  const graph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: t('brand.name'),
+        alternateName: 'Laqta',
+        description: t('brand.promise'),
+        inLanguage: 'ar-SA',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${SITE_URL}/footage?q={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+      {
+        '@type': 'Organization',
+        '@id': `${SITE_URL}/#organization`,
+        name: t('brand.name'),
+        alternateName: 'Laqta',
+        url: SITE_URL,
+        slogan: t('brand.tagline'),
+        areaServed: ['SA', 'AE', 'EG', 'KW', 'QA', 'BH', 'OM'],
+      },
+    ],
+  }
 
-        <ul className="flex flex-wrap gap-2 pt-4">
-          {promises.map((promise) => (
-            <li key={promise}>
-              <Badge variant="neutral">{promise}</Badge>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+  return (
+    <script
+      type="application/ld+json"
+      // Structured data has to reach the crawler in the HTML, and this object
+      // is entirely our own — no user input is interpolated into it.
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+    />
   )
 }

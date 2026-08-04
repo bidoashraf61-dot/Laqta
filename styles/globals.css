@@ -227,6 +227,112 @@
   }
 }
 
+/*
+ * Scroll-world engine theme.
+ *
+ * DELIBERATELY UNLAYERED. The engine injects its CSS as `@layer sw`, appended
+ * after Tailwind declares base/components/utilities — so `sw` is the last layer
+ * and wins over every Tailwind utility, including `bg-background` on <body>.
+ * Unlayered declarations beat all layered ones regardless of order, which is
+ * the only reliable way to hand the engine our tokens.
+ *
+ * Both selectors are required, and for different reasons:
+ *   :root      — the engine styles html/body directly, and those read the
+ *                variable from the document root.
+ *   .sw-root   — the engine ALSO declares `--sw-bg` on .sw-root itself, which
+ *                is a nearer ancestor for every scene and the sky than :root
+ *                is. Custom properties resolve by inheritance from the nearest
+ *                declaring ancestor, so a :root override alone loses to it no
+ *                matter what the cascade says. This is why the sky rendered
+ *                cream over a dark page.
+ */
+:root,
+.sw-root {
+  --sw-bg: hsl(240 12% 9%);
+  --sw-ink: hsl(40 39% 96%);
+  --sw-ink-soft: hsl(40 10% 66%);
+  --sw-accent: hsl(43 52% 54%);
+  --sw-font-display: var(--font-plex-arabic), system-ui, sans-serif;
+  --sw-font-body: var(--font-plex-arabic), system-ui, sans-serif;
+}
+
+/*
+ * The engine ships its own fixed brand bar, section nav and progress bar. The
+ * site already has a sticky header doing that job, and two of them stack on
+ * top of each other. The scene rail (.sw-route) is kept — it is the one piece
+ * of chrome that belongs to the film rather than the site.
+ */
+.sw-topbar,
+.sw-scrollbar {
+  display: none !important;
+}
+
+/*
+ * The engine was authored LTR-first and light-first. These are the six places
+ * that assumption shows. All unlayered, so they beat `@layer sw`.
+ */
+
+/* 1–3. RTL geometry. The copy column, the gradient scrim that makes it
+   legible, and the scene rail all sit on hard-coded physical edges. In Arabic
+   the copy belongs on the right and the rail on the left — mirrored, not just
+   right-aligned text. */
+[dir='rtl'] .sw-copy {
+  left: auto;
+  right: clamp(18px, 5vw, 64px);
+  text-align: start;
+}
+
+[dir='rtl'] .sw-copylayer::before {
+  left: auto;
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    var(--sw-bg) 0%,
+    color-mix(in srgb, var(--sw-bg) 82%, transparent) 34%,
+    color-mix(in srgb, var(--sw-bg) 40%, transparent) 62%,
+    transparent 100%
+  );
+}
+
+[dir='rtl'] .sw-route {
+  right: auto;
+  left: clamp(14px, 2.4vw, 30px);
+}
+
+[dir='rtl'] .sw-route__label {
+  right: auto;
+  left: 24px;
+  transform: translateY(-50%) translateX(-6px);
+}
+
+/* 4. The scene counter is "01 / 14" — a fraction, not prose. Left to bidi it
+   renders as "14 / 01" on an Arabic page, which reads as scene fourteen. */
+.sw-copy__num {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+/* 5–6. Light-theme hardcodes: the tag chips mix toward #fff and the primary
+   button paints white-on-`--sw-ink`, which is near-white in a dark theme —
+   invisible. Both are re-derived from the accent instead. */
+.sw-copy__tags li {
+  color: var(--sw-accent);
+  background: color-mix(in srgb, var(--sw-accent) 16%, transparent);
+  border-color: color-mix(in srgb, var(--sw-accent) 34%, transparent);
+}
+
+.sw-btn--primary {
+  color: hsl(var(--ink));
+  background: var(--sw-accent);
+}
+
+.sw-route__label {
+  color: var(--sw-ink);
+  background: color-mix(in srgb, var(--sw-bg) 88%, transparent);
+  border-color: color-mix(in srgb, var(--sw-accent) 26%, transparent);
+}
+
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;

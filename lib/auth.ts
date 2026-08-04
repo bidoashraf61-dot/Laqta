@@ -229,16 +229,14 @@ export async function requireRole(...roles: Role[]) {
 export const requireAdmin = () => requireRole('admin')
 export const requireCreator = () => requireRole('creator', 'admin')
 
+/**
+ * Mirrors the middleware matcher, for use inside a page or action that wants
+ * to test access without throwing. Paths carry no locale prefix — the site is
+ * Arabic-only and `/ar/*` is redirected away before anything sees it.
+ */
 export function canAccess(role: Role | undefined, pathname: string) {
-  const path = stripLocale(pathname)
-  if (path.startsWith('/admin')) return role === 'admin'
-  if (path.startsWith('/studio')) return role === 'creator' || role === 'admin'
-  if (path.startsWith('/account')) return Boolean(role)
+  if (pathname.startsWith('/admin')) return role === 'admin'
+  if (pathname.startsWith('/studio')) return role === 'creator' || role === 'admin'
+  if (pathname.startsWith('/account')) return Boolean(role)
   return true
-}
-
-function stripLocale(pathname: string) {
-  const segments = pathname.split('/').filter(Boolean)
-  if (segments[0] === 'ar' || segments[0] === 'en') segments.shift()
-  return `/${segments.join('/')}`
 }

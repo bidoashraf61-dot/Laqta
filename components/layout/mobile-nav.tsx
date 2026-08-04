@@ -5,44 +5,28 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/toggles'
 import { PRIMARY_NAV, type NavItem } from '@/components/layout/nav'
 import { cn } from '@/lib/utils'
-import type { Locale } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 
 /**
  * Mobile drawer.
  *
- * Opens from `side="start"` — the right edge in Arabic, the left in English —
- * so it slides out from under the thumb that opened it, matching every native
- * app on the device.
+ * Opens from `side="start"` — the right edge in Arabic — so it slides out from
+ * under the thumb that opened it, matching every native app on the device.
  */
-export function MobileNav({
-  locale,
-  labels,
-  extra,
-}: {
-  locale: Locale
-  labels: Record<string, string>
-  extra: NavItem[]
-}) {
+export function MobileNav({ extra }: { extra: NavItem[] }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
   const link = (item: NavItem) => {
-    const href = `/${locale}${item.href}`
-    const active = pathname === href || pathname.startsWith(`${href}/`)
+    const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
     return (
       <Link
         key={item.href}
-        href={href}
+        href={item.href}
         onClick={() => setOpen(false)}
         aria-current={active ? 'page' : undefined}
         className={cn(
@@ -50,7 +34,7 @@ export function MobileNav({
           active && 'bg-accent font-semibold text-gold',
         )}
       >
-        {labels[item.labelKey] ?? item.labelKey}
+        {t(item.labelKey)}
       </Link>
     )
   }
@@ -58,13 +42,13 @@ export function MobileNav({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={labels['nav.menu']}>
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t('nav.menu')}>
           <Menu />
         </Button>
       </SheetTrigger>
       <SheetContent side="start" className="flex flex-col">
         <SheetHeader>
-          <SheetTitle>{labels['nav.menu']}</SheetTitle>
+          <SheetTitle>{t('nav.menu')}</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-1 px-4 pb-6">
           {PRIMARY_NAV.map(link)}

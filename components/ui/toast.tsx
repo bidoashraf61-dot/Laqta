@@ -1,28 +1,27 @@
 'use client'
 
 import { Toaster as SonnerToaster, toast } from 'sonner'
-import type { Locale } from '@/lib/i18n'
 
 /**
  * Toasts.
  *
- * Mounted once in app/[locale]/layout.tsx. The stack anchors to the bottom
- * inline-start corner — bottom-right in Arabic, bottom-left in English —
- * because a toast that covers the reading edge is a toast people miss.
+ * Mounted once in app/layout.tsx. The stack anchors bottom-right — the inline
+ * start of an Arabic page — because a toast covering the reading edge is a
+ * toast people miss.
  *
  * Usage anywhere in a client component:
  *   import { toast } from '@/components/ui/toast'
  *   toast.success('تم الحفظ')
  */
-function Toaster({ locale }: { locale: Locale }) {
+function Toaster() {
   return (
     <SonnerToaster
-      dir={locale === 'ar' ? 'rtl' : 'ltr'}
-      position={locale === 'ar' ? 'bottom-right' : 'bottom-left'}
+      dir="rtl"
+      position="bottom-right"
       // Sonner labels its live region "Notifications" by default. That string
       // is never drawn, so it survives any visual review — but a screen reader
-      // on an Arabic page announces the toast container in English.
-      containerAriaLabel={locale === 'ar' ? 'الإشعارات' : 'Notifications'}
+      // would announce the toast container in English.
+      containerAriaLabel="الإشعارات"
       theme="dark"
       closeButton
       toastOptions={{

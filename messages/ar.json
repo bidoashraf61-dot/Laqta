@@ -136,6 +136,11 @@
     "approve": "اعتماد",
     "reject": "رفض"
   },
+  "role": {
+    "buyer": "مشترٍ",
+    "creator": "صانع محتوى",
+    "admin": "مدير"
+  },
   "palette": {
     "gold": "ذهبي",
     "sand": "رملي",
@@ -150,7 +155,7 @@
     "licences": "التراخيص",
     "contentPolicy": "سياسة المحتوى",
     "refunds": "سياسة الاسترجاع",
-    "language": "اللغة",
+    "follow": "تابعنا",
     "rights": "جميع الحقوق محفوظة"
   },
   "admin": {

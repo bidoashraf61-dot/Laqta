@@ -19,5 +19,8 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // laqta-worktrees holds nested git worktrees — separate checkouts of other
+  // branches. Type-checking them would compile whatever half-finished state
+  // another session happens to be in.
+  "exclude": ["node_modules", "laqta-worktrees", ".next"]
 }

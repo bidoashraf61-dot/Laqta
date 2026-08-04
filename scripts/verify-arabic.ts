@@ -3,23 +3,23 @@
  *
  *   npm start &  →  npm run verify:arabic
  *
- * Crawls every `/ar` route as a signed-in admin, strips the markup, and fails
- * on any visible Latin text that is not deliberately marked as an isolated
- * foreign run.
+ * Crawls every route as a signed-in admin, strips the markup, and fails on any
+ * visible Latin text that is not deliberately marked as an isolated foreign
+ * run. Also proves the retired locale prefixes still redirect.
  *
  * ── The rule it enforces ────────────────────────────────────────────────────
- * On an Arabic page, Latin text is allowed only inside `.ltr-island`,
- * `.numeric`, or `<code>`. That is not a style preference: those wrappers set
- * `unicode-bidi: isolate`, without which a Latin run drags its punctuation and
- * numerals to the wrong end of the Arabic sentence around it. So "is it
- * translated" and "is it correctly isolated" are the same check, and this
- * script answers both.
+ * Latin is allowed only inside `.ltr-island`, `.numeric`, or `<code>`. That is
+ * not a style preference: those wrappers set `unicode-bidi: isolate`, without
+ * which a Latin run drags its punctuation and numerals to the wrong end of the
+ * Arabic sentence around it. So "is it translated" and "is it correctly
+ * isolated" are the same check, and this answers both.
  *
- * Brand names, currency codes and file paths are legitimately Latin — they
- * must simply be wrapped. Anything else is untranslated copy.
+ * It reads attributes as well as text nodes — `placeholder`, `aria-label`,
+ * `title`, `alt` — because that is where English actually survives review.
  * ────────────────────────────────────────────────────────────────────────────
+ *
+ * Adding a route? Put it in ROUTES.
  */
-import { locales } from '../lib/i18n'
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
 
@@ -94,7 +94,7 @@ async function adminJar(): Promise<Jar> {
       csrfToken,
       email: 'admin@laqta.sa',
       password: 'Laqta!2026',
-      callbackUrl: `${BASE}/ar`,
+      callbackUrl: `${BASE}/`,
     }),
   })
   absorb(jar, response)
@@ -102,25 +102,20 @@ async function adminJar(): Promise<Jar> {
 }
 
 /**
- * Visible text, minus anything deliberately isolated.
- *
- * Islands in this codebase are always a single non-nested element, so a
- * targeted strip is enough and keeps the script dependency-free.
+ * Visible text, minus anything deliberately isolated. Islands in this codebase
+ * are always a single non-nested element, so a targeted strip is enough and
+ * keeps the script dependency-free.
  */
 function visibleText(html: string) {
-  return (
-    html
-      .replace(/<head[\s\S]*?<\/head>/gi, '')
-      .replace(/<(script|style|svg|noscript)[\s\S]*?<\/\1>/gi, '')
-      // Deliberately isolated foreign runs.
-      .replace(/<([a-z]+)[^>]*class="[^"]*(?:ltr-island|numeric)[^"]*"[^>]*>[\s\S]*?<\/\1>/gi, ' ')
-      .replace(/<code[\s\S]*?<\/code>/gi, ' ')
-      // Attributes carry user-facing copy too: placeholder, aria-label, title.
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&[a-z]+;|&#\d+;/gi, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-  )
+  return html
+    .replace(/<head[\s\S]*?<\/head>/gi, '')
+    .replace(/<(script|style|svg|noscript)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<([a-z]+)[^>]*class="[^"]*(?:ltr-island|numeric)[^"]*"[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<code[\s\S]*?<\/code>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;|&#\d+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 /** User-facing copy hiding in attributes rather than text nodes. */
@@ -147,20 +142,17 @@ function latinOffenders(text: string) {
 
 let failures = 0
 
-async function auditArabicRoutes() {
+async function auditRoutes() {
   const jar = await adminJar()
-  console.log('Arabic coverage — /ar\n')
+  console.log('Arabic coverage\n')
 
   for (const route of ROUTES) {
-    const url = `${BASE}/ar${route === '/' ? '' : route}`
-    const response = await fetch(url, { headers: { Cookie: cookieHeader(jar) } })
+    const response = await fetch(`${BASE}${route}`, { headers: { Cookie: cookieHeader(jar) } })
     const html = await response.text()
-
     const body = `${visibleText(html)} ${attributeCopy(html)}`
     const offenders = latinOffenders(body)
-    const hasArabic = ARABIC.test(body)
 
-    if (!hasArabic) {
+    if (!ARABIC.test(body)) {
       failures += 1
       console.log(`  FAIL  ${route} — no Arabic text rendered at all`)
       continue
@@ -178,33 +170,35 @@ async function auditArabicRoutes() {
   }
 }
 
-/** The document shell must declare the language and direction on every locale. */
 async function auditShell() {
-  console.log('\nDocument shell')
-  for (const locale of locales) {
-    const html = await fetch(`${BASE}/${locale}`).then((r) => r.text())
-    const tag = html.match(/<html[^>]*>/)?.[0] ?? ''
-    const expectedDir = locale === 'ar' ? 'rtl' : 'ltr'
-    const ok = tag.includes(`lang="${locale}"`) && tag.includes(`dir="${expectedDir}"`)
-    if (!ok) failures += 1
-    console.log(`  ${ok ? 'PASS' : 'FAIL'}  /${locale} → ${tag}`)
-  }
+  console.log('\nDocument shell and retired locale prefixes')
 
-  // Arabic must be what an unprefixed request lands on.
-  const root = await fetch(`${BASE}/`, { redirect: 'manual' })
-  const target = root.headers.get('location') ?? ''
-  const ok = target.endsWith('/ar')
-  if (!ok) failures += 1
-  console.log(`  ${ok ? 'PASS' : 'FAIL'}  / redirects to Arabic — ${target || 'no redirect'}`)
+  const html = await fetch(`${BASE}/`).then((r) => r.text())
+  const tag = html.match(/<html[^>]*>/)?.[0] ?? ''
+  const shellOk = tag.includes('lang="ar"') && tag.includes('dir="rtl"')
+  if (!shellOk) failures += 1
+  console.log(`  ${shellOk ? 'PASS' : 'FAIL'}  / → ${tag}`)
+
+  // The site was briefly bilingual. Those URLs must not 404.
+  for (const [from, expected] of [
+    ['/ar', '/'],
+    ['/en', '/'],
+    ['/ar/albums', '/albums'],
+    ['/en/sign-in', '/sign-in'],
+  ]) {
+    const response = await fetch(`${BASE}${from}`, { redirect: 'manual' })
+    const location = response.headers.get('location') ?? ''
+    const ok = response.status === 308 && new URL(location, BASE).pathname === expected
+    if (!ok) failures += 1
+    console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${from} → ${location || `${response.status}, no redirect`}`)
+  }
 }
 
 async function main() {
-  await auditArabicRoutes()
+  await auditRoutes()
   await auditShell()
   console.log(
-    failures === 0
-      ? '\nEvery Arabic route is fully Arabic.'
-      : `\n${failures} route(s) leaking English.`,
+    failures === 0 ? '\nEvery route is fully Arabic.' : `\n${failures} check(s) failed.`,
   )
   process.exitCode = failures === 0 ? 0 : 1
 }

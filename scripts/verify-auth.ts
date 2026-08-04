@@ -1,11 +1,12 @@
 /**
  * End-to-end auth check against a running server.
  *
- *   npm start &  →  npx tsx scripts/verify-auth.ts
+ *   npm start &  →  npm run verify:auth
  *
- * Exercises the two sign-in rails and the second factor for real, over HTTP,
- * rather than asserting against mocks: phone-OTP and TOTP are exactly the
- * paths that look fine in a unit test and fail against a live Auth.js route.
+ * Exercises both sign-in rails, the second factor, and the full role-guard
+ * matrix for real, over HTTP, rather than asserting against mocks. Phone-OTP,
+ * TOTP and middleware guards are exactly the paths that look fine in a unit
+ * test and fail against a live Auth.js route.
  */
 import { issueOtp } from '../lib/otp'
 import { normalisePhone } from '../lib/auth'
@@ -42,7 +43,7 @@ async function signIn(provider: string, body: Record<string, string>) {
       'Content-Type': 'application/x-www-form-urlencoded',
       Cookie: cookieHeader(jar),
     },
-    body: new URLSearchParams({ csrfToken, callbackUrl: `${BASE}/ar`, ...body }),
+    body: new URLSearchParams({ csrfToken, callbackUrl: `${BASE}/`, ...body }),
   })
   absorb(jar, response)
 
@@ -51,13 +52,26 @@ async function signIn(provider: string, body: Record<string, string>) {
     headers: { Cookie: cookieHeader(jar) },
   }).then((r) => r.json())) ?? {}) as { user?: { role?: string; id?: string } }
 
-  return { location: response.headers.get('location') ?? '', session }
+  return { jar, session }
 }
 
 let failures = 0
 function report(name: string, ok: boolean, detail = '') {
   if (!ok) failures += 1
   console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` — ${detail}` : ''}`)
+}
+
+/** What a guarded path actually did for this session. */
+async function probe(jar: Jar, path: string) {
+  const response = await fetch(`${BASE}${path}`, {
+    headers: { Cookie: cookieHeader(jar) },
+    redirect: 'manual',
+  })
+  if (response.status === 307 || response.status === 302) return 'redirected'
+  const body = await response.text()
+  // The 403 is a rewrite, so it arrives as 200 with the forbidden page.
+  if (body.includes('لا تملك صلاحية الوصول')) return 'forbidden'
+  return response.ok ? 'allowed' : `http ${response.status}`
 }
 
 async function main() {
@@ -78,13 +92,16 @@ async function main() {
   report('OTP issued with a dev code', Boolean(devCode))
 
   const otp = await signIn('phone', { phone, code: devCode ?? '' })
-  report('phone OTP signs in', Boolean(otp.session.user), `role=${otp.session.user?.role}`)
+  report('phone OTP signs in', Boolean(otp.session.user))
 
   const replay = await signIn('phone', { phone, code: devCode ?? '' })
   report('a consumed OTP cannot be replayed', !replay.session.user)
 
-  const badCode = await issueOtp(phone)
-  const wrongOtp = await signIn('phone', { phone, code: badCode.devCode === '000000' ? '111111' : '000000' })
+  const fresh = await issueOtp(phone)
+  const wrongOtp = await signIn('phone', {
+    phone,
+    code: fresh.devCode === '000000' ? '111111' : '000000',
+  })
   report('wrong OTP is rejected', !wrongOtp.session.user)
 
   // ── TOTP second factor ────────────────────────────────────────────────────
@@ -92,7 +109,6 @@ async function main() {
   report('TOTP round-trips its own token', verifyToken(secret, generateToken(secret)))
   report('TOTP rejects a stale token', !verifyToken(secret, generateToken(secret, Date.now() - 300_000)))
 
-  // Enrol the buyer, then prove the password alone no longer gets in.
   await db.user.update({
     where: { email: 'buyer@agency.sa' },
     data: { twoFactorEnabled: true, twoFactorSecret: secret },
@@ -108,18 +124,53 @@ async function main() {
   })
   report('2FA account accepts password + code', Boolean(withCode.session.user))
 
-  const withBadCode = await signIn('email', {
+  const withBad = await signIn('email', {
     email: 'buyer@agency.sa',
     password: 'Laqta!2026',
     totp: '000000',
   })
-  report('2FA account refuses a wrong code', !withBadCode.session.user)
+  report('2FA account refuses a wrong code', !withBad.session.user)
 
-  // Leave the seeded buyer as the seed made it.
   await db.user.update({
     where: { email: 'buyer@agency.sa' },
     data: { twoFactorEnabled: false, twoFactorSecret: null },
   })
+
+  // ── Route guards ──────────────────────────────────────────────────────────
+  console.log('\nRoute guards')
+
+  const anon: Jar = new Map()
+  for (const path of ['/account', '/studio', '/admin']) {
+    report(`anonymous → ${path} redirects to sign-in`, (await probe(anon, path)) === 'redirected')
+  }
+
+  // Expected outcome per role, per path.
+  const matrix: Array<[string, string, Record<string, string>]> = [
+    [
+      'buyer@agency.sa',
+      'buyer',
+      { '/account': 'allowed', '/studio': 'forbidden', '/admin': 'forbidden' },
+    ],
+    [
+      'creator@laqta.sa',
+      'creator',
+      { '/account': 'allowed', '/studio': 'allowed', '/admin': 'forbidden' },
+    ],
+    [
+      'admin@laqta.sa',
+      'admin',
+      { '/account': 'allowed', '/studio': 'allowed', '/admin': 'allowed' },
+    ],
+  ]
+
+  for (const [address, role, expectations] of matrix) {
+    const { jar, session } = await signIn('email', { email: address, password: 'Laqta!2026' })
+    report(`${role} signs in`, session.user?.role === role, `got ${session.user?.role}`)
+    for (const [path, expected] of Object.entries(expectations)) {
+      const actual = await probe(jar, path)
+      report(`  ${role} → ${path} is ${expected}`, actual === expected, `got ${actual}`)
+    }
+  }
 
   console.log(failures === 0 ? '\nAll auth checks passed.' : `\n${failures} check(s) failed.`)
   process.exitCode = failures === 0 ? 0 : 1

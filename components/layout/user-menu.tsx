@@ -15,28 +15,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ACCOUNT_NAV, roleNav } from '@/components/layout/nav'
-import type { Locale, Translator } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 
-/**
- * Account menu, or a sign-in button when signed out.
- *
- * `t` is passed in from the server layout rather than re-derived here: the
- * message dictionaries are the source of truth, and shipping a second copy of
- * the lookup to the client for four labels is not worth the bytes.
- */
-export function UserMenu({
-  locale,
-  session,
-  labels,
-}: {
-  locale: Locale
-  session: Session | null
-  labels: Record<string, string>
-}) {
+/** Account menu, or a sign-in button when signed out. */
+export function UserMenu({ session }: { session: Session | null }) {
   if (!session?.user) {
     return (
       <Button asChild variant="gold" size="sm">
-        <Link href={`/${locale}/sign-in`}>{labels.signIn}</Link>
+        <Link href="/sign-in">{t('auth.signIn')}</Link>
       </Button>
     )
   }
@@ -47,7 +33,7 @@ export function UserMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={labels.account}>
+        <Button variant="ghost" size="icon" aria-label={t('nav.account')}>
           <Avatar className="size-8">
             {user.image ? <AvatarImage src={user.image} alt="" /> : null}
             <AvatarFallback>{initial}</AvatarFallback>
@@ -56,8 +42,10 @@ export function UserMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="truncate">{user.name ?? labels.account}</span>
+          <span className="truncate">{user.name ?? t('nav.account')}</span>
           {user.email ? (
+            // Latin on an Arabic page — isolated so the address does not
+            // reorder around the Arabic name above it.
             <span className="ltr-island truncate text-xs font-normal text-muted-foreground">
               {user.email}
             </span>
@@ -67,9 +55,9 @@ export function UserMenu({
 
         {ACCOUNT_NAV.map((item) => (
           <DropdownMenuItem key={item.href} asChild>
-            <Link href={`/${locale}${item.href}`}>
+            <Link href={item.href}>
               <UserIcon />
-              {labels[item.labelKey] ?? item.labelKey}
+              {t(item.labelKey)}
             </Link>
           </DropdownMenuItem>
         ))}
@@ -77,17 +65,17 @@ export function UserMenu({
         <DropdownMenuSeparator />
         {roleNav(user.role).map((item) => (
           <DropdownMenuItem key={item.href} asChild>
-            <Link href={`/${locale}${item.href}`}>
+            <Link href={item.href}>
               <ShieldCheck />
-              {labels[item.labelKey] ?? item.labelKey}
+              {t(item.labelKey)}
             </Link>
           </DropdownMenuItem>
         ))}
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => signOut({ redirectTo: `/${locale}` })}>
+        <DropdownMenuItem onSelect={() => signOut({ redirectTo: '/' })}>
           <LogOut />
-          {labels.signOut}
+          {t('auth.signOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

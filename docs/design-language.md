@@ -198,19 +198,34 @@ Widen the margins. Content should occupy roughly the middle 60–70% at desktop,
 
 ---
 
-## 3. Concretely, what to change first
+## 3. Status — applied
 
-Ranked by visible effect per hour:
+1. ✅ **Gold rationed** — 112 references down to 73. Removed from card-hover borders, link
+   and heading hovers, and trust-strip figures (a resolution spec is not money). Nineteen of
+   twenty-one gold buttons demoted, so the one that remains reads as primary.
+2. ✅ **Two-weight headlines** — `<Headline lead bold>` in components/ui/typography.tsx.
+   The hero splits its own copy on the Arabic comma.
+3. ✅ **Alternating grounds** — `<Section tone="base|raised|accent">`. The landing page now
+   reads as held frames rather than one column.
+4. ⏳ **Letterbox** — `.letterbox` utility exists; applied to hero crops. Album covers still
+   force 16:9 and should follow the clip's real aspect once real footage lands.
+5. ✅ **Price chip** — the only fully-rounded element on a card.
+6. ✅ **Measure** — `.container-tight` caps at 1140px; editorial pages moved onto it. Studio
+   and admin deliberately keep the wide container: they are dense work surfaces, and
+   narrowing them costs rows.
 
-1. **Ration the gold.** Remove it from nav hover, heading hover and non-price text. Price,
-   primary CTA and active state only.
-2. **Two-weight headlines** on the landing sections and the album PDP title.
-3. **Alternate section grounds** on the landing page.
-4. **Letterbox device** on album covers and empty states; stop forcing 16:9.
-5. **Price chip** as the only pill; everything else `--radius`.
-6. **Widen margins**, shrink body copy, open tracking.
+### Typography, as shipped
 
-Items 1–3 are roughly an hour and change the feel more than the rest combined.
+Thmanyah, three families, each in the role it was drawn for — Sans for UI, Serif Text for
+editorial prose, Serif Display for the big type. See the note at the top of globals.css: the
+web-embedding permission is still outstanding.
+
+### Still open
+
+- **Logo.** The wordmark is live text. Blocks favicon, OG image, invoices, watermark.
+- **Album covers** should respect the clip's real aspect rather than being forced to 16:9 —
+  needs real footage to be worth doing.
+- **The attribute scale** in §2.1 is still my proposal, not your decision.
 
 ---
 

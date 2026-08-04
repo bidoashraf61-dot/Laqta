@@ -393,6 +393,34 @@
   border-color: color-mix(in srgb, var(--sw-accent) 26%, transparent);
 }
 
+@layer components {
+  /*
+   * A tighter measure than `.container`.
+   *
+   * The reference holds content to roughly the middle 60-70% of the canvas and
+   * lets the margins do the work. Our container was running to 90%, which is
+   * why the landing page read as one long column rather than a sequence of
+   * composed frames.
+   */
+  .container-tight {
+    width: 100%;
+    max-width: 1140px;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 5vw, 4rem);
+  }
+
+  /*
+   * The letterbox.
+   *
+   * Laqta's own geometry, replacing the reference's pointed arch: 2.39:1 is
+   * the literal shape of the thing being sold. Used for hero crops, empty
+   * states and anywhere a frame needs to read as cinema rather than as a card.
+   */
+  .letterbox {
+    aspect-ratio: 2.39 / 1;
+  }
+}
+
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;

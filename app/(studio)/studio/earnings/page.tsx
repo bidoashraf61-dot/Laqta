@@ -26,7 +26,7 @@ export default async function EarningsPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/studio" className="text-sm text-muted-foreground hover:text-gold">
+      <Link href="/studio" className="text-sm text-muted-foreground hover:text-foreground">
         ← {t('studio.title')}
       </Link>
       <h1 className="text-headline font-semibold">{t('studio.earnings')}</h1>

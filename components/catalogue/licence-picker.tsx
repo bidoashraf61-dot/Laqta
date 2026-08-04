@@ -115,7 +115,7 @@ function TierOption({
       onClick={onSelect}
       className={cn(
         'rounded-md border p-3 text-start transition-colors',
-        selected ? 'border-gold bg-gold/10' : 'border-input hover:border-gold/40',
+        selected ? 'border-gold bg-gold/10' : 'border-input hover:border-foreground/25',
       )}
     >
       <span className="flex items-baseline justify-between gap-2">

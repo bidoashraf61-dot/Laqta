@@ -126,7 +126,7 @@ export default async function AlbumPage({
   const hero = album.clips[0]?.thumbnailKeys[0] ?? null
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <ProductJsonLd
         album={album}
         priceStandard={priceStandard}
@@ -156,7 +156,7 @@ export default async function AlbumPage({
               <Bilingual ar={album.titleAr} en={album.titleEn} />
             </h1>
             <p className="text-muted-foreground">
-              <Link href={`/creators/${album.creator.handle}`} className="hover:text-gold">
+              <Link href={`/creators/${album.creator.handle}`} className="hover:text-foreground">
                 {t('commerce.byCreator', { creator: album.creator.displayNameAr })}
               </Link>
             </p>
@@ -194,7 +194,7 @@ export default async function AlbumPage({
                 <Link
                   key={clip.id}
                   href={`/footage/${clip.slug}`}
-                  className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-gold/50"
+                  className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-foreground/25"
                 >
                   <div className="relative aspect-video bg-muted">
                     {clip.thumbnailKeys[0] ? (
@@ -212,7 +212,7 @@ export default async function AlbumPage({
                       {formatDuration(Number(clip.durationS))}
                     </Badge>
                   </div>
-                  <p className="line-clamp-1 p-2 text-xs group-hover:text-gold">
+                  <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
                     <Bilingual ar={clip.titleAr} en={clip.titleEn} />
                   </p>
                 </Link>

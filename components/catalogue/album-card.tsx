@@ -37,21 +37,21 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
     <Link
       href={albumHref(album)}
       className={cn(
-        'group block overflow-hidden rounded-lg border bg-card transition-colors hover:border-gold/50',
+        'group block overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground/25',
         className,
       )}
     >
       <div className="relative aspect-video overflow-hidden bg-muted">
         <CoverImage src={album.coverKey} alt="" />
         {album.clearedForCommercial ? (
-          <Badge variant="success" className="absolute end-2 top-2">
+          <Badge variant="success" className="absolute end-2 top-2 bg-ink/80 backdrop-blur">
             {t('commerce.clearedForCommercial')}
           </Badge>
         ) : null}
       </div>
 
       <div className="space-y-2 p-4">
-        <h3 className="line-clamp-2 font-semibold leading-snug group-hover:text-gold">
+        <h3 className="line-clamp-2 font-semibold leading-snug group-hover:text-foreground">
           <Bilingual ar={album.titleAr} en={album.titleEn} />
         </h3>
 
@@ -60,7 +60,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
         </p>
 
         <div className="flex items-baseline justify-between gap-2 pt-1">
-          <span className="numeric text-lg font-bold text-gold">
+          <span className="numeric rounded-full bg-gold/12 px-3 py-1 text-base font-bold text-gold">
             {formatMoney(album.priceStandard, album.currency)}
           </span>
           <span className="text-xs text-muted-foreground">

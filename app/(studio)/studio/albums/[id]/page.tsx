@@ -33,7 +33,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <Link href="/studio" className="text-sm text-muted-foreground hover:text-gold">
+        <Link href="/studio" className="text-sm text-muted-foreground hover:text-foreground">
           ← {t('studio.title')}
         </Link>
         <h1 className="text-headline font-semibold">

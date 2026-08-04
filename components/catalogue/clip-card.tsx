@@ -28,7 +28,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
   return (
     <article
       className={cn(
-        'group overflow-hidden rounded-lg border bg-card transition-colors hover:border-gold/50',
+        'group overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground/25',
         className,
       )}
     >
@@ -57,7 +57,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
           </div>
         </div>
 
-        <h3 className="line-clamp-2 px-3 pt-3 text-sm font-medium leading-snug group-hover:text-gold">
+        <h3 className="line-clamp-2 px-3 pt-3 text-sm font-medium leading-snug group-hover:text-foreground">
           <Bilingual ar={clip.titleAr} en={clip.titleEn} />
         </h3>
       </Link>
@@ -75,7 +75,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
           </span>
         </p>
         <p className="mt-1 flex items-center gap-2 text-xs">
-          <span className="numeric font-bold text-gold">
+          <span className="numeric rounded-full bg-gold/12 px-2 py-0.5 font-bold text-gold">
             {formatMoney(clip.album.priceStandard, clip.album.currency)}
           </span>
           <span className="text-muted-foreground">

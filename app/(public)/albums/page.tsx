@@ -63,7 +63,7 @@ export default async function AlbumsPage({
   }))
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <header className="mb-6 space-y-1">
         <h1 className="text-headline font-semibold">{t('catalogue.albumsTitle')}</h1>
         <p className="text-muted-foreground">

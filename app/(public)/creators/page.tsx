@@ -25,7 +25,7 @@ export default async function CreatorsPage() {
   })
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <h1 className="mb-6 text-headline font-semibold">{t('catalogue.creatorsTitle')}</h1>
 
       {creators.length === 0 ? (
@@ -36,7 +36,7 @@ export default async function CreatorsPage() {
             <Link
               key={creator.handle}
               href={`/creators/${creator.handle}`}
-              className="rounded-lg border bg-card p-5 transition-colors hover:border-gold/50"
+              className="rounded-lg border bg-card p-5 transition-colors hover:border-foreground/25"
             >
               <div className="flex items-center gap-3">
                 <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-semibold">

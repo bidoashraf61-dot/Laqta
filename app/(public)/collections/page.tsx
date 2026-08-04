@@ -25,7 +25,7 @@ export default async function CollectionsPage() {
   })
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <h1 className="mb-6 text-headline font-semibold">{t('catalogue.collectionsTitle')}</h1>
       {collections.length === 0 ? (
         <EmptyState title={t('state.empty')} />
@@ -35,7 +35,7 @@ export default async function CollectionsPage() {
             <Link
               key={collection.slug}
               href={`/collections/${collection.slug}`}
-              className="group relative isolate overflow-hidden rounded-lg border bg-card p-6 transition-colors hover:border-gold/50"
+              className="group relative isolate overflow-hidden rounded-lg border bg-card p-6 transition-colors hover:border-foreground/25"
             >
               {collection.heroMedia ? (
                 <img
@@ -45,7 +45,7 @@ export default async function CollectionsPage() {
                   className="absolute inset-0 -z-10 size-full object-cover opacity-25"
                 />
               ) : null}
-              <p className="text-lg font-semibold group-hover:text-gold">
+              <p className="text-lg font-semibold group-hover:text-foreground">
                 <Bilingual ar={collection.titleAr} en={collection.titleEn} />
               </p>
               {collection.descriptionAr ? (

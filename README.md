@@ -30,9 +30,13 @@ the same `DATABASE_URL`** so you are all developing against one catalogue.
 | `npm run db:start` / `db:stop` | local Postgres |
 | `npm run db:migrate` / `db:seed` / `db:studio` | Prisma |
 | `npm run lint` / `typecheck` | ESLint / tsc |
-| `npm run verify:i18n` | locale switching, dictionary parity, formatting |
-| `npm run verify:arabic` | **no English leaking into any `/ar` route** — run before merging |
-| `npm run verify:auth` | both sign-in rails + 2FA, against a running server |
+| `npm run verify` | **everything below, in order** |
+| `npm run verify:i18n` | Arabic copy, formatting, search folding |
+| `npm run verify:search` | Arabic stemming, transliteration, filters, zero-result logging |
+| `npm run verify:entitlement` | buy → mutate the album → library unchanged |
+| `npm run verify:money` | commission frozen; refund reverses at the frozen rate |
+| `npm run verify:auth` | both sign-in rails, 2FA, and the full role-guard matrix |
+| `npm run verify:arabic` | no English leaking into any route (needs the server running) |
 
 ### Seeded accounts
 
@@ -180,29 +184,30 @@ form shows the authenticator step.
 
 ---
 
-## i18n and RTL
+## Arabic
 
-`/ar` is the default, `/en` is the alternative. Middleware redirects any
-unprefixed path and remembers the choice in a cookie.
+The portal ships in Arabic only. There is no locale segment, no language
+switcher and no second dictionary — `laqta.sa/albums`, not `/ar/albums`.
+`/ar/*` and `/en/*` 308-redirect, so nothing already linked breaks.
+
+The **data** stays bilingual on purpose: `titleEn` and the taxonomy's English
+synonyms carry the transliterations that let an Arabic query match
+English-tagged footage, and creators are worldwide.
 
 ```ts
-import { getTranslator, localisePath, formatMoney, formatDate,
-         formatHijri, normaliseArabic, type Locale } from '@/lib/i18n'
+import { t, formatMoney, formatDate, formatHijri, normaliseArabic } from '@/lib/i18n'
 
-const t = getTranslator(locale)
 t('commerce.fromAlbum', { album: 'العلا' })   // → "من ألبوم: العلا"
-localisePath('/ar/albums/x', 'en')            // → "/en/albums/x"
-formatMoney(1499, 'ar')                       // → "1,499 ر.س."
+formatMoney(1499)                             // → "1,499 ر.س."
 formatHijri(new Date())                       // → "21 صفر 1448 هـ"
 ```
 
-Strings live in `messages/ar.json` and `messages/en.json`. **Arabic is the
-source of truth** — write it first. Add keys to both files; `npm run verify:i18n`
-fails the build of your patience otherwise.
+Strings live in `messages/ar.json`. `t()` is a plain function over one
+dictionary, so client components import it directly — no label-threading.
 
 ### Arabic is not negotiable — and it is enforced
 
-`npm run verify:arabic` crawls every `/ar` route as a signed-in admin and fails
+`npm run verify:arabic` crawls every route as a signed-in admin and fails
 on any visible Latin text that is not deliberately marked as an isolated
 foreign run. **Run it before you merge.** Add your new routes to `ROUTES` in
 `scripts/verify-arabic.ts`.
@@ -334,8 +339,24 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
 
 ---
 
-## Placeholders you are expected to delete
+## What is built
 
-`/`, `/studio`, `/admin` and `/account` render scaffolds so the guards and the
-shell can be exercised today. Replace them wholesale — they carry no logic
-worth keeping.
+| Brief | Status |
+|---|---|
+| 01 Foundation | schema, auth, 2FA, design system, Arabic shell |
+| 02 Landing | scroll cinematic (stills; clips drop in via `components/landing/scenes.ts`) |
+| 05 Catalogue | /footage, /albums, album PDP, clip detail, hubs, Arabic search |
+| 04 Client | cart, checkout, library, signed downloads, shared boards |
+| 03 Creator | studio, spec-consistency gate, submission gate, earnings |
+| 06 Admin | review queue with enforced checklist, refunds, zero-result report |
+
+## Known gaps — deliberate, not forgotten
+
+- **No payment gateway.** `lib/payments.ts` returns `unavailable` for card /
+  Apple Pay / BNPL rather than faking a charge. Bank transfer works end to end.
+- **No object storage.** `lib/storage.ts` signs and gates correctly; only
+  `resolveKey` changes when S3 credentials exist. Upload UI is not built.
+- **No Meilisearch.** Search runs on Postgres behind `SearchDriver`.
+- **No ETA e-invoicing.** Invoice rows are created; the certified-provider
+  integration is not built. Do not build e-invoicing by hand.
+- **Album trailers** are not auto-cut; the PDP falls back to the cover still.

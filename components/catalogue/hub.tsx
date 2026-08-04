@@ -119,7 +119,7 @@ export async function TaxonomyHub({
     <div className="container py-10">
       <BreadcrumbJsonLd kind={kind} entry={entry} />
 
-      <nav className="mb-4 text-sm text-muted-foreground" aria-label="breadcrumb">
+      <nav className="mb-4 text-sm text-muted-foreground" aria-label={t('catalogue.breadcrumb')}>
         <Link href="/" className="hover:text-foreground">
           {t('nav.home')}
         </Link>

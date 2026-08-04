@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { BadgeCheck, Download, FileText, Receipt } from 'lucide-react'
 import { db } from '@/lib/db'
 import { formatMoney, t } from '@/lib/i18n'
-import { formatBytes, formatDuration } from '@/lib/utils'
+import { formatBytes, formatDuration, cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/toggles'
@@ -334,11 +334,28 @@ export default async function AlbumPage({
   )
 }
 
+/**
+ * A spec row.
+ *
+ * Values that came back from `specLabel` still in Latin — codec names, camera
+ * models, colour profiles — are wrapped in `.ltr-island`. Without that,
+ * "Rec.709" renders as "709.Rec" beside Arabic, and "DJI Inspire 3" loses its
+ * number to the wrong end of the line.
+ */
 function Spec({ label, value, numeric }: { label: string; value: string; numeric?: boolean }) {
+  const latin = !numeric && /[A-Za-z]/.test(value)
   return (
     <div className="flex justify-between gap-4 border-b border-border/60 py-1.5">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className={numeric ? 'numeric text-sm font-medium' : 'text-sm font-medium'}>{value}</dd>
+      <dd
+        className={cn(
+          'text-sm font-medium',
+          numeric && 'numeric',
+          latin && 'ltr-island',
+        )}
+      >
+        {value}
+      </dd>
     </div>
   )
 }

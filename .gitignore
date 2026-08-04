@@ -42,3 +42,4 @@ build/
 # ~3.8MB total; the 200MB 4K originals stay out.
 !/public/hero/
 !/public/hero/*.jpg
+*.tsbuildinfo

@@ -17,6 +17,12 @@ import { emptyChecklist } from '@/lib/review-checklist'
  * reviewer checks this too, but the creator should see it before submitting —
  * finding out three days later wastes everyone's time.
  */
+/**
+ * The smallest transfer worth a bank fee. Lives here rather than beside the
+ * action because a `'use server'` module may only export async functions.
+ */
+export const MIN_PAYOUT_SAR = 500
+
 export function analyseConsistency(
   clips: Array<{ fps: unknown; colourProfile: string | null; width: number; height: number }>,
 ) {

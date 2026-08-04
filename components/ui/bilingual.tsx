@@ -54,4 +54,25 @@ function Numeric({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>)
   return <span className={cn('numeric', className)} {...props} />
 }
 
-export { Bilingual, RtlIsland, LtrIsland, Numeric }
+/**
+ * Text whose script we do not control: a buyer's search query, a claimant's
+ * name, a permit's issuing authority.
+ *
+ * `<bdi>` is the right primitive here rather than `.ltr-island`, because the
+ * direction is genuinely unknown per value — "Empty Quarter timelapse" and
+ * "الربع الخالي" both arrive through the same field, and forcing LTR on the
+ * second would be as wrong as leaving the first un-isolated. `<bdi>` defaults
+ * to `dir="auto"` with `unicode-bidi: isolate`, so each value picks its own
+ * direction and none of them can leak into the Arabic sentence around it.
+ */
+function UserText({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return <bdi className={className}>{children}</bdi>
+}
+
+export { Bilingual, RtlIsland, LtrIsland, Numeric, UserText }

@@ -1,138 +1,212 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { TrendingUp, Wallet } from 'lucide-react'
+import { AlertTriangle, Eye, Percent, ShoppingBag, TrendingUp, Wallet } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { getEarnings, getDemandSignals } from '@/lib/studio'
-import { Badge } from '@/components/ui/badge'
+import { creatorTrend, summary, topAlbums } from '@/lib/analytics'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Bilingual, UserText } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
-import { Bilingual } from '@/components/ui/bilingual'
-import { formatMoney, formatNumber, t } from '@/lib/i18n'
+import { DashboardHeader, Panel, StatGrid, StatTile } from '@/components/dashboard/primitives'
+import { TrendChart } from '@/components/dashboard/charts'
+import { StatusBadge } from '@/components/dashboard/status'
+import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
 
 export const metadata = { title: t('studio.title') }
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: 'studio.draft',
-  in_review: 'studio.inReview',
-  changes_requested: 'studio.changesRequested',
-  live: 'studio.live',
-  paused: 'studio.paused',
-  delisted: 'studio.delisted',
-}
-
+/**
+ * Creator overview.
+ *
+ * The question this page answers is "is anything wrong, and is the work
+ * paying?" — in that order. Attention items come before the numbers, because
+ * an album stuck in `changes_requested` costs the creator more than a soft
+ * week of views, and a dashboard that buries it behind four KPI tiles has
+ * failed at the only job that is genuinely urgent.
+ */
 export default async function StudioPage() {
   const user = await requireCreator()
   if (!user.creatorId) redirect('/sell')
 
-  const [albums, earnings, demand] = await Promise.all([
-    db.album.findMany({
-      where: { creatorId: user.creatorId },
-      orderBy: { updatedAt: 'desc' },
-      select: {
-        id: true,
-        slug: true,
-        titleAr: true,
-        titleEn: true,
-        status: true,
-        clipCount: true,
-        priceStandard: true,
-        currency: true,
-      },
+  const creatorId = user.creatorId
+
+  const [creator, earnings, stats, trend, top, demand, attention] = await Promise.all([
+    db.creator.findUnique({
+      where: { id: creatorId },
+      select: { displayNameAr: true },
     }),
-    getEarnings(user.creatorId),
-    getDemandSignals(6),
+    getEarnings(creatorId),
+    summary({ creatorId }, 30),
+    creatorTrend(creatorId, 'views', 30),
+    topAlbums({ creatorId }, 'revenue', 30, 5),
+    getDemandSignals(5),
+    Promise.all([
+      db.album.findMany({
+        where: { creatorId, status: 'changes_requested' },
+        select: { id: true, titleAr: true, titleEn: true },
+        take: 5,
+      }),
+      db.album.count({ where: { creatorId, status: 'in_review' } }),
+      db.release.count({ where: { creatorId, verification: 'pending' } }),
+    ]),
   ])
 
+  const [changesRequested, inReview, pendingReleases] = attention
+  const hasAttention = changesRequested.length > 0 || inReview > 0 || pendingReleases > 0
+  const hasHistory = trend.some((point) => point.value > 0)
+
   return (
-    <div className="space-y-8">
-      <h1 className="font-display text-headline font-semibold">{t('studio.title')}</h1>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label={t('studio.available')} value={formatMoney(earnings.available)} accent />
-        <Stat label={t('studio.held')} value={formatMoney(earnings.held)} />
-        <Stat label={t('studio.lifetime')} value={formatMoney(earnings.lifetime)} />
-      </div>
-      <p className="text-sm text-muted-foreground">{t('studio.holdExplain')}</p>
-
-      <section>
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="font-display text-xl font-semibold">{t('studio.albums')}</h2>
+    <>
+      <DashboardHeader
+        title={t('dash.welcome', { name: creator?.displayNameAr ?? '' })}
+        description={t('dash.todayIs', { days: 30 })}
+        action={
           <Button asChild variant="outline" size="sm">
-            <Link href="/studio/earnings">
-              <Wallet />
-              {t('studio.earnings')}
+            <Link href="/studio/analytics">
+              <TrendingUp />
+              {t('dash.analytics')}
             </Link>
           </Button>
-        </div>
+        }
+      />
 
-        {albums.length === 0 ? (
-          <EmptyState title={t('studio.noAlbums')} />
-        ) : (
-          <div className="grid gap-3">
-            {albums.map((album) => (
+      <div className="space-y-6">
+        {/* Attention first. An empty state here is itself the good news, so it
+            is stated rather than silently omitted. */}
+        <Panel title={t('dash.needsAttention')}>
+          {hasAttention ? (
+            <ul className="divide-y divide-border/60">
+              {changesRequested.map((album) => (
+                <li key={album.id}>
+                  <Link
+                    href={`/studio/albums/${album.id}`}
+                    className="-mx-2 flex items-center gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-accent"
+                  >
+                    <AlertTriangle className="size-4 shrink-0 text-warning" />
+                    <span className="min-w-0 flex-1 truncate text-sm">
+                      <Bilingual ar={album.titleAr} en={album.titleEn} />
+                    </span>
+                    <StatusBadge domain="album" value="changes_requested" />
+                  </Link>
+                </li>
+              ))}
+              {inReview > 0 ? (
+                <li className="flex items-center gap-3 py-2.5 text-sm">
+                  <span className="min-w-0 flex-1">{t('studio.inReview')}</span>
+                  <span className="numeric text-muted-foreground">{formatNumber(inReview)}</span>
+                </li>
+              ) : null}
+              {pendingReleases > 0 ? (
+                <li className="flex items-center gap-3 py-2.5 text-sm">
+                  <Link href="/studio/releases" className="min-w-0 flex-1 hover:underline">
+                    {t('dash.releasePending')}
+                  </Link>
+                  <span className="numeric text-muted-foreground">
+                    {formatNumber(pendingReleases)}
+                  </span>
+                </li>
+              ) : null}
+            </ul>
+          ) : (
+            <p className="py-2 text-sm text-muted-foreground">{t('dash.allClear')}</p>
+          )}
+        </Panel>
+
+        <StatGrid>
+          <StatTile
+            label={t('studio.available')}
+            value={formatMoney(earnings.available)}
+            icon={Wallet}
+            accent
+            hint={t('studio.holdExplain')}
+          />
+          <StatTile
+            label={t('dash.revenue')}
+            value={formatMoney(stats.revenue)}
+            icon={ShoppingBag}
+            delta={stats.delta.revenue}
+            hint={t('dash.vsPrevious')}
+          />
+          <StatTile
+            label={t('dash.views')}
+            value={formatNumber(stats.views)}
+            icon={Eye}
+            delta={stats.delta.views}
+          />
+          <StatTile
+            label={t('dash.conversion')}
+            value={formatPercent(stats.conversion / 100, 2)}
+            icon={Percent}
+          />
+        </StatGrid>
+
+        <Panel title={t('dash.trendViews')}>
+          {hasHistory ? (
+            <TrendChart data={trend} />
+          ) : (
+            <EmptyState title={t('dash.noData')} description={t('dash.noDataHint')} />
+          )}
+        </Panel>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Panel
+            title={t('dash.topAlbums')}
+            action={
               <Link
-                key={album.id}
-                href={`/studio/albums/${album.id}`}
-                className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-foreground/25"
+                href="/studio/albums"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
-                <span className="min-w-0 flex-1 font-medium">
-                  <Bilingual ar={album.titleAr} en={album.titleEn} />
-                </span>
-                <span className="numeric text-sm text-muted-foreground">
-                  {album.clipCount} {t('studio.clips')}
-                </span>
-                <span className="numeric text-sm text-gold">
-                  {formatMoney(Number(album.priceStandard), album.currency)}
-                </span>
-                <Badge variant={album.status === 'live' ? 'success' : 'neutral'}>
-                  {t(STATUS_LABEL[album.status] ?? album.status)}
-                </Badge>
+                {t('actions.more')}
               </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* The most actionable thing the platform can tell a creator, and it
-          costs nothing — search already logs it. */}
-      <section>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="size-5 text-gold" />
-              {t('studio.demand')}
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">{t('studio.demandHint')}</p>
-          </CardHeader>
-          <CardContent>
-            {demand.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t('state.empty')}</p>
+            }
+          >
+            {top.length === 0 ? (
+              <p className="py-2 text-sm text-muted-foreground">{t('dash.noData')}</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="divide-y divide-border/60">
+                {top.map((row) =>
+                  row.album ? (
+                    <li key={row.album.id} className="flex items-center gap-3 py-2.5 text-sm">
+                      <span className="min-w-0 flex-1 truncate">
+                        <Bilingual ar={row.album.titleAr} en={row.album.titleEn} />
+                      </span>
+                      <span className="numeric text-xs text-muted-foreground">
+                        {formatNumber(row.views)}
+                      </span>
+                      <span className="numeric font-medium text-gold">
+                        {formatMoney(row.revenue)}
+                      </span>
+                    </li>
+                  ) : null,
+                )}
+              </ul>
+            )}
+          </Panel>
+
+          {/* Zero-result searches — the most actionable thing the platform can
+              tell a creator, and it costs nothing: search already logs it. */}
+          <Panel title={t('studio.demand')}>
+            <p className="mb-3 text-xs text-muted-foreground">{t('studio.demandHint')}</p>
+            {demand.length === 0 ? (
+              <p className="py-2 text-sm text-muted-foreground">{t('state.empty')}</p>
+            ) : (
+              <ul className="divide-y divide-border/60">
                 {demand.map((signal) => (
-                  <li key={signal.query} className="flex justify-between gap-4 text-sm">
-                    <span>{signal.query}</span>
-                    <span className="numeric text-muted-foreground">
+                  <li
+                    key={signal.query}
+                    className="flex items-center justify-between gap-4 py-2.5 text-sm"
+                  >
+                    <UserText className="min-w-0 truncate">{signal.query}</UserText>
+                    <span className="numeric shrink-0 text-xs text-muted-foreground">
                       {formatNumber(signal.searches)} {t('studio.searches')}
                     </span>
                   </li>
                 ))}
               </ul>
             )}
-          </CardContent>
-        </Card>
-      </section>
-    </div>
-  )
-}
-
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className="rounded-lg border bg-card p-5">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className={`numeric mt-1 text-2xl font-bold ${accent ? 'text-gold' : ''}`}>{value}</p>
-    </div>
+          </Panel>
+        </div>
+      </div>
+    </>
   )
 }

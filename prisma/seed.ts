@@ -1011,6 +1011,70 @@ async function main() {
     console.log('  search telemetry — 10 queries, 7 of them zero-result')
   }
 
+  // ── Analytics history ───────────────────────────────────────────────────────
+  //
+  // Ninety days of daily AlbumStat rows so the dashboards render live trend
+  // charts on a fresh database. Shaped, not random: a gentle upward drift with
+  // a weekly rhythm (Gulf weekend dip on Fri/Sat) and occasional spikes, and a
+  // realistic funnel — a fraction of views reach the cart, a fraction of those
+  // convert. Deterministic (seeded PRNG) so a re-seed reproduces the same
+  // history rather than churning the charts.
+  if ((await db.albumStat.count()) === 0) {
+    const liveAlbums = await db.album.findMany({
+      where: { status: 'live' },
+      select: { id: true, creatorId: true, priceStandard: true, salesCount: true },
+    })
+
+    // Small deterministic PRNG (mulberry32) so seeds are reproducible without
+    // Math.random, which the harness also discourages in scripts.
+    let prngState = 0x9e3779b9
+    const rand = () => {
+      prngState |= 0
+      prngState = (prngState + 0x6d2b79f5) | 0
+      let x = Math.imul(prngState ^ (prngState >>> 15), 1 | prngState)
+      x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x
+      return ((x ^ (x >>> 14)) >>> 0) / 4294967296
+    }
+
+    let rows = 0
+    for (const album of liveAlbums) {
+      const price = Number(album.priceStandard)
+      // A per-album popularity weight so albums differ in the "top albums" table.
+      const weight = 0.5 + rand() * 1.5
+      for (let d = 89; d >= 0; d -= 1) {
+        const date = daysAgo(d)
+        const dow = date.getDay() // 5 Fri, 6 Sat
+        const weekend = dow === 5 || dow === 6 ? 0.55 : 1
+        const drift = 1 + (89 - d) / 160 // slow growth toward today
+        const spike = rand() < 0.04 ? 2.4 : 1 // occasional viral day
+        const base = 22 * weight * weekend * drift * spike
+
+        const views = Math.max(1, Math.round(base + (rand() - 0.5) * 8))
+        const cartAdds = Math.round(views * (0.06 + rand() * 0.05))
+        const purchases = Math.round(cartAdds * (0.28 + rand() * 0.18))
+        const boardAdds = Math.round(views * (0.09 + rand() * 0.06))
+        const revenue = Math.round(purchases * price * 100) / 100
+
+        await db.albumStat.create({
+          data: {
+            albumId: album.id,
+            creatorId: album.creatorId,
+            day: new Date(
+              Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+            ),
+            views,
+            boardAdds,
+            cartAdds,
+            purchases,
+            revenue,
+          },
+        })
+        rows += 1
+      }
+    }
+    console.log(`  analytics — ${rows} daily rows across ${liveAlbums.length} albums (90 days)`)
+  }
+
   console.log('Seed complete.')
 }
 

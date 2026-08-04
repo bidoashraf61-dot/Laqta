@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { SubmitButton } from '@/components/studio/submit-button'
+import { BackLink } from '@/components/dashboard/primitives'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { specLabel } from '@/lib/spec-labels'
@@ -32,20 +32,18 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <Link href="/studio" className="text-sm text-muted-foreground hover:text-foreground">
-          ← {t('studio.title')}
-        </Link>
-        <h1 className="font-display text-headline font-semibold">
+      <div className="mb-6">
+        <BackLink href="/studio/albums" label={t('studio.albums')} />
+        <h1 className="font-display text-2xl font-bold">
           <Bilingual ar={album.titleAr} en={album.titleEn} />
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-muted-foreground">
           <span className="numeric">{album.clipCount}</span> {t('studio.clips')} ·{' '}
           <span className="numeric">
             {formatMoney(Number(album.priceStandard), album.currency)}
           </span>
         </p>
-      </header>
+      </div>
 
       {/* Reviewer feedback, if the album came back. */}
       {album.status === 'changes_requested' && latestReview?.decisionNote ? (

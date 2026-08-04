@@ -1,24 +1,15 @@
 /**
- * i18n and formatting check.
+ * Copy and formatting check.
  *
  *   npx tsx scripts/verify-i18n.ts
  *
- * Guards the three things that quietly rot as five sessions add copy:
- * locale switching must preserve the path, the two dictionaries must have the
- * same keys, and no Arabic string may be left as its English placeholder.
+ * The site is Arabic-only, so there is no dictionary parity to check any more.
+ * What can still rot as five sessions add copy is: an English placeholder left
+ * in the Arabic dictionary, a key referenced but never added, and the Arabic
+ * search folding that makes احمد match أحمد.
  */
 import ar from '../messages/ar.json'
-import en from '../messages/en.json'
-import {
-  localisePath,
-  localeFromPath,
-  formatMoney,
-  formatDate,
-  formatHijri,
-  normaliseArabic,
-  getTranslator,
-  type Locale,
-} from '../lib/i18n'
+import { t, formatMoney, formatDate, formatHijri, normaliseArabic, isArabic } from '../lib/i18n'
 
 let failures = 0
 function report(name: string, ok: boolean, detail = '') {
@@ -37,59 +28,48 @@ function flatten(source: unknown, prefix = ''): Record<string, string> {
   return out
 }
 
-console.log('i18n verification\n')
+console.log('Copy and formatting\n')
 
-// ── Locale switching keeps you where you were ────────────────────────────────
-const paths: Array<[string, Locale, string]> = [
-  ['/ar/albums/alula-golden-hour', 'en', '/en/albums/alula-golden-hour'],
-  ['/en/footage', 'ar', '/ar/footage'],
-  ['/ar', 'en', '/en'],
-  ['/albums/x', 'ar', '/ar/albums/x'],
-]
-for (const [from, locale, expected] of paths) {
-  const got = localisePath(from, locale)
-  report(`${from} → ${locale}`, got === expected, got)
-}
-report('unprefixed path falls back to Arabic', localeFromPath('/albums') === 'ar')
+const flat = flatten(ar)
+console.log(`  ${Object.keys(flat).length} keys in messages/ar.json`)
 
-// ── Dictionaries agree ───────────────────────────────────────────────────────
-const flatAr = flatten(ar)
-const flatEn = flatten(en)
-const missingEn = Object.keys(flatAr).filter((key) => !(key in flatEn))
-const missingAr = Object.keys(flatEn).filter((key) => !(key in flatAr))
-report('every Arabic key exists in English', missingEn.length === 0, missingEn.join(', '))
-report('every English key exists in Arabic', missingAr.length === 0, missingAr.join(', '))
-
-// Arabic is the source of truth; an Arabic value identical to the English one
-// is almost always an untranslated placeholder that shipped by accident.
-const ARABIC = /[؀-ۿ]/
-const untranslated = Object.keys(flatAr).filter(
-  (key) =>
-    flatAr[key] === flatEn[key] &&
-    !ARABIC.test(flatAr[key]) &&
-    // Brand and proper nouns are legitimately the same in both.
-    !/^brand\./.test(key),
+/**
+ * Latin values that are not proper nouns are almost always an untranslated
+ * placeholder that shipped by accident.
+ */
+const PROPER_NOUN_KEYS = /^(brand\.|palette\.)/
+const untranslated = Object.entries(flat).filter(
+  ([key, value]) => !isArabic(value) && !PROPER_NOUN_KEYS.test(key) && /[A-Za-z]{3}/.test(value),
 )
-report('no Arabic string left as English', untranslated.length === 0, untranslated.join(', '))
+report(
+  'no English left in the Arabic dictionary',
+  untranslated.length === 0,
+  untranslated.map(([key]) => key).join(', '),
+)
+
+report('a missing key returns the key, not a blank', t('does.not.exist') === 'does.not.exist')
+report('interpolation fills placeholders', t('commerce.fromAlbum', { album: 'العلا' }).includes('العلا'))
+report(
+  'an unfilled placeholder stays visible',
+  t('commerce.fromAlbum').includes('{album}'),
+)
 
 // ── Formatting ───────────────────────────────────────────────────────────────
 const now = new Date('2026-08-04T10:00:00Z')
-console.log(`\n  money    ar  ${formatMoney(1499, 'ar')}`)
-console.log(`  money    en  ${formatMoney(1499, 'en')}`)
-console.log(`  money    ar (Arabic-Indic)  ${formatMoney(1499, 'ar', 'SAR', { arabicDigits: true })}`)
-console.log(`  date     ar  ${formatDate(now, 'ar')}`)
-console.log(`  hijri        ${formatHijri(now)}`)
-console.log(`  interpolation  ${getTranslator('ar')('commerce.fromAlbum', { album: 'العلا' })}`)
+console.log(`\n  money            ${formatMoney(1499)}`)
+console.log(`  money (Arabic-Indic)  ${formatMoney(1499, 'SAR', { arabicDigits: true })}`)
+console.log(`  date             ${formatDate(now)}`)
+console.log(`  hijri            ${formatHijri(now)}`)
 
+// ── Arabic search folding ────────────────────────────────────────────────────
 report(
-  'Arabic search folding matches spelling variants',
+  'diacritics and hamza fold together',
   normaliseArabic('أَحْمَد') === normaliseArabic('احمد'),
   normaliseArabic('أَحْمَد'),
 )
-report(
-  'alef maqsura folds to yaa (العلى → العلا side)',
-  normaliseArabic('العلى') === normaliseArabic('العلي'),
-)
+report('teh marbuta folds to heh (جدة ≈ جده)', normaliseArabic('جدة') === normaliseArabic('جده'))
+report('alef maqsura folds to yaa', normaliseArabic('العلى') === normaliseArabic('العلي'))
+report('tatweel is stripped', normaliseArabic('محـــمد') === normaliseArabic('محمد'))
 
-console.log(failures === 0 ? '\nAll i18n checks passed.' : `\n${failures} check(s) failed.`)
+console.log(failures === 0 ? '\nAll copy checks passed.' : `\n${failures} check(s) failed.`)
 process.exitCode = failures === 0 ? 0 : 1

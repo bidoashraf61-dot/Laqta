@@ -2,21 +2,8 @@
 
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { useDirection } from '@radix-ui/react-direction'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-/**
- * Screen-reader label for the close affordance.
- *
- * Primitives sit below the locale, so they take the direction from the
- * `DirectionProvider` instead. With two locales, direction maps one-to-one
- * onto language — and a screen reader announcing "Close" in the middle of an
- * Arabic dialog is exactly the kind of leak nobody sees in a screenshot.
- */
-function useCloseLabel() {
-  return useDirection() === 'rtl' ? 'إغلاق' : 'Close'
-}
 
 const Dialog = DialogPrimitive.Root
 const DialogTrigger = DialogPrimitive.Trigger
@@ -42,7 +29,6 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
-  const closeLabel = useCloseLabel()
   return (
   <DialogPortal>
     <DialogOverlay />
@@ -60,7 +46,7 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close className="absolute end-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
         <X className="size-4" />
-        <span className="sr-only">{closeLabel}</span>
+        <span className="sr-only">إغلاق</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

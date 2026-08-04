@@ -9,17 +9,10 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
+import { t } from '@/lib/i18n'
 import { beginTwoFactorEnrolment, confirmTwoFactor, disableTwoFactor } from './actions'
 
-export function TwoFactorCard({
-  enabled,
-  mandatory,
-  labels,
-}: {
-  enabled: boolean
-  mandatory: boolean
-  labels: Record<string, string>
-}) {
+export function TwoFactorCard({ enabled, mandatory }: { enabled: boolean; mandatory: boolean }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [secret, setSecret] = useState<string | null>(null)
@@ -38,11 +31,11 @@ export function TwoFactorCard({
     startTransition(async () => {
       const result = await confirmTwoFactor(formData)
       if (!result.ok) {
-        setError(labels[result.messageKey] ?? result.messageKey)
+        setError(t(result.messageKey))
         return
       }
       setSecret(null)
-      toast.success(labels[result.messageKey] ?? result.messageKey)
+      toast.success(t(result.messageKey))
       router.refresh()
     })
   }
@@ -51,10 +44,10 @@ export function TwoFactorCard({
     startTransition(async () => {
       const result = await disableTwoFactor()
       if (!result.ok) {
-        setError(labels[result.messageKey] ?? result.messageKey)
+        setError(t(result.messageKey))
         return
       }
-      toast.success(labels[result.messageKey] ?? result.messageKey)
+      toast.success(t(result.messageKey))
       router.refresh()
     })
   }
@@ -63,23 +56,23 @@ export function TwoFactorCard({
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center gap-3">
-          <CardTitle>{labels.twoFactor}</CardTitle>
+          <CardTitle>{t('security.twoFactor')}</CardTitle>
           <Badge variant={enabled ? 'success' : 'neutral'}>
-            {enabled ? labels.enabled : labels.disabled}
+            {enabled ? t('security.enabled') : t('security.disabled')}
           </Badge>
         </div>
-        <CardDescription>{labels.twoFactorWhy}</CardDescription>
+        <CardDescription>{t('security.twoFactorWhy')}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
         {secret ? (
           <form action={confirm} className="space-y-4">
-            <p className="text-sm text-muted-foreground">{labels.setupIntro}</p>
+            <p className="text-sm text-muted-foreground">{t('security.setupIntro')}</p>
 
-            {/* The key is shown as text rather than only a QR: authenticator
-                apps all accept manual entry, and a QR image would mean adding
-                a rendering dependency to the critical account-security path. */}
-            <Field label={labels.secretKey} htmlFor="secret">
+            {/* The key is shown as text rather than only a QR: every
+                authenticator accepts manual entry, and a QR would mean adding
+                a rendering dependency to the account-security path. */}
+            <Field label={t('security.secretKey')} htmlFor="secret">
               <Input
                 id="secret"
                 readOnly
@@ -90,7 +83,7 @@ export function TwoFactorCard({
               />
             </Field>
 
-            <Field label={labels.enterCodeToEnable} htmlFor="token" required>
+            <Field label={t('security.enterCodeToEnable')} htmlFor="token" required>
               <Input
                 id="token"
                 name="token"
@@ -110,22 +103,22 @@ export function TwoFactorCard({
             ) : null}
 
             <Button type="submit" variant="gold" disabled={pending}>
-              {labels.enable}
+              {t('security.enable')}
             </Button>
           </form>
         ) : (
           <div className="flex flex-wrap items-center gap-3">
             {enabled ? (
               mandatory ? (
-                <p className="text-sm text-muted-foreground">{labels.twoFactorWhy}</p>
+                <p className="text-sm text-muted-foreground">{t('security.twoFactorWhy')}</p>
               ) : (
                 <Button variant="outline" onClick={turnOff} disabled={pending}>
-                  {labels.disable}
+                  {t('security.disable')}
                 </Button>
               )
             ) : (
               <Button variant="gold" onClick={start} disabled={pending}>
-                {labels.enable}
+                {t('security.enable')}
               </Button>
             )}
             {error ? (

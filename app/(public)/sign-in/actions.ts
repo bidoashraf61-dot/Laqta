@@ -5,14 +5,13 @@ import { z } from 'zod'
 import { signIn, normalisePhone, hashPassword } from '@/lib/auth'
 import { issueOtp } from '@/lib/otp'
 import { db } from '@/lib/db'
-import { defaultLocale, isLocale } from '@/lib/i18n'
 
 /**
  * Sign-in / sign-up server actions.
  *
- * All three return a plain result object rather than redirecting themselves —
- * the form component decides what to show, and a redirect thrown from inside a
- * try/catch here would be swallowed as an error.
+ * All of them return a plain result object rather than redirecting themselves —
+ * the form decides what to show, and a redirect thrown inside a try/catch here
+ * would be swallowed as an error.
  *
  * Message keys, not sentences: the caller translates. Never leak whether an
  * email exists — every failure path returns the same `invalidCredentials`.
@@ -24,13 +23,12 @@ export type AuthActionResult =
   | { status: 'two_factor' }
   | { status: 'code_sent'; phone: string; devCode: string | null }
 
-function safeRedirect(locale: string, callbackUrl: string | null) {
-  const target = isLocale(locale) ? locale : defaultLocale
-  // Only same-origin paths; an open redirect here would be a phishing hole.
+/** Same-origin paths only — an open redirect here would be a phishing hole. */
+function safeRedirect(callbackUrl: string | null) {
   if (callbackUrl && callbackUrl.startsWith('/') && !callbackUrl.startsWith('//')) {
     return callbackUrl
   }
-  return `/${target}`
+  return '/'
 }
 
 const emailInput = z.object({
@@ -40,8 +38,7 @@ const emailInput = z.object({
 })
 
 export async function signInWithEmail(formData: FormData): Promise<AuthActionResult> {
-  const locale = String(formData.get('locale') ?? defaultLocale)
-  const redirectTo = safeRedirect(locale, formData.get('callbackUrl') as string | null)
+  const redirectTo = safeRedirect(formData.get('callbackUrl') as string | null)
 
   const parsed = emailInput.safeParse({
     email: formData.get('email'),
@@ -81,8 +78,7 @@ export async function requestPhoneCode(formData: FormData): Promise<AuthActionRe
 }
 
 export async function signInWithPhone(formData: FormData): Promise<AuthActionResult> {
-  const locale = String(formData.get('locale') ?? defaultLocale)
-  const redirectTo = safeRedirect(locale, formData.get('callbackUrl') as string | null)
+  const redirectTo = safeRedirect(formData.get('callbackUrl') as string | null)
   const phone = String(formData.get('phone') ?? '')
   const code = String(formData.get('code') ?? '')
 
@@ -103,7 +99,6 @@ const signUpInput = z.object({
 })
 
 export async function signUpWithEmail(formData: FormData): Promise<AuthActionResult> {
-  const locale = String(formData.get('locale') ?? defaultLocale)
   const parsed = signUpInput.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -120,7 +115,7 @@ export async function signUpWithEmail(formData: FormData): Promise<AuthActionRes
       email,
       name: parsed.data.name,
       passwordHash: await hashPassword(parsed.data.password),
-      locale: isLocale(locale) ? locale : defaultLocale,
+      locale: 'ar',
       role: 'buyer',
     },
   })
@@ -129,13 +124,13 @@ export async function signUpWithEmail(formData: FormData): Promise<AuthActionRes
     await signIn('email', { email, password: parsed.data.password, redirect: false })
   } catch (error) {
     if (error instanceof AuthError) {
-      // Account exists but the session did not start — send them to sign in.
+      // The account exists but the session did not start — send them to sign in.
       return { status: 'error', messageKey: 'auth.somethingWentWrong' }
     }
     throw error
   }
 
-  return { status: 'ok', redirectTo: safeRedirect(locale, null) }
+  return { status: 'ok', redirectTo: '/' }
 }
 
 /**

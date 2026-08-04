@@ -1,24 +1,15 @@
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/state'
-import { getTranslator, type Locale } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 
 /**
- * Placeholder for a route Foundation guards but does not build.
+ * Placeholder for a route the foundation guards but does not build.
  *
- * Every one of these disappears when the owning session lands. They exist so
- * the guards, the nav and the shell can be exercised end to end today rather
- * than after five other briefs are done.
+ * Each disappears when the owning session lands. They exist so the guards, the
+ * nav and the shell can be exercised today rather than after every brief is
+ * finished.
  */
-export function ScaffoldPage({
-  locale,
-  title,
-  owner,
-}: {
-  locale: Locale
-  title: string
-  owner: string
-}) {
-  const t = getTranslator(locale)
+export function ScaffoldPage({ title, owner }: { title: string; owner: string }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">

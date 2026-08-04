@@ -1,19 +1,21 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
-import type { Locale } from '@/lib/i18n'
+import { isArabic } from '@/lib/i18n'
 
 /**
  * Direction islands.
  *
- * Every catalogue record carries both an Arabic and an English string. Whenever
- * one is rendered inside a document of the *other* direction — Arabic album
- * titles in the LTR admin shell, an English creator handle in an Arabic page —
- * the browser's bidi algorithm will otherwise drag trailing punctuation and
- * numerals to the wrong end. These wrappers isolate the run.
+ * Every catalogue record carries both an Arabic and an English string. The UI
+ * is Arabic, but the English side is still present in the data — and whenever
+ * a Latin run is rendered inside Arabic (a creator's English handle, a camera
+ * model, a file key) the browser's bidi algorithm will drag its punctuation
+ * and numerals to the wrong end of the surrounding sentence unless it is
+ * isolated.
  *
- *   <Bilingual ar={album.titleAr} en={album.titleEn} locale={locale} />
+ *   <Bilingual ar={album.titleAr} en={album.titleEn} />
  *
- * renders the locale's string and marks it with the correct island class.
+ * renders the Arabic string, falls back to English when Arabic is missing,
+ * and marks whichever it used with the correct island.
  */
 
 function RtlIsland({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
@@ -27,24 +29,22 @@ function LtrIsland({ className, ...props }: React.HTMLAttributes<HTMLSpanElement
 function Bilingual({
   ar,
   en,
-  locale,
   className,
 }: {
   ar: string | null | undefined
   en: string | null | undefined
-  locale: Locale
   className?: string
 }) {
-  const preferred = locale === 'ar' ? (ar ?? en) : (en ?? ar)
-  if (!preferred) return null
+  const value = ar ?? en
+  if (!value) return null
 
-  // Which script actually won, rather than which one we asked for — a missing
+  // Which script actually won, not which one we hoped for — a record with no
   // Arabic title falls back to English and must then be isolated LTR.
-  const isArabic = preferred === ar
-  const Island = isArabic ? RtlIsland : LtrIsland
+  const arabic = isArabic(value)
+  const Island = arabic ? RtlIsland : LtrIsland
   return (
-    <Island className={className} lang={isArabic ? 'ar' : 'en'}>
-      {preferred}
+    <Island className={className} lang={arabic ? 'ar' : 'en'}>
+      {value}
     </Island>
   )
 }

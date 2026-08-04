@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react'
 import { ErrorState } from '@/components/ui/state'
-import { getTranslator, defaultLocale } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 
-export default function LocaleError({
+export default function GlobalError({
   error,
   reset,
 }: {
@@ -15,8 +15,6 @@ export default function LocaleError({
     // Replace with the real reporter once observability is picked.
     console.error(error)
   }, [error])
-
-  const t = getTranslator(defaultLocale)
 
   return (
     <div className="container py-20">

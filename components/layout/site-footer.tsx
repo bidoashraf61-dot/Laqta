@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { Separator } from '@/components/ui/toggles'
-import { LocaleSwitch } from '@/components/layout/locale-switch'
 import { FOOTER_LEGAL } from '@/components/layout/nav'
-import { getTranslator, type Locale } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 
 const SOCIAL = [
   { href: 'https://x.com/laqta_sa', label: 'X' },
@@ -11,8 +10,7 @@ const SOCIAL = [
   { href: 'https://linkedin.com/company/laqta', label: 'LinkedIn' },
 ]
 
-export function SiteFooter({ locale }: { locale: Locale }) {
-  const t = getTranslator(locale)
+export function SiteFooter() {
   const year = new Date().getFullYear()
 
   return (
@@ -29,7 +27,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             {FOOTER_LEGAL.map((item) => (
               <Link
                 key={item.href}
-                href={`/${locale}${item.href}`}
+                href={item.href}
                 className="text-muted-foreground transition-colors hover:text-foreground"
               >
                 {t(item.labelKey)}
@@ -38,11 +36,11 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </nav>
 
           <div className="space-y-3">
-            <p className="text-sm font-medium">{t('footer.language')}</p>
-            <LocaleSwitch locale={locale} />
-            <ul className="flex gap-4 pt-2 text-sm">
+            <p className="text-sm font-medium">{t('footer.follow')}</p>
+            <ul className="flex gap-4 text-sm">
               {SOCIAL.map((item) => (
                 <li key={item.label}>
+                  {/* Platform names are proper nouns — Latin, but isolated. */}
                   <a
                     href={item.href}
                     rel="noopener noreferrer"

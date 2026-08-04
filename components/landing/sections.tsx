@@ -8,6 +8,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { formatNumber, t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { Headline, Prose, Section } from '@/components/ui/typography'
 
 /** Section heading with an optional "view all" on the opposite edge. */
 function SectionHead({
@@ -20,10 +21,11 @@ function SectionHead({
   href?: string
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="font-display text-headline font-semibold">{title}</h2>
-        {subtitle ? <p className="mt-1 text-muted-foreground">{subtitle}</p> : null}
+        {/* Two-weight pair: the subtitle carries the Light line, the title the
+            Bold one, so a section head has internal hierarchy at one size. */}
+        <Headline lead={subtitle} bold={title} size="lg" />
       </div>
       {href ? (
         <Button asChild variant="ghost" size="sm">
@@ -52,10 +54,10 @@ export function TrustStrip({
 
   return (
     <section className="border-y border-border/60 bg-card/30">
-      <div className="container grid grid-cols-2 gap-6 py-8 md:grid-cols-4">
+      <div className="container-tight grid grid-cols-2 gap-6 py-10 md:grid-cols-4">
         {items.map((item) => (
           <div key={item.label} className="text-center">
-            <p className="numeric text-2xl font-bold text-gold">{item.value}</p>
+            <p className="numeric font-display text-3xl font-bold text-foreground">{item.value}</p>
             <p className="mt-1 text-sm text-muted-foreground">{item.label}</p>
           </div>
         ))}
@@ -69,14 +71,16 @@ function AlbumRail({
   subtitle,
   albums,
   href,
+  tone,
 }: {
   title: string
   subtitle: string
   albums: AlbumCardData[]
   href: string
+  tone?: 'base' | 'raised' | 'accent'
 }) {
   return (
-    <section className="container py-14">
+    <Section tone={tone}>
       <SectionHead title={title} subtitle={subtitle} href={href} />
       {albums.length === 0 ? (
         <EmptyState title={t('state.empty')} />
@@ -87,7 +91,7 @@ function AlbumRail({
           ))}
         </div>
       )}
-    </section>
+    </Section>
   )
 }
 
@@ -98,6 +102,7 @@ export function FeaturedAlbums({ albums }: { albums: AlbumCardData[] }) {
       subtitle={t('landing.featuredSubtitle')}
       albums={albums}
       href="/albums"
+      tone="raised"
     />
   )
 }
@@ -109,6 +114,7 @@ export function NewThisWeek({ albums }: { albums: AlbumCardData[] }) {
       subtitle={t('landing.newSubtitle')}
       albums={albums}
       href="/albums?sort=new"
+      tone="raised"
     />
   )
 }
@@ -135,14 +141,14 @@ export function BrowseTiles({
   className?: string
 }) {
   return (
-    <section className={cn('container py-14', className)}>
+    <Section tone="base" className={className}>
       <SectionHead title={title} subtitle={subtitle} href={base} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {tiles.map((tile) => (
           <Link
             key={tile.slug}
             href={`${base}/${tile.slug}`}
-            className="group relative isolate overflow-hidden rounded-lg border bg-card p-5 transition-colors hover:border-gold/50"
+            className="group relative isolate overflow-hidden rounded-lg border bg-card p-5 transition-colors hover:border-foreground/25"
           >
             {tile.heroImage ? (
               <img
@@ -152,7 +158,7 @@ export function BrowseTiles({
                 className="absolute inset-0 -z-10 size-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105"
               />
             ) : null}
-            <p className="font-semibold group-hover:text-gold">
+            <p className="font-semibold group-hover:text-foreground">
               <Bilingual ar={tile.nameAr} en={tile.nameEn} />
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -161,7 +167,7 @@ export function BrowseTiles({
           </Link>
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
@@ -177,7 +183,7 @@ export function TopCreators({
   }>
 }) {
   return (
-    <section className="container py-14">
+    <Section tone="raised">
       <SectionHead
         title={t('landing.creatorsTitle')}
         subtitle={t('landing.creatorsSubtitle')}
@@ -188,7 +194,7 @@ export function TopCreators({
           <Link
             key={creator.handle}
             href={`/creators/${creator.handle}`}
-            className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:border-gold/50"
+            className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:border-foreground/25"
           >
             <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-semibold">
               {creator.nameAr.charAt(0)}
@@ -205,7 +211,7 @@ export function TopCreators({
           </Link>
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
@@ -217,9 +223,8 @@ export function HowItWorks() {
   ]
 
   return (
-    <section className="border-y border-border/60 bg-card/30">
-      <div className="container py-16">
-        <SectionHead title={t('landing.howTitle')} />
+    <Section tone="raised">
+      <SectionHead title={t('landing.howTitle')} />
         <div className="grid gap-6 md:grid-cols-3">
           {steps.map((step, index) => (
             <Card key={step.title}>
@@ -241,31 +246,32 @@ export function HowItWorks() {
 
         {/* The positioning, stated outright. It is the single thing that
             separates Laqta from every subscription library buyers know. */}
-        <p className="mt-10 text-center text-xl font-semibold text-gold">
-          {t('landing.positioning')}
-        </p>
-      </div>
-    </section>
+      {/* The positioning, stated outright — the one line that separates Laqta
+          from every subscription library buyers already know. */}
+      <p className="mt-12 text-center font-display text-2xl font-light text-sand">
+        {t('landing.positioning')}
+      </p>
+    </Section>
   )
 }
 
 export function CreatorCta() {
   return (
-    <section className="container py-16">
-      <div className="flex flex-col items-start gap-6 rounded-lg border border-gold/30 bg-gold/5 p-8 md:flex-row md:items-center md:justify-between">
+    <Section tone="accent">
+      <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl space-y-2">
           <Badge variant="gold" className="gap-1">
             <Clapperboard className="size-3" />
             {t('nav.sell')}
           </Badge>
-          <h2 className="text-headline font-semibold">{t('landing.sellTitle')}</h2>
-          <p className="text-muted-foreground">{t('landing.sellBody')}</p>
+          <Headline bold={t('landing.sellTitle')} size="lg" />
+          <Prose>{t('landing.sellBody')}</Prose>
         </div>
         <Button asChild variant="gold" size="lg">
           <Link href="/sell">{t('landing.sellCta')}</Link>
         </Button>
       </div>
-    </section>
+    </Section>
   )
 }
 

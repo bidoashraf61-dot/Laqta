@@ -158,7 +158,7 @@ export function CheckoutForm({
               onClick={() => setMethod(option)}
               className={cn(
                 'rounded-md border p-3 text-start text-sm transition-colors',
-                method === option ? 'border-gold bg-gold/10' : 'border-input hover:border-gold/40',
+                method === option ? 'border-gold bg-gold/10' : 'border-input hover:border-foreground/25',
               )}
             >
               {t(METHOD_LABEL[option])}
@@ -204,7 +204,7 @@ function Toggle({
       onClick={onClick}
       className={cn(
         'flex-1 rounded-md border px-4 py-2 text-sm transition-colors',
-        active ? 'border-gold bg-gold/10 text-gold' : 'border-input hover:border-gold/40',
+        active ? 'border-gold bg-gold/10 text-gold' : 'border-input hover:border-foreground/25',
       )}
     >
       {label}

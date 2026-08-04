@@ -55,7 +55,7 @@ export default async function LibraryAlbumPage({
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <Link href="/account/library" className="text-sm text-muted-foreground hover:text-gold">
+        <Link href="/account/library" className="text-sm text-muted-foreground hover:text-foreground">
           ← {t('library.title')}
         </Link>
         <h1 className="text-headline font-semibold">
@@ -80,7 +80,7 @@ export default async function LibraryAlbumPage({
       </Alert>
 
       {paid ? (
-        <Button asChild variant="gold">
+        <Button asChild variant="outline">
           <Link
             href={downloadUrl({
               key: `albums/${entitlement.albumId}.zip`,

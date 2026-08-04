@@ -58,7 +58,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="text-sm text-muted-foreground hover:text-gold">
+      <Link href="/admin" className="text-sm text-muted-foreground hover:text-foreground">
         ← {t('admin.reviewQueue')}
       </Link>
 

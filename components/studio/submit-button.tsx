@@ -50,7 +50,7 @@ export function SubmitButton({
       ) : null}
 
       <Button
-        variant="gold"
+        variant="default"
         disabled={!canSubmit || pending}
         onClick={() =>
           startTransition(async () => {

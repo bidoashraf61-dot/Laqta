@@ -66,7 +66,7 @@ export default async function LibraryPage() {
                 </p>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
-                <Button asChild variant="gold" size="sm" disabled={!entry.paid}>
+                <Button asChild variant="outline" size="sm" disabled={!entry.paid}>
                   <Link href={`/account/library/${entry.id}`}>{t('library.downloadAll')}</Link>
                 </Button>
                 <Button asChild variant="outline" size="sm">

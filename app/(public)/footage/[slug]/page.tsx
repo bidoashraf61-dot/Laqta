@@ -110,7 +110,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
   const siblings = clip.album.clips.filter((sibling) => sibling.id !== clip.id)
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <VideoJsonLd clip={clip} url={`${SITE_URL}/footage/${slug}`} />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
@@ -190,7 +190,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                     <Link
                       key={sibling.id}
                       href={`/footage/${sibling.slug}`}
-                      className="group w-44 shrink-0 overflow-hidden rounded-md border bg-card transition-colors hover:border-gold/50"
+                      className="group w-44 shrink-0 overflow-hidden rounded-md border bg-card transition-colors hover:border-foreground/25"
                     >
                       <div className="relative aspect-video bg-muted">
                         {sibling.thumbnailKeys[0] ? (
@@ -202,7 +202,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                           />
                         ) : null}
                       </div>
-                      <p className="line-clamp-1 p-2 text-xs group-hover:text-gold">
+                      <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
                         {sibling.titleAr}
                       </p>
                     </Link>
@@ -218,7 +218,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           <Card className="border-gold/30">
             <CardContent className="space-y-4 p-5">
               <p className="text-sm text-muted-foreground">{t('catalogue.partOfAlbum')}</p>
-              <Link href={albumUrl} className="block text-lg font-semibold hover:text-gold">
+              <Link href={albumUrl} className="block text-lg font-semibold hover:text-foreground">
                 <Bilingual ar={clip.album.titleAr} en={clip.album.titleEn} />
               </Link>
 

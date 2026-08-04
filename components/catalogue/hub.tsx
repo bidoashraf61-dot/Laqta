@@ -66,14 +66,14 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
   })
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <h1 className="mb-6 font-display text-headline font-semibold">{t(TITLE_KEY[kind])}</h1>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {rows.map((row) => (
           <Link
             key={row.slug}
             href={`${BASE[kind]}/${row.slug}`}
-            className="group relative isolate overflow-hidden rounded-lg border bg-card p-5 transition-colors hover:border-gold/50"
+            className="group relative isolate overflow-hidden rounded-lg border bg-card p-5 transition-colors hover:border-foreground/25"
           >
             {row.heroImage ? (
               <img
@@ -83,7 +83,7 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
                 className="absolute inset-0 -z-10 size-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105"
               />
             ) : null}
-            <p className="font-semibold group-hover:text-gold">
+            <p className="font-semibold group-hover:text-foreground">
               <Bilingual ar={row.nameAr} en={row.nameEn} />
             </p>
             <p className="numeric mt-1 text-xs text-muted-foreground">
@@ -116,7 +116,7 @@ export async function TaxonomyHub({
   } as Parameters<typeof search>[0])
 
   return (
-    <div className="container py-10">
+    <div className="container-tight py-16">
       <BreadcrumbJsonLd kind={kind} entry={entry} />
 
       <nav className="mb-4 text-sm text-muted-foreground" aria-label={t('catalogue.breadcrumb')}>

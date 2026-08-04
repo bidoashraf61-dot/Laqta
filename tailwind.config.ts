@@ -94,8 +94,8 @@ const config: Config = {
       },
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
-        display: ['clamp(2.5rem, 6vw, 4.5rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
-        headline: ['clamp(1.75rem, 3vw, 2.5rem)', { lineHeight: '1.15' }],
+        display: ['clamp(2.25rem, 5vw, 4rem)', { lineHeight: '1.08', letterSpacing: '-0.015em' }],
+        headline: ['clamp(1.5rem, 2.6vw, 2.125rem)', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
       },
       borderRadius: {
         lg: 'var(--radius)',

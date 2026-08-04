@@ -102,7 +102,7 @@ export function TwoFactorCard({ enabled, mandatory }: { enabled: boolean; mandat
               </Alert>
             ) : null}
 
-            <Button type="submit" variant="gold" disabled={pending}>
+            <Button type="submit" variant="default" disabled={pending}>
               {t('security.enable')}
             </Button>
           </form>
@@ -117,7 +117,7 @@ export function TwoFactorCard({ enabled, mandatory }: { enabled: boolean; mandat
                 </Button>
               )
             ) : (
-              <Button variant="gold" onClick={start} disabled={pending}>
+              <Button variant="default" onClick={start} disabled={pending}>
                 {t('security.enable')}
               </Button>
             )}

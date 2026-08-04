@@ -75,7 +75,7 @@ export default async function StudioPage() {
               <Link
                 key={album.id}
                 href={`/studio/albums/${album.id}`}
-                className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-gold/50"
+                className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-foreground/25"
               >
                 <span className="min-w-0 flex-1 font-medium">
                   <Bilingual ar={album.titleAr} en={album.titleEn} />

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SCENES, CONNECTORS } from './scenes'
 import { t } from '@/lib/i18n'
+import { Eyebrow, Headline, Prose } from '@/components/ui/typography'
 
 /**
  * The scroll-scrubbed hero.
@@ -89,10 +90,17 @@ function HeroFallback() {
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
 
-      <div className="container space-y-6 py-24">
-        <p className="text-sm font-medium tracking-wide text-gold">{first.eyebrow}</p>
-        <h1 className="max-w-3xl text-balance font-display text-display font-bold">{first.title}</h1>
-        <p className="max-w-xl text-lg text-muted-foreground">{first.body}</p>
+      <div className="container-tight space-y-6 py-28">
+        <Eyebrow>{first.eyebrow}</Eyebrow>
+        {/* The hero headline splits on its comma into the Light/Bold pair. */}
+        <Headline
+          as="h1"
+          size="display"
+          lead={first.title?.split('،')[0] ? `${first.title.split('،')[0]}،` : undefined}
+          bold={first.title?.split('،').slice(1).join('،').trim() || first.title}
+          className="max-w-3xl"
+        />
+        <Prose className="max-w-xl">{first.body}</Prose>
         <ul className="flex flex-wrap gap-2">
           {(first.tags ?? []).map((tag) => (
             <li

@@ -244,7 +244,7 @@ function Chips({
             /[A-Za-z]/.test(option.label) && 'ltr-island',
             isActive(option.value)
               ? 'border-gold bg-gold/15 text-gold'
-              : 'border-input text-muted-foreground hover:border-gold/40 hover:text-foreground',
+              : 'border-input text-muted-foreground hover:border-foreground/25 hover:text-foreground',
           )}
         >
           {option.label}

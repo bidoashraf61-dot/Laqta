@@ -102,7 +102,7 @@ export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: 
                           : state === 'fail'
                             ? 'border-destructive bg-destructive/15 text-destructive'
                             : 'border-gold bg-gold/15 text-gold'
-                        : 'border-input text-muted-foreground hover:border-gold/40',
+                        : 'border-input text-muted-foreground hover:border-foreground/25',
                     )}
                   >
                     {t(STATE_LABEL[state])}
@@ -138,7 +138,7 @@ export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: 
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="gold" disabled={!gate.ok || pending} onClick={() => decide('approve')}>
+          <Button variant="default" disabled={!gate.ok || pending} onClick={() => decide('approve')}>
             {t('admin.approve')}
           </Button>
           <Button variant="outline" disabled={pending} onClick={() => decide('request_changes')}>

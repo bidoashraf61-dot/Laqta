@@ -70,7 +70,7 @@ export default async function AdminPage() {
                 <Link
                   key={task.id}
                   href={`/admin/review/${task.id}`}
-                  className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-gold/50"
+                  className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-foreground/25"
                 >
                   <span className="min-w-0 flex-1 font-medium">
                     <Bilingual ar={task.album.titleAr} en={task.album.titleEn} />

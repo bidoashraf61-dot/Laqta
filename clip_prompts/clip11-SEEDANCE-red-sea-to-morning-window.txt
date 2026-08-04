@@ -1,0 +1,22 @@
+<<<image_1>>>  Start Frame
+<<<image_2>>>  End Frame
+
+Style & Mood: Morning aerial realism resolving into a warm interior. Pale blue sky, soft cream and peach dawn light, vivid turquoise water giving way to soft white cloud, warm amber glow on a darkened cabin wall. Wide FPV lens with natural barrel distortion, deep focus, filmic grade, fine 35mm grain, soft diffusion bloom, strong atmospheric depth. Fast at first, then settling — arrival, calm, homecoming.
+
+Narrative Summary: A high-speed FPV racing drone climbs away from the turquoise lagoon up into the cloud deck until vapour completely fills the frame, then eases out of the cloud and settles back inside a darkened aircraft cabin, framed on the morning window.
+
+Dynamic Description: One continuous first-person flying camera shot, no cuts, no scene change, no time jump. The camera is a free-flying FPV drone, never mounted on anything, moving on a single unbroken path that begins fast and ends still.
+
+THE SHOT BEGINS EXACTLY ON THE START FRAME (<<<image_1>>>) — the first frame must match <<<image_1>>> precisely: a high downward aerial view through a break in a sunlit cloud deck, a turquoise coral lagoon with a pale sandbar at centre and dark reef patches through the water, deep sapphire sea at the rim, bright sun glitter on the right, banked white cloud all around the opening. Hold that exact framing, then the drone accelerates hard and climbs steeply away from the lagoon, which shrinks and slides down and out of the lower frame as the camera pitches up toward the sky.
+
+The drone climbs fast into the cloud bank, punching into the vapour at full speed. Soft sunlit vapour rushes in from every edge and COMPLETELY FILLS THE FRAME edge to edge — no sea, no reef, no horizon, no sky visible anywhere. Vapour streams past the lens, streaking at the frame edges. This fully-filled cloud frame is the transition.
+
+The drone slows steadily inside the vapour, shedding all its speed. The cloud ahead thins and parts gently, and the camera eases forward through the last of it and PASSES THROUGH AN AIRCRAFT WINDOW back into a darkened cabin interior. The window frame sweeps inward from the extreme left and right edges and settles into place around the view, the near-black cabin wall closing in around it, a thin warm rim of morning light catching the window's rounded edge.
+
+The camera comes to rest, completely still, holding on the window.
+
+THE SHOT ENDS EXACTLY ON THE END FRAME (<<<image_2>>>) — the final frame must match <<<image_2>>> precisely: an aircraft cabin window centred in a darkened interior wall, a warm amber glow along its rounded rim, and through the glass a soft pale blue and peach morning sky, the wing angling away, and a soft white cloud deck below.
+
+The cabin and window are opaque and physically present behind the vapour before the vapour parts. They are revealed only by cloud moving away. They NEVER fade in, dissolve in, materialise, appear from nothing, or build up. Physical occlusion only.
+
+Static Description: Morning at high altitude. At the start, a turquoise coral lagoon with a pale sandbar and dark reef patches, deep sapphire sea at the rim, seen through a break in a sunlit cloud deck. At the end, an aircraft cabin interior in near darkness with a single rounded window edged in warm morning light, and beyond the glass a pale blue and peach sky, one aircraft wing, and a soft white cloud deck below. THE LAGOON, THE REEF, THE CABIN, THE WINDOW AND THE WING ARE COMPLETELY STATIC FROZEN OBJECTS, like still photographs — nothing on them moves, animates, shifts, ripples, drifts, flickers or shimmers; the water surface stays perfectly still with no waves, no swell, no moving glitter; no moving lights, no flashing, no strobing, no blinking. Illumination is soft, even and constant. The window frame keeps rigid true shape and correct perspective throughout the passage, never bending, warping, melting or stretching. Clouds hold consistent volumetric shape and mass with correct depth parallax between near and far vapour. Motion obeys real physics and consistent inertia, decelerating smoothly to a complete stop — never teleporting, never jumping, never reversing. Stable level horizon. No drone body, no propellers, no boats, no people, no figures, no text, no letters, no logos, no watermark.

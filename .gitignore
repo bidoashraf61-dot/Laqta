@@ -33,3 +33,7 @@ build/
 .env
 .env.*
 !.env.example
+
+# Nested git worktrees for parallel build sessions — each has its own
+# checkout, node_modules and .pgdata; none of it belongs to this tree.
+/laqta-worktrees/

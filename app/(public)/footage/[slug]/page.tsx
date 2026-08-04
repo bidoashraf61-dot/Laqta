@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation'
 import { BadgeCheck, MapPin } from 'lucide-react'
 import { db } from '@/lib/db'
 import { formatMoney, t } from '@/lib/i18n'
-import { formatDuration } from '@/lib/utils'
+import { formatDuration, cn } from '@/lib/utils'
+import { specLabel } from '@/lib/spec-labels'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -173,8 +174,8 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
               <Spec label={t('catalogue.colourProfile')} value={clip.colourProfile ?? '—'} />
               <Spec label={t('catalogue.camera')} value={clip.camera ?? '—'} />
               <Spec label={t('catalogue.lens')} value={clip.lens ?? '—'} />
-              <Spec label={t('catalogue.cameraMovement')} value={clip.cameraMovement ?? '—'} />
-              <Spec label={t('catalogue.shotSize')} value={clip.shotSize ?? '—'} />
+              <Spec label={t('catalogue.cameraMovement')} value={specLabel('movement', clip.cameraMovement) ?? '—'} />
+              <Spec label={t('catalogue.shotSize')} value={specLabel('shotSize', clip.shotSize) ?? '—'} />
             </dl>
           </section>
 
@@ -255,11 +256,28 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
   )
 }
 
+/**
+ * A spec row.
+ *
+ * Values that came back from `specLabel` still in Latin — codec names, camera
+ * models, colour profiles — are wrapped in `.ltr-island`. Without that,
+ * "Rec.709" renders as "709.Rec" beside Arabic, and "DJI Inspire 3" loses its
+ * number to the wrong end of the line.
+ */
 function Spec({ label, value, numeric }: { label: string; value: string; numeric?: boolean }) {
+  const latin = !numeric && /[A-Za-z]/.test(value)
   return (
     <div className="flex justify-between gap-4 border-b border-border/60 py-1.5">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className={numeric ? 'numeric text-sm font-medium' : 'text-sm font-medium'}>{value}</dd>
+      <dd
+        className={cn(
+          'text-sm font-medium',
+          numeric && 'numeric',
+          latin && 'ltr-island',
+        )}
+      >
+        {value}
+      </dd>
     </div>
   )
 }

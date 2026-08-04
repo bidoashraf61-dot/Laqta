@@ -239,6 +239,9 @@ function Chips({
           className={cn(
             'rounded-full border px-3 py-1 text-xs transition-colors',
             numeric && 'numeric',
+            // Codec and profile names are Latin identifiers, not copy — they
+            // stay Latin but must be isolated inside an Arabic rail.
+            /[A-Za-z]/.test(option.label) && 'ltr-island',
             isActive(option.value)
               ? 'border-gold bg-gold/15 text-gold'
               : 'border-input text-muted-foreground hover:border-gold/40 hover:text-foreground',

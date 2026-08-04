@@ -85,8 +85,8 @@ export default async function AdminPage() {
                     {formatMoney(Number(task.album.priceStandard), task.album.currency)}
                   </span>
                   {task.slaDueAt ? (
-                    <Badge variant={overdue ? 'destructive' : 'neutral'} className="numeric">
-                      {formatDate(task.slaDueAt)}
+                    <Badge variant={overdue ? 'destructive' : 'neutral'}>
+                      <span className="numeric">{formatDate(task.slaDueAt)}</span>
                     </Badge>
                   ) : null}
                 </Link>

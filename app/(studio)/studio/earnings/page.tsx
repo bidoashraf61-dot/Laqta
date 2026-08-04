@@ -85,8 +85,10 @@ export default async function EarningsPage() {
                       ) : released ? (
                         <Badge variant="success">{t('studio.available')}</Badge>
                       ) : (
-                        <Badge variant="warning" className="numeric">
-                          {entry.availableAt ? formatDate(entry.availableAt) : ''}
+                        <Badge variant="warning">
+                          <span className="numeric">
+                            {entry.availableAt ? formatDate(entry.availableAt) : ''}
+                          </span>
                         </Badge>
                       )}
                     </TableCell>

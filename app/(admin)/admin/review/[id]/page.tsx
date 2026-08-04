@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AlertTriangle } from 'lucide-react'
 import { requireAdmin } from '@/lib/auth'
@@ -8,8 +7,9 @@ import { analyseConsistency } from '@/lib/studio'
 import { normaliseChecklist } from '@/lib/review-checklist'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/state'
-import { Bilingual } from '@/components/ui/bilingual'
+import { Bilingual, UserText } from '@/components/ui/bilingual'
 import { ReviewChecklist } from '@/components/admin/review-checklist'
+import { BackLink } from '@/components/dashboard/primitives'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 
@@ -58,23 +58,23 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="text-sm text-muted-foreground hover:text-foreground">
-        ← {t('admin.reviewQueue')}
-      </Link>
-
-      <header className="space-y-2">
-        <h1 className="font-display text-headline font-semibold">
+      <div className="mb-6">
+        <BackLink href="/admin/review" label={t('admin.reviewQueue')} />
+        <h1 className="font-display text-2xl font-bold">
           <Bilingual ar={task.album.titleAr} en={task.album.titleEn} />
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {t('commerce.byCreator', { creator: task.album.creator.displayNameAr })} ·{' '}
+        <p className="mt-1 text-sm text-muted-foreground">
+          <UserText>
+            {t('commerce.byCreator', { creator: task.album.creator.displayNameAr })}
+          </UserText>{' '}
+          ·{' '}
           <span className="ltr-island">{task.album.creator.country}</span> ·{' '}
           <span className="numeric">{task.album.clipCount}</span> {t('studio.clips')} ·{' '}
           <span className="numeric">
             {formatMoney(Number(task.album.priceStandard), task.album.currency)}
           </span>
         </p>
-      </header>
+      </div>
 
       {/* Automated reports the reviewer should see before deciding anything. */}
       {duplicates.length > 0 ? (

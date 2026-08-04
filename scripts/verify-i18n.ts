@@ -39,7 +39,11 @@ console.log(`  ${Object.keys(flat).length} keys in messages/ar.json`)
  */
 // Product names that are Latin in Arabic copy too — Apple Pay is written
 // "Apple Pay" on every Saudi checkout, not transliterated.
-const PROPER_NOUN_KEYS = /^(brand\.|palette\.|checkout\.methodApplePay)/
+// Payment and payout rails are trademarks, not untranslated copy — "Payoneer"
+// has no Arabic form and inventing one would make the label unrecognisable on
+// a bank statement. Same exemption the checkout already carries for Apple Pay;
+// verify-arabic's ALLOWED set sanctions the same words at render time.
+const PROPER_NOUN_KEYS = /^(brand\.|palette\.|checkout\.methodApplePay|dash\.method(Payoneer|Wise))/
 const untranslated = Object.entries(flat).filter(
   ([key, value]) => !isArabic(value) && !PROPER_NOUN_KEYS.test(key) && /[A-Za-z]{3}/.test(value),
 )

@@ -350,6 +350,7 @@ model Creator {
   ledger   CreatorLedger[]
   payouts  Payout[]
   orderItems OrderItem[]
+  stats    AlbumStat[]
 
   @@index([status, tier])
 }
@@ -408,6 +409,7 @@ model Album {
   orderItems     OrderItem[]
   entitlements   Entitlement[]
   disputes       Dispute[]
+  stats          AlbumStat[]
 
   @@index([status, publishedAt])
   @@index([creatorId, status])
@@ -1150,6 +1152,42 @@ model SearchQueryLog {
 
   @@index([normalized, createdAt])
   @@index([resultCount, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Analytics — daily rollup, one row per album per day.
+//
+// Trend charts need time series, and computing them live from Order/Download
+// on every dashboard load does not scale. This table is the aggregate: a job
+// (or the checkout/download/view paths) increments the current day's row, and
+// the dashboards read ranges straight out of it. `creatorId` is denormalised
+// on so a creator's whole-catalogue trend is one indexed query rather than a
+// join through Album.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AlbumStat {
+  id        String   @id @default(cuid())
+  albumId   String
+  creatorId String
+  /// Midnight (UTC) of the day this row aggregates.
+  day       DateTime
+
+  views     Int     @default(0)
+  boardAdds Int     @default(0)
+  cartAdds  Int     @default(0)
+  purchases Int     @default(0)
+  /// Gross sale value booked that day, ex-VAT.
+  revenue   Decimal @default(0) @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  album   Album   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  creator Creator @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@unique([albumId, day])
+  @@index([creatorId, day])
+  @@index([day])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

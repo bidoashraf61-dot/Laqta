@@ -75,8 +75,29 @@ const ROUTES = [
   '/account/purchases',
   '/account/downloads',
   '/account/boards',
+  // Creator studio — every dashboard surface, not just the landing.
   '/studio',
+  '/studio/analytics',
+  '/studio/albums',
+  '/studio/albums/new',
+  '/studio/releases',
+  '/studio/earnings',
+  '/studio/payouts',
+  '/studio/settings',
+  // Admin control panel.
   '/admin',
+  '/admin/analytics',
+  '/admin/review',
+  '/admin/creators',
+  '/admin/disputes',
+  '/admin/catalogue',
+  '/admin/taxonomy',
+  '/admin/merchandising',
+  '/admin/orders',
+  '/admin/payouts',
+  '/admin/promos',
+  '/admin/reports',
+  '/admin/settings',
 ]
 
 type Jar = Map<string, string>
@@ -122,12 +143,20 @@ async function adminJar(): Promise<Jar> {
  * Visible text, minus anything deliberately isolated. Islands in this codebase
  * are always a single non-nested element, so a targeted strip is enough and
  * keeps the script dependency-free.
+ *
+ * `<bdi>` counts as an island too. It carries `unicode-bidi: isolate` with
+ * `dir="auto"`, which is the correct wrapper for text whose script we do not
+ * control — a buyer's own search query, a claimant's name — where forcing LTR
+ * would be as wrong as forcing RTL. What this audit is really asserting is
+ * "every foreign run is isolated"; `<bdi>` satisfies that, and the content
+ * inside it is user data rather than untranslated UI copy.
  */
 function visibleText(html: string) {
   return html
     .replace(/<head[\s\S]*?<\/head>/gi, '')
     .replace(/<(script|style|svg|noscript)[\s\S]*?<\/\1>/gi, '')
     .replace(/<([a-z]+)[^>]*class="[^"]*(?:ltr-island|numeric)[^"]*"[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<bdi\b[^>]*>[\s\S]*?<\/bdi>/gi, ' ')
     .replace(/<code[\s\S]*?<\/code>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;|&#\d+;/gi, ' ')

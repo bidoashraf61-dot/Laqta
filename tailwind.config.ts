@@ -86,6 +86,19 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
+      /**
+       * The design system tints at 8/12/15% — a gold fill that reads as a
+       * state, not a colour. Those steps are not in Tailwind's default opacity
+       * scale, and an out-of-scale modifier is silently DROPPED rather than
+       * erroring, so `bg-gold/12` produced no rule at all until they were
+       * declared here. 85 is the backdrop-blur ground on the sticky headers.
+       */
+      opacity: {
+        8: '0.08',
+        12: '0.12',
+        15: '0.15',
+        85: '0.85',
+      },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-serif)', 'Georgia', 'serif'],

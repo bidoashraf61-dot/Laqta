@@ -164,7 +164,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           <Separator />
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold">{t('catalogue.specs')}</h2>
+            <h2 className="mb-3 font-display text-xl font-semibold">{t('catalogue.specs')}</h2>
             <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
               <Spec label={t('catalogue.duration')} value={formatDuration(Number(clip.durationS))} numeric />
               <Spec label={t('catalogue.dimensions')} value={`${clip.width}×${clip.height}`} numeric />
@@ -183,7 +183,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
               intent into an album purchase. */}
           {siblings.length > 0 ? (
             <section>
-              <h2 className="mb-3 text-lg font-semibold">{t('catalogue.clipsInAlbum')}</h2>
+              <h2 className="mb-3 font-display text-xl font-semibold">{t('catalogue.clipsInAlbum')}</h2>
               <ScrollArea className="w-full">
                 <div className="flex gap-3 pb-3">
                   {siblings.map((sibling) => (

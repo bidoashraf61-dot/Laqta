@@ -23,7 +23,7 @@ export default async function ReportsPage() {
       <Link href="/admin" className="text-sm text-muted-foreground hover:text-foreground">
         ← {t('admin.title')}
       </Link>
-      <h1 className="text-headline font-semibold">{t('admin.zeroResults')}</h1>
+      <h1 className="font-display text-headline font-semibold">{t('admin.zeroResults')}</h1>
 
       {rows.length === 0 ? (
         <EmptyState title={t('state.empty')} />

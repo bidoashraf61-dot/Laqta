@@ -58,7 +58,7 @@ export default async function LibraryAlbumPage({
         <Link href="/account/library" className="text-sm text-muted-foreground hover:text-foreground">
           ← {t('library.title')}
         </Link>
-        <h1 className="text-headline font-semibold">
+        <h1 className="font-display text-headline font-semibold">
           <Bilingual ar={entitlement.album.titleAr} en={entitlement.album.titleEn} />
         </h1>
         <p className="numeric text-sm text-muted-foreground">

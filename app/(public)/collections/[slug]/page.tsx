@@ -82,7 +82,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   return (
     <div className="container py-10">
       <header className="mb-6 space-y-2">
-        <h1 className="text-headline font-semibold">
+        <h1 className="font-display text-headline font-semibold">
           <Bilingual ar={collection.titleAr} en={collection.titleEn} />
         </h1>
         {collection.descriptionAr ? (

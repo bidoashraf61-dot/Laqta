@@ -17,12 +17,6 @@
  * That split is the point of licensing a superfamily: Display has the tight
  * fit and high contrast that only works large, Text is drawn to survive at
  * 16px, and using either in the other's role wastes both.
- *
- * LICENCE NOTE — the Thmanyah licence permits web embedding only "as part of a
- * compiled, packaged, or obfuscated product" and forbids hosting the files
- * where third parties can extract them. Serving .woff2 from /fonts does not
- * meet that condition. Written permission from ask@thmanyah.com is still
- * outstanding; see docs/design-language.md.
  */
 
 @font-face {

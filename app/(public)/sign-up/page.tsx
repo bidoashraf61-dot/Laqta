@@ -15,7 +15,7 @@ export default async function SignUpPage() {
     <div className="container flex min-h-[70vh] items-center justify-center py-12">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{t('auth.signUpTitle')}</CardTitle>
+          <CardTitle className="font-display text-2xl">{t('auth.signUpTitle')}</CardTitle>
           <CardDescription>{t('brand.promise')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

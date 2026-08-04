@@ -29,7 +29,7 @@ export default async function EarningsPage() {
       <Link href="/studio" className="text-sm text-muted-foreground hover:text-foreground">
         ← {t('studio.title')}
       </Link>
-      <h1 className="text-headline font-semibold">{t('studio.earnings')}</h1>
+      <h1 className="font-display text-headline font-semibold">{t('studio.earnings')}</h1>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border bg-card p-5">
@@ -53,7 +53,7 @@ export default async function EarningsPage() {
       </Alert>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold">{t('studio.ledger')}</h2>
+        <h2 className="mb-3 font-display text-xl font-semibold">{t('studio.ledger')}</h2>
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
@@ -85,8 +85,10 @@ export default async function EarningsPage() {
                       ) : released ? (
                         <Badge variant="success">{t('studio.available')}</Badge>
                       ) : (
-                        <Badge variant="warning" className="numeric">
-                          {entry.availableAt ? formatDate(entry.availableAt) : ''}
+                        <Badge variant="warning">
+                          <span className="numeric">
+                            {entry.availableAt ? formatDate(entry.availableAt) : ''}
+                          </span>
                         </Badge>
                       )}
                     </TableCell>

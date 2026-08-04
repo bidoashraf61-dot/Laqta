@@ -26,7 +26,7 @@ export default async function CollectionsPage() {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 text-headline font-semibold">{t('catalogue.collectionsTitle')}</h1>
+      <h1 className="mb-6 font-display text-headline font-semibold">{t('catalogue.collectionsTitle')}</h1>
       {collections.length === 0 ? (
         <EmptyState title={t('state.empty')} />
       ) : (

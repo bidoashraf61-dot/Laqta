@@ -64,7 +64,7 @@ export function CheckoutForm({
       <Card>
         <CardContent className="space-y-4 p-6 text-center">
           <CheckCircle2 className="mx-auto size-10 text-success" />
-          <h2 className="text-lg font-semibold">{t('checkout.successTitle')}</h2>
+          <h2 className="font-display text-xl font-semibold">{t('checkout.successTitle')}</h2>
           <p className="numeric text-sm text-muted-foreground">
             {t('checkout.orderNumber')}: {done.orderNumber}
           </p>

@@ -43,7 +43,7 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-headline font-semibold">{t('admin.title')}</h1>
+      <h1 className="font-display text-headline font-semibold">{t('admin.title')}</h1>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Stat label={t('admin.catalogue')} value={liveAlbums} />
@@ -54,7 +54,7 @@ export default async function AdminPage() {
 
       <section>
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">{t('admin.reviewQueue')}</h2>
+          <h2 className="font-display text-xl font-semibold">{t('admin.reviewQueue')}</h2>
           <Button asChild variant="outline" size="sm">
             <Link href="/admin/reports">{t('admin.reports')}</Link>
           </Button>
@@ -85,8 +85,8 @@ export default async function AdminPage() {
                     {formatMoney(Number(task.album.priceStandard), task.album.currency)}
                   </span>
                   {task.slaDueAt ? (
-                    <Badge variant={overdue ? 'destructive' : 'neutral'} className="numeric">
-                      {formatDate(task.slaDueAt)}
+                    <Badge variant={overdue ? 'destructive' : 'neutral'}>
+                      <span className="numeric">{formatDate(task.slaDueAt)}</span>
                     </Badge>
                   ) : null}
                 </Link>

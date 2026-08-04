@@ -71,11 +71,13 @@ function EmptyState({
     <div
       className={cn(
         'flex min-h-56 flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-8 text-center',
+        // Cinema proportion: an empty grid still reads as a frame.
+        'sm:aspect-[2.39/1] sm:min-h-0',
         className,
       )}
     >
       <div className="text-muted-foreground [&_svg]:size-8">{icon ?? <Inbox />}</div>
-      <h3 className="text-base font-semibold">{title}</h3>
+      <h3 className="font-display text-lg font-semibold">{title}</h3>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       ) : null}
@@ -106,7 +108,7 @@ function ErrorState({
       role="alert"
     >
       <AlertTriangle className="size-8 text-destructive" />
-      <h3 className="text-base font-semibold">{title}</h3>
+      <h3 className="font-display text-lg font-semibold">{title}</h3>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       ) : null}

@@ -94,7 +94,7 @@ export default async function SharedBoardPage({
   return (
     <div className="container py-10">
       <header className="mb-6 space-y-1">
-        <h1 className="text-headline font-semibold">{board.name}</h1>
+        <h1 className="font-display text-headline font-semibold">{board.name}</h1>
         <p className="numeric text-sm text-muted-foreground">
           {hits.length} {t('boards.clips')}
         </p>

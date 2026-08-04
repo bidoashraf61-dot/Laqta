@@ -36,7 +36,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
         <Link href="/studio" className="text-sm text-muted-foreground hover:text-foreground">
           ← {t('studio.title')}
         </Link>
-        <h1 className="text-headline font-semibold">
+        <h1 className="font-display text-headline font-semibold">
           <Bilingual ar={album.titleAr} en={album.titleEn} />
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -58,7 +58,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
       {/* Spec consistency — shown before submission, not discovered by a
           reviewer three days later. */}
       <section>
-        <h2 className="mb-2 text-lg font-semibold">{t('studio.consistencyTitle')}</h2>
+        <h2 className="mb-2 font-display text-xl font-semibold">{t('studio.consistencyTitle')}</h2>
         {consistency.hasWarning ? (
           <Alert variant="warning">
             <AlertTitle className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
       )}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold">{t('studio.clips')}</h2>
+        <h2 className="mb-3 font-display text-xl font-semibold">{t('studio.clips')}</h2>
         <ul className="divide-y rounded-lg border">
           {album.clips.map((clip) => (
             <li key={clip.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">

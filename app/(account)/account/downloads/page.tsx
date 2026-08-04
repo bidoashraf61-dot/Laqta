@@ -20,7 +20,7 @@ export default async function DownloadsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-headline font-semibold">{t('library.downloadsTitle')}</h1>
+      <h1 className="font-display text-headline font-semibold">{t('library.downloadsTitle')}</h1>
       {downloads.length === 0 ? (
         <EmptyState title={t('library.noDownloads')} />
       ) : (

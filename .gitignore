@@ -37,3 +37,8 @@ build/
 # Nested git worktrees for parallel build sessions — each has its own
 # checkout, node_modules and .pgdata; none of it belongs to this tree.
 /laqta-worktrees/
+
+# Web-optimised hero posters (generated from final_stills_4K by sips).
+# ~3.8MB total; the 200MB 4K originals stay out.
+!/public/hero/
+!/public/hero/*.jpg

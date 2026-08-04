@@ -1,0 +1,18 @@
+<<<image_1>>>  Start Frame
+<<<image_2>>>  End Frame
+
+Style & Mood: Nocturnal aerial realism. Deep indigo night sky, cool moonlight, charcoal and blue-grey cloud, near-black cabin interior. Wide FPV lens with natural barrel distortion, deep focus, filmic low-key grade, fine 35mm grain, soft diffusion bloom, strong atmospheric depth. Quiet, weightless, expectant — building into motion.
+
+Narrative Summary: The camera drifts forward from inside a darkened aircraft cabin toward the night window, accelerates, passes straight through the glass, and comes out into open night air alongside the wing above a moonlit cloud deck.
+
+Dynamic Description: One continuous first-person flying camera shot, no cuts, no scene change, no time jump. The camera is a free-flying FPV drone, never mounted on anything, moving on a single unbroken forward path.
+
+THE SHOT BEGINS EXACTLY ON THE START FRAME (<<<image_1>>>) — the first frame must match <<<image_1>>> precisely: an aircraft cabin window centred in a near-black interior wall, the rounded window frame lit by a thin cool rim of light, and through the glass a deep indigo night sky, the wing angling away, and a moonlit cloud deck far below. Hold that exact framing, then the camera begins drifting slowly forward toward the window. The window grows steadily in frame and the dark cabin wall spreads outward past the frame edges.
+
+The camera accelerates as it reaches the glass and PASSES STRAIGHT THROUGH THE WINDOW without stopping. The window frame sweeps outward to the extreme left and right edges and slides away behind the camera as the view opens completely into open air. Speed builds through the passage — this is the moment the shot stops being an interior and becomes flight.
+
+Now outside in open night air, the camera continues forward and settles into a steady cruise, the wing holding steady on the right of frame, the night sky opening wide overhead, the moonlit cloud deck running away below toward a faint horizon.
+
+THE SHOT ENDS EXACTLY ON THE END FRAME (<<<image_2>>>) — the final frame must match <<<image_2>>> precisely: a full wide view of deep indigo starlit night sky, the aircraft wing angling in from the right of frame, an unbroken moonlit cloud deck below, and only the faintest soft trace of the window frame remaining at the extreme left and right edges.
+
+Static Description: Aircraft cabin interior in near darkness, a single rounded window with a pale illuminated rim. Outside: deep indigo night sky with faint stars, one aircraft wing, an unbroken moonlit cloud deck below with soft rolling tops. THE CABIN, THE WINDOW AND THE WING ARE COMPLETELY STATIC AND FROZEN, like a still photograph — nothing on them moves, animates, flickers, shimmers or pulses; no moving lights, no flashing, no strobing, no blinking, no light animation. All illumination is soft, even and constant. The window frame keeps rigid true shape and correct perspective throughout the passage, never bending, warping, melting or stretching. Clouds hold consistent volumetric shape and mass with correct depth parallax between near and far vapour. Smooth continuous forward motion obeying real physics and consistent inertia — never teleporting, never jumping, never reversing. Stable level horizon. No drone body, no propellers, no aircraft interior fittings beyond the wall and window, no people, no figures, no text, no letters, no logos, no watermark.

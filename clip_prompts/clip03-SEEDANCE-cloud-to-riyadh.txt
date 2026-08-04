@@ -1,0 +1,20 @@
+<<<image_1>>>  Start Frame
+<<<image_2>>>  End Frame
+
+Style & Mood: Nocturnal aerial realism at high altitude. Deep indigo night sky, cool moonlight, charcoal and blue-grey vapour, warm amber city light glowing far below. Wide FPV racing lens with natural barrel distortion, deep focus, filmic low-key grade, fine 35mm grain, motion blur from velocity, strong atmospheric depth. Fast, kinetic, weightless.
+
+Narrative Summary: A high-speed FPV racing drone drives forward through dense night cloud, tears out of the far side of the vapour, and uncovers the illuminated Riyadh tower standing alone above a moonlit cloud sea.
+
+Dynamic Description: One continuous first-person flying camera shot, no cuts, no scene change, no time jump. THE CAMERA IS A HIGH-SPEED FPV RACING DRONE flying fast and freely through night air — not a slow cinematic glide, not a passive aerial, not a hovering drone, never mounted on any aircraft. Real racing velocity: strong constant forward drive, banking, wide-lens distortion at the frame edges, motion blur from speed.
+
+THE SHOT BEGINS EXACTLY ON THE START FRAME (<<<image_1>>>) — the first frame must match <<<image_1>>> precisely: dense dark blue-grey night cumulus filling the entire frame edge to edge, moonlight catching the upper crests, deep charcoal shadow in the folds, one small brighter break of pale light near the centre. Hold that exact framing, then the drone drives forward hard into the vapour, dense cloud rushing past the lens on all sides, tendrils streaking and smearing at the frame edges.
+
+The vapour ahead thins and TEARS OPEN, peeling toward the frame edges and sliding past the camera, uncovering what is ALREADY THERE, solid and fully built behind it: a tall slender glass tower rising from an unbroken sea of moonlit cloud — blue-grey glass and steel, two sides angling upward and inward to a distinctive inverted parabolic arch near the summit, lit soft and even. Warm amber city light glows diffusely up through the cloud around its base.
+
+The drone drives on toward the tower, which grows in scale as the camera approaches, then sheds velocity smoothly and settles into a slow steady drift with the tower centred in frame above the cloud sea.
+
+THE SHOT ENDS EXACTLY ON THE END FRAME (<<<image_2>>>) — the final frame must match <<<image_2>>> precisely: the illuminated tower with its inverted parabolic arch standing vertical at centre above an unbroken moonlit cloud sea, warm city light glowing up through the vapour below it, under a deep indigo night sky.
+
+The tower is opaque and physically present behind the vapour before the vapour parts. It is revealed only by cloud moving away from it. It NEVER fades in, dissolves in, materialises, appears from nothing, or builds up. Physical occlusion only.
+
+Static Description: High cruising altitude above an unbroken cloud deck at night, under a deep indigo sky with faint stars. A single tall tower — blue-grey glass and steel facade, two sides angling upward and inward to an inverted parabolic arch near the summit. Diffuse warm city light glowing up through the cloud at its base. Only this tower — no other towers, no skyline, no second city. THE TOWER IS A COMPLETELY STATIC FROZEN OBJECT, like a still photograph of a building — nothing on it moves, animates, flickers, shimmers or pulses; its glass, windows and lights stay identical in every frame; no moving lights, no light animation, no lights switching on or off, no moving reflections, no colour change, no flashing, no strobing, no blinking. Illumination is soft, even and constant. Architecture stays rigid even at speed: straight verticals, correct perspective and proportion, the arch keeping its true shape, never bending, warping, leaning or stretching, growing in scale only because the camera approaches. Clouds hold consistent volumetric shape and mass with correct depth parallax. Fast but controlled flight obeying real physics and consistent inertia — never jittery, never chaotic, never teleporting, never reversing. No drone body, no propellers, no aircraft, no people, no figures, no text, no letters, no logos, no watermark.

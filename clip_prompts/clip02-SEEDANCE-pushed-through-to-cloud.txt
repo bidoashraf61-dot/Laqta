@@ -1,0 +1,18 @@
+<<<image_1>>>  Start Frame
+<<<image_2>>>  End Frame
+
+Style & Mood: Nocturnal aerial realism at high altitude. Deep indigo night sky, cool moonlight, charcoal and blue-grey vapour. Wide FPV racing lens with natural barrel distortion, deep focus, filmic low-key grade, fine 35mm grain, motion blur from velocity, strong atmospheric depth. Building speed, weightless, immersive.
+
+Narrative Summary: The camera breaks away from the aircraft into open night sky, accelerates hard into a diving descent, and plunges into the cloud deck until dense night vapour completely fills the frame.
+
+Dynamic Description: One continuous first-person flying camera shot, no cuts, no scene change, no time jump. THE CAMERA IS A HIGH-SPEED FPV RACING DRONE flying fast and freely through open night air — not a slow cinematic glide, not a passive aerial, not a hovering drone, never mounted on any aircraft. Real racing velocity: rapid acceleration, hard banking, a steep committed dive, g-loaded turning, wide-lens distortion at the frame edges, motion blur from speed.
+
+THE SHOT BEGINS EXACTLY ON THE START FRAME (<<<image_1>>>) — the first frame must match <<<image_1>>> precisely: a full wide view of deep indigo starlit night sky, an aircraft wing angling in from the right of frame, and an unbroken moonlit cloud deck below. Hold that exact framing, then the camera accelerates hard forward and banks away from the wing, which sweeps across and out of frame behind the camera and does not return.
+
+Alone now in open night sky, the drone pitches nose-down and DIVES FAST toward the cloud deck below, velocity building through the descent, the cloud tops rushing up to meet the lens, the horizon rolling away above the top of frame.
+
+The drone punches through the surface of the cloud deck at full speed. Dense dark blue-grey vapour explodes in from every edge and COMPLETELY FILLS THE FRAME edge to edge — no wing, no horizon, no sky, no ground visible anywhere. Vapour tears past the lens at high velocity, streaking and smearing at the frame edges. The drone drives on into the interior of the cloud bank and eases into a steady forward push through dense vapour.
+
+THE SHOT ENDS EXACTLY ON THE END FRAME (<<<image_2>>>) — the final frame must match <<<image_2>>> precisely: dense dark blue-grey night cumulus filling the entire frame edge to edge, moonlight catching the upper crests, deep charcoal shadow in the folds, one small brighter break of pale light near the centre, no horizon and no ground visible.
+
+Static Description: High cruising altitude at night under a deep indigo starlit sky. One aircraft wing at the start only. An unbroken cloud deck below, becoming dense enveloping cumulus by the end. THE WING IS A COMPLETELY STATIC FROZEN OBJECT, like a still photograph — nothing on it moves, animates, flickers, shimmers or pulses; no moving lights, no flashing, no strobing, no blinking, no light animation. Illumination is soft, even and constant. Clouds hold consistent volumetric shape and mass as the camera drives through them, growing naturally rather than mutating, with correct depth parallax between near and far vapour. Fast but controlled flight obeying real physics and consistent inertia — energetic, never jittery, never chaotic, never teleporting, never reversing. No drone body, no propellers, no aircraft, no people, no figures, no text, no letters, no logos, no watermark.

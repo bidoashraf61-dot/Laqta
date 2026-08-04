@@ -37,7 +37,9 @@ console.log(`  ${Object.keys(flat).length} keys in messages/ar.json`)
  * Latin values that are not proper nouns are almost always an untranslated
  * placeholder that shipped by accident.
  */
-const PROPER_NOUN_KEYS = /^(brand\.|palette\.)/
+// Product names that are Latin in Arabic copy too — Apple Pay is written
+// "Apple Pay" on every Saudi checkout, not transliterated.
+const PROPER_NOUN_KEYS = /^(brand\.|palette\.|checkout\.methodApplePay)/
 const untranslated = Object.entries(flat).filter(
   ([key, value]) => !isArabic(value) && !PROPER_NOUN_KEYS.test(key) && /[A-Za-z]{3}/.test(value),
 )

@@ -152,7 +152,7 @@ export default async function AlbumPage({
           </div>
 
           <header className="space-y-3">
-            <h1 className="text-headline font-semibold">
+            <h1 className="font-display text-headline font-semibold">
               <Bilingual ar={album.titleAr} en={album.titleEn} />
             </h1>
             <p className="text-muted-foreground">
@@ -161,7 +161,7 @@ export default async function AlbumPage({
               </Link>
             </p>
             {album.descriptionAr ? (
-              <p className="max-w-prose leading-relaxed text-muted-foreground">
+              <p className="max-w-prose font-serif text-[1.05rem] leading-relaxed text-muted-foreground">
                 {album.descriptionAr}
               </p>
             ) : null}

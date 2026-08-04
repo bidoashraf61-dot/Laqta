@@ -18,7 +18,7 @@ export function SiteFooter() {
       <div className="container py-10">
         <div className="flex flex-col gap-8 md:flex-row md:justify-between">
           <div className="max-w-sm space-y-2">
-            <p className="text-2xl font-bold text-gold">{t('brand.name')}</p>
+            <p className="font-display text-2xl font-bold text-gold">{t('brand.name')}</p>
             <p className="text-sm text-muted-foreground">{t('brand.tagline')}</p>
             <p className="text-sm text-muted-foreground">{t('brand.promise')}</p>
           </div>

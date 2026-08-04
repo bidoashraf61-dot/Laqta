@@ -3,74 +3,132 @@
 @tailwind utilities;
 
 /*
- * IBM Plex Sans Arabic, self-hosted. No Google Fonts request: the Arabic face
- * is the primary typeface here, and a blocking third-party round-trip on the
- * critical path is not acceptable for the Gulf.
+ * Thmanyah — the whole superfamily, self-hosted.
  *
- * Arabic and Latin ship as separate files registered under one family. The
- * Arabic faces carry a `unicode-range`, so the browser only downloads the
- * 45 KB Arabic file for Arabic codepoints and the 19 KB Latin file for
- * everything else. An `/ar` page never pays for Latin glyphs it won't draw.
+ * Three families, five weights each, replacing IBM Plex entirely. Thmanyah
+ * covers Arabic, Latin AND both numeral sets (٠-٩ and 0-9), so there is no
+ * second family to fall back to and no unicode-range split to maintain — an
+ * Arabic page and a Latin proper noun are drawn by the same typeface.
+ *
+ *   Sans          → UI. Nav, buttons, labels, forms, tables, badges.
+ *   Serif Text    → editorial body. Descriptions, bios, licence prose.
+ *   Serif Display → the big type. Hero, page titles, section heads.
+ *
+ * That split is the point of licensing a superfamily: Display has the tight
+ * fit and high contrast that only works large, Text is drawn to survive at
+ * 16px, and using either in the other's role wastes both.
+ *
+ * LICENCE NOTE — the Thmanyah licence permits web embedding only "as part of a
+ * compiled, packaged, or obfuscated product" and forbids hosting the files
+ * where third parties can extract them. Serving .woff2 from /fonts does not
+ * meet that condition. Written permission from ask@thmanyah.com is still
+ * outstanding; see docs/design-language.md.
  */
+
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahsans-Light.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/plex-arabic-400.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+  src: url('/fonts/thmanyah/thmanyahsans-Regular.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/plex-arabic-500.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+  src: url('/fonts/thmanyah/thmanyahsans-Medium.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/plex-arabic-600.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
-}
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/plex-arabic-700.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+  src: url('/fonts/thmanyah/thmanyahsans-Bold.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahsans-Black.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Text';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahseriftext-Light.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Text';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/plex-latin-400.woff2') format('woff2');
+  src: url('/fonts/thmanyah/thmanyahseriftext-Regular.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Serif Text';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/plex-latin-500.woff2') format('woff2');
+  src: url('/fonts/thmanyah/thmanyahseriftext-Medium.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/plex-latin-600.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Serif Text';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/plex-latin-700.woff2') format('woff2');
+  src: url('/fonts/thmanyah/thmanyahseriftext-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Text';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahseriftext-Black.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahserifdisplay-Light.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahserifdisplay-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahserifdisplay-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/thmanyah/thmanyahserifdisplay-Black.woff2') format('woff2');
 }
 
 /*
@@ -89,7 +147,9 @@
 
 @layer base {
   :root {
-    --font-plex-arabic: 'IBM Plex Sans Arabic';
+    --font-sans: 'Thmanyah Sans';
+    --font-serif: 'Thmanyah Serif Text';
+    --font-display: 'Thmanyah Serif Display';
 
     --gold: 43 52% 54%;
     --gold-50: 43 52% 96%;
@@ -252,8 +312,8 @@
   --sw-ink: hsl(40 39% 96%);
   --sw-ink-soft: hsl(40 10% 66%);
   --sw-accent: hsl(43 52% 54%);
-  --sw-font-display: var(--font-plex-arabic), system-ui, sans-serif;
-  --sw-font-body: var(--font-plex-arabic), system-ui, sans-serif;
+  --sw-font-display: var(--font-display), Georgia, serif;
+  --sw-font-body: var(--font-sans), system-ui, sans-serif;
 }
 
 /*

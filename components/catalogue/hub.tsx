@@ -67,7 +67,7 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
 
   return (
     <div className="container py-10">
-      <h1 className="mb-6 text-headline font-semibold">{t(TITLE_KEY[kind])}</h1>
+      <h1 className="mb-6 font-display text-headline font-semibold">{t(TITLE_KEY[kind])}</h1>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {rows.map((row) => (
           <Link
@@ -132,11 +132,11 @@ export async function TaxonomyHub({
       </nav>
 
       <header className="mb-6 space-y-2">
-        <h1 className="text-headline font-semibold">
+        <h1 className="font-display text-headline font-semibold">
           {t('nav.footage')} <Bilingual ar={entry.nameAr} en={entry.nameEn} />
         </h1>
         {entry.seoDescAr ? (
-          <p className="max-w-prose text-muted-foreground">{entry.seoDescAr}</p>
+          <p className="max-w-prose font-serif text-[1.05rem] text-muted-foreground">{entry.seoDescAr}</p>
         ) : null}
         <p className="numeric text-sm text-muted-foreground">
           {t('catalogue.resultsCount', { count: formatNumber(result.total) })}

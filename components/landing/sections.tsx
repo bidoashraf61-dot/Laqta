@@ -22,7 +22,7 @@ function SectionHead({
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="text-headline font-semibold">{title}</h2>
+        <h2 className="font-display text-headline font-semibold">{title}</h2>
         {subtitle ? <p className="mt-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
       {href ? (

@@ -91,7 +91,7 @@ function HeroFallback() {
 
       <div className="container space-y-6 py-24">
         <p className="text-sm font-medium tracking-wide text-gold">{first.eyebrow}</p>
-        <h1 className="max-w-3xl text-balance text-display font-bold">{first.title}</h1>
+        <h1 className="max-w-3xl text-balance font-display text-display font-bold">{first.title}</h1>
         <p className="max-w-xl text-lg text-muted-foreground">{first.body}</p>
         <ul className="flex flex-wrap gap-2">
           {(first.tags ?? []).map((tag) => (

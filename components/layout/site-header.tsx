@@ -24,7 +24,7 @@ export function SiteHeader({ session }: { session: Session | null }) {
 
         <Link
           href="/"
-          className="shrink-0 text-2xl font-bold tracking-tight text-gold"
+          className="shrink-0 font-display text-2xl font-bold tracking-tight text-gold"
           aria-label={t('brand.name')}
         >
           {t('brand.name')}

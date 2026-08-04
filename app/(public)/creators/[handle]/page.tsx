@@ -85,7 +85,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
           {creator.displayNameAr.charAt(0)}
         </span>
         <div className="min-w-0 space-y-1">
-          <h1 className="text-headline font-semibold">
+          <h1 className="font-display text-headline font-semibold">
             <Bilingual ar={creator.displayNameAr} en={creator.displayNameEn} />
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
             <span className="numeric">{albums.length}</span> {t('commerce.album')}
           </p>
           {creator.bioAr ? (
-            <p className="max-w-prose pt-2 text-muted-foreground">{creator.bioAr}</p>
+            <p className="max-w-prose pt-2 font-serif text-[1.05rem] text-muted-foreground">{creator.bioAr}</p>
           ) : null}
         </div>
       </header>

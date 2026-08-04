@@ -131,7 +131,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           </div>
 
           <header className="space-y-2">
-            <h1 className="text-headline font-semibold">
+            <h1 className="font-display text-headline font-semibold">
               <Bilingual ar={clip.titleAr} en={clip.titleEn} />
             </h1>
             {clip.descriptionAr ? (

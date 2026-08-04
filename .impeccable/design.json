@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-05T00:00:00.000Z",
+  "title": "Design System: Laqta",
+  "extensions": {
+    "colorMeta": {
+      "gold": {
+        "role": "primary",
+        "displayName": "Cinematic Gold",
+        "canonical": "#C8A24A",
+        "tonalRamp": ["#2A2312", "#514421", "#7A6631", "#A38743", "#C8A24A", "#D6B871", "#E4CF9E", "#F2E7CE"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Film Ink",
+        "canonical": "#14141A",
+        "tonalRamp": ["#0B0B0F", "#14141A", "#1C1C22", "#26262E", "#33333D", "#52525E", "#8A8A96", "#C7C7CF"]
+      },
+      "sand": {
+        "role": "neutral",
+        "displayName": "Desert Sand",
+        "canonical": "#E9DCC3",
+        "tonalRamp": ["#3B331F", "#5C5031", "#7E6E44", "#A08D5A", "#C2AF83", "#E9DCC3", "#F1E8D6", "#FAF6EC"]
+      },
+      "oasis": {
+        "role": "tertiary",
+        "displayName": "Oasis Green",
+        "canonical": "#2F8F5B",
+        "tonalRamp": ["#0E2A1B", "#164028", "#1F5537", "#276F47", "#2F8F5B", "#3AAE6E", "#6FC996", "#A9E0C2"]
+      },
+      "clay": {
+        "role": "tertiary",
+        "displayName": "Clay",
+        "canonical": "#C06A3E",
+        "tonalRamp": ["#331B10", "#4F2A19", "#6E3B23", "#8E4C2D", "#C06A3E", "#D08A64", "#E0AC90", "#F0D2BF"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Serif Display", "purpose": "Hero and page titles only — high contrast, large-only." },
+      "prose": { "displayName": "Serif Text", "purpose": "Editorial body: descriptions, bios, licence text." },
+      "body": { "displayName": "Sans", "purpose": "Every control, label, table cell." },
+      "eyebrow": { "displayName": "Eyebrow", "purpose": "Tracked gold overline above a headline." }
+    },
+    "shadows": [
+      { "name": "soft", "value": "0 1px 2px rgba(20,20,26,0.06), 0 8px 24px -12px rgba(20,20,26,0.25)", "purpose": "Cards at rest." },
+      { "name": "lift", "value": "0 2px 4px rgba(20,20,26,0.08), 0 20px 40px -16px rgba(20,20,26,0.4)", "purpose": "Dialogs, sheets, popovers." },
+      { "name": "glow", "value": "0 0 0 1px rgba(200,162,74,0.35), 0 12px 32px -12px rgba(200,162,74,0.45)", "purpose": "The single primary CTA only." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for colour and border transitions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "container", "value": "1140px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one gold CTA per screen — buy, submit.",
+      "html": "<button class=\"ds-btn-primary\">شراء الألبوم</button>",
+      "css": ".ds-btn-primary { direction: rtl; font-family: 'Thmanyah Sans', system-ui, sans-serif; font-weight: 500; font-size: 0.95rem; color: #14141A; background: #C8A24A; border: none; border-radius: 8px; height: 48px; padding: 0 24px; box-shadow: 0 0 0 1px rgba(200,162,74,0.35), 0 12px 32px -12px rgba(200,162,74,0.45); cursor: pointer; transition: background 0.2s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { background: #D6B871; } .ds-btn-primary:focus-visible { outline: 2px solid #C8A24A; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action; hover lifts the border, never to gold.",
+      "html": "<button class=\"ds-btn-outline\">عرض كل اللقطات</button>",
+      "css": ".ds-btn-outline { direction: rtl; font-family: 'Thmanyah Sans', system-ui, sans-serif; font-weight: 500; font-size: 0.95rem; color: #F5F2EA; background: transparent; border: 1px solid #33333D; border-radius: 8px; height: 40px; padding: 0 16px; cursor: pointer; transition: border-color 0.2s; } .ds-btn-outline:hover { border-color: rgba(245,242,234,0.25); }"
+    },
+    {
+      "name": "Price Chip",
+      "kind": "chip",
+      "refersTo": "price-chip",
+      "description": "The only fully-rounded element on a card, so the eye lands on the number.",
+      "html": "<span class=\"ds-price-chip\" dir=\"ltr\">1,499 ر.س.</span>",
+      "css": ".ds-price-chip { direction: ltr; unicode-bidi: isolate; font-family: 'Thmanyah Sans', system-ui, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; font-size: 1rem; color: #C8A24A; background: rgba(200,162,74,0.12); border-radius: 999px; padding: 4px 12px; }"
+    },
+    {
+      "name": "Album Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Catalogue card; hover lifts the border and scales the image, title never changes colour.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card__media\"></div><h3 class=\"ds-card__title\">العُلا — لقطات جوية</h3><span class=\"ds-price-chip\" dir=\"ltr\">1,499 ر.س.</span></article>",
+      "css": ".ds-card { direction: rtl; background: #1C1C22; border: 1px solid #33333D; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(20,20,26,0.06), 0 8px 24px -12px rgba(20,20,26,0.25); transition: border-color 0.3s; } .ds-card:hover { border-color: rgba(245,242,234,0.25); } .ds-card__media { aspect-ratio: 16/9; background: linear-gradient(135deg,#14141A,#26262E); } .ds-card__title { font-family: 'Thmanyah Serif Display', Georgia, serif; font-weight: 600; font-size: 1.05rem; color: #F5F2EA; padding: 12px 16px 4px; margin: 0; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Header search; magnifier at inline-start via padding so it flips in RTL.",
+      "html": "<input class=\"ds-input\" dir=\"rtl\" placeholder=\"ابحث عن لقطات… الرياض، العلا\" />",
+      "css": ".ds-input { direction: rtl; font-family: 'Thmanyah Sans', system-ui, sans-serif; font-size: 0.9rem; color: #F5F2EA; background: #14141A; border: 1px solid #33333D; border-radius: 8px; height: 40px; padding: 0 12px; width: 100%; text-align: start; } .ds-input::placeholder { color: #A6A29A; } .ds-input:focus-visible { outline: 2px solid #C8A24A; outline-offset: 2px; border-color: #C8A24A; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cinema, Not the Vendor's Table",
+    "overview": "Laqta is the Saudi stock footage library. The whole product lives inside the hero film — a dark, cinematic scroll built from the library's own footage — so the design is dark-first by conviction. The frame is the loudest thing on screen, the chrome recedes, and gold appears only where money and action are. The system is deliberately spare: one accent, one type family in three cuts, a handful of surfaces stepping up from ink. Restraint is the identity — the moment three highlights compete, nothing reads as premium, and premium is the entire pitch against a subscription library. Arabic leads everywhere; it is not a translation layer over a Latin design.",
+    "keyCharacteristics": [
+      "Dark-first: the catalogue sits inside the film, ink is ~55% of any surface",
+      "One accent (gold), rationed to money / primary action / active state only",
+      "Thmanyah superfamily: Serif Display large, Serif Text for prose, Sans for UI",
+      "The letterbox (2.39:1) as the recurring geometry — the shape of the product",
+      "Arabic-first, RTL, logical properties only",
+      "Generous margins; content holds the middle two-thirds"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Gold means money, the primary action, or the active state — nothing else. On any given screen gold covers well under 15% of surface. If two gold things compete for the eye on one screen, one of them is wrong.", "section": "colors" },
+      { "name": "The Status-Only Colour Rule", "body": "Oasis, clay and destructive appear only as state — a badge, an alert, a ledger sign. Never a brand accent, never a decorative surface.", "section": "colors" },
+      { "name": "The Two-Weight Headline Rule", "body": "A headline is one size set as two lines — a Light lead over a Bold statement. Arabic copy splits on its comma.", "section": "typography" },
+      { "name": "The Isolated-Latin Rule", "body": "Any Latin run inside Arabic is wrapped .ltr-island or .numeric. Dates and money go in an inner numeric span, never on a flex container, because flex breaks the isolation.", "section": "typography" },
+      { "name": "The Tonal-Depth Rule", "body": "Prefer stepping the surface tone (ink → card → muted) over adding a shadow. Shadows are for things that genuinely float.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep gold for money, the one primary action, and active state. Well under 15% of a screen.",
+      "Do set page titles in Serif Display, editorial prose in Serif Text, and every control in Sans.",
+      "Do use the two-weight headline where copy splits on a comma.",
+      "Do wrap every Latin run inside Arabic in .ltr-island / .numeric, and put dates/money in an inner numeric span, never on a flex element.",
+      "Do reach for a tonal step (ink → card → muted) before a shadow.",
+      "Do use the letterbox (2.39:1) for hero crops and empty states."
+    ],
+    "donts": [
+      "Don't put gold on hover borders, heading hovers, non-price text, or stat figures that aren't money.",
+      "Don't introduce a second accent hue or a gradient; the palette is five earth values plus status.",
+      "Don't force 16:9 on a clip whose real aspect is 9:16 — it lies about the product.",
+      "Don't use left/right or ml/mr; logical properties only, or RTL breaks.",
+      "Don't let a status colour (oasis/clay/destructive) become a brand accent.",
+      "Don't ship a headline in Sans or a data table label in Serif Display."
+    ]
+  }
+}

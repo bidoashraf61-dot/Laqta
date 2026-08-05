@@ -97,7 +97,7 @@ export default async function StudioAnalyticsPage({
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Panel title={t('dash.trendRevenue')}>
-              <BarSeries data={revenue} unit="SAR" height={220} />
+              <BarSeries data={revenue} unit="USD" height={220} />
             </Panel>
             <Panel title={t('dash.trendPurchases')}>
               <TrendChart data={purchases} height={220} />

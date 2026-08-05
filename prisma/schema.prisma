@@ -370,7 +370,7 @@ model Album {
 
   priceStandard Decimal @db.Decimal(10, 2)
   priceExtended Decimal @db.Decimal(10, 2)
-  currency      String  @default("SAR")
+  currency      String  @default("USD")
 
   coverClipId    String?
   trailerUrl     String?
@@ -702,7 +702,7 @@ model Order {
   vatRate   Decimal @db.Decimal(5, 4)
   vatAmount Decimal @db.Decimal(12, 2)
   total     Decimal @db.Decimal(12, 2)
-  currency  String  @default("SAR")
+  currency  String  @default("USD")
 
   refundedAmount Decimal @default(0) @db.Decimal(12, 2)
 
@@ -936,7 +936,7 @@ model CreatorLedger {
 
   /// Signed. Sales are positive; refunds, payouts and withholding negative.
   amount       Decimal @db.Decimal(14, 2)
-  currency     String  @default("SAR")
+  currency     String  @default("USD")
   balanceAfter Decimal @db.Decimal(14, 2)
 
   orderItemId String?
@@ -962,7 +962,7 @@ model Payout {
   runId     String?
 
   amount   Decimal      @db.Decimal(14, 2)
-  currency String       @default("SAR")
+  currency String       @default("USD")
   status   PayoutStatus @default(requested)
   method   PayoutMethod
 
@@ -1072,7 +1072,7 @@ model PriceBand {
   priceStandard Decimal @db.Decimal(10, 2)
   /// Extended is 3× standard by policy; kept explicit so it can be tuned.
   extendedMultiplier Decimal @default(3) @db.Decimal(5, 2)
-  currency  String    @default("SAR")
+  currency  String    @default("USD")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1083,7 +1083,7 @@ model PromoCode {
   code     String    @unique
   kind     PromoKind @default(percent)
   value    Decimal   @db.Decimal(10, 2)
-  currency String    @default("SAR")
+  currency String    @default("USD")
 
   maxRedemptions Int?
   redemptions    Int  @default(0)

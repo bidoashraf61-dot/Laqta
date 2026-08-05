@@ -96,7 +96,7 @@ export default async function AdminAnalyticsPage({
           </StatGrid>
 
           <Panel title={t('dash.trendRevenue')}>
-            <BarSeries data={revenue} unit="SAR" />
+            <BarSeries data={revenue} unit="USD" />
           </Panel>
 
           <div className="grid gap-6 lg:grid-cols-2">

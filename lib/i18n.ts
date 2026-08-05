@@ -52,7 +52,7 @@ export function t(key: string, vars?: Record<string, string | number>): string {
  */
 export function formatMoney(
   amount: number | string,
-  currency = 'SAR',
+  currency = 'USD',
   options: { arabicDigits?: boolean } = {},
 ) {
   const value = typeof amount === 'string' ? Number(amount) : amount
@@ -62,7 +62,12 @@ export function formatMoney(
     currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  }).format(Number.isFinite(value) ? value : 0)
+  })
+    .format(Number.isFinite(value) ? value : 0)
+    // Same bidi hygiene as formatDate: `ar-SA` wraps the currency run in
+    // directional marks. Money is always shown in an isolated `.numeric` span,
+    // so the marks are redundant at best and a reorder risk at worst — drop them.
+    .replace(BIDI_MARKS, '')
 }
 
 export function formatNumber(value: number) {

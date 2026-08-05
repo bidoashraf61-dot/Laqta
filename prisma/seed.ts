@@ -247,10 +247,10 @@ async function seedLicences() {
 /** Price bands. Extended is 3× standard by policy — locked in 00-README. */
 async function seedPriceBands() {
   const bands = [
-    ['mini', 'ألبوم مصغّر', 'Mini', 8, 11, 299],
-    ['standard', 'ألبوم قياسي', 'Standard', 12, 19, 799],
-    ['pro', 'ألبوم احترافي', 'Pro', 20, 34, 1499],
-    ['signature', 'ألبوم مميّز', 'Signature', 35, null, 2999],
+    ['mini', 'ألبوم مصغّر', 'Mini', 8, 11, 79],
+    ['standard', 'ألبوم قياسي', 'Standard', 12, 19, 199],
+    ['pro', 'ألبوم احترافي', 'Pro', 20, 34, 399],
+    ['signature', 'ألبوم مميّز', 'Signature', 35, null, 799],
   ] as const
 
   for (const [tier, labelAr, labelEn, minClips, maxClips, priceStandard] of bands) {
@@ -533,7 +533,7 @@ async function main() {
         'Twenty-two aerial shots of AlUla captured across four golden-hour flights. All 4K, 24p, LOG, graded to cut together in a single timeline without regrading.',
       status: 'live',
       tier: 'pro',
-      priceStandard: 1499,
+      priceStandard: 399,
       priceExtended: 4497,
       clearanceStatus: 'full',
       clearedForCommercial: true,
@@ -559,7 +559,7 @@ async function main() {
       descriptionEn: 'Aerial dune fields at dawn and after sunset.',
       status: 'draft',
       tier: 'mini',
-      priceStandard: 299,
+      priceStandard: 79,
       priceExtended: 897,
       clearanceStatus: 'pending',
     },
@@ -577,7 +577,7 @@ async function main() {
       descriptionEn: 'Night driving plates in and around north Riyadh.',
       status: 'in_review',
       tier: 'standard',
-      priceStandard: 799,
+      priceStandard: 199,
       priceExtended: 2397,
       clearanceStatus: 'editorial_only',
     },

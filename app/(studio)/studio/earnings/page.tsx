@@ -80,7 +80,7 @@ export default async function EarningsPage() {
 
         {hasHistory ? (
           <Panel title={t('dash.trendRevenue')}>
-            <BarSeries data={revenue} unit="SAR" />
+            <BarSeries data={revenue} unit="USD" />
           </Panel>
         ) : null}
 

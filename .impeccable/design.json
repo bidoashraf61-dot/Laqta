@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-05T00:00:00.000Z",
+  "generatedAt": "2026-08-05T13:00:00.000Z",
   "title": "Design System: Laqta",
   "extensions": {
     "colorMeta": {
@@ -106,7 +106,8 @@
       },
       "prose": {
         "displayName": "Serif Text",
-        "purpose": "Editorial body: descriptions, bios, licence text."
+        "purpose": "Editorial body: descriptions, bios, licence text.",
+        "fontSize": "1.2rem"
       },
       "body": {
         "displayName": "Sans",
@@ -255,6 +256,7 @@
       "Use left/right or ml/mr — logical properties only",
       "Let a status colour become a brand accent",
       "Ship a headline in Sans or a data-table label in Serif Display"
-    ]
+    ],
+    "paletteNote": "The earth palette is activated per docs/design-language.md §2.2: sand as a warm neutral ground (alternating sections, empty states, the dashboard rail), oasis for cleared/verified, clay for attention, mixed-hue icon chips across feature grids. Gold stays rationed to money/action/active. Headlines are Black (900) two-weight; prose is 1.2rem (1.35rem lead)."
   }
 }

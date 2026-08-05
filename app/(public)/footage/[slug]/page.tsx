@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/toggles'
 import { Bilingual } from '@/components/ui/bilingual'
 import { ScrollArea } from '@/components/ui/overlays'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -119,7 +120,8 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
             {clip.thumbnailKeys[0] ? (
               <img src={clip.thumbnailKeys[0]} alt="" className="size-full object-cover" />
             ) : null}
-            <Badge variant="neutral" className="absolute end-3 top-3 bg-ink/80 backdrop-blur">
+            <PreviewWatermark />
+            <Badge variant="neutral" className="absolute end-3 top-3 z-[2] bg-ink/80 backdrop-blur">
               {t('catalogue.previewWatermarked')}
             </Badge>
             <Badge
@@ -201,6 +203,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                             className="size-full object-cover"
                           />
                         ) : null}
+                        <PreviewWatermark />
                       </div>
                       <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
                         {sibling.titleAr}

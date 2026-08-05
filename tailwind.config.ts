@@ -30,6 +30,7 @@ const config: Config = {
         // Brand palette lifted from the hero cinematic.
         gold: {
           DEFAULT: 'hsl(var(--gold))',
+          foreground: 'hsl(var(--gold-foreground))',
           50: 'hsl(var(--gold-50))',
           100: 'hsl(var(--gold-100))',
           200: 'hsl(var(--gold-200))',

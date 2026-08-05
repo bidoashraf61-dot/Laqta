@@ -84,7 +84,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
 function CoverImage({ src, alt }: { src: string | null; alt: string }) {
   if (!src) {
     return (
-      <div className="flex size-full items-center justify-center bg-gradient-to-br from-ink to-secondary">
+      <div className="dark flex size-full items-center justify-center bg-gradient-to-br from-ink to-secondary">
         <span className="text-3xl font-bold text-gold/30">{t('brand.name')}</span>
       </div>
     )

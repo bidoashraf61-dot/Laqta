@@ -42,7 +42,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
               className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
+            <div className="dark grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
               <span className="text-2xl font-bold text-gold/30">{t('brand.name')}</span>
             </div>
           )}

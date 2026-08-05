@@ -64,7 +64,11 @@ export function HeroCinematic() {
   }, [])
 
   return (
-    <section aria-label={t('landing.heroLabel')}>
+    /* `.dark` is scoped here rather than set on <html>: the page is paper,
+       the film is not. Every token inside this section resolves to the dark
+       palette, so the engine's scenes and the fallback's copy stay legible
+       over footage without a single hard-coded colour. */
+    <section aria-label={t('landing.heroLabel')} className="dark bg-ink text-foreground">
       <div ref={containerRef} />
 
       {/* Server-rendered fallback: the real first frame, the real headline.

@@ -41,15 +41,18 @@ export function Headline({
   const scale =
     size === 'display' ? 'text-display' : size === 'headline' ? 'text-headline' : 'text-2xl'
 
+  // The statement line is Black (900), not Bold (700). Against the Light (300)
+  // lead the weight jump is the whole device — the heavier the statement, the
+  // more the pair reads as one voice dropping to a whisper then landing hard.
   return (
-    <Tag className={cn('font-display text-balance leading-[1.15]', scale, className)}>
+    <Tag className={cn('font-display text-balance leading-[1.12]', scale, className)}>
       {lead ? (
         <>
           <span className="block font-light">{lead}</span>
-          <span className="block font-bold">{bold}</span>
+          <span className="block font-black tracking-[-0.02em]">{bold}</span>
         </>
       ) : (
-        <span className="font-bold">{children ?? bold}</span>
+        <span className="font-black tracking-[-0.02em]">{children ?? bold}</span>
       )}
     </Tag>
   )
@@ -77,15 +80,20 @@ export function Eyebrow({
  */
 export function Prose({
   children,
+  size = 'base',
   className,
 }: {
   children: React.ReactNode
+  size?: 'base' | 'lg'
   className?: string
 }) {
+  // Bigger than before, and tinted from the foreground rather than muted, so a
+  // description reads as something to be read — not texture under the headline.
   return (
     <div
       className={cn(
-        'max-w-prose font-serif text-[1.05rem] leading-[1.9] text-muted-foreground',
+        'max-w-prose font-serif leading-[1.85] text-foreground/75',
+        size === 'lg' ? 'text-[1.35rem] leading-[1.75]' : 'text-[1.2rem]',
         className,
       )}
     >

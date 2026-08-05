@@ -1,129 +1,179 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { SCENES, CONNECTORS, CONNECTORS_MOBILE } from './scenes'
+import { useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { Headline, Prose } from '@/components/ui/typography'
 import { t } from '@/lib/i18n'
-import { Eyebrow, Headline, Prose } from '@/components/ui/typography'
 
 /**
  * The scroll-scrubbed hero.
  *
- * Not WebGL and not a scroll library: a pre-rendered flight whose playhead is
- * driven by scroll position, the same technique Apple uses on product pages.
- * Scroll down and the camera flies forward; stop and it freezes; scroll up and
- * it flies backward.
+ * One continuous film, scrubbed by scroll — no still scenes between the video,
+ * so it reads as a single cinematic take rather than a slideshow of photos and
+ * clips. The film is the header: a bounded scroll region (not the whole page),
+ * so the moment it finishes the sticky stage releases and the rest of the
+ * landing flows normally beneath it. Nothing here is `position: fixed`, which
+ * is why the old engine's overlay could never leak past the hero again.
  *
- * The engine is loaded with a dynamic `import()` inside the effect so its ~29KB
- * and its injected CSS stay out of the server render and off the critical path
- * — the poster for scene one is a plain <img> below, so first paint never waits
- * on any of this.
+ * The mechanism is a pinned `<video>` whose `currentTime` tracks the wrapper's
+ * scroll progress. Two pieces of hard-won handling are kept: seek coalescing
+ * (never issue a new seek while the decoder is still resolving the last, or a
+ * fast flick freezes the picture) and a muted play→pause prime (iOS will not
+ * paint a seeked-but-never-played muted video otherwise). The copy is real DOM
+ * — the `<h1>` is server-rendered — so search engines and reduced-motion users
+ * get the headline whether or not the film ever scrubs.
  */
 export function HeroCinematic() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [mounted, setMounted] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const copyRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    const wrap = wrapRef.current
+    const video = videoRef.current
+    const copy = copyRef.current
+    if (!wrap || !video) return
 
+    // Reduced motion: the poster still stands, the copy stands, nothing scrubs.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    // Serve the lighter 720p encode to phones; the 1080p master is wasted on a
+    // small decoder and only makes the scrub cost more.
+    const mobile = window.matchMedia('(max-width: 860px)').matches
+    video.src = mobile ? '/hero/vid/hero-web-m.mp4' : '/hero/vid/hero-web.mp4'
+
+    let raf = 0
+    let seeking = false
+    let target = 0
     let disposed = false
 
-    // `prefers-reduced-motion` is honoured by not mounting at all. The engine
-    // has its own reduced-motion path, but the static fallback below is a
-    // better answer than a scroll-driven scene that refuses to move.
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced) return
+    const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+    const onSeeked = () => {
+      seeking = false
+    }
+    video.addEventListener('seeked', onSeeked)
 
-    import('./scroll-world.js')
-      .then(({ mountScrollWorld }) => {
-        if (disposed || !containerRef.current) return
-        mountScrollWorld(containerRef.current, {
-          // No `brand` and no `nav`: the site header already carries both, and
-          // the engine's fixed top bar renders straight through it.
-          cta: { label: t('landing.browseAlbums'), href: '/albums' },
-          hint: t('landing.scrollHint'),
-          diveScroll: 1.35,
-          connScroll: 0.9,
-          crossfade: 0.1,
-          nav: false,
-          atmosphere: true,
-          sections: SCENES,
-          connectors: CONNECTORS,
-          connectorsMobile: CONNECTORS_MOBILE,
-        })
-        setMounted(true)
-      })
-      .catch((error) => {
-        // A failed engine load must not take the page with it — the static
-        // fallback stays on screen and everything below still works.
-        console.error('hero cinematic failed to mount', error)
-      })
+    const measure = () => {
+      const scrollable = wrap.offsetHeight - window.innerHeight
+      const progress = scrollable > 0 ? clamp(-wrap.getBoundingClientRect().top / scrollable) : 0
+      const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 1
+      // Stop a hair short of the end — the very last frame can be a black tail.
+      target = progress * duration * 0.997
+      // The copy holds over the film's opening, then clears so the footage
+      // plays unobstructed; it is back the moment you scroll up.
+      if (copy) copy.style.opacity = String(clamp(1 - progress / 0.32))
+    }
+
+    const tick = () => {
+      if (disposed) return
+      if (!seeking && video.readyState >= 2) {
+        const t2 = clamp(target, 0, video.duration || 1)
+        if (Math.abs(video.currentTime - t2) > 0.03) {
+          seeking = true
+          try {
+            video.currentTime = t2
+          } catch {
+            seeking = false
+          }
+        }
+      }
+      raf = requestAnimationFrame(tick)
+    }
+
+    const onScroll = () => measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', measure)
+    // Prime the decoder so the first seek paints instead of showing black.
+    const prime = () => {
+      const p = video.play()
+      if (p && typeof p.then === 'function') p.then(() => video.pause()).catch(() => {})
+    }
+    video.addEventListener('loadeddata', prime, { once: true })
+
+    measure()
+    raf = requestAnimationFrame(tick)
 
     return () => {
       disposed = true
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', measure)
+      video.removeEventListener('seeked', onSeeked)
     }
   }, [])
 
   return (
-    /* `.dark` is scoped here rather than set on <html>: the page is paper,
-       the film is not. Every token inside this section resolves to the dark
-       palette, so the engine's scenes and the fallback's copy stay legible
-       over footage without a single hard-coded colour. */
     <section aria-label={t('landing.heroLabel')} className="dark bg-ink text-foreground">
-      <div ref={containerRef} />
+      {/* The scroll length of the hero. ~3 screens: enough to let the film play
+          as a scrub, then the sticky stage releases and the sections begin. */}
+      <div ref={wrapRef} className="relative h-[300vh]">
+        <div className="sticky top-0 flex h-dvh items-center overflow-hidden">
+          <video
+            ref={videoRef}
+            className="absolute inset-0 -z-10 size-full object-cover"
+            poster="/hero/00-window-NIGHT.jpg"
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden
+          />
+          {/* Legibility scrim: the copy sits at the inline-start (the right, in
+              this RTL-only app), so the ground is darkened from the right and
+              the bottom. `to-l` is a paint direction, not a layout property —
+              it correctly weights the start edge here. */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/45 to-ink/10" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-l from-ink/85 via-ink/25 to-transparent" />
 
-      {/* Server-rendered fallback: the real first frame, the real headline.
-          It is what reduced-motion users, crawlers and anyone whose JS has not
-          arrived yet actually see, so it carries the h1 rather than a spinner. */}
-      {mounted ? null : <HeroFallback />}
+          <div ref={copyRef} className="container-tight w-full">
+            <Headline
+              as="h1"
+              size="display"
+              lead={t('landing.heroLead')}
+              bold={t('landing.heroBold')}
+              className="max-w-4xl"
+            />
+            <Prose size="lg" className="mt-6 max-w-xl text-foreground/85">
+              {t('landing.heroBody')}
+            </Prose>
+            <ul className="mt-8 flex flex-wrap gap-2.5">
+              {[
+                t('landing.trustResolution'),
+                t('landing.trustCleared'),
+                t('landing.heroChipNoSub'),
+              ].map((chip) => (
+                <li
+                  key={chip}
+                  className="rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold"
+                >
+                  {chip}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link
+                href="/albums"
+                className="inline-flex h-12 items-center rounded-md bg-gold px-6 text-base font-semibold text-gold-foreground shadow-glow transition-colors hover:bg-gold-400"
+              >
+                {t('landing.browseAlbums')}
+              </Link>
+              <Link
+                href="/sell"
+                className="inline-flex h-12 items-center rounded-md border border-foreground/25 px-6 text-base font-medium text-foreground transition-colors hover:border-foreground/50"
+              >
+                {t('landing.sellCta')}
+              </Link>
+            </div>
+          </div>
 
-      {/* Once the engine mounts it replaces the fallback, and the page's only
-          h1 goes with it — the scenes are the engine's own markup and it sets
-          them as h2. Restating the title for assistive tech keeps exactly one
-          h1 on the document in both states. */}
-      {mounted ? <h1 className="sr-only">{t('brand.tagline')}</h1> : null}
-    </section>
-  )
-}
-
-function HeroFallback() {
-  const first = SCENES[0]
-  const finale = SCENES[SCENES.length - 1]
-
-  return (
-    <div className="relative isolate flex min-h-[80vh] items-center overflow-hidden">
-      <img
-        src={first.still}
-        alt=""
-        aria-hidden
-        className="absolute inset-0 -z-10 size-full object-cover opacity-60"
-        fetchPriority="high"
-      />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
-
-      <div className="container-tight space-y-6 py-28">
-        <Eyebrow>{first.eyebrow}</Eyebrow>
-        {/* The hero headline splits on its comma into the Light/Bold pair. */}
-        <Headline
-          as="h1"
-          size="display"
-          lead={first.title?.split('،')[0] ? `${first.title.split('،')[0]}،` : undefined}
-          bold={first.title?.split('،').slice(1).join('،').trim() || first.title}
-          className="max-w-3xl"
-        />
-        <Prose className="max-w-xl">{first.body}</Prose>
-        <ul className="flex flex-wrap gap-2">
-          {(first.tags ?? []).map((tag) => (
-            <li
-              key={tag}
-              className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs text-gold"
-            >
-              {tag}
-            </li>
-          ))}
-        </ul>
-        <p className="sr-only">{finale.body}</p>
+          {/* Scroll cue — the one authored motion moment on the hero. */}
+          <span className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex w-fit flex-col items-center gap-2 text-xs uppercase tracking-[0.16em] text-foreground/60">
+            {t('landing.scrollHint')}
+            <span className="grid h-8 w-5 place-items-start justify-center rounded-full border-2 border-foreground/30 pt-1.5">
+              <span className="h-1.5 w-1 animate-bounce rounded-full bg-gold" />
+            </span>
+          </span>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

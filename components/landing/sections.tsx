@@ -248,7 +248,7 @@ export function HowItWorks() {
             separates Laqta from every subscription library buyers know. */}
       {/* The positioning, stated outright — the one line that separates Laqta
           from every subscription library buyers already know. */}
-      <p className="mt-12 text-center font-display text-2xl font-light text-sand">
+      <p className="mt-12 text-center font-display text-2xl font-light text-muted-foreground">
         {t('landing.positioning')}
       </p>
     </Section>

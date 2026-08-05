@@ -30,17 +30,22 @@ import { formatNumber } from '@/lib/i18n'
  * correctly as isolated runs.
  */
 
+/**
+ * Gold is a literal because `--gold` is the same value in both themes — only
+ * the semantic tokens around it flip. The grid, axes and tooltip cursor are
+ * NOT literals: they were tuned for an ink ground and became invisible the
+ * moment the page went to paper, so they are painted from tokens in CSS
+ * (`.laqta-chart` in globals.css) and re-theme with the document.
+ */
 const GOLD = 'hsl(43 52% 54%)'
-const MUTED = 'hsl(240 8% 22%)'
-const AXIS = 'hsl(40 10% 66%)'
 
 const CATEGORICAL = [
-  'hsl(43 52% 54%)', // gold
-  'hsl(148 50% 42%)', // oasis
-  'hsl(21 51% 55%)', // clay
-  'hsl(42 47% 74%)', // sand
-  'hsl(210 30% 62%)', // sky (window scenes)
-  'hsl(240 8% 40%)', // ash
+  'hsl(43 52% 48%)', // gold, a shade down so it holds on paper
+  'hsl(148 50% 37%)', // oasis
+  'hsl(21 51% 50%)', // clay
+  'hsl(42 40% 58%)', // sand, darkened — the pale value vanished on paper
+  'hsl(210 34% 48%)', // sky (window scenes)
+  'hsl(240 8% 45%)', // ash
 ]
 
 type Point = { label: string; value: number }
@@ -79,7 +84,7 @@ export function TrendChart({
   height?: number
 }) {
   return (
-    <div dir="ltr" style={{ width: '100%', height }}>
+    <div dir="ltr" className="laqta-chart" style={{ width: '100%', height }}>
       <ResponsiveContainer>
         <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
           <defs>
@@ -88,17 +93,16 @@ export function TrendChart({
               <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke={MUTED} strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="label"
-            stroke={AXIS}
             fontSize={11}
             tickLine={false}
             axisLine={false}
             minTickGap={24}
           />
-          <YAxis stroke={AXIS} fontSize={11} tickLine={false} axisLine={false} width={40} />
-          <Tooltip content={<ChartTooltip unit={unit} />} cursor={{ stroke: MUTED }} />
+          <YAxis fontSize={11} tickLine={false} axisLine={false} width={40} />
+          <Tooltip content={<ChartTooltip unit={unit} />} />
           <Area
             type="monotone"
             dataKey="value"
@@ -123,13 +127,13 @@ export function BarSeries({
   height?: number
 }) {
   return (
-    <div dir="ltr" style={{ width: '100%', height }}>
+    <div dir="ltr" className="laqta-chart" style={{ width: '100%', height }}>
       <ResponsiveContainer>
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
-          <CartesianGrid stroke={MUTED} strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="label" stroke={AXIS} fontSize={11} tickLine={false} axisLine={false} />
-          <YAxis stroke={AXIS} fontSize={11} tickLine={false} axisLine={false} width={40} />
-          <Tooltip content={<ChartTooltip unit={unit} />} cursor={{ fill: MUTED, fillOpacity: 0.3 }} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <XAxis dataKey="label" fontSize={11} tickLine={false} axisLine={false} />
+          <YAxis fontSize={11} tickLine={false} axisLine={false} width={40} />
+          <Tooltip content={<ChartTooltip unit={unit} />} />
           <Bar dataKey="value" fill={GOLD} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -140,7 +144,7 @@ export function BarSeries({
 /** A donut — the default for a categorical split (clips by location). */
 export function DonutChart({ data, height = 240 }: { data: Point[]; height?: number }) {
   return (
-    <div dir="ltr" style={{ width: '100%', height }}>
+    <div dir="ltr" className="laqta-chart" style={{ width: '100%', height }}>
       <ResponsiveContainer>
         <PieChart>
           <Pie

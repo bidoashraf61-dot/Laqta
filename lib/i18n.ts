@@ -77,11 +77,24 @@ export function formatPercent(fraction: number, digits = 1) {
   }).format(fraction)
 }
 
+/**
+ * Intl formats an `ar-SA` Gregorian date as `01‏/08‏/2026` — Latin digits, but
+ * with a U+200F RIGHT-TO-LEFT MARK wedged between each segment. Every date in
+ * the UI is rendered inside a `.numeric` span (forced LTR, isolated), and in
+ * that context those marks flip the slashes and reorder the parts to
+ * `012026/08/`. It survives in a table cell and breaks in a paragraph — the
+ * exact kind of bidi landmine this codebase isolates against. Since the output
+ * is always shown LTR, the directional marks are pure harm: strip them.
+ */
+const BIDI_MARKS = /[‎‏؜]/g
+
 export function formatDate(value: Date | string) {
   const date = typeof value === 'string' ? new Date(value) : value
   return new Intl.DateTimeFormat(`${bcp47}-u-nu-latn-ca-gregory`, {
     dateStyle: 'medium',
-  }).format(date)
+  })
+    .format(date)
+    .replace(BIDI_MARKS, '')
 }
 
 export function formatDateTime(value: Date | string) {
@@ -89,7 +102,9 @@ export function formatDateTime(value: Date | string) {
   return new Intl.DateTimeFormat(`${bcp47}-u-nu-latn-ca-gregory`, {
     dateStyle: 'medium',
     timeStyle: 'short',
-  }).format(date)
+  })
+    .format(date)
+    .replace(BIDI_MARKS, '')
 }
 
 /** Hijri, offered alongside Gregorian on buyer-facing surfaces. */

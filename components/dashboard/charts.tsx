@@ -101,7 +101,10 @@ export function TrendChart({
             axisLine={false}
             minTickGap={24}
           />
-          <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} />
+          {/* Every Laqta metric is a count or a whole-riyal figure, so the
+              axis must not invent fractional ticks — a "1.5 sales" gridline is
+              a data-viz lie about a discrete quantity. */}
+          <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} allowDecimals={false} />
           <Tooltip content={<ChartTooltip unit={unit} />} />
           <Area
             type="monotone"
@@ -132,7 +135,10 @@ export function BarSeries({
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="label" fontSize={11} tickLine={false} axisLine={false} />
-          <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} />
+          {/* Every Laqta metric is a count or a whole-riyal figure, so the
+              axis must not invent fractional ticks — a "1.5 sales" gridline is
+              a data-viz lie about a discrete quantity. */}
+          <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} allowDecimals={false} />
           <Tooltip content={<ChartTooltip unit={unit} />} />
           <Bar dataKey="value" fill={GOLD} radius={[4, 4, 0, 0]} />
         </BarChart>

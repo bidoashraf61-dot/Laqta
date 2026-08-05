@@ -10,7 +10,7 @@ import {
   TrustStrip,
 } from '@/components/landing/sections'
 import { EmailCapture } from '@/components/landing/email-capture'
-import { Clearance, TheProblem, WhoItsFor } from '@/components/landing/positioning'
+import { Clearance, OurStory, TheProblem, TheSolution, WhoItsFor } from '@/components/landing/positioning'
 import {
   getCatalogueStats,
   getFeaturedAlbums,
@@ -80,9 +80,11 @@ export default async function HomePage() {
       <StructuredData />
       <HeroCinematic />
       <TrustStrip stats={stats} />
-      {/* The pitch, before the catalogue: why the library they already pay for
-          is not enough, and that this one is for them specifically. */}
+      {/* The story arc, before the catalogue: who we are, why the library they
+          already pay for is not enough, and the solution — then who it is for. */}
+      <OurStory />
       <TheProblem />
+      <TheSolution />
       <FeaturedAlbums albums={featured} />
       <WhoItsFor />
       <BrowseTiles

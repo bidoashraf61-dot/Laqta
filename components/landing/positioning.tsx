@@ -1,8 +1,71 @@
 import Link from 'next/link'
-import { Building2, Clapperboard, Landmark, Megaphone, ShieldCheck, XCircle } from 'lucide-react'
+import {
+  Building2,
+  Clapperboard,
+  Infinity as InfinityIcon,
+  Landmark,
+  MapPin,
+  Megaphone,
+  ShieldCheck,
+  XCircle,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Headline, Prose, Section } from '@/components/ui/typography'
 import { t } from '@/lib/i18n'
+
+/**
+ * The story, first.
+ *
+ * Right after the film, before any catalogue, a plain-language answer to "who
+ * are you and why does this exist". A two-sided marketplace has to earn the
+ * belief that it was built by people who know the difference between one
+ * Riyadh neighbourhood and the next — so the origin is stated, not implied.
+ */
+export function OurStory() {
+  return (
+    <Section tone="base">
+      <div className="max-w-3xl">
+        <Headline lead={t('landing.storyTitle')} bold={t('landing.storyBold')} size="lg" />
+        <Prose size="lg" className="mt-6 max-w-2xl">
+          {t('landing.storyBody')}
+        </Prose>
+      </div>
+    </Section>
+  )
+}
+
+const SOLUTIONS = [
+  { icon: MapPin, key: 'solution1' },
+  { icon: ShieldCheck, key: 'solution2' },
+  { icon: InfinityIcon, key: 'solution3' },
+] as const
+
+/**
+ * The solution, as three concrete promises rather than a slogan — real place,
+ * verified permits, permanent ownership. Each is the direct answer to one of
+ * the problems the section above names.
+ */
+export function TheSolution() {
+  return (
+    <Section tone="raised">
+      <div className="mb-10 max-w-2xl">
+        <Headline lead={t('landing.solutionTitle')} bold={t('landing.solutionBold')} size="lg" />
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-3">
+        {SOLUTIONS.map(({ icon: Icon, key }) => (
+          <div key={key} className="rounded-lg border bg-card p-6">
+            <span className="mb-4 grid size-11 place-items-center rounded-md bg-gold/12 text-gold">
+              <Icon className="size-5" />
+            </span>
+            <p className="text-lg font-semibold">{t(`landing.${key}Title`)}</p>
+            <p className="mt-2 leading-relaxed text-muted-foreground">{t(`landing.${key}Body`)}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
+  )
+}
 
 /**
  * The two sections that carry the positioning.

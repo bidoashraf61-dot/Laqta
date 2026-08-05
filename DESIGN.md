@@ -33,9 +33,15 @@ typography:
     letterSpacing: "-0.01em"
   prose:
     fontFamily: "Thmanyah Serif Text, Georgia, serif"
-    fontSize: "1.05rem"
+    fontSize: "1.2rem"
     fontWeight: 400
-    lineHeight: 1.9
+    lineHeight: 1.85
+    letterSpacing: "normal"
+  prose-lead:
+    fontFamily: "Thmanyah Serif Text, Georgia, serif"
+    fontSize: "1.35rem"
+    fontWeight: 400
+    lineHeight: 1.75
     letterSpacing: "normal"
   body:
     fontFamily: "Thmanyah Sans, system-ui, sans-serif"

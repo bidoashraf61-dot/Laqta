@@ -23,7 +23,8 @@
     "verify:entitlement": "tsx scripts/verify-entitlement.ts",
     "verify:money": "tsx scripts/verify-money.ts",
     "verify": "npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic",
-    "verify:hero": "tsx scripts/verify-hero.ts"
+    "verify:hero": "tsx scripts/verify-hero.ts",
+    "audit": "tsx scripts/audit-portal.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

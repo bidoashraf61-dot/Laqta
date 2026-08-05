@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { PanelRightClose, PanelRightOpen } from 'lucide-react'
-import type { DashboardSection } from './nav'
+import { navSections, type DashboardNav } from './nav'
 import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
@@ -23,12 +23,13 @@ import { cn } from '@/lib/utils'
  * native tooltip.
  */
 export function DashboardSidebar({
-  sections,
+  nav,
   brand,
 }: {
-  sections: DashboardSection[]
+  nav: DashboardNav
   brand: string
 }) {
+  const sections = navSections(nav)
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
 

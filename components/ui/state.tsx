@@ -77,7 +77,7 @@ function EmptyState({
       )}
     >
       <div className="text-muted-foreground [&_svg]:size-8">{icon ?? <Inbox />}</div>
-      <h3 className="font-display text-lg font-semibold">{title}</h3>
+      <h2 className="font-display text-lg font-semibold">{title}</h2>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       ) : null}
@@ -108,7 +108,7 @@ function ErrorState({
       role="alert"
     >
       <AlertTriangle className="size-8 text-destructive" />
-      <h3 className="font-display text-lg font-semibold">{title}</h3>
+      <h2 className="font-display text-lg font-semibold">{title}</h2>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       ) : null}

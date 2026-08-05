@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
+import { SiteChrome } from '@/components/layout/site-chrome'
 
 /**
  * `/account/*` — any authenticated user.
@@ -14,5 +15,9 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const session = await auth()
   if (!session?.user) redirect('/sign-in?callbackUrl=/account')
 
-  return <div className="container py-10">{children}</div>
+  return (
+    <SiteChrome session={session}>
+      <div className="container py-10">{children}</div>
+    </SiteChrome>
+  )
 }

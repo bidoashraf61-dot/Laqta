@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu } from 'lucide-react'
-import type { DashboardSection } from './nav'
+import { navSections, type DashboardNav } from './nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/i18n'
@@ -17,7 +17,8 @@ import { cn } from '@/lib/utils'
  * the expected behaviour for a control panel on a phone; a drawer that stays
  * open after a tap feels broken.
  */
-export function MobileSidebar({ sections }: { sections: DashboardSection[] }) {
+export function MobileSidebar({ nav }: { nav: DashboardNav }) {
+  const sections = navSections(nav)
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
 

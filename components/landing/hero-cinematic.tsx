@@ -76,6 +76,12 @@ export function HeroCinematic() {
           It is what reduced-motion users, crawlers and anyone whose JS has not
           arrived yet actually see, so it carries the h1 rather than a spinner. */}
       {mounted ? null : <HeroFallback />}
+
+      {/* Once the engine mounts it replaces the fallback, and the page's only
+          h1 goes with it — the scenes are the engine's own markup and it sets
+          them as h2. Restating the title for assistive tech keeps exactly one
+          h1 on the document in both states. */}
+      {mounted ? <h1 className="sr-only">{t('brand.tagline')}</h1> : null}
     </section>
   )
 }

@@ -57,9 +57,9 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
           </div>
         </div>
 
-        <h3 className="line-clamp-2 px-3 pt-3 text-sm font-medium leading-snug group-hover:text-foreground">
+        <h2 className="line-clamp-2 px-3 pt-3 text-sm font-medium leading-snug group-hover:text-foreground">
           <Bilingual ar={clip.titleAr} en={clip.titleEn} />
-        </h3>
+        </h2>
       </Link>
 
       {/* The ribbon. Its own link, so the buyer can go straight to the thing

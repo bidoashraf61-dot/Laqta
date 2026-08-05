@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import type { Session } from 'next-auth'
-import type { DashboardSection } from './nav'
+import type { DashboardNav } from './nav'
 import { DashboardSidebar } from './sidebar'
 import { MobileSidebar } from './mobile-sidebar'
 import { UserMenu } from '@/components/layout/user-menu'
@@ -18,21 +18,27 @@ import { t } from '@/lib/i18n'
  * restrained colour, nothing decorative.
  */
 export function DashboardShell({
-  sections,
+  nav,
   session,
   children,
 }: {
-  sections: DashboardSection[]
+  /**
+   * The nav's NAME, not its sections. Each link carries a lucide component,
+   * and a component cannot be serialized across the server→client boundary —
+   * passing the array from this server component crashed both dashboards into
+   * their error boundary while still returning HTTP 200.
+   */
+  nav: DashboardNav
   session: Session | null
   children: ReactNode
 }) {
   return (
     <div className="flex min-h-dvh bg-background">
-      <DashboardSidebar sections={sections} brand={t('brand.name')} />
+      <DashboardSidebar nav={nav} brand={t('brand.name')} />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/60 bg-background/85 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <MobileSidebar sections={sections} />
+          <MobileSidebar nav={nav} />
 
           {/* Slot the page can fill via the DashboardHeader below sits in the
               content, so the top bar stays thin: identity, exit, account. */}

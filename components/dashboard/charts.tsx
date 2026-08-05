@@ -86,7 +86,7 @@ export function TrendChart({
   return (
     <div dir="ltr" className="laqta-chart" style={{ width: '100%', height }}>
       <ResponsiveContainer>
-        <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+        <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="laqta-trend" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={GOLD} stopOpacity={0.35} />
@@ -101,7 +101,7 @@ export function TrendChart({
             axisLine={false}
             minTickGap={24}
           />
-          <YAxis fontSize={11} tickLine={false} axisLine={false} width={40} />
+          <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} />
           <Tooltip content={<ChartTooltip unit={unit} />} />
           <Area
             type="monotone"
@@ -129,10 +129,10 @@ export function BarSeries({
   return (
     <div dir="ltr" className="laqta-chart" style={{ width: '100%', height }}>
       <ResponsiveContainer>
-        <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+        <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="label" fontSize={11} tickLine={false} axisLine={false} />
-          <YAxis fontSize={11} tickLine={false} axisLine={false} width={40} />
+          <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} />
           <Tooltip content={<ChartTooltip unit={unit} />} />
           <Bar dataKey="value" fill={GOLD} radius={[4, 4, 0, 0]} />
         </BarChart>

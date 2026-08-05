@@ -51,9 +51,9 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
       </div>
 
       <div className="space-y-2 p-4">
-        <h3 className="line-clamp-2 font-semibold leading-snug group-hover:text-foreground">
+        <h2 className="line-clamp-2 font-semibold leading-snug group-hover:text-foreground">
           <Bilingual ar={album.titleAr} en={album.titleEn} />
-        </h3>
+        </h2>
 
         <p className="text-sm text-muted-foreground">
           {t('commerce.byCreator', { creator: album.creatorNameAr })}

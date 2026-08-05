@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { DashboardShell } from '@/components/dashboard/shell'
-import { STUDIO_NAV } from '@/components/dashboard/nav'
 
 /**
  * `/studio/*` — creator or admin.
@@ -17,7 +16,7 @@ export default async function StudioLayout({ children }: { children: ReactNode }
   if (session.user.role !== 'creator' && session.user.role !== 'admin') redirect('/forbidden')
 
   return (
-    <DashboardShell sections={STUDIO_NAV} session={session}>
+    <DashboardShell nav="studio" session={session}>
       {children}
     </DashboardShell>
   )

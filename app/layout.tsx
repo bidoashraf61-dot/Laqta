@@ -3,8 +3,6 @@ import type { Metadata, Viewport } from 'next'
 import { auth } from '@/lib/auth'
 import { direction, locale, t } from '@/lib/i18n'
 import { Providers } from '@/components/layout/providers'
-import { SiteHeader } from '@/components/layout/site-header'
-import { SiteFooter } from '@/components/layout/site-footer'
 import { Toaster } from '@/components/ui/toast'
 import '@/styles/globals.css'
 
@@ -59,13 +57,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           >
             {t('nav.skipToContent')}
           </a>
-          <div className="flex min-h-dvh flex-col">
-            <SiteHeader session={session} />
-            <main id="main" className="flex-1">
-              {children}
-            </main>
-            <SiteFooter />
-          </div>
+          {/* The site header and footer belong to the marketing and account
+              surfaces, not to the document. The dashboards bring their own
+              chrome — a sidebar and a top bar — and rendering the site header
+              above that stacked two brands and two account menus on every
+              studio and admin screen. */}
+          {children}
           <Toaster />
         </Providers>
       </body>

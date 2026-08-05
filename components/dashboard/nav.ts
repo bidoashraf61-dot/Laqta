@@ -44,6 +44,17 @@ export type DashboardSection = {
   links: DashboardLink[]
 }
 
+/**
+ * Which nav a shell renders.
+ *
+ * The shell takes this STRING, not the section array. `DashboardLink.icon` is
+ * a React component, and a component cannot cross the server→client boundary
+ * as a prop — React refuses to serialize it and the whole subtree renders its
+ * error boundary instead. Passing a discriminator and resolving it inside the
+ * client sidebar keeps one source of truth and stays serializable.
+ */
+export type DashboardNav = 'studio' | 'admin'
+
 /** Creator studio. */
 export const STUDIO_NAV: DashboardSection[] = [
   {
@@ -112,3 +123,8 @@ export const ADMIN_NAV: DashboardSection[] = [
     links: [{ href: '/admin/settings', labelKey: 'dash.settings', icon: Settings }],
   },
 ]
+
+/** Resolve a nav name to its sections, on whichever side of the boundary. */
+export function navSections(nav: DashboardNav): DashboardSection[] {
+  return nav === 'admin' ? ADMIN_NAV : STUDIO_NAV
+}

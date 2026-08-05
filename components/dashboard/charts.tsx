@@ -31,13 +31,22 @@ import { formatNumber } from '@/lib/i18n'
  */
 
 /**
- * Gold is a literal because `--gold` is the same value in both themes — only
- * the semantic tokens around it flip. The grid, axes and tooltip cursor are
- * NOT literals: they were tuned for an ink ground and became invisible the
- * moment the page went to paper, so they are painted from tokens in CSS
- * (`.laqta-chart` in globals.css) and re-theme with the document.
+ * Two series colours, and which one a chart gets is the One Voice Rule made
+ * literal: **gold means money.** A revenue chart is gold; a views or sales-count
+ * chart is ink. Painting a views line in money-gold — which the first cut did to
+ * every series — teaches the eye that gold is just "a colour the brand likes,"
+ * and that is exactly what makes the buy button stop reading as valuable.
+ *
+ * `MONEY` is a shade richer than the film's #C8A24A because these charts live on
+ * paper, where 54% lightness is a pale 2.4:1 against a white card; 44% holds. The
+ * grid, axes and tooltip cursor are still token-driven in CSS (`.laqta-chart`),
+ * so they re-theme with the document.
  */
-const GOLD = 'hsl(43 52% 54%)'
+const MONEY = 'hsl(43 56% 44%)'
+const NEUTRAL = 'hsl(240 10% 38%)'
+
+type Tone = 'money' | 'neutral'
+const seriesColor = (tone: Tone) => (tone === 'money' ? MONEY : NEUTRAL)
 
 const CATEGORICAL = [
   'hsl(43 52% 48%)', // gold, a shade down so it holds on paper
@@ -73,24 +82,34 @@ function ChartTooltip({
   )
 }
 
-/** A filled area trend — the default for a time series (views, sales). */
+/**
+ * A filled area trend. `tone` is not decoration — `money` paints it gold, and
+ * everything else (views, sales counts) is ink, so gold on a chart still means
+ * money. Default is `neutral`: a chart is only gold when a caller says it is
+ * revenue.
+ */
 export function TrendChart({
   data,
   unit,
+  tone = 'neutral',
   height = 240,
 }: {
   data: Point[]
   unit?: string
+  tone?: Tone
   height?: number
 }) {
+  const color = seriesColor(tone)
+  // A gradient id per tone, or two area charts on one page share a fill.
+  const gradientId = `laqta-trend-${tone}`
   return (
     <div dir="ltr" className="laqta-chart" style={{ width: '100%', height }}>
       <ResponsiveContainer>
         <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
-            <linearGradient id="laqta-trend" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={GOLD} stopOpacity={0.35} />
-              <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={tone === 'money' ? 0.35 : 0.18} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -109,9 +128,9 @@ export function TrendChart({
           <Area
             type="monotone"
             dataKey="value"
-            stroke={GOLD}
+            stroke={color}
             strokeWidth={2}
-            fill="url(#laqta-trend)"
+            fill={`url(#${gradientId})`}
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -123,10 +142,12 @@ export function TrendChart({
 export function BarSeries({
   data,
   unit,
+  tone = 'money',
   height = 240,
 }: {
   data: Point[]
   unit?: string
+  tone?: Tone
   height?: number
 }) {
   return (
@@ -140,7 +161,7 @@ export function BarSeries({
               a data-viz lie about a discrete quantity. */}
           <YAxis fontSize={11} tickLine={false} axisLine={false} width={56} allowDecimals={false} />
           <Tooltip content={<ChartTooltip unit={unit} />} />
-          <Bar dataKey="value" fill={GOLD} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="value" fill={seriesColor(tone)} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

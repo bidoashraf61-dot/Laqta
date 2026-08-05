@@ -73,7 +73,7 @@ export default async function StudioPage() {
       <div className="space-y-6">
         {/* Attention first. An empty state here is itself the good news, so it
             is stated rather than silently omitted. */}
-        <Panel title={t('dash.needsAttention')}>
+        <Panel title={t('dash.needsAttention')} accent={hasAttention ? 'warning' : undefined}>
           {hasAttention ? (
             <ul className="divide-y divide-border/60">
               {changesRequested.map((album) => (

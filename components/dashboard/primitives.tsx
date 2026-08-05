@@ -110,23 +110,48 @@ export function StatTile({
   )
 }
 
-/** A titled content panel — the standard container for a table, list or chart. */
+/**
+ * A titled content panel — the standard container for a table, list or chart.
+ *
+ * `accent="warning"` raises a panel that is carrying something the operator has
+ * to act on, so the one actionable thing on a dashboard does not lose the
+ * visual-hierarchy contest to the passive KPI tiles beside it. It is a status
+ * signal (the Status-Only Colour Rule), not decoration: a full hairline in the
+ * warning hue plus a faint tint on the header, nothing heavier.
+ */
 export function Panel({
   title,
   action,
+  accent,
   children,
   className,
 }: {
   title?: string
   action?: ReactNode
+  accent?: 'warning'
   children: ReactNode
   className?: string
 }) {
   return (
-    <section className={cn('rounded-lg border bg-card', className)}>
+    <section
+      className={cn(
+        'rounded-lg border bg-card',
+        accent === 'warning' && 'border-warning/40',
+        className,
+      )}
+    >
       {title || action ? (
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-3.5">
-          {title ? <h2 className="font-medium">{title}</h2> : <span />}
+        <div
+          className={cn(
+            'flex items-center justify-between gap-3 border-b px-5 py-3.5',
+            accent === 'warning' ? 'border-warning/25 bg-warning/8' : 'border-border/60',
+          )}
+        >
+          {title ? (
+            <h2 className={cn('font-medium', accent === 'warning' && 'text-warning')}>{title}</h2>
+          ) : (
+            <span />
+          )}
           {action}
         </div>
       ) : null}

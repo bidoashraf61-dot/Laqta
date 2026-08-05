@@ -201,12 +201,9 @@ export default async function AdminCataloguePage({
             <TableBody>
               {bands.map((band) => (
                 <TableRow key={band.id}>
-                  <TableCell className="font-medium">
-                    {band.labelAr}
-                    <Badge variant="neutral" className="ms-2">
-                      <span className="ltr-island">{band.tier}</span>
-                    </Badge>
-                  </TableCell>
+                  {/* The Arabic label names the tier; the Latin enum key beside
+                      it was noise the studio never shows. One language per row. */}
+                  <TableCell className="font-medium">{band.labelAr}</TableCell>
                   <TableCell className="numeric text-end text-muted-foreground">
                     {formatNumber(band.minClips)}
                     {band.maxClips ? `–${formatNumber(band.maxClips)}` : '+'}

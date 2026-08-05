@@ -22,9 +22,10 @@
     "verify:search": "tsx scripts/verify-search.ts",
     "verify:entitlement": "tsx scripts/verify-entitlement.ts",
     "verify:money": "tsx scripts/verify-money.ts",
-    "verify": "npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic",
+    "verify": "npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic && npm run verify:hero && npm run verify:flows && npm run audit",
     "verify:hero": "tsx scripts/verify-hero.ts",
-    "audit": "tsx scripts/audit-portal.ts"
+    "audit": "tsx scripts/audit-portal.ts",
+    "verify:flows": "tsx scripts/verify-flows.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

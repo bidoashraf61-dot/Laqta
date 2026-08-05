@@ -37,7 +37,16 @@ isolated with `.ltr-island` or `.numeric`. `npm run verify:arabic` must pass.
 - `verify:entitlement` — buy → mutate album → library unchanged
 - `verify:money` — commission frozen; refund reverses the frozen rate
 - `verify:auth` — both sign-in rails, 2FA, role-guard matrix
-- `verify:arabic` — no English leaking into any route (needs the server up)
+- `verify:arabic` — no English leaking into any route
+- `verify:hero` — the cinematic mounts, scrubs both ways, survives a flick
+- `verify:flows` — dashboard controls actually mutate and navigate
+- `audit` — every route in real Chrome at desktop + phone: script errors,
+  failed requests, unlabelled controls, heading order, overflow, RTL
+
+The last four drive real Chrome and need the server up (`npm start &`). They
+exist because HTTP 200 proves nothing: both dashboards once rendered an error
+boundary on every route while returning 200, in Arabic, with a green build.
+**Look at the page, or run the browser gates.**
 
 Plus `npm run build` and `npm run lint`.
 

@@ -70,13 +70,17 @@ function EmptyState({
   return (
     <div
       className={cn(
-        'flex min-h-56 flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-8 text-center',
+        'flex min-h-56 flex-col items-center justify-center gap-3 rounded-lg border border-sand/50 bg-sand/20 p-8 text-center',
         // Cinema proportion: an empty grid still reads as a frame.
         'sm:aspect-[2.39/1] sm:min-h-0',
         className,
       )}
     >
-      <div className="text-muted-foreground [&_svg]:size-8">{icon ?? <Inbox />}</div>
+      {/* An empty state is warm, not grey — a sand frame with the icon in the
+          same hue, so "nothing here yet" still looks like part of the world. */}
+      <div className="grid size-12 place-items-center rounded-full bg-gold/12 text-gold [&_svg]:size-6">
+        {icon ?? <Inbox />}
+      </div>
       <h2 className="font-display text-lg font-semibold">{title}</h2>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>

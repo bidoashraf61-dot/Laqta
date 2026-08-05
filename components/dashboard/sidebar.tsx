@@ -40,7 +40,11 @@ export function DashboardSidebar({
     <aside
       data-collapsed={collapsed}
       className={cn(
-        'sticky top-0 hidden h-dvh shrink-0 flex-col border-e border-border/60 bg-card/60 transition-[width] duration-200 lg:flex',
+        // A warm rail: the dashboard chrome takes a sand tint against the paper
+        // content area, so the back office reads as the same warm world as the
+        // storefront rather than a grey admin. The data tables stay on white
+        // cards, where legibility beats warmth.
+        'sticky top-0 hidden h-dvh shrink-0 flex-col border-e border-sand/50 bg-sand/25 transition-[width] duration-200 lg:flex',
         collapsed ? 'w-16' : 'w-64',
       )}
     >

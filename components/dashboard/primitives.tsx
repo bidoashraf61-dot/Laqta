@@ -85,7 +85,19 @@ export function StatTile({
     <div className="rounded-lg border bg-card p-5">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">{label}</p>
-        {Icon ? <Icon className="size-4 text-muted-foreground/60" /> : null}
+        {/* The icon sits in a tinted chip — gold when the tile is money, a warm
+            sand otherwise, so a row of KPI tiles carries the palette instead of
+            four grey glyphs. The value colour still means money (gold) alone. */}
+        {Icon ? (
+          <span
+            className={cn(
+              'grid size-8 place-items-center rounded-md',
+              accent ? 'bg-gold/12 text-gold' : 'bg-sand/50 text-foreground/70',
+            )}
+          >
+            <Icon className="size-4" />
+          </span>
+        ) : null}
       </div>
       <p className={cn('numeric mt-2 text-2xl font-bold', accent && 'text-gold')}>{value}</p>
       <div className="mt-1 flex items-center gap-2">

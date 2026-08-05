@@ -11,6 +11,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Headline, Prose, Section } from '@/components/ui/typography'
+import { accentChip, cycleAccent, type Accent } from '@/components/ui/accent'
+import { cn } from '@/lib/utils'
 import { t } from '@/lib/i18n'
 
 /**
@@ -35,9 +37,9 @@ export function OurStory() {
 }
 
 const SOLUTIONS = [
-  { icon: MapPin, key: 'solution1' },
-  { icon: ShieldCheck, key: 'solution2' },
-  { icon: InfinityIcon, key: 'solution3' },
+  { icon: MapPin, key: 'solution1', accent: 'clay' as Accent }, // real place — earth
+  { icon: ShieldCheck, key: 'solution2', accent: 'oasis' as Accent }, // permits — verified/green
+  { icon: InfinityIcon, key: 'solution3', accent: 'gold' as Accent }, // own forever — money
 ] as const
 
 /**
@@ -53,9 +55,9 @@ export function TheSolution() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-3">
-        {SOLUTIONS.map(({ icon: Icon, key }) => (
+        {SOLUTIONS.map(({ icon: Icon, key, accent }) => (
           <div key={key} className="rounded-lg border bg-card p-6">
-            <span className="mb-4 grid size-11 place-items-center rounded-md bg-gold/12 text-gold">
+            <span className={cn('mb-4 grid size-11 place-items-center rounded-md', accentChip[accent])}>
               <Icon className="size-5" />
             </span>
             <p className="text-lg font-semibold">{t(`landing.${key}Title`)}</p>
@@ -130,9 +132,14 @@ export function WhoItsFor() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {AUDIENCES.map(({ icon: Icon, key }) => (
+        {AUDIENCES.map(({ icon: Icon, key }, index) => (
           <div key={key}>
-            <span className="mb-3 grid size-11 place-items-center rounded-md bg-secondary text-foreground">
+            <span
+              className={cn(
+                'mb-3 grid size-11 place-items-center rounded-md',
+                accentChip[cycleAccent(index)],
+              )}
+            >
               <Icon className="size-5" />
             </span>
             <p className="font-semibold">{t(`landing.${key}Title`)}</p>
@@ -156,9 +163,11 @@ export function WhoItsFor() {
  */
 export function Clearance() {
   return (
-    <Section tone="accent">
+    <Section tone="oasis">
       <div className="flex flex-col items-start gap-8 md:flex-row md:items-center">
-        <ShieldCheck className="size-12 shrink-0 text-gold" />
+        <span className="grid size-16 shrink-0 place-items-center rounded-xl bg-oasis/12 text-oasis">
+          <ShieldCheck className="size-8" />
+        </span>
         <div className="max-w-2xl space-y-3">
           <Headline bold={t('landing.clearanceTitle')} size="lg" />
           <Prose>{t('landing.clearanceBody')}</Prose>

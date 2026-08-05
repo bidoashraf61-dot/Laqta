@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/state'
 import { formatNumber, t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { Headline, Prose, Section } from '@/components/ui/typography'
+import { accentChip, cycleAccent, TILE_TINT } from '@/components/ui/accent'
 
 /** Section heading with an optional "view all" on the opposite edge. */
 function SectionHead({
@@ -53,11 +54,11 @@ export function TrustStrip({
   ]
 
   return (
-    <section className="border-y border-border/60 bg-card/30">
+    <section className="border-y border-gold/20 bg-gold/[0.06]">
       <div className="container-tight grid grid-cols-2 gap-6 py-10 md:grid-cols-4">
         {items.map((item) => (
           <div key={item.label} className="text-center">
-            <p className="numeric font-display text-3xl font-bold text-foreground">{item.value}</p>
+            <p className="numeric font-display text-3xl font-black text-gold">{item.value}</p>
             <p className="mt-1 text-sm text-muted-foreground">{item.label}</p>
           </div>
         ))}
@@ -144,11 +145,17 @@ export function BrowseTiles({
     <Section tone="base" className={className}>
       <SectionHead title={title} subtitle={subtitle} href={base} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {tiles.map((tile) => (
+        {tiles.map((tile, index) => (
+          // A warm tile: with no photo it takes a soft tinted ground in a
+          // rotating palette hue, so a wall of tiles reads as a colourful set
+          // rather than identical grey cards. Photo tiles keep the image.
           <Link
             key={tile.slug}
             href={`${base}/${tile.slug}`}
-            className="group relative isolate overflow-hidden rounded-lg border bg-card p-5 transition-colors hover:border-foreground/25"
+            className={cn(
+              'group relative isolate overflow-hidden rounded-lg border p-5 transition-colors hover:border-foreground/25',
+              tile.heroImage ? 'bg-card' : cn('border-transparent', TILE_TINT[cycleAccent(index)]),
+            )}
           >
             {tile.heroImage ? (
               <img
@@ -230,7 +237,12 @@ export function HowItWorks() {
             <Card key={step.title}>
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-full bg-gold/15 text-gold">
+                  <span
+                    className={cn(
+                      'grid size-10 place-items-center rounded-full',
+                      accentChip[cycleAccent(index)],
+                    )}
+                  >
                     <step.icon className="size-5" />
                   </span>
                   <span className="numeric text-sm text-muted-foreground">{index + 1}</span>

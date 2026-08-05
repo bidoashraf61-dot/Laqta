@@ -114,13 +114,22 @@ export function Section({
   children,
   className,
   ...props
-}: React.HTMLAttributes<HTMLElement> & { tone?: 'base' | 'raised' | 'accent' }) {
+}: React.HTMLAttributes<HTMLElement> & {
+  tone?: 'base' | 'raised' | 'warm' | 'accent' | 'oasis'
+}) {
+  // The colour-ratio system, activated: the page alternates paper with warm
+  // sand grounds (Al Diaar's method — a sequence of held frames, not one flat
+  // column). Gold is the money/accent ground; oasis carries the one green
+  // "cleared / verified" beat. Each is a full-bleed panel with a hairline in
+  // its own hue.
   const ground =
-    tone === 'raised'
-      ? 'bg-card/40 border-y border-border/60'
+    tone === 'raised' || tone === 'warm'
+      ? 'bg-sand/25 border-y border-sand/50'
       : tone === 'accent'
-        ? 'bg-gold/[0.06] border-y border-gold/20'
-        : ''
+        ? 'bg-gold/[0.07] border-y border-gold/25'
+        : tone === 'oasis'
+          ? 'bg-oasis/[0.07] border-y border-oasis/25'
+          : ''
 
   return (
     <section className={cn(ground, className)} {...props}>

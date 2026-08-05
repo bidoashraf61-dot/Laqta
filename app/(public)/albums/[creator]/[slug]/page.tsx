@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/toggles'
 import { Bilingual } from '@/components/ui/bilingual'
 import { AlbumCard } from '@/components/catalogue/album-card'
 import { LicencePicker } from '@/components/catalogue/licence-picker'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -146,7 +147,8 @@ export default async function AlbumPage({
                 <span className="text-4xl font-bold text-gold/30">{t('brand.name')}</span>
               </div>
             )}
-            <Badge variant="neutral" className="absolute end-3 top-3 bg-ink/80 backdrop-blur">
+            <PreviewWatermark />
+            <Badge variant="neutral" className="absolute end-3 top-3 z-[2] bg-ink/80 backdrop-blur">
               {t('catalogue.previewWatermarked')}
             </Badge>
           </div>
@@ -161,7 +163,7 @@ export default async function AlbumPage({
               </Link>
             </p>
             {album.descriptionAr ? (
-              <p className="max-w-prose font-serif text-[1.05rem] leading-relaxed text-muted-foreground">
+              <p className="max-w-prose font-serif text-[1.2rem] leading-[1.85] text-foreground/75">
                 {album.descriptionAr}
               </p>
             ) : null}
@@ -205,9 +207,10 @@ export default async function AlbumPage({
                         className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : null}
+                    <PreviewWatermark />
                     <Badge
                       variant="neutral"
-                      className="numeric absolute bottom-1.5 end-1.5 bg-ink/80 backdrop-blur"
+                      className="numeric absolute bottom-1.5 end-1.5 z-[2] bg-ink/80 backdrop-blur"
                     >
                       {formatDuration(Number(clip.durationS))}
                     </Badge>

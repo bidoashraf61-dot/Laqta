@@ -4,6 +4,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 
 /**
  * The album card.
@@ -43,8 +44,9 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
     >
       <div className="relative aspect-video overflow-hidden bg-muted">
         <CoverImage src={album.coverKey} alt="" />
+        <PreviewWatermark />
         {album.clearedForCommercial ? (
-          <Badge variant="success" className="absolute end-2 top-2 bg-ink/80 backdrop-blur">
+          <Badge variant="success" className="absolute end-2 top-2 z-[2] bg-ink/80 backdrop-blur">
             {t('commerce.clearedForCommercial')}
           </Badge>
         ) : null}

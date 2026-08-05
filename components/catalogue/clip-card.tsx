@@ -6,6 +6,7 @@ import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration, cn } from '@/lib/utils'
 import type { ClipHit } from '@/lib/search'
 import { albumHref } from '@/components/catalogue/album-card'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 
 /**
  * The clip card — and the album ribbon underneath it.
@@ -47,7 +48,9 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
             </div>
           )}
 
-          <div className="absolute inset-x-2 bottom-2 flex items-center justify-between gap-2">
+          <PreviewWatermark />
+
+          <div className="absolute inset-x-2 bottom-2 z-[2] flex items-center justify-between gap-2">
             <Badge variant="neutral" className="numeric bg-ink/80 backdrop-blur">
               {formatDuration(clip.durationS)}
             </Badge>

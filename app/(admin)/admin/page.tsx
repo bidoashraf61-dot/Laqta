@@ -207,7 +207,7 @@ export default async function AdminPage() {
 
         <Panel title={t('dash.trendRevenue')}>
           {hasHistory ? (
-            <TrendChart data={trend} unit="SAR" />
+            <TrendChart data={trend} unit="SAR" tone="money" />
           ) : (
             <EmptyState title={t('dash.noData')} description={t('dash.noDataHint')} />
           )}

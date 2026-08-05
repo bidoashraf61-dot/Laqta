@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { SCENES, CONNECTORS } from './scenes'
+import { SCENES, CONNECTORS, CONNECTORS_MOBILE } from './scenes'
 import { t } from '@/lib/i18n'
 import { Eyebrow, Headline, Prose } from '@/components/ui/typography'
 
@@ -49,6 +49,7 @@ export function HeroCinematic() {
           atmosphere: true,
           sections: SCENES,
           connectors: CONNECTORS,
+          connectorsMobile: CONNECTORS_MOBILE,
         })
         setMounted(true)
       })

@@ -22,7 +22,8 @@
     "verify:search": "tsx scripts/verify-search.ts",
     "verify:entitlement": "tsx scripts/verify-entitlement.ts",
     "verify:money": "tsx scripts/verify-money.ts",
-    "verify": "npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic"
+    "verify": "npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic",
+    "verify:hero": "tsx scripts/verify-hero.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -72,6 +73,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.1.4",
     "eslint-config-prettier": "^9.1.0",
+    "playwright": "^1.62.1",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",

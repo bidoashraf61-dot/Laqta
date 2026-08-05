@@ -223,4 +223,54 @@ export const SCENES: Scene[] = [
  * null simply crossfades — the engine tolerates gaps, so the page stays whole
  * while the renders come in one at a time.
  */
-export const CONNECTORS: Array<string | null> = Array(SCENES.length - 1).fill(null)
+/**
+ * The connectors — the film itself.
+ *
+ * `CONNECTORS[i]` is the flight from scene `i` into scene `i+1`, scrubbed by
+ * scroll. They are cut from the single continuous 59s film: every transition
+ * is a cloud wipe, so the joins are inside vapour and there is never a visible
+ * cut between a connector and the scene it lands on.
+ *
+ * Encoded at a tight GOP (`-g 8`) because the engine scrubs `currentTime` — a
+ * long GOP makes every seek decode a whole group, which is exactly what turns
+ * a scrub into a stutter. `-m` variants are 720p for phones.
+ *
+ * Index 07 is deliberately null. There is no qasr-al-farid → empty-quarter
+ * flight in the delivered film; the engine crossfades the two stills instead,
+ * which is its documented behaviour for a missing connector and is why the
+ * page never depended on the video landing in the first place.
+ */
+const conn = (index: string) => `/hero/vid/conn/conn-${index}.mp4`
+const connMobile = (index: string) => `/hero/vid/conn/conn-${index}-m.mp4`
+
+export const CONNECTORS: Array<string | null> = [
+  conn('00'), // window-night     → pushed-through
+  conn('01'), // pushed-through   → cloud-night
+  conn('02'), // cloud-night      → riyadh
+  conn('03'), // riyadh           → makkah
+  conn('04'), // makkah           → cloud-dawn  (the 8-hour night→dawn shift)
+  conn('05'), // cloud-dawn       → alula
+  conn('06'), // alula            → qasr-al-farid
+  null, //       qasr-al-farid    → empty-quarter  (no flight delivered)
+  conn('08'), // empty-quarter    → edge-of-the-world
+  conn('09'), // edge-of-the-world→ red-sea
+  conn('10'), // red-sea          → jeddah
+  conn('11'), // jeddah           → diriyah
+  conn('12'), // diriyah          → finale
+]
+
+export const CONNECTORS_MOBILE: Array<string | null> = [
+  connMobile('00'),
+  connMobile('01'),
+  connMobile('02'),
+  connMobile('03'),
+  connMobile('04'),
+  connMobile('05'),
+  connMobile('06'),
+  null,
+  connMobile('08'),
+  connMobile('09'),
+  connMobile('10'),
+  connMobile('11'),
+  connMobile('12'),
+]

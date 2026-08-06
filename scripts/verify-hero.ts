@@ -76,14 +76,14 @@ async function main() {
   const sections = await page.evaluate(() => {
     const text = document.body.innerText
     return {
-      story: text.includes('قصّتنا') || text.includes('لماذا بنينا'),
-      problem: text.includes('لماذا لا تكفي'),
-      solution: text.includes('تحلّ ثلاث') || text.includes('مكتبة واحدة'),
+      wall: text.includes('تصفّح باللقطة') || text.includes('واشترِ بالألبوم'),
+      collection: text.includes('المجموعة الأولى') || text.includes('كل لقطة مقصودة'),
+      licensing: text.includes('تغطّي كل استخداماتك') || text.includes('رخصة واحدة'),
     }
   })
-  report('story section renders below the hero', sections.story)
-  report('problem section renders below the hero', sections.problem)
-  report('solution section renders below the hero', sections.solution)
+  report('footage wall renders below the hero', sections.wall)
+  report('collection renders below the hero', sections.collection)
+  report('licensing section renders below the hero', sections.licensing)
 
   // ── No fixed overlay stranded at the bottom (the old white-shape bug) ───────
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))

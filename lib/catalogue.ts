@@ -137,6 +137,102 @@ export async function getTopCreators(take = 6) {
   }))
 }
 
+/**
+ * A single frame on the footage wall.
+ *
+ * The wall shows clips, but nothing on it is a clip you can buy — every tile
+ * routes to the album it belongs to (`album.creatorHandle`/`album.slug`),
+ * carrying that album's price so the doorway is honest about what it costs.
+ */
+export type FootageTile = {
+  slug: string
+  titleAr: string
+  titleEn: string
+  aspectRatio: string | null
+  thumbKey: string | null
+  album: {
+    creatorHandle: string
+    slug: string
+    titleAr: string
+    titleEn: string
+    priceStandard: number
+    currency: string
+    clipCount: number
+    clearedForCommercial: boolean
+  }
+}
+
+/**
+ * The landing footage wall — individual frames drawn from *across* the live
+ * catalogue, each a doorway into its album.
+ *
+ * With a young catalogue this is also what makes five albums read as a wall of
+ * Saudi: the eye counts frames, not albums. So the tiles are interleaved
+ * round-robin across albums rather than served in album order — no single
+ * album clusters, and the variety is what sells.
+ */
+export async function getFootageWall(take = 12): Promise<FootageTile[]> {
+  const rows = await db.clip.findMany({
+    where: { album: { status: 'live' } },
+    orderBy: [{ album: { salesCount: 'desc' } }, { orderIndex: 'asc' }],
+    take: take * 4,
+    select: {
+      slug: true,
+      titleAr: true,
+      titleEn: true,
+      aspectRatio: true,
+      thumbnailKeys: true,
+      album: {
+        select: {
+          slug: true,
+          titleAr: true,
+          titleEn: true,
+          priceStandard: true,
+          currency: true,
+          clipCount: true,
+          clearedForCommercial: true,
+          creator: { select: { handle: true } },
+        },
+      },
+    },
+  })
+
+  const tiles: FootageTile[] = rows.map((row) => ({
+    slug: row.slug,
+    titleAr: row.titleAr,
+    titleEn: row.titleEn,
+    aspectRatio: row.aspectRatio,
+    thumbKey: row.thumbnailKeys[0] ?? null,
+    album: {
+      creatorHandle: row.album.creator.handle,
+      slug: row.album.slug,
+      titleAr: row.album.titleAr,
+      titleEn: row.album.titleEn,
+      priceStandard: Number(row.album.priceStandard),
+      currency: row.album.currency,
+      clipCount: row.album.clipCount,
+      clearedForCommercial: row.album.clearedForCommercial,
+    },
+  }))
+
+  // Round-robin across albums so one album never fills the wall.
+  const byAlbum = new Map<string, FootageTile[]>()
+  for (const tile of tiles) {
+    const key = `${tile.album.creatorHandle}/${tile.album.slug}`
+    const bucket = byAlbum.get(key)
+    if (bucket) bucket.push(tile)
+    else byAlbum.set(key, [tile])
+  }
+  const buckets = [...byAlbum.values()]
+  const woven: FootageTile[] = []
+  for (let i = 0; woven.length < take && buckets.some((b) => b.length); i++) {
+    const bucket = buckets[i % buckets.length]
+    const next = bucket.shift()
+    if (next) woven.push(next)
+  }
+  return woven
+}
+
 /** Headline numbers for the trust strip. */
 export async function getCatalogueStats() {
   const [clips, albums, creators, cleared] = await Promise.all([

@@ -1,0 +1,47 @@
+# Laqta — functional specifications
+
+One document per implemented surface. Each spec is **derived from the shipped
+code**, not from intentions: if a spec and the implementation disagree, the
+spec is the bug report.
+
+## How to read a spec
+
+Every spec follows the same shape:
+
+| Section | What it answers |
+|---|---|
+| **Route** | The URL, and whether it is static, dynamic or parameterised |
+| **Access** | Who can load it, and what happens to everyone else |
+| **Purpose** | The one job this surface does, in a sentence |
+| **Data in** | What it reads, from which models, with which filters |
+| **Controls** | Every interactive element and exactly what it mutates |
+| **States** | Empty, loading, error, and any role- or data-conditional variants |
+| **Invariants** | Rules this surface must never break |
+| **Verified by** | Which automated gate covers it |
+
+## The two frozen invariants
+
+Two rules cut across the whole system. Any spec that touches money or
+downloads restates them, and no surface may work around them:
+
+1. **Entitlement is served from `OrderItem.clipManifestSnapshot`.** What a
+   buyer owns is frozen at purchase. Editing an album later never adds to or
+   removes from a completed order.
+2. **Commission is frozen at purchase** (`OrderItem.commissionRate`). A
+   creator promoted to a better tier in March does not change what they earned
+   in January, and a refund reverses at the rate on the order — never the
+   creator's current rate.
+
+## Index
+
+- [`public/`](./public) — marketing, catalogue and policy surfaces
+- [`account/`](./account) — the buyer's authenticated area
+- [`studio/`](./studio) — the creator portal
+- [`admin/`](./admin) — the operator control panel
+- [`auth/`](./auth) — sign-in, sign-up and the guard model
+- [`api/`](./api) — route handlers
+- [`_invariants.md`](./_invariants.md) — the system-wide rules in full
+
+## Coverage
+
+58 page routes + 2 API handlers. Every route in `app/` has a spec.

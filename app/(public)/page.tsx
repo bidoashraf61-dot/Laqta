@@ -1,23 +1,12 @@
 import type { Metadata } from 'next'
 import { HeroCinematic } from '@/components/landing/hero-cinematic'
-import {
-  BrowseTiles,
-  CreatorCta,
-  FeaturedAlbums,
-  HowItWorks,
-  NewThisWeek,
-  TopCreators,
-  TrustStrip,
-} from '@/components/landing/sections'
+import { FootageWall } from '@/components/landing/footage-wall'
+import { TheCollection } from '@/components/landing/collection'
+import { LicensingRights } from '@/components/landing/licensing'
+import { LandingFaq } from '@/components/landing/faq'
+import { CreatorCta, HowItWorks } from '@/components/landing/sections'
 import { EmailCapture } from '@/components/landing/email-capture'
-import { Clearance, OurStory, TheProblem, TheSolution, WhoItsFor } from '@/components/landing/positioning'
-import {
-  getCatalogueStats,
-  getFeaturedAlbums,
-  getNewAlbums,
-  getTaxonomyTiles,
-  getTopCreators,
-} from '@/lib/catalogue'
+import { getFeaturedAlbums, getFootageWall } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
@@ -66,43 +55,25 @@ export const metadata: Metadata = {
  * client JS to become visible.
  */
 export default async function HomePage() {
-  const [stats, featured, fresh, locations, categories, creators] = await Promise.all([
-    getCatalogueStats(),
-    getFeaturedAlbums(8),
-    getNewAlbums(4),
-    getTaxonomyTiles('location', 8),
-    getTaxonomyTiles('category', 8),
-    getTopCreators(6),
-  ])
+  // A young catalogue is presented by depth, not breadth: the wall of frames
+  // and the considered collection do the selling, and nothing on the page
+  // counts albums, creators, or clips out loud. As the catalogue grows the
+  // same two queries simply return more.
+  const [albums, footage] = await Promise.all([getFeaturedAlbums(6), getFootageWall(12)])
 
   return (
     <>
       <StructuredData />
       <HeroCinematic />
-      <TrustStrip stats={stats} />
-      {/* The story arc, before the catalogue: who we are, why the library they
-          already pay for is not enough, and the solution — then who it is for. */}
-      <OurStory />
-      <TheProblem />
-      <TheSolution />
-      <FeaturedAlbums albums={featured} />
-      <WhoItsFor />
-      <BrowseTiles
-        title={t('landing.locationsTitle')}
-        subtitle={t('landing.locationsSubtitle')}
-        base="/locations"
-        tiles={locations}
-      />
-      <BrowseTiles
-        title={t('landing.categoriesTitle')}
-        subtitle={t('landing.categoriesSubtitle')}
-        base="/categories"
-        tiles={categories}
-      />
-      <NewThisWeek albums={fresh} />
-      <Clearance />
-      <TopCreators creators={creators} />
+      {/* Impulse-first: the reel catches, the wall floods the eye with Saudi
+          frames (each a doorway into its album), then the collection makes the
+          considered album pitch. Licensing lifts the last hesitation, how-it-
+          works teaches the model, the FAQ clears the leftover objections. */}
+      <FootageWall footage={footage} />
+      <TheCollection albums={albums} />
+      <LicensingRights />
       <HowItWorks />
+      <LandingFaq />
       <CreatorCta />
       <EmailCapture />
     </>

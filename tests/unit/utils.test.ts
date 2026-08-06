@@ -126,3 +126,14 @@ describe('addBusinessDays — the review SLA', () => {
     expect(calendarDays).toBeGreaterThan(3)
   })
 })
+
+describe('MIN_PAYOUT_USD — the withdrawal floor', () => {
+  it('is denominated in USD, not the old SAR value', async () => {
+    const { MIN_PAYOUT_USD } = await import('@/lib/studio')
+    // SAR 500 kept literally through the USD move raised the floor to ~SAR
+    // 1,875 and stranded withdrawable balances. It must sit at or below the
+    // peg equivalent so the change only ever helps a creator.
+    expect(MIN_PAYOUT_USD).toBeLessThanOrEqual(500 / 3.75)
+    expect(MIN_PAYOUT_USD).toBeGreaterThan(0)
+  })
+})

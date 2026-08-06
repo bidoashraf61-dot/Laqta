@@ -28,7 +28,9 @@
     "verify:flows": "tsx scripts/verify-flows.ts",
     "db:to-usd": "tsx scripts/to-usd.ts",
     "test:unit": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify:journeys": "tsx scripts/verify-journeys.ts",
+    "test": "npm run test:unit && npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic && npm run verify:hero && npm run verify:journeys && npm run verify:flows && npm run audit"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

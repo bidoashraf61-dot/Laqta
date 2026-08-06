@@ -5,7 +5,7 @@ import {
   tierForLifetimeGmv,
   vatOn,
   TIER_RATES,
-  TIER_THRESHOLDS_SAR,
+  TIER_THRESHOLDS_USD,
   EXCLUSIVE_BONUS_POINTS,
 } from '@/lib/commission'
 
@@ -18,20 +18,44 @@ import {
  * ledger forever, so the arithmetic is pinned exhaustively rather than sampled.
  */
 
+describe('tier thresholds are denominated in USD', () => {
+  /**
+   * The catalogue moved from SAR to USD and these thresholds did not, so
+   * `lifetimeGmv` (redenominated with everything else) was being measured in
+   * dollars against a riyal bar — promotion silently became 3.75× harder.
+   * Pinned to the currency the rest of the money model uses.
+   */
+  it('uses figures that make sense as dollars, not riyals', () => {
+    expect(TIER_THRESHOLDS_USD.silver).toBeLessThan(50_000)
+    expect(TIER_THRESHOLDS_USD.gold).toBeLessThan(200_000)
+  })
+
+  it('keeps the tiers ordered', () => {
+    expect(TIER_THRESHOLDS_USD.standard).toBe(0)
+    expect(TIER_THRESHOLDS_USD.silver).toBeLessThan(TIER_THRESHOLDS_USD.gold)
+  })
+
+  it('is no harder to reach than the original SAR bar was', () => {
+    // SAR 50k / 200k at the 3.75 peg. Rounding must favour the creator.
+    expect(TIER_THRESHOLDS_USD.silver).toBeLessThanOrEqual(50_000 / 3.75)
+    expect(TIER_THRESHOLDS_USD.gold).toBeLessThanOrEqual(200_000 / 3.75)
+  })
+})
+
 describe('tier thresholds', () => {
   it('starts every creator on standard', () => {
     expect(tierForLifetimeGmv(0)).toBe('standard')
-    expect(tierForLifetimeGmv(49_999)).toBe('standard')
+    expect(tierForLifetimeGmv(TIER_THRESHOLDS_USD.silver - 1)).toBe('standard')
   })
 
   it('promotes at the published thresholds, inclusive', () => {
-    expect(tierForLifetimeGmv(TIER_THRESHOLDS_SAR.silver)).toBe('silver')
-    expect(tierForLifetimeGmv(TIER_THRESHOLDS_SAR.gold)).toBe('gold')
+    expect(tierForLifetimeGmv(TIER_THRESHOLDS_USD.silver)).toBe('silver')
+    expect(tierForLifetimeGmv(TIER_THRESHOLDS_USD.gold)).toBe('gold')
   })
 
   it('does not promote a fraction below a threshold', () => {
-    expect(tierForLifetimeGmv(TIER_THRESHOLDS_SAR.silver - 0.01)).toBe('standard')
-    expect(tierForLifetimeGmv(TIER_THRESHOLDS_SAR.gold - 0.01)).toBe('silver')
+    expect(tierForLifetimeGmv(TIER_THRESHOLDS_USD.silver - 0.01)).toBe('standard')
+    expect(tierForLifetimeGmv(TIER_THRESHOLDS_USD.gold - 0.01)).toBe('silver')
   })
 
   it('keeps gold as the ceiling', () => {

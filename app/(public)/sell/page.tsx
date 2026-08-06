@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { BadgeCheck, Coins, FileCheck2, Send, Upload } from 'lucide-react'
 import { db } from '@/lib/db'
-import { TIER_RATES, TIER_THRESHOLDS_SAR, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
+import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Headline, Prose, Section } from '@/components/ui/typography'
@@ -40,7 +40,7 @@ export default async function SellPage() {
     tier,
     label: t(TIER_LABEL[tier]),
     share: 1 - TIER_RATES[tier],
-    threshold: TIER_THRESHOLDS_SAR[tier],
+    threshold: TIER_THRESHOLDS_USD[tier],
   }))
 
   const steps = [

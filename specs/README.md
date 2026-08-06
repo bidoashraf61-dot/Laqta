@@ -40,7 +40,10 @@ downloads restates them, and no surface may work around them:
 - [`admin/`](./admin) — the operator control panel
 - [`auth/`](./auth) — sign-in, sign-up and the guard model
 - [`api/`](./api) — route handlers
-- [`_invariants.md`](./_invariants.md) — the system-wide rules in full
+
+The two frozen invariants have no separate document: they are stated above, enforced
+in `lib/orders.ts` (entitlement snapshot, commission freeze) and `lib/admin.ts`
+(refund reversal at the frozen rate), and restated by every spec that touches them.
 
 ## Coverage
 

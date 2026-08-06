@@ -18,10 +18,17 @@ import { emptyChecklist } from '@/lib/review-checklist'
  * finding out three days later wastes everyone's time.
  */
 /**
- * The smallest transfer worth a bank fee. Lives here rather than beside the
- * action because a `'use server'` module may only export async functions.
+ * The smallest transfer worth a bank fee, in USD.
+ *
+ * Was SAR 500 and kept its riyal value through the move to USD, which silently
+ * raised the bar to $500 (~SAR 1,875) and stranded balances that should have
+ * been withdrawable. $100 is a little under the SAR 500 peg equivalent
+ * (~$133), so the threshold only ever got easier to clear.
+ *
+ * Lives here rather than beside the action because a `'use server'` module may
+ * only export async functions.
  */
-export const MIN_PAYOUT_SAR = 500
+export const MIN_PAYOUT_USD = 100
 
 export function analyseConsistency(
   clips: Array<{ fps: unknown; colourProfile: string | null; width: number; height: number }>,

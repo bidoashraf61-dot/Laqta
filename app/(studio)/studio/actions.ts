@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireCreator } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { getEarnings, submitForReview, MIN_PAYOUT_SAR } from '@/lib/studio'
+import { getEarnings, submitForReview, MIN_PAYOUT_USD } from '@/lib/studio'
 import { recordAudit } from '@/lib/audit'
 import { t } from '@/lib/i18n'
 
@@ -104,8 +104,8 @@ export async function requestPayout(): Promise<Result> {
 
   if (!creator) return { ok: false, message: t('state.notFound') }
   if (open) return { ok: false, message: t('dash.payoutRequested') }
-  if (earnings.available < MIN_PAYOUT_SAR) {
-    return { ok: false, message: t('dash.belowMinimum', { amount: MIN_PAYOUT_SAR }) }
+  if (earnings.available < MIN_PAYOUT_USD) {
+    return { ok: false, message: t('dash.belowMinimum', { amount: MIN_PAYOUT_USD }) }
   }
 
   const amount = earnings.available

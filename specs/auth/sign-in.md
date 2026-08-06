@@ -53,7 +53,9 @@ step, not on the send-code step.
 - **Dev OTP notice** — with no `SMS_PROVIDER`/`SMS_API_KEY` env, `sendSms`
   logs the code, returns `delivered: false`, and the code is rendered in a
   warning alert: «وضع التطوير: الرمز هو {code}». **SMS delivery is not wired.**
-  With `SMS_PROVIDER` set but unimplemented, `issueOtp` throws.
+  The dev path is taken whenever **either** var is missing; only with **both**
+  `SMS_PROVIDER` and `SMS_API_KEY` set does `sendSms` reach the unimplemented
+  branch and throw.
 - **Empty** — n/a, the form always renders.
 - No password-reset, no "resend code" control (`auth.resendCode` exists in the
   dictionary but is unused), no email-verification step.

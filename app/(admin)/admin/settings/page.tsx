@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { TIER_RATES, TIER_THRESHOLDS_SAR, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
-import { MIN_PAYOUT_SAR } from '@/lib/studio'
+import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
+import { MIN_PAYOUT_USD } from '@/lib/studio'
 import { storageConfigured } from '@/lib/storage'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/state'
@@ -69,7 +69,7 @@ export default async function AdminSettingsPage() {
                 <TableRow key={tier}>
                   <TableCell className="font-medium">{t(TIER_LABEL[tier])}</TableCell>
                   <TableCell className="numeric text-end text-muted-foreground">
-                    {formatMoney(TIER_THRESHOLDS_SAR[tier])}
+                    {formatMoney(TIER_THRESHOLDS_USD[tier])}
                   </TableCell>
                   <TableCell className="numeric text-end text-gold">
                     {formatPercent(1 - TIER_RATES[tier], 0)}
@@ -87,7 +87,7 @@ export default async function AdminSettingsPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <SettingTile label={t('dash.reviewSla')} value="3" />
           <SettingTile label={t('dash.holdDays')} value="30" />
-          <SettingTile label={t('dash.minPayout')} value={formatMoney(MIN_PAYOUT_SAR)} />
+          <SettingTile label={t('dash.minPayout')} value={formatMoney(MIN_PAYOUT_USD)} />
           <SettingTile label={t('dash.vatRate')} value={formatPercent(vatRate, 0)} />
         </div>
 

@@ -59,6 +59,14 @@ authorisation boundary.
 - `releases` and `cultural` are **blocking** checks: approval is refused while either is
   `fail`, and refused while any check is still `pending`. Enforced in
   `lib/review-checklist.canApprove`, re-run server-side.
+- **The checklist fails closed.** `normaliseChecklist` is the trust boundary — it is fed
+  straight from the client by `submitReview` and also parses a stored JSON column, so it
+  validates `state` against the four known values and falls back to `pending` on anything
+  else (and keeps `note`/`checkedAt`/`checkedBy` only when they are strings). This is
+  load-bearing: `checklistProgress` counts anything that is not exactly `pending` as
+  decided and only an exact `fail` as blocking, so a crafted
+  `{ releases: { state: 'anything' } }` would otherwise read as "decided, not failing"
+  and let an album publish with its model-release check never actually passed.
 - A `request_changes` or `reject` decision without a note is refused.
 - `clearedForCommercial` is derived, never set by hand:
   `releases === 'pass' && thirdPartyIp !== 'fail'`. It drives the buyer-facing
@@ -68,6 +76,11 @@ authorisation boundary.
 - No money and no entitlement is touched here.
 
 ## Verified by
-Not covered. `/admin/review/[id]` is absent from `scripts/verify-arabic.ts`,
-`scripts/audit-portal.ts` and `scripts/verify-flows.ts`; the approval gate itself has no
-unit test.
+**The route** is not covered: `/admin/review/[id]` is absent from
+`scripts/verify-arabic.ts`, `scripts/audit-portal.ts` and `scripts/verify-flows.ts`, so
+nothing loads this page automatically.
+
+**The gate behind it** is covered by `npm run test:unit`
+(`tests/unit/review-checklist.test.ts`): the blocking-check table, `normaliseChecklist`
+rejecting an unknown state, every `canApprove` refusal, `checklistProgress` and
+`clearedForCommercial`.

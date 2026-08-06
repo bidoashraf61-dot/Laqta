@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Banknote, Clock, Wallet } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { getEarnings, MIN_PAYOUT_SAR } from '@/lib/studio'
+import { getEarnings, MIN_PAYOUT_USD } from '@/lib/studio'
 import { Alert, AlertDescription, EmptyState } from '@/components/ui/state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DashboardHeader, Panel, StatGrid, StatTile } from '@/components/dashboard/primitives'
@@ -54,7 +54,7 @@ export default async function StudioPayoutsPage() {
         ? Boolean(creator.payoneerEmail)
         : Boolean(creator?.wiseEmail)
 
-  const eligible = earnings.available >= MIN_PAYOUT_SAR && !openRequest && railReady
+  const eligible = earnings.available >= MIN_PAYOUT_USD && !openRequest && railReady
 
   return (
     <>
@@ -102,12 +102,12 @@ export default async function StudioPayoutsPage() {
             <Alert variant="info" className="mb-4">
               <AlertDescription>{t('dash.payoutRequested')}</AlertDescription>
             </Alert>
-          ) : earnings.available < MIN_PAYOUT_SAR ? (
+          ) : earnings.available < MIN_PAYOUT_USD ? (
             <Alert variant="info" className="mb-4">
               <AlertDescription>
                 {earnings.available <= 0
                   ? t('dash.nothingAvailable')
-                  : t('dash.belowMinimum', { amount: formatMoney(MIN_PAYOUT_SAR) })}
+                  : t('dash.belowMinimum', { amount: formatMoney(MIN_PAYOUT_USD) })}
               </AlertDescription>
             </Alert>
           ) : null}

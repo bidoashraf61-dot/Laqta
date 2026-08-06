@@ -6,8 +6,8 @@ import { CreatorTier } from '@prisma/client'
  * Published rates (docs/saudi-stock-footage-portal-plan.md §9):
  *
  *   Standard  default              35% platform take
- *   Silver    SAR 50k lifetime     30%
- *   Gold      SAR 200k lifetime    25%
+ *   Silver    USD 12.5k lifetime   30%
+ *   Gold      USD 50k lifetime     25%
  *   Exclusive album                −5 percentage points
  *
  * ── THE RULE ────────────────────────────────────────────────────────────────
@@ -25,10 +25,22 @@ export const TIER_RATES: Record<CreatorTier, number> = {
   gold: 0.25,
 }
 
-export const TIER_THRESHOLDS_SAR: Record<CreatorTier, number> = {
+/**
+ * Promotion thresholds, in USD of lifetime GMV.
+ *
+ * These were SAR figures (50k / 200k) and stayed SAR through the move to USD
+ * pricing, while `Creator.lifetimeGmv` was redenominated with everything else —
+ * so a creator was suddenly being measured in dollars against a riyal bar and
+ * promotion became 3.75× harder overnight.
+ *
+ * Converted at the peg and rounded DOWN to clean figures, so the change can
+ * only help: $12,500 is below SAR 50,000 (~$13,333) and $50,000 is below
+ * SAR 200,000 (~$53,333). Nobody loses a tier they had already earned.
+ */
+export const TIER_THRESHOLDS_USD: Record<CreatorTier, number> = {
   standard: 0,
-  silver: 50_000,
-  gold: 200_000,
+  silver: 12_500,
+  gold: 50_000,
 }
 
 export const EXCLUSIVE_BONUS_POINTS = 0.05
@@ -53,8 +65,8 @@ export type CommissionResult = {
 }
 
 export function tierForLifetimeGmv(lifetimeGmv: number): CreatorTier {
-  if (lifetimeGmv >= TIER_THRESHOLDS_SAR.gold) return 'gold'
-  if (lifetimeGmv >= TIER_THRESHOLDS_SAR.silver) return 'silver'
+  if (lifetimeGmv >= TIER_THRESHOLDS_USD.gold) return 'gold'
+  if (lifetimeGmv >= TIER_THRESHOLDS_USD.silver) return 'silver'
   return 'standard'
 }
 

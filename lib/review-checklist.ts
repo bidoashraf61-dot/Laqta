@@ -157,14 +157,41 @@ export function emptyChecklist(): Checklist {
   ) as Checklist
 }
 
-/** Tolerate old rows written before a check was added. */
+const CHECK_STATES: readonly CheckState[] = ['pending', 'pass', 'fail', 'not_applicable']
+
+/**
+ * Tolerate old rows written before a check was added — and DISTRUST the input.
+ *
+ * This is the trust boundary for the checklist. It is fed straight from the
+ * client in `submitReview`, and it is also the shape read back out of a JSON
+ * column, so neither source is trustworthy. An unrecognised `state` used to be
+ * cast through untouched, which was an approval bypass: `checklistProgress`
+ * counts anything that is not `pending` as DECIDED, and only an exact `fail`
+ * as a blocking failure. So a crafted `{ releases: { state: 'anything' } }`
+ * read as "decided, not failing" and `canApprove` returned ok — publishing an
+ * album whose model-release check had never actually passed.
+ *
+ * Unknown states now fall back to `pending`, which fails closed: the gate
+ * refuses to approve until a reviewer decides the check for real.
+ */
 export function normaliseChecklist(value: unknown): Checklist {
   const base = emptyChecklist()
   if (!value || typeof value !== 'object') return base
   for (const key of CHECK_KEYS) {
     const entry = (value as Record<string, unknown>)[key]
-    if (entry && typeof entry === 'object' && 'state' in entry) {
-      base[key] = entry as CheckEntry
+    if (!entry || typeof entry !== 'object' || !('state' in entry)) continue
+
+    const raw = entry as Record<string, unknown>
+    const state = raw.state
+    const text = (field: unknown) => (typeof field === 'string' ? field : undefined)
+
+    base[key] = {
+      state: CHECK_STATES.includes(state as CheckState) ? (state as CheckState) : 'pending',
+      // Keep the audit trail — who decided a check and when — but only when it
+      // is actually a string; the note is shown to the creator on a rejection.
+      note: text(raw.note),
+      checkedAt: text(raw.checkedAt),
+      checkedBy: text(raw.checkedBy),
     }
   }
   return base

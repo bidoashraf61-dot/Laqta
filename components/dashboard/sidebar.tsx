@@ -44,7 +44,7 @@ export function DashboardSidebar({
         // work surface instead of blending into it, and `.dark` flips the
         // tokens so nav labels, icons and the active state all resolve against
         // the near-black without a single hand-picked colour.
-        'dark sticky top-0 hidden h-dvh shrink-0 flex-col border-e border-white/10 bg-chrome text-foreground transition-[width] duration-200 lg:flex',
+        'on-olive sticky top-0 hidden h-dvh shrink-0 flex-col border-e border-border bg-background text-foreground transition-[width] duration-200 lg:flex',
         collapsed ? 'w-16' : 'w-64',
       )}
     >

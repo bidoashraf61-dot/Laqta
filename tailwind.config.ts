@@ -42,6 +42,8 @@ const config: Config = {
         'off-white': 'hsl(var(--off-white))',
         'dusty-olive': 'hsl(var(--dusty-olive))',
         olive: 'hsl(var(--olive))',
+        'olive-deep': 'hsl(var(--olive-deep))',
+        'olive-line': 'hsl(var(--olive-line))',
         chrome: 'hsl(var(--chrome))',
         sand: 'hsl(var(--sand))',
         clay: 'hsl(var(--clay))',

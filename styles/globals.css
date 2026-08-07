@@ -195,6 +195,13 @@
     --off-white: 42 33% 91%;
     --dusty-olive: 59 17% 66%;
     --olive: 60 11% 33%;
+    /* The text cut of olive. #5D5D4B is the GROUND; as type on a light or mid
+       ground it only reaches 3.27:1 on dusty olive, so it fails body text
+       exactly where it would be used most. 25% clears 4.5:1 there (4.60:1) and
+       reads 7.9:1 on off-white, 8.7:1 on paper — one token for dark olive type
+       on every light ground. */
+    --olive-deep: 60 11% 25%;
+    --olive-line: 60 11% 45%;
     --chrome: 0 0% 10%;
     --sand: 42 47% 84%;
     /* Clay carries a negative delta as text, so it is set for legibility on a
@@ -272,6 +279,90 @@
     --border: 240 8% 22%;
     --input: 240 8% 22%;
     --ring: 43 52% 54%;
+  }
+
+  /*
+   * The two olive grounds.
+   *
+   * Olive is the identity colour — the reference's 30% main — and until now it
+   * was declared and used nowhere. These two scopes are how it earns that
+   * share: a band opts into a ground and the ENTIRE token set flips with it,
+   * the same mechanism `.dark` uses. Nothing inside a band needs to know what
+   * it is sitting on, and a broken foreground/background pair cannot be built
+   * by hand because no component picks its own colours.
+   *
+   * Every value below was solved for, not chosen by eye:
+   *
+   *   .on-olive   #5D5D4B. off-white text 5.64:1, secondary 4.67:1, hairline
+   *               1.64:1. Gold FAILS here (2.82:1) at every weight the brand
+   *               uses, so the accent role passes to sand (5.01:1) and the
+   *               gold token itself is re-pitched to 82% (4.88:1) for the rare
+   *               figure that must stay gold. Cards invert to off-white: a
+   *               light card on a dark band reads crisper than any tint of the
+   *               band itself, which tops out at 1.35:1 and is invisible.
+   *
+   *   .on-dusty   #B7B79A. This ground has almost no text room — only 25%
+   *               lightness or darker clears 4.5:1, so primary and secondary
+   *               text sit two steps apart and nothing lighter is legible.
+   *               That is why dusty olive is a FRAME: it holds white cards and
+   *               large type, and never carries running prose.
+   */
+  .on-olive {
+    --background: 60 11% 33%;
+    --foreground: 42 33% 91%;
+    /*
+     * Cards RECESS here, they do not invert.
+     *
+     * Inverting them to off-white looked right in isolation and broke every
+     * card in the band: `--muted-foreground` and `--gold` are pitched for the
+     * dark ground, so a byline and a price landed light-on-light and vanished.
+     * A band has to be one world or the other.
+     *
+     * Dark themes normally raise cards toward the light, but this ground sits
+     * at 33% rather than near-black, so there is far more room below it than
+     * above: a card at 40% gives off-white only 4.19:1, while 26% gives 7.57:1
+     * — and muted 6.27:1, gold 6.55:1, sand 6.73:1, all comfortable. The
+     * hairline at 45% reads 2.20:1 against the card and carries the edge.
+     */
+    --card: 60 11% 26%;
+    --card-foreground: 42 33% 91%;
+    --popover: 60 11% 26%;
+    --popover-foreground: 42 33% 91%;
+    --primary: 42 47% 84%;
+    --primary-foreground: 60 11% 25%;
+    --secondary: 60 11% 40%;
+    --secondary-foreground: 42 33% 91%;
+    --muted: 60 11% 40%;
+    --muted-foreground: 42 20% 83%;
+    --accent: 60 11% 40%;
+    --accent-foreground: 42 33% 91%;
+    --border: 60 11% 45%;
+    --input: 60 11% 45%;
+    --ring: 42 47% 84%;
+    --gold: 43 52% 82%;
+    --gold-foreground: 60 11% 25%;
+  }
+
+  .on-dusty {
+    --background: 59 17% 66%;
+    --foreground: 60 11% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 12% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 12% 9%;
+    --primary: 43 52% 22%;
+    --primary-foreground: 42 33% 91%;
+    --secondary: 42 33% 91%;
+    --secondary-foreground: 60 11% 25%;
+    --muted: 59 17% 74%;
+    --muted-foreground: 60 11% 25%;
+    --accent: 59 17% 58%;
+    --accent-foreground: 60 11% 20%;
+    --border: 60 11% 45%;
+    --input: 60 11% 45%;
+    --ring: 60 11% 25%;
+    --gold: 43 52% 22%;
+    --gold-foreground: 42 33% 91%;
   }
 }
 

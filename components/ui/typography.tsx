@@ -182,30 +182,54 @@ export function Prose({
  * column, and it achieves that purely by alternating the background between
  * full-bleed panels. `tone` is the only knob.
  */
+export type SectionTone =
+  | 'base'
+  | 'offwhite'
+  | 'raised'
+  | 'warm'
+  | 'dusty'
+  | 'olive'
+  | 'accent'
+  | 'oasis'
+
+/**
+ * The ground ladder, lightest to darkest.
+ *
+ *   base      paper       #F9F6F1   the reading canvas
+ *   offwhite  off-white   #F0EBE0   the quiet alternate
+ *   raised    sand        #E9DEC3   the warm alternate
+ *   dusty     dusty olive #B7B79A   a FRAME — holds cards, never prose
+ *   olive     dark olive  #5D5D4B   the identity band
+ *
+ * `olive` and `dusty` do not set colours directly. They opt into `.on-olive` /
+ * `.on-dusty`, which remap the whole token set the way `.dark` does, so every
+ * descendant — card, badge, button, muted caption — resolves against the band
+ * it is actually sitting on. That is why a section can go dark without a single
+ * component being told about it.
+ *
+ * `accent` and `oasis` are SEMANTIC, not decorative: gold means money and oasis
+ * means cleared-for-commercial. They stay tints rather than joining the ladder,
+ * because a full gold band would spend the One Voice Rule for atmosphere.
+ */
+const GROUNDS: Record<SectionTone, string> = {
+  base: '',
+  offwhite: 'bg-off-white border-y border-olive/12',
+  raised: 'bg-sand/25 border-y border-sand/50',
+  warm: 'bg-sand/25 border-y border-sand/50',
+  dusty: 'on-dusty bg-background text-foreground border-y border-olive/20',
+  olive: 'on-olive bg-background text-foreground',
+  accent: 'bg-gold/[0.07] border-y border-gold/25',
+  oasis: 'bg-oasis/[0.07] border-y border-oasis/25',
+}
+
 export function Section({
   tone = 'base',
   children,
   className,
   ...props
-}: React.HTMLAttributes<HTMLElement> & {
-  tone?: 'base' | 'raised' | 'warm' | 'accent' | 'oasis'
-}) {
-  // The colour-ratio system, activated: the page alternates paper with warm
-  // sand grounds (Al Diaar's method — a sequence of held frames, not one flat
-  // column). Gold is the money/accent ground; oasis carries the one green
-  // "cleared / verified" beat. Each is a full-bleed panel with a hairline in
-  // its own hue.
-  const ground =
-    tone === 'raised' || tone === 'warm'
-      ? 'bg-sand/25 border-y border-sand/50'
-      : tone === 'accent'
-        ? 'bg-gold/[0.07] border-y border-gold/25'
-        : tone === 'oasis'
-          ? 'bg-oasis/[0.07] border-y border-oasis/25'
-          : ''
-
+}: React.HTMLAttributes<HTMLElement> & { tone?: SectionTone }) {
   return (
-    <section className={cn(ground, className)} {...props}>
+    <section className={cn(GROUNDS[tone], className)} {...props}>
       <div className="container-tight py-20">{children}</div>
     </section>
   )

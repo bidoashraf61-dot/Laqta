@@ -230,7 +230,7 @@ export function HowItWorks() {
   ]
 
   return (
-    <Section tone="raised">
+    <Section tone="dusty">
       <SectionHead title={t('landing.howTitle')} />
         <div className="grid gap-6 md:grid-cols-3">
           {steps.map((step, index) => (
@@ -269,7 +269,7 @@ export function HowItWorks() {
 
 export function CreatorCta() {
   return (
-    <Section tone="accent">
+    <Section tone="olive">
       <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl space-y-2">
           <Badge variant="gold" className="gap-1">

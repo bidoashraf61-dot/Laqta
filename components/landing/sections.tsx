@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { ArrowLeft, BadgeCheck, Clapperboard, Download, Search, ShoppingBag } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import * as Laqta from '@/components/ui/icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -224,9 +225,9 @@ export function TopCreators({
 
 export function HowItWorks() {
   const steps = [
-    { icon: Search, title: t('landing.howStep1Title'), body: t('landing.howStep1Body') },
-    { icon: ShoppingBag, title: t('landing.howStep2Title'), body: t('landing.howStep2Body') },
-    { icon: Download, title: t('landing.howStep3Title'), body: t('landing.howStep3Body') },
+    { icon: Laqta.Search, title: t('landing.howStep1Title'), body: t('landing.howStep1Body') },
+    { icon: Laqta.Basket, title: t('landing.howStep2Title'), body: t('landing.howStep2Body') },
+    { icon: Laqta.Download, title: t('landing.howStep3Title'), body: t('landing.howStep3Body') },
   ]
 
   return (
@@ -273,7 +274,7 @@ export function CreatorCta() {
       <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl space-y-2">
           <Badge variant="gold" className="gap-1">
-            <Clapperboard className="size-3" />
+            <Laqta.Clip className="size-3" />
             {t('nav.sell')}
           </Badge>
           <Headline bold={t('landing.sellTitle')} size="lg" />
@@ -290,7 +291,7 @@ export function CreatorCta() {
 export function ClearedNote() {
   return (
     <p className="container flex items-center justify-center gap-2 pb-6 text-sm text-muted-foreground">
-      <BadgeCheck className="size-4 text-success" />
+      <Laqta.Cleared className="size-4 text-success" />
       {t('landing.trustCleared')}
     </p>
   )

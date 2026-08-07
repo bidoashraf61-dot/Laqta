@@ -7,6 +7,7 @@ import { ClipCard } from '@/components/catalogue/clip-card'
 import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatNumber, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 /**
  * Taxonomy hubs — `/locations/[slug]` and `/categories/[slug]`.
@@ -67,7 +68,7 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 font-display text-headline font-bold">{t(TITLE_KEY[kind])}</h1>
+      <PageTitle className="mb-6">{t(TITLE_KEY[kind])}</PageTitle>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {rows.map((row) => (
           <Link
@@ -132,11 +133,11 @@ export async function TaxonomyHub({
       </nav>
 
       <header className="mb-6 space-y-2">
-        <h1 className="font-display text-headline font-bold">
+        <PageTitle>
           {t('nav.footage')} <Bilingual ar={entry.nameAr} en={entry.nameEn} />
-        </h1>
+        </PageTitle>
         {entry.seoDescAr ? (
-          <p className="max-w-prose font-serif text-[1.05rem] text-muted-foreground">{entry.seoDescAr}</p>
+          <p className="max-w-prose font-serif text-base text-muted-foreground">{entry.seoDescAr}</p>
         ) : null}
         <p className="numeric text-sm text-muted-foreground">
           {t('catalogue.resultsCount', { count: formatNumber(result.total) })}

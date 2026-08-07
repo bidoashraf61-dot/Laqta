@@ -7,6 +7,7 @@ import { FilterRail } from '@/components/catalogue/filter-rail'
 import { EmptyState } from '@/components/ui/state'
 import { Button } from '@/components/ui/button'
 import { formatNumber, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata: Metadata = {
   title: t('catalogue.footageTitle'),
@@ -64,7 +65,7 @@ export default async function FootagePage({
   return (
     <div className="container py-10">
       <header className="mb-6 space-y-1">
-        <h1 className="font-display text-headline font-bold">{t('catalogue.footageTitle')}</h1>
+        <PageTitle>{t('catalogue.footageTitle')}</PageTitle>
         <p className="text-muted-foreground">{t('catalogue.footageSubtitle')}</p>
       </header>
 

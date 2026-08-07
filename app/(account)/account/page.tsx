@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ACCOUNT_NAV } from '@/components/layout/nav'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('nav.account') }
 
@@ -15,7 +16,7 @@ export default async function AccountPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-headline font-bold">{t('nav.account')}</h1>
+        <PageTitle>{t('nav.account')}</PageTitle>
         <Badge variant="neutral">{t(`role.${session?.user?.role ?? 'buyer'}`)}</Badge>
       </div>
 

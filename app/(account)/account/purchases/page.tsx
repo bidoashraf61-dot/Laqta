@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { formatDate, formatMoney, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('library.purchasesTitle') }
 
@@ -18,7 +19,7 @@ export default async function PurchasesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-headline font-bold">{t('library.purchasesTitle')}</h1>
+      <PageTitle>{t('library.purchasesTitle')}</PageTitle>
 
       {orders.length === 0 ? (
         <EmptyState title={t('state.empty')} />

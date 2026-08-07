@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { twoFactorRequired } from '@/lib/totp'
 import { t } from '@/lib/i18n'
 import { TwoFactorCard } from './two-factor-card'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('security.title') }
 
@@ -15,7 +16,7 @@ export default async function SecurityPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="font-display text-headline font-bold">{t('security.title')}</h1>
+      <PageTitle>{t('security.title')}</PageTitle>
       <TwoFactorCard
         enabled={Boolean(user?.twoFactorEnabled)}
         mandatory={twoFactorRequired(user?.role ?? 'buyer')}

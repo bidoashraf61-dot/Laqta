@@ -5,6 +5,7 @@ import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 async function getCreator(handle: string) {
   return db.creator.findFirst({
@@ -85,15 +86,15 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
           {creator.displayNameAr.charAt(0)}
         </span>
         <div className="min-w-0 space-y-1">
-          <h1 className="font-display text-headline font-bold">
+          <PageTitle>
             <Bilingual ar={creator.displayNameAr} en={creator.displayNameEn} />
-          </h1>
+          </PageTitle>
           <p className="text-sm text-muted-foreground">
             {creator.city ? `${creator.city} · ` : ''}
             <span className="numeric">{albums.length}</span> {t('commerce.album')}
           </p>
           {creator.bioAr ? (
-            <p className="max-w-prose pt-2 font-serif text-[1.05rem] text-muted-foreground">{creator.bioAr}</p>
+            <p className="max-w-prose pt-2 font-serif text-base text-muted-foreground">{creator.bioAr}</p>
           ) : null}
         </div>
       </header>

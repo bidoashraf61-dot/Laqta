@@ -74,7 +74,12 @@ async function main() {
   // ── The hero is bounded — sections render just below it ─────────────────────
   await scrollTo(page, vh * 3.3)
   const sections = await page.evaluate(() => {
-    const text = document.body.innerText
+    // Headlines carry kashida (U+0640) — the elongated join that draws a word
+    // out, see lib/arabic.ts. It is invisible to a reader and fatal to an
+    // exact substring match, so strip it before comparing against the
+    // dictionary copy. The check is "did this section render", not "did it
+    // render without typographic elongation".
+    const text = document.body.innerText.replace(/\u0640+/g, '')
     return {
       wall: text.includes('تصفّح باللقطة') || text.includes('واشترِ بالألبوم'),
       collection: text.includes('المجموعة الأولى') || text.includes('كل لقطة مقصودة'),

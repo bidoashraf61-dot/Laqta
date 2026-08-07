@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { Prisma } from '@prisma/client'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -107,12 +106,21 @@ export default async function AdminReviewPage({
                 return (
                   <TableRow key={task.id}>
                     <TableCell className="max-w-[18rem] font-medium">
-                      <Link
+                      {/* A plain anchor, not next/link, and deliberately.
+                          Opening a review task is the operator's core action,
+                          and the client router intermittently fetched this
+                          route's payload and then silently declined to commit
+                          — the click did nothing, no error, roughly one time
+                          in two under load. The same symptom hit the catalogue
+                          and taxonomy filters. A real navigation always
+                          commits; the cost is one round trip on a click that
+                          re-queries the database anyway. */}
+                      <a
                         href={`/admin/review/${task.id}`}
                         className="block truncate transition-colors hover:text-gold"
                       >
                         <Bilingual ar={task.album.titleAr} en={task.album.titleEn} />
-                      </Link>
+                      </a>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       <UserText>{task.album.creator.displayNameAr}</UserText>

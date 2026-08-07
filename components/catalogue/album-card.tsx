@@ -47,7 +47,13 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
       )}
     >
       <div className="relative aspect-video overflow-hidden bg-muted">
-        <CoverImage src={album.coverKey} alt="" />
+        <CoverImage
+          src={album.coverKey}
+          alt={t('catalogue.altAlbumCover', {
+            album: album.titleAr,
+            count: String(album.clipCount),
+          })}
+        />
         <PreviewWatermark />
         {album.clearedForCommercial ? (
           <Badge variant="success" className="absolute end-2 top-2 z-[2] bg-ink/80 backdrop-blur">

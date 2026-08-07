@@ -27,8 +27,17 @@ export const metadata: Metadata = {
     siteName: t('brand.name'),
     title: `${t('brand.name')} — ${t('brand.tagline')}`,
     description: t('brand.promise'),
+    // Every page that does not set its own share card falls back to this one.
+    // Without it a link pasted into WhatsApp — how this catalogue actually
+    // travels between editors — renders as a bare URL with no picture.
+    images: [{ url: '/hero/06-alula.jpg', width: 1920, height: 1080, alt: t('brand.tagline') }],
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${t('brand.name')} — ${t('brand.tagline')}`,
+    description: t('brand.promise'),
+    images: ['/hero/06-alula.jpg'],
+  },
 }
 
 /**

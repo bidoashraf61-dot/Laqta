@@ -28,6 +28,7 @@ Read-only — no form, no server action on this page. The application itself hap
 - **Also the creator-funnel entry point** — `/studio` redirects here when a signed-in user has no creator profile, so this page is reached mid-funnel as well as cold.
 
 ## Invariants
+- Creator-facing copy admits **both** real and generated material with disclosure (`docs/website-content.md` §B11: «تصوير حقيقي أو مولّد — بشرط الإفصاح»). `sell.intro`, `sell.whatWeNeed1` and `sell.faq2A` previously required footage shot inside the Kingdom, which excluded the generated route the product accepts.
 - The stated commission model must match `lib/commission.ts`; the page reads the constants rather than hard-coding percentages.
 - The "frozen rate" promise on this page is the same invariant enforced in `lib/orders.ts` — commission is resolved once at purchase and a later tier promotion never applies retroactively.
 - No individual creator's earnings are shown.

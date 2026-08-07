@@ -34,6 +34,8 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- **No page on this site may claim the footage was filmed in the Kingdom or that permits were cleared.** The catalogue is AI-generated (`docs/website-content.md` §0). `landing.heroBody`, `landing.solution1Body` and `landing.collectionBody` all carried that claim and were corrected; the landing FAQ's permits guarantee was replaced with the AI disclosure (`landing.faq4Q/A`).
+- The AI disclosure appears in the footer of every route via `brand.aiNotice`, so no page can be reached that does not carry it.
 - A clip is bait; the album is the product. Every tile on the wall links to an album and shows that album's price. No surface on this page may offer a single clip for sale.
 - Every preview frame is watermarked via `PreviewWatermark`; no un-marked preview may ship.
 - Album cards always show a price (`AlbumCard` treats the price as non-optional) — a price-less card reads as a subscription catalogue.

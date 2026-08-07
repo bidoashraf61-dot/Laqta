@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brand & Business Guidelines</title>
+<style>
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Light.woff2")format("woff2");font-weight:300;font-display:block}
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2")format("woff2");font-weight:700;font-display:block}
+@font-face{font-family:"Thmanyah Serif Text";src:url("../public/fonts/thmanyah/thmanyahseriftext-Regular.woff2")format("woff2");font-weight:400;font-display:block}
+@font-face{font-family:"Thmanyah Serif Text";src:url("../public/fonts/thmanyah/thmanyahseriftext-Bold.woff2")format("woff2");font-weight:700;font-display:block}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Regular.woff2")format("woff2");font-weight:400;font-display:block}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Medium.woff2")format("woff2");font-weight:500;font-display:block}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Bold.woff2")format("woff2");font-weight:700;font-display:block}
+
+:root{
+  --paper:#FAF8F3; --base:#F9F6F1; --offwhite:#F0EBE0; --raised:#E9DEC3;
+  --olive:#5D5D4B; --dusty:#B7B79A; --chrome:#1A1A1A; --ink:#14141A;
+  --card:#FFFFFF; --muted:#EFEBE2; --mutedfg:#666370; --border:#CFC8BB;
+  --sand:#E9DCC3; --gold:#83682A; --goldfilm:#C8A24A;
+  --oasis:#4A7C59; --clay:#A85838;
+}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;font-size:10.5pt;line-height:1.75;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.page{width:210mm;min-height:297mm;padding:22mm 20mm;page-break-after:always;position:relative;background:var(--paper);display:flex;flex-direction:column}
+.page:last-child{page-break-after:auto}
+.page.olive{background:var(--olive);color:#F5F2EA}
+.page.ink{background:var(--ink);color:#F5F2EA}
+
+h1{font-family:"Thmanyah Serif Display",Georgia,serif;font-weight:700;font-size:40pt;line-height:1.05;letter-spacing:-.01em}
+h2{font-family:"Thmanyah Serif Display",Georgia,serif;font-weight:700;font-size:21pt;line-height:1.15;margin-bottom:5mm;padding-bottom:2.5mm;border-bottom:1.5pt solid var(--ink)}
+.olive h2,.ink h2{border-color:rgba(245,242,234,.35)}
+h3{font-family:"Thmanyah Sans";font-weight:700;font-size:11.5pt;margin:6mm 0 2mm;letter-spacing:.01em}
+h3:first-child{margin-top:0}
+p{max-width:150mm;margin-bottom:3mm}
+.prose{font-family:"Thmanyah Serif Text",Georgia,serif;font-size:11pt;line-height:1.85}
+
+.eyebrow{font-family:"Thmanyah Sans";font-weight:500;font-size:8pt;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:3mm}
+.olive .eyebrow,.ink .eyebrow{color:var(--sand)}
+.lead{font-family:"Thmanyah Serif Display",Georgia,serif;font-weight:300;font-size:16pt;line-height:1.35;max-width:150mm}
+.lead b{font-weight:700}
+
+/* two-weight headline rule */
+.tw{font-family:"Thmanyah Serif Display",Georgia,serif;line-height:1.1;font-size:26pt}
+.tw span{display:block;font-weight:300}
+.tw strong{display:block;font-weight:700}
+
+table{width:100%;border-collapse:collapse;margin:3mm 0 5mm;font-size:9pt}
+th{text-align:start;font-family:"Thmanyah Sans";font-weight:700;font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;color:var(--mutedfg);padding:2mm 2.5mm;border-bottom:1pt solid var(--ink)}
+td{padding:2.2mm 2.5mm;border-bottom:.5pt solid var(--border);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--offwhite)}
+.olive th{color:var(--sand);border-color:rgba(245,242,234,.4)}
+.olive td{border-color:rgba(245,242,234,.2)}
+.olive tbody tr:nth-child(even) td{background:rgba(0,0,0,.12)}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.gold{color:var(--gold);font-weight:700}
+
+.ar{direction:rtl;text-align:right;font-family:"Thmanyah Serif Text",Georgia,serif;font-size:12pt;line-height:1.9}
+.ar-d{direction:rtl;text-align:right;font-family:"Thmanyah Serif Display",Georgia,serif;font-weight:700;font-size:20pt;line-height:1.45}
+
+.card{background:var(--card);border:.5pt solid var(--border);border-radius:2mm;padding:5mm;margin-bottom:4mm}
+.band{background:var(--offwhite);border-inline-start:2.5pt solid var(--gold);padding:4mm 5mm;margin:4mm 0}
+.olive .band{background:rgba(0,0,0,.15);border-color:var(--sand)}
+.rule{background:var(--sand);border-radius:2mm;padding:4mm 5mm;margin:3mm 0}
+.rule b{display:block;font-size:10.5pt;margin-bottom:1mm}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
+
+.sw{border-radius:1.5mm;padding:4mm 3mm 3mm;color:#F5F2EA;font-family:"Thmanyah Sans";font-size:7.5pt;line-height:1.4;min-height:24mm;display:flex;flex-direction:column;justify-content:flex-end}
+.sw b{display:block;font-size:9.5pt;font-weight:700}
+.sw.d{color:var(--ink)}
+
+/* letterbox motif — the shape of the product */
+.lb{width:100%;aspect-ratio:2.39/1;background:var(--ink);border-radius:1.5mm;display:flex;align-items:center;justify-content:center;color:var(--goldfilm);font-family:"Thmanyah Serif Display",Georgia,serif;font-size:15pt;margin:5mm 0}
+
+.foot{margin-top:auto;padding-top:5mm;border-top:.5pt solid var(--border);font-family:"Thmanyah Sans";font-size:7.5pt;color:var(--mutedfg);display:flex;justify-content:space-between}
+.olive .foot,.ink .foot{border-color:rgba(245,242,234,.25);color:rgba(245,242,234,.7)}
+.tag{display:inline-block;background:var(--muted);border-radius:1mm;padding:.6mm 2mm;font-family:"Thmanyah Sans";font-size:7.5pt;font-weight:500;margin-inline-end:1.5mm}
+.ok{color:var(--oasis);font-weight:700}
+.no{color:var(--clay);font-weight:700}
+ul{margin:0 0 3mm 0;padding-inline-start:5mm}
+li{margin-bottom:1.5mm}
+.small{font-size:8.5pt;color:var(--mutedfg);line-height:1.6}
+</style>
+</head>
+<body>
+
+<!-- 1 COVER -->
+<section class="page ink" style="justify-content:space-between">
+  <div class="eyebrow" style="color:var(--goldfilm)">Brand &amp; Business Guidelines · v1 · August 2026</div>
+  <div>
+    <div class="ar-d" style="font-size:34pt;color:#F5F2EA;margin-bottom:6mm">مكتبة اللقطات السعودية</div>
+    <h1 style="color:#F5F2EA;max-width:150mm">The Saudi footage library.</h1>
+    <p class="lead" style="color:var(--goldfilm);margin-top:6mm">One licence. Forever.<br>At a price any creator can pay.</p>
+  </div>
+  <div class="foot"><span>Internal document — not for publication</span><span>01</span></div>
+</section>
+
+<!-- 2 CONTENTS + ESSENCE -->
+<section class="page">
+  <div class="eyebrow">Contents</div>
+  <h2>What this document is</h2>
+  <p class="prose">The single reference for what this business is, who it serves, what it charges, and how it looks and sounds. Everything in it is decided unless marked <b>open</b>. Where a figure appears, its source is named.</p>
+  <table>
+    <tr><td class="num">01</td><td>The brand in one page</td></tr>
+    <tr><td class="num">02</td><td>Positioning — the gap</td></tr>
+    <tr><td class="num">03</td><td>The business model</td></tr>
+    <tr><td class="num">04</td><td>Unit economics</td></tr>
+    <tr><td class="num">05</td><td>The licence</td></tr>
+    <tr><td class="num">06</td><td>Creators</td></tr>
+    <tr><td class="num">07</td><td>The market</td></tr>
+    <tr><td class="num">08</td><td>The eight USPs</td></tr>
+    <tr><td class="num">09</td><td>Verbal identity</td></tr>
+    <tr><td class="num">10</td><td>Arabic register</td></tr>
+    <tr><td class="num">11</td><td>Visual identity — colour</td></tr>
+    <tr><td class="num">12</td><td>Typography</td></tr>
+    <tr><td class="num">13</td><td>The named rules</td></tr>
+    <tr><td class="num">14</td><td>Content &amp; ethics</td></tr>
+    <tr><td class="num">15</td><td>Forecast</td></tr>
+    <tr><td class="num">16</td><td>Open decisions</td></tr>
+  </table>
+  <div class="foot"><span>Brand &amp; Business Guidelines</span><span>02</span></div>
+</section>
+
+<!-- 3 BRAND IN ONE PAGE -->
+<section class="page">
+  <div class="eyebrow">01 — The brand in one page</div>
+  <h2>The brand in one page</h2>
+  <div class="band">
+    <div class="ar-d">لقطات السعودية، بسعر تقدر عليه، وترخيص ما ينتهي.</div>
+    <p class="small" style="margin-top:2mm">Saudi footage, at a price you can afford, with a licence that never expires.</p>
+  </div>
+  <h3>Creative north star</h3>
+  <p class="prose"><b>The gallery, not the vendor's table.</b> The page is paper; the film is not. Dark is a property of the frame, never of the document. Authority is earned by withholding, not by decorating.</p>
+  <h3>Who it's for</h3>
+  <table>
+    <tr><th>Audience</th><th>Their job</th><th>What wins them</th></tr>
+    <tr><td>Arab freelance editors working for Saudi clients</td><td>Take the Saudi job without losing money on stock</td><td>Price. The album pays for itself on the first job</td></tr>
+    <tr><td>Saudi agencies &amp; production houses</td><td>Get client legal sign-off without a licence problem</td><td>The licence. No caps, no expiry, no upgrade</td></tr>
+  </table>
+  <h3>The three voice traits</h3>
+  <div class="grid3">
+    <div class="card"><b class="ar-d" style="font-size:15pt">واثق</b><p class="small">Confident. States the number and stops. No hedging, no hype.</p></div>
+    <div class="card"><b class="ar-d" style="font-size:15pt">صريح</b><p class="small">Direct. Says it's AI before anyone has to ask.</p></div>
+    <div class="card"><b class="ar-d" style="font-size:15pt">قريب</b><p class="small">Close. Talks to the editor like a colleague, not a company.</p></div>
+  </div>
+  <div class="foot"><span>The brand in one page</span><span>03</span></div>
+</section>
+
+<!-- 4 POSITIONING -->
+<section class="page olive">
+  <div class="eyebrow">02 — Positioning</div>
+  <h2>The gap</h2>
+  <p class="lead" style="color:#F5F2EA">Everything in this market is either <b>Saudi and expensive</b>, or <b>cheap and not Saudi</b>.</p>
+  <table>
+    <tr><th>Source</th><th>50 clips costs</th><th>Saudi depth</th></tr>
+    <tr><td>Named competitor A</td><td class="num">$2,133</td><td>Real, permitted</td></tr>
+    <tr><td>Named competitor B (broadcast)</td><td class="num">$30,900</td><td>Arab, not Saudi-specific</td></tr>
+    <tr><td>Named competitor C</td><td class="num">$2,950 (SD)</td><td>Saudi only</td></tr>
+    <tr><td>Global subscription libraries</td><td class="num">$198–384/yr</td><td>Almost none</td></tr>
+    <tr><td><b>Us</b></td><td class="num"><b>$129</b></td><td><b>Saudi only</b></td></tr>
+  </table>
+  <div class="band">
+    <p style="margin:0"><b>The square marked “genuinely Saudi and genuinely affordable” is empty.</b> That is the whole business.</p>
+  </div>
+  <h3>The second gap — the buyer nobody serves</h3>
+  <p class="prose" style="color:#F5F2EA">Every competitor prices for a Riyadh agency. Not one has a product a freelance editor can buy on a Tuesday afternoon with a card. That buyer exists in the tens of thousands and currently turns Saudi work down.</p>
+  <div class="foot"><span>Positioning</span><span>04</span></div>
+</section>
+
+<!-- 5 BUSINESS MODEL -->
+<section class="page">
+  <div class="eyebrow">03 — The business model</div>
+  <h2>The business model</h2>
+  <table>
+    <tr><th>Decision</th><th>Locked</th></tr>
+    <tr><td>Market</td><td><b>Saudi Arabia only.</b> Deliberately niche</td></tr>
+    <tr><td>Unit of sale</td><td><b>Albums only.</b> 15 / 30 / 50 / 70 clips. No single clips</td></tr>
+    <tr><td>Purchase</td><td>One-time. <b>No subscription</b></td></tr>
+    <tr><td>Licence</td><td><b>One licence for everyone</b>, including broadcast and OOH</td></tr>
+    <tr><td>Quality</td><td>1080p at launch, generated 4K. Both 16:9 and 9:16</td></tr>
+    <tr><td>Content</td><td>AI-generated, <b>disclosed openly</b>. No religious sites</td></tr>
+    <tr><td>Creators</td><td>Live from day one. <b>Flat 30% commission</b></td></tr>
+    <tr><td>Entity &amp; currency</td><td>Egyptian entity. Prices in <b>USD</b></td></tr>
+    <tr><td>Refunds</td><td>None after download. 7 days if undownloaded</td></tr>
+  </table>
+  <h3>Album rules — the quality moat</h3>
+  <ul>
+    <li><b>One subject.</b> "AlUla — Golden Hour Aerials" ✓ · "Best of Saudi" ✗</li>
+    <li><b>One look.</b> Same grade, same spec, same frame rate — it must cut together untouched</li>
+    <li><b>Minimum 15 clips</b>, cover clip and stills chosen deliberately</li>
+    <li>Both orientations delivered — vertical produced by <b>reframing the 4K master</b>, never regenerated</li>
+  </ul>
+  <div class="band"><p style="margin:0">Album coherence is the single biggest lever on refund rate and repeat purchase. A dumping ground is not an album.</p></div>
+  <div class="foot"><span>The business model</span><span>05</span></div>
+</section>
+
+<!-- 6 UNIT ECONOMICS -->
+<section class="page">
+  <div class="eyebrow">04 — Unit economics</div>
+  <h2>Unit economics</h2>
+  <h3>What an album costs to make</h3>
+  <table>
+    <tr><th>Line</th><th>Credits</th><th>Note</th></tr>
+    <tr><td>50 video clips × 72</td><td class="num">3,600</td><td></td></tr>
+    <tr><td>~51 stills × 4</td><td class="num">204</td><td>Each end frame is the next start frame</td></tr>
+    <tr><td>Reject buffer (+50%)</td><td class="num">1,902</td><td>The reject rate is real. Budget it</td></tr>
+    <tr><td><b>Total per 50-clip album</b></td><td class="num"><b>5,706</b></td><td><b>≈ $257</b> at $0.045/credit</td></tr>
+  </table>
+  <h3>Price ladder</h3>
+  <table>
+    <tr><th>Album</th><th>Clips</th><th>Costs</th><th>Launch</th><th>Full</th><th>Per clip</th><th>Clears cost at</th></tr>
+    <tr><td>Small</td><td class="num">15</td><td class="num">$77</td><td class="num gold">$39</td><td class="num">$99</td><td class="num">$2.60</td><td class="num">2.0 sales</td></tr>
+    <tr><td>Medium</td><td class="num">30</td><td class="num">$154</td><td class="num gold">$79</td><td class="num">$199</td><td class="num">$2.63</td><td class="num">1.9 sales</td></tr>
+    <tr><td>Large</td><td class="num">50</td><td class="num">$257</td><td class="num gold">$129</td><td class="num">$329</td><td class="num">$2.58</td><td class="num">2.0 sales</td></tr>
+    <tr><td>Extended</td><td class="num">70</td><td class="num">$359</td><td class="num gold">$179</td><td class="num">$449</td><td class="num">$2.56</td><td class="num">2.0 sales</td></tr>
+  </table>
+  <div class="rule"><b>The two-sale rule</b>Every album clears its production cost on the second sale. Everything after that is close to pure profit, because delivering a file costs almost nothing. This is what protects cash flow while the catalogue is small.</div>
+  <div class="foot"><span>Unit economics</span><span>06</span></div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">04 — Unit economics, continued</div>
+  <h2>The bundle</h2>
+  <table>
+    <tr><th>Catalogue</th><th>Sum of albums</th><th>Bundle</th><th>Saving</th></tr>
+    <tr><td class="num">3</td><td class="num">$337</td><td class="num gold">$239</td><td class="num">29%</td></tr>
+    <tr><td class="num">6</td><td class="num">$650</td><td class="num gold">$349</td><td class="num">46%</td></tr>
+    <tr><td class="num">10</td><td class="num">$1,050</td><td class="num gold">$499</td><td class="num">52%</td></tr>
+    <tr><td class="num">14</td><td class="num">$1,450</td><td class="num gold">$649</td><td class="num">55%</td></tr>
+  </table>
+  <p class="small">A fixed bundle price breaks at launch — with three albums, buying separately costs $337, so a $299 bundle saves nothing and reads as dishonest.</p>
+  <div class="foot"><span>Unit economics</span><span>06</span></div>
+</section>
+
+<!-- 7 LICENCE -->
+<section class="page">
+  <div class="eyebrow">05 — The licence</div>
+  <h2>One licence. Forever.</h2>
+  <p class="lead">This is the argument that wins agencies. Price wins freelancers; <b>the licence wins the people with budgets.</b></p>
+  <div class="grid2">
+    <div>
+      <h3 class="ok">Included</h3>
+      <ul class="small">
+        <li>Social, YouTube, web, apps</li>
+        <li>Paid advertising — <b>no impression cap</b></li>
+        <li>Client work — <b>unlimited clients</b></li>
+        <li><b>Television broadcast</b></li>
+        <li><b>Cinema and screenings</b></li>
+        <li><b>Billboards, OOH, outdoor screens</b></li>
+        <li>Events and exhibitions</li>
+        <li>Editing, cutting, compositing</li>
+        <li>Up to 10 people in the company</li>
+        <li>Worldwide · <b>Perpetual</b></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="no">Excluded</h3>
+      <ul class="small">
+        <li>Reselling the clips as stock</li>
+        <li>Training AI models</li>
+        <li><b>Editorial or news use</b> — the content is generated and depicts nothing real</li>
+        <li>Implying endorsement by a real person or body</li>
+        <li>Anything unlawful under Saudi regulation</li>
+      </ul>
+    </div>
+  </div>
+  <h3>How this differs from the market</h3>
+  <table>
+    <tr><th></th><th>Us</th><th>Market norm</th></tr>
+    <tr><td>Licence term</td><td class="ok">Perpetual</td><td>Expires after 2 years</td></tr>
+    <tr><td>Impression cap</td><td class="ok">None</td><td>500,000</td></tr>
+    <tr><td>Production budget cap</td><td class="ok">None</td><td>Capped</td></tr>
+    <tr><td>Broadcast</td><td class="ok">Included</td><td>Separate, far pricier licence</td></tr>
+    <tr><td>Seats</td><td class="ok">Up to 10</td><td>One</td></tr>
+  </table>
+  <div class="band"><p style="margin:0"><b>Licence certificate.</b> Every purchase generates a PDF in the buyer's company name with the order number, date and full clip manifest. Their client's legal team will ask for it — and they will already have it.</p></div>
+  <div class="foot"><span>The licence</span><span>07</span></div>
+</section>
+
+<!-- 8 CREATORS + MARKET -->
+<section class="page">
+  <div class="eyebrow">06 — Creators</div>
+  <h2>Creators</h2>
+  <table>
+    <tr><th>Term</th><th></th></tr>
+    <tr><td>Creator keeps</td><td><b>70%</b> of every sale</td></tr>
+    <tr><td>Platform takes</td><td>30%, flat, on all content</td></tr>
+    <tr><td>Exclusivity</td><td><b>Not required</b></td></tr>
+    <tr><td>Payout</td><td>Monthly · $50 minimum</td></tr>
+    <tr><td>Content type</td><td>Filmed or generated — <b>disclosure mandatory</b></td></tr>
+    <tr><td>Location claiming</td><td>First come, first served, before production</td></tr>
+  </table>
+  <p class="small">Creator albums cost nothing to produce and earn 30% forever. They are free catalogue depth — the thing that makes the bundle worth buying and gives a returning customer a reason to come back.</p>
+
+  <div class="foot"><span>Creators</span><span>08</span></div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">07 — The market</div>
+  <h2>The market</h2>
+  <p class="prose">Four companies sell Saudi footage commercially. Every one of them prices for agencies.</p>
+  <table>
+    <tr><th>Player</th><th>Scale</th><th>Standard clip</th><th>Broadcast</th></tr>
+    <tr><td>Pan-Arab library</td><td>242,000 videos · 51–200 staff</td><td class="num">$137–158</td><td class="num">$618–711</td></tr>
+    <tr><td>Saudi library</td><td>Founder-led · 2.5M SAR raised</td><td class="num">$43</td><td>Undisclosed</td></tr>
+    <tr><td>Saudi-only archive</td><td>Not disclosed</td><td class="num">$59 <span class="small">(6s, SD)</span></td><td>Undisclosed</td></tr>
+    <tr><td>Regional library</td><td>Not disclosed</td><td>Not public</td><td>Not public</td></tr>
+  </table>
+  <div class="rule"><b>Never name a competitor in public-facing material</b>Comparisons stay anonymous — <span class="ar" style="font-size:10pt">المنصات الأخرى</span> / <span class="ar" style="font-size:10pt">عند غيرنا</span>. It is legally safer, it denies rivals free publicity, and it means no claim needs defending in court.</div>
+  <div class="foot"><span>Creators &amp; market</span><span>08</span></div>
+</section>
+
+<!-- 9 USPs -->
+<section class="page olive">
+  <div class="eyebrow">08 — The eight USPs</div>
+  <h2>What only we can say</h2>
+  <table>
+    <tr><th>#</th><th>USP</th><th>Who else has it</th></tr>
+    <tr><td class="num">1</td><td><b>~$2.60 a clip with full broadcast rights</b></td><td>Nobody — the market charges $618 for the same rights</td></tr>
+    <tr><td class="num">2</td><td><b>One licence, forever, no caps</b></td><td>Nobody — all rivals tier and cap</td></tr>
+    <tr><td class="num">3</td><td><b>Albums that cut together</b></td><td>Nobody sells coherent sets</td></tr>
+    <tr><td class="num">4</td><td><b>No permits — impossible shots, any season, any hour</b></td><td>Nobody. Rivals need site-authority approval</td></tr>
+    <tr><td class="num">5</td><td><b>Buy once, own forever</b></td><td>Subscriptions rent; the local licence expires</td></tr>
+    <tr><td class="num">6</td><td><b>16:9 and 9:16 of the same clip</b></td><td>Nobody</td></tr>
+    <tr><td class="num">7</td><td><b>Priced for the Arab freelancer</b></td><td>Nobody — every rival prices for agencies</td></tr>
+    <tr><td class="num">8</td><td><b>Honest about AI</b></td><td>Turns the obvious question into the reason for the price</td></tr>
+  </table>
+  <div class="band"><p style="margin:0"><b>The line that does the most work:</b><br>A broadcast-licensed clip costs over $600 elsewhere. Here it costs about $2.60.</p></div>
+  <div class="foot"><span>The eight USPs</span><span>09</span></div>
+</section>
+
+<!-- 10 VERBAL -->
+<section class="page">
+  <div class="eyebrow">09 — Verbal identity</div>
+  <h2>Verbal identity</h2>
+  <div class="card">
+    <p class="small" style="margin:0">NAME — <b>open decision.</b> Shortlist: نُقوش Nuqoosh · نَقْشة Naqsha · لَحْظة Lahtha · كُوّة Kuwwa · ذُرْوة Dhurwa · كَشْتة Kashta. All <span class="num">.sa</span> domains verified free.</p>
+  </div>
+  <h3>Tagline</h3>
+  <div class="ar-d">لقطات السعودية في متناول الجميع</div>
+  <p class="small">The Kingdom, within reach.</p>
+  <h3>The offer line — use everywhere</h3>
+  <div class="ar-d">ترخيص واحد. للأبد. وبسعر يقدر عليه أي مستقل.</div>
+  <h3>The freelancer line — the strongest sentence we own</h3>
+  <div class="ar-d">الألبوم يدفع ثمن نفسه من أول شغلة سعودية.</div>
+  <p class="small">The album pays for itself on your first Saudi job.</p>
+  <h3>Signature patterns</h3>
+  <table>
+    <tr><td>Sentence length</td><td>Short. A full stop instead of a comma wherever possible</td></tr>
+    <tr><td>Numbers vs metaphor</td><td><b>Always the number.</b> $2.60 — never "affordable"</td></tr>
+    <tr><td>Questions</td><td>Only as headings, never rhetorically in body copy</td></tr>
+    <tr><td>Claims per block</td><td>One. Never stack three benefits in a sentence</td></tr>
+  </table>
+  <div class="rule"><b>No desert clichés in the writing</b>The footage is desert; the copy doesn't need to be. No <span class="ar" style="font-size:10pt">رمال ذهبية</span>, no <span class="ar" style="font-size:10pt">سحر الصحراء</span>. The pictures do that job — flat, factual words are what make the pictures look expensive.</div>
+  <div class="foot"><span>Verbal identity</span><span>10</span></div>
+</section>
+
+<!-- 11 REGISTER -->
+<section class="page">
+  <div class="eyebrow">10 — Arabic register</div>
+  <h2>Arabic register</h2>
+  <p class="lead"><b>Saudi.</b> One register everywhere, no exceptions.</p>
+  <p class="prose">Saudi colloquial with an MSA backbone — colloquial rhythm and vocabulary, full sentences, correct grammar. Not street slang, not corporate Arabic. <b>The test:</b> would a Riyadh creative director say this out loud in a meeting?</p>
+  <div class="grid2">
+    <div>
+      <h3 class="ok">✓ We use</h3>
+      <table><tbody>
+        <tr><td class="ar" style="font-size:11pt">تقدر</td><td class="small">not يمكنك</td></tr>
+        <tr><td class="ar" style="font-size:11pt">الحين</td><td class="small">not حالياً</td></tr>
+        <tr><td class="ar" style="font-size:11pt">عندك</td><td class="small">not لديك</td></tr>
+        <tr><td class="ar" style="font-size:11pt">ما فيه</td><td class="small">not لا يوجد</td></tr>
+        <tr><td class="ar" style="font-size:11pt">شغلة</td><td class="small">not شغلانة</td></tr>
+      </tbody></table>
+    </div>
+    <div>
+      <h3 class="no">✗ We never use</h3>
+      <p class="small"><b>Egyptian:</b> <span class="ar" style="font-size:10pt">شغلانة · دلوقتي · عايز · كده · إزاي</span></p>
+      <p class="small"><b>Corporate:</b> <span class="ar" style="font-size:10pt">نسعى · نفخر · رائدة · حلول متكاملة</span></p>
+      <p class="small"><b>Hedging:</b> <span class="ar" style="font-size:10pt">ربما · قد يكون · تقريباً</span></p>
+      <p class="small"><b>Empty:</b> <span class="ar" style="font-size:10pt">جودة عالية · أسعار تنافسية</span></p>
+    </div>
+  </div>
+  <div class="rule"><b>Never mix dialects on one page</b>An early draft ran Gulf <span class="ar" style="font-size:10pt">مو</span> next to Egyptian <span class="ar" style="font-size:10pt">شغلانة</span>. That reads as two different writers, and for a brand asking agencies to trust it with a broadcast licence, that costs real credibility.</div>
+  <h3>Known trade-off</h3>
+  <p class="small">Standard guidance for a multi-regional Arab audience is MSA with light dialect. Saudi register was chosen deliberately: it buys credibility with the buyers who hold the budgets, and Egyptian readers understand Gulf dialect from media exposure. Accepted, not accidental.</p>
+  <div class="foot"><span>Arabic register</span><span>11</span></div>
+</section>
+
+<!-- 12 COLOUR -->
+<section class="page">
+  <div class="eyebrow">11 — Visual identity</div>
+  <h2>Colour</h2>
+  <p class="prose">A warm, low-saturation desert palette. Gold and earth on an off-white paper ground, with the film frames set into it in ink.</p>
+  <div class="grid3">
+    <div class="sw d" style="background:#FAF8F3;border:.5pt solid var(--border)"><b>Paper</b>#FAF8F3 · the quiet default</div>
+    <div class="sw d" style="background:#F0EBE0"><b>Off-white</b>#F0EBE0 · reading canvas</div>
+    <div class="sw d" style="background:#E9DEC3"><b>Sand</b>#E9DEC3 · documents, chips</div>
+    <div class="sw" style="background:#5D5D4B"><b>Olive</b>#5D5D4B · identity band</div>
+    <div class="sw" style="background:#1A1A1A"><b>Chrome</b>#1A1A1A · the app frame</div>
+    <div class="sw" style="background:#14141A"><b>Ink</b>#14141A · text, and film ground</div>
+    <div class="sw" style="background:#83682A"><b>Gold — paper</b>#83682A · the accent</div>
+    <div class="sw d" style="background:#C8A24A"><b>Gold — film</b>#C8A24A · same hue, dark ground</div>
+    <div class="sw d" style="background:#B7B79A"><b>Dusty olive</b>#B7B79A · data only, never ground</div>
+  </div>
+  <h3>The ground ladder</h3>
+  <p class="small">Sections don't sit on one canvas. A band opts into a rung — never by setting a colour directly. Light body, black frame, olive on exactly three surfaces: the collection band, the creator CTA, and the footer.</p>
+  <div class="lb">the letterbox — 2.39:1</div>
+  <p class="small">The letterbox is the recurring geometry: the shape of the product itself. Every thumbnail, hero and empty state is a dark frame with paper around it.</p>
+  <div class="foot"><span>Colour</span><span>12</span></div>
+</section>
+
+<!-- 13 TYPE + RULES -->
+<section class="page">
+  <div class="eyebrow">12 — Typography</div>
+  <h2>Typography</h2>
+  <p class="prose">One Saudi superfamily doing three jobs. Using one cut in another's role wastes the family — that separation is the point of licensing a superfamily.</p>
+  <table>
+    <tr><th>Cut</th><th>Job</th><th>Never</th></tr>
+    <tr><td><b>Serif Display</b></td><td>Hero and page titles only</td><td>At body size — it's drawn for large</td></tr>
+    <tr><td><b>Serif Text</b></td><td>Editorial prose, album descriptions, licence text</td><td>For UI controls</td></tr>
+    <tr><td><b>Sans</b></td><td>Every control, label, table cell</td><td>For long-form reading</td></tr>
+  </table>
+  <div class="card">
+    <p class="small" style="margin-bottom:2mm">THE TWO-WEIGHT HEADLINE — one size, two lines, light over bold. Internal hierarchy with no second size, colour or rule. Arabic splits on its comma.</p>
+    <div class="tw ar" style="direction:rtl;text-align:right"><span>لقطات سعودية،</span><strong>بجودة سينمائية.</strong></div>
+  </div>
+
+  <div class="foot"><span>Typography</span><span>13</span></div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">13 — The named rules</div>
+  <h2>The named rules</h2>
+  <div class="rule"><b>The One Voice Rule</b>Gold means money, the primary action, or the active state — nothing else. Under 15% of any screen. <b>Audit test:</b> if two gold things compete for the eye, one is wrong.</div>
+  <div class="rule"><b>The Dark-Is-A-Frame Rule</b><code>.dark</code> describes footage, never chrome. The document is paper. Premium comes from the frames being the only dark things on screen.</div>
+  <div class="rule"><b>The Isolated-Latin Rule</b>Any Latin run inside Arabic — a codec, a price, an order number — is wrapped <code>.ltr-island</code> or <code>.numeric</code>. Un-isolated, "Rec.709" renders as "709.Rec".</div>
+  <div class="foot"><span>Typography &amp; rules</span><span>13</span></div>
+</section>
+
+<!-- 14 ETHICS -->
+<section class="page">
+  <div class="eyebrow">14 — Content &amp; ethics</div>
+  <h2>Content &amp; ethics</h2>
+  <div class="rule"><b>1 · AI is disclosed, always</b>Every album carries a visible badge. It appears on the homepage, in the FAQ, on every album page and in the licence. We never imply the footage is filmed. Being caught concealing it would end the business — and disclosed well, it is the reason the price exists.</div>
+  <div class="rule"><b>2 · No religious sites, ever</b>No Makkah, no Madinah, no mosque interiors. AI depictions of the Two Holy Mosques are religiously and legally sensitive in Saudi Arabia. Not generated, not sold, not shown.</div>
+  <div class="rule"><b>3 · No editorial or news use</b>The footage depicts nothing real. It cannot be used in journalism, documentary, or any context implying a real event, place or person. Stated in the licence.</div>
+  <div class="rule"><b>4 · No identifiable real people</b>No real individuals, no implied endorsement.</div>
+  <div class="rule"><b>5 · Saudi content standards</b>Modest dress, appropriate gender interaction, no alcohol. Cultural QC runs on every shot involving people before it is published. This is not optional.</div>
+  <div class="rule"><b>6 · No competitor is ever named publicly</b>Comparisons stay anonymous. Real figures are internal only, and every published number must be provable with a dated screenshot.</div>
+  <div class="foot"><span>Content &amp; ethics</span><span>14</span></div>
+</section>
+
+<!-- 15 FORECAST + OPEN -->
+<section class="page">
+  <div class="eyebrow">15 — Forecast</div>
+  <h2>Forecast</h2>
+  <p class="small">Launch: 2 own albums + 1 creator album. Own production ~2 albums/month at roughly $513/month in credits.</p>
+  <table>
+    <tr><th>Catalogue</th><th>Launch</th><th>M1</th><th>M2</th><th>M3</th></tr>
+    <tr><td>Own albums</td><td class="num">2</td><td class="num">4</td><td class="num">6</td><td class="num">8</td></tr>
+    <tr><td>Creator albums</td><td class="num">1</td><td class="num">2</td><td class="num">4</td><td class="num">6</td></tr>
+    <tr><td><b>Total</b></td><td class="num"><b>3</b></td><td class="num"><b>6</b></td><td class="num"><b>10</b></td><td class="num"><b>14</b></td></tr>
+  </table>
+  <table>
+    <tr><th>Scenario</th><th>Orders M1–M3</th><th>Gross</th><th>Net</th><th>Profit</th></tr>
+    <tr><td>Slow</td><td class="num">37</td><td class="num">$7,210</td><td class="num">$5,440</td><td class="num">~$2,750</td></tr>
+    <tr><td><b>Base</b></td><td class="num"><b>77</b></td><td class="num"><b>$14,900</b></td><td class="num"><b>$11,250</b></td><td class="num gold"><b>~$8,250</b></td></tr>
+    <tr><td>Fast</td><td class="num">140</td><td class="num">$27,225</td><td class="num">$20,550</td><td class="num">~$17,150</td></tr>
+  </table>
+  <div class="band"><p style="margin:0"><b>The honest caveat.</b> The unit economics are solid and verified. <b>The order volumes are an assumption, not a forecast.</b> The product will make money if people see it; whether they see it in ninety days is a marketing question, and that part is not in the spreadsheet.</p></div>
+
+  <div class="foot"><span>Forecast</span><span>15</span></div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">16 — Open decisions</div>
+  <h2>Open decisions</h2>
+  <table>
+    <tr><th>Decision</th><th>Blocks</th></tr>
+    <tr><td><b>The name</b></td><td>Brand, domain, schema, 40+ copy slots</td></tr>
+    <tr><td><b>Founder bio, contact email, social accounts</b></td><td>E-E-A-T — AI search engines will not cite an anonymous site</td></tr>
+    <tr><td>Launch offer end date</td><td>Every price display</td></tr>
+    <tr><td>Does the bundle include future albums?</td><td>Returning-customer revenue. Recommendation: no</td></tr>
+    <tr><td>Album one subject</td><td>The whole launch</td></tr>
+    <tr><td>mada payment acceptance</td><td>Saudi card conversion</td></tr>
+  </table>
+  <div class="foot"><span>Forecast &amp; open decisions</span><span>15</span></div>
+</section>
+
+</body>
+</html>

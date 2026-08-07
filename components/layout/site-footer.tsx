@@ -58,7 +58,8 @@ export function SiteFooter() {
         <Separator className="my-8" />
 
         <p className="text-xs text-muted-foreground">
-          <span className="numeric">{year}</span> © {t('brand.name')} — {t('footer.rights')}
+          <span className="numeric">{year}</span> © {t('brand.name')} — {t('brand.aiNotice')} —{' '}
+          {t('footer.rights')}
         </p>
       </div>
     </footer>

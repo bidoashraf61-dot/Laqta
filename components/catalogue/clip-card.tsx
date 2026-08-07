@@ -37,7 +37,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
           {clip.thumbnail ? (
             <img
               src={clip.thumbnail}
-              alt=""
+              alt={t('catalogue.altClipThumb', { clip: clip.titleAr })}
               loading="lazy"
               className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />

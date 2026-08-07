@@ -50,6 +50,27 @@ boundary on every route while returning 200, in Arabic, with a green build.
 
 Plus `npm run build` and `npm run lint`.
 
+## Client-router navigations that never commit
+
+A recurring, intermittent Next.js App Router failure in this codebase: a
+`next/link` (or `router.push`/`replace`) navigation fetches the route's RSC
+payload, returns 200, and then **silently declines to commit** — the URL never
+changes, no console error, no failed request, no history entry. Retrying the
+click does not reliably help; it has been observed swallowing four clicks over
+ten seconds under load.
+
+Hit three times so far, all fixed the same way — **use a plain `<a>`**:
+
+- `/admin/catalogue` and `/admin/taxonomy` filter chips (same-pathname, search
+  params only)
+- `/admin/review` queue row → `/admin/review/[id]` (the operator's core action)
+
+A plain anchor always commits. The cost is one server round trip on a control
+that re-queries the database anyway. Reach for it whenever a navigation is
+load-bearing — a filter, or a row that opens the thing the SLA depends on —
+rather than assuming the click worked. `verify:journeys` covers these paths, so
+a regression fails the suite rather than reaching an operator.
+
 ## Architecture facts a session needs
 
 - Next.js App Router, Arabic-only (no locale segment; `/ar` and `/en` 308-redirect).

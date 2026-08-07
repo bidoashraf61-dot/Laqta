@@ -22,7 +22,7 @@ Read-only apart from filtering; the decision itself lives on `/admin/review/[id]
 | Control | Action | Effect |
 | --- | --- | --- |
 | `FilterChips` (all + 6 statuses) | plain `<a>` to `?status=…` | full navigation; server re-queries |
-| Album title in a row | link | → `/admin/review/{task.id}` |
+| Album title in a row | plain `<a>` | full navigation → `/admin/review/{task.id}` |
 
 ## States
 - **Empty result** — `EmptyState` with `dash.queueEmpty` / `dash.queueHint`.
@@ -37,6 +37,10 @@ Read-only apart from filtering; the decision itself lives on `/admin/review/[id]
 
 ## Invariants
 - Ordering is by SLA, not submission time — that is the queue's stated promise.
+- The row link is a plain `<a>`, never `next/link`: the client router
+  intermittently declined to commit this navigation (about one click in two
+  under load), which silently blocked the operator's core action. See
+  "Client-router navigations that never commit" in CLAUDE.md.
 - Read-only: no `ReviewTask` or `Album` state changes from this route.
 
 ## Verified by

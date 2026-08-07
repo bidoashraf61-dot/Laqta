@@ -17,8 +17,13 @@ import { t } from '@/lib/i18n'
 export function SiteHeader({ session }: { session: Session | null }) {
   const extra = roleNav(session?.user?.role)
 
+  // Dark chrome. The reference carries a near-black as its 15% secondary, and
+  // giving it to the header does two things: it frames the paper content the
+  // way a gallery wall frames a print, and it stops the sticky bar dissolving
+  // into the page as you scroll. `.dark` scopes the token flip so every control
+  // inside inherits the right foreground automatically.
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <header className="dark sticky top-0 z-40 border-b border-white/10 bg-chrome text-foreground shadow-lift backdrop-blur supports-[backdrop-filter]:bg-chrome/95">
       <div className="container flex h-16 items-center gap-3">
         <MobileNav extra={extra} />
 

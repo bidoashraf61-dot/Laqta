@@ -32,7 +32,7 @@ export function MobileSidebar({ nav }: { nav: DashboardNav }) {
           <Menu />
         </Button>
       </SheetTrigger>
-      <SheetContent side="start" className="w-72 p-0">
+      <SheetContent side="start" className="dark w-72 bg-chrome p-0 text-foreground">
         <SheetHeader>
           <SheetTitle className="font-display text-gold">{t('brand.name')}</SheetTitle>
         </SheetHeader>

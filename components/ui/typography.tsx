@@ -14,8 +14,15 @@ import { cn } from '@/lib/utils'
  *
  *   <Headline lead="لقطات سعودية،" bold="بجودة سينمائية." />
  *
- * Both lines are Serif Display. Falling back to a single-line `<Headline>` is
- * fine when the copy will not split — the pairing is a tool, not a quota.
+ * Both lines are SANS — the most geometric cut in the superfamily, and the only
+ * one that holds open tracking at display size without falling apart. Falling
+ * back to a single-line `<Headline>` is fine when the copy will not split — the
+ * pairing is a tool, not a quota.
+ *
+ * Headlines are set OPEN via `.headline-airy`, which spaces WORDS rather than
+ * letters. Arabic is cursive: letter-spacing pries apart glyphs that are meant
+ * to join and reads as broken, while word-spacing gives the same generosity
+ * with every ligature intact.
  *
  * ── Eyebrow ─────────────────────────────────────────────────────────────────
  * Small, tracked, gold. This is one of the few places gold survives the
@@ -45,15 +52,50 @@ export function Headline({
   // lead the weight jump is the whole device — the heavier the statement, the
   // more the pair reads as one voice dropping to a whisper then landing hard.
   return (
-    <Tag className={cn('font-display text-balance leading-[1.12]', scale, className)}>
+    <Tag
+      className={cn(
+        'font-display text-balance leading-[1.12]',
+        size === 'display' ? 'headline-airy-wide' : 'headline-airy',
+        scale,
+        className,
+      )}
+    >
       {lead ? (
         <>
           <span className="block font-light">{lead}</span>
-          <span className="block font-black tracking-[-0.02em]">{bold}</span>
+          <span className="block font-black">{bold}</span>
         </>
       ) : (
-        <span className="font-black tracking-[-0.02em]">{children ?? bold}</span>
+        <span className="font-black">{children ?? bold}</span>
       )}
+    </Tag>
+  )
+}
+
+/**
+ * Sub-headline — Serif Display.
+ *
+ * One step below a Headline: the editorial voice that introduces a section or
+ * carries a pull-quote. Serif Display's high contrast does the work here, where
+ * it is large enough to show and not competing with the Sans headline above it.
+ */
+export function SubHeadline({
+  children,
+  as: Tag = 'h3',
+  className,
+}: {
+  children: React.ReactNode
+  as?: 'h2' | 'h3' | 'h4' | 'p'
+  className?: string
+}) {
+  return (
+    <Tag
+      className={cn(
+        'font-subhead text-[1.5rem] font-medium leading-[1.35] text-foreground/90 sm:text-[1.75rem]',
+        className,
+      )}
+    >
+      {children}
     </Tag>
   )
 }

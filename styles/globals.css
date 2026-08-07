@@ -10,13 +10,14 @@
  * second family to fall back to and no unicode-range split to maintain — an
  * Arabic page and a Latin proper noun are drawn by the same typeface.
  *
- *   Sans          → UI. Nav, buttons, labels, forms, tables, badges.
- *   Serif Text    → editorial body. Descriptions, bios, licence prose.
- *   Serif Display → the big type. Hero, page titles, section heads.
+ *   Sans          → HEADLINES and titles, plus every control.
+ *   Serif Display → sub-headlines and section leads.
+ *   Serif Text    → normal reading text. Paragraphs, descriptions, prose.
  *
- * That split is the point of licensing a superfamily: Display has the tight
- * fit and high contrast that only works large, Text is drawn to survive at
- * 16px, and using either in the other's role wastes both.
+ * That split is the point of licensing a superfamily. Sans is the most
+ * geometric cut and the only one that holds open tracking at display size;
+ * Serif Display's high contrast reads as editorial one step down; Serif Text
+ * was drawn to survive at reading size and carries the body.
  */
 
 @font-face {
@@ -141,9 +142,24 @@
 
 @layer base {
   :root {
+    /*
+     * Font roles.
+     *
+     * Sans carries the HEADLINES — it is the loudest, most geometric cut in the
+     * superfamily and it holds open tracking without falling apart, which is
+     * what the reference's display treatment depends on. Serif Display steps
+     * down to sub-headlines, where its high contrast reads as editorial rather
+     * than shouty. Serif Text is the reading face: it was drawn to survive at
+     * body size, so it carries every paragraph on the site.
+     *
+     * Controls stay Sans — a button or a table cell is interface, not reading
+     * matter, and a serif control is the fastest way to make a dashboard feel
+     * slow.
+     */
     --font-sans: 'Thmanyah Sans';
+    --font-display: 'Thmanyah Sans';
+    --font-subhead: 'Thmanyah Serif Display';
     --font-serif: 'Thmanyah Serif Text';
-    --font-display: 'Thmanyah Serif Display';
 
     /*
      * Gold is theme-aware, and it has to be.
@@ -167,6 +183,16 @@
     --gold-600: 43 52% 44%;
     --gold-800: 43 52% 22%;
     --ink: 240 12% 9%;
+    /*
+     * The reference's secondary set, carried as real tokens so sections can
+     * vary without inventing hues: off-white and dusty olive for grounds, a
+     * near-black for chrome. Olive is the reference's 30% main — here it is
+     * the dark chrome ground under the header and the dashboard rail.
+     */
+    --off-white: 42 33% 91%;
+    --dusty-olive: 59 17% 66%;
+    --olive: 60 11% 33%;
+    --chrome: 0 0% 10%;
     --sand: 42 47% 84%;
     /* Clay carries a negative delta as text, so it is set for legibility on a
        white card (4.61:1), not for how it looked on ink. */
@@ -447,6 +473,27 @@
   }
 
   /*
+   * Airy headlines.
+   *
+   * The reference sets display type open. In Arabic that has to be WORD
+   * spacing, not letter spacing: Arabic is cursive, and letter-spacing pries
+   * apart glyphs that are meant to join, which reads as broken rather than
+   * airy. Word-spacing adds the same generosity between words — the "space at
+   * the end of a word" look — while every ligature stays intact. A small
+   * positive letter-spacing rides along for the Latin runs inside a headline,
+   * which do want it and are unaffected by cursive joining.
+   */
+  .headline-airy {
+    word-spacing: 0.14em;
+    letter-spacing: 0.01em;
+  }
+
+  .headline-airy-wide {
+    word-spacing: 0.2em;
+    letter-spacing: 0.015em;
+  }
+
+  /*
    * Charts.
    *
    * Recharts takes its colours as props, which freezes a chart to whichever
@@ -471,6 +518,26 @@
   .laqta-chart .recharts-rectangle.recharts-tooltip-cursor {
     fill: hsl(var(--muted));
     fill-opacity: 0.6;
+  }
+}
+
+@layer components {
+  /*
+   * Interface is Sans. The body defaults to Serif Text so paragraphs read
+   * well, but a control is not reading matter — a serif button or table cell
+   * is the fastest way to make a dashboard feel slow.
+   */
+  button,
+  input,
+  select,
+  textarea,
+  th,
+  td,
+  label,
+  nav,
+  [role='tab'],
+  [role='menuitem'] {
+    font-family: var(--font-sans), system-ui, sans-serif;
   }
 }
 

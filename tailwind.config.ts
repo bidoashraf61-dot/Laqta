@@ -39,6 +39,10 @@ const config: Config = {
           800: 'hsl(var(--gold-800))',
         },
         ink: 'hsl(var(--ink))',
+        'off-white': 'hsl(var(--off-white))',
+        'dusty-olive': 'hsl(var(--dusty-olive))',
+        olive: 'hsl(var(--olive))',
+        chrome: 'hsl(var(--chrome))',
         sand: 'hsl(var(--sand))',
         clay: 'hsl(var(--clay))',
         oasis: 'hsl(var(--oasis))',
@@ -103,13 +107,22 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
+        subhead: ['var(--font-subhead)', 'Georgia', 'serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
+      letterSpacing: {
+        // The reference sets display type with open letter-spacing; these are
+        // the two steps the headline scale uses.
+        headline: '0.015em',
+        display: '0.03em',
       },
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
-        display: ['clamp(2.25rem, 5vw, 4rem)', { lineHeight: '1.08', letterSpacing: '-0.015em' }],
-        headline: ['clamp(1.5rem, 2.6vw, 2.125rem)', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        // Display type is now Sans and set OPEN, per the reference. Tracking is
+        // slightly positive rather than the tight negative fit a serif needed.
+        display: ['clamp(2.5rem, 5.4vw, 4.5rem)', { lineHeight: '1.06', letterSpacing: '0.005em' }],
+        headline: ['clamp(1.6rem, 2.8vw, 2.375rem)', { lineHeight: '1.18', letterSpacing: '0.01em' }],
       },
       borderRadius: {
         lg: 'var(--radius)',

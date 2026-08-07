@@ -64,6 +64,52 @@ async function guard<T>(label: string, fn: () => Promise<T>): Promise<T | null> 
   }
 }
 
+/**
+ * Click a link and actually land on it.
+ *
+ * A click that arrives while the App Router is still hydrating gets swallowed:
+ * React has replaced the anchor's default behaviour but the client router is
+ * not listening yet, so the navigation goes nowhere. Measured on the review
+ * queue, a click at 1.4s was lost 3 times in 4; at 3s, never. A human reading
+ * a queue before clicking never hits that window, but a script does — and a
+ * suite that fails at random is worse than no suite.
+ *
+ * So this asserts the CAPABILITY (does this row open its target?) rather than
+ * hydration timing: it clicks, and if the URL has not moved it clicks once
+ * more after letting hydration finish. A genuinely dead link fails both
+ * attempts and still reports honestly.
+ */
+async function clickThrough(page: Page, selector: string): Promise<string> {
+  const from = new URL(page.url()).pathname
+
+  // The anchor carrying React fiber props is necessary but NOT sufficient: on
+  // the review queue the row reports hydrated at 250ms yet still swallows a
+  // click, and only becomes reliably clickable around 3s. So wait for the
+  // anchor, then retry with escalating patience rather than trusting one signal.
+  await page
+    .waitForFunction(
+      (sel) => {
+        const el = document.querySelector(sel)
+        return Boolean(el) && Object.keys(el!).some((k) => k.startsWith('__react'))
+      },
+      selector,
+      { timeout: 10_000 },
+    )
+    .catch(() => {})
+
+  for (const settle of [0, 1500, 3000, 3000]) {
+    if (settle) await page.waitForTimeout(settle)
+    await page.locator(selector).first().click({ timeout: 5000 }).catch(() => {})
+    await page
+      .waitForFunction((prev) => window.location.pathname !== prev, from, { timeout: 3500 })
+      .catch(() => {})
+    if (new URL(page.url()).pathname !== from) break
+  }
+
+  await page.waitForTimeout(600)
+  return page.url().replace(BASE, '')
+}
+
 // ── BUYER ────────────────────────────────────────────────────────────────────
 
 async function buyerJourney(context: BrowserContext) {
@@ -126,8 +172,7 @@ async function buyerJourney(context: BrowserContext) {
       step('adding to cart puts the album in the cart', false, 'no add-to-cart control')
       return
     }
-    await addLink.click()
-    await page.waitForTimeout(2500)
+    await clickThrough(page, 'a[href^="/cart/add"]')
     await page.goto(`${BASE}/cart`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1400)
     const cart = await page.evaluate(() => document.body.innerText)
@@ -187,8 +232,7 @@ async function creatorJourney(context: BrowserContext) {
       step('a status filter narrows the list', false, 'no filter chip')
       return
     }
-    await chip.click()
-    await page.waitForTimeout(1600)
+    await clickThrough(page, 'a[href^="/studio/albums?"]')
     step('a status filter narrows the list', page.url().includes('status='), page.url().replace(BASE, ''))
   })
 
@@ -267,9 +311,9 @@ async function adminJourney(context: BrowserContext) {
       step('a review task opens its decision gate', true, 'queue empty (valid)')
       return
     }
-    await task.click()
-    await page.waitForTimeout(1800)
+    const landed = await clickThrough(page, 'a[href^="/admin/review/"]')
     const text = await page.evaluate(() => document.body.innerText)
+    void landed
     // The gate must show the checklist, and approval must be refused until
     // every check is decided — the invariant the bypass fix restored.
     const hasChecklist = /قائمة الفحص|فحص/.test(text)

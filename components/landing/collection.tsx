@@ -17,7 +17,7 @@ import { t } from '@/lib/i18n'
  */
 export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
   return (
-    <Section tone="raised">
+    <Section tone="olive">
       <div className="mb-10 max-w-2xl">
         <Headline lead={t('landing.collectionLead')} bold={t('landing.collectionBold')} size="lg" />
       </div>

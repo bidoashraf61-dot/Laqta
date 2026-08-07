@@ -23,7 +23,7 @@ export function SiteHeader({ session }: { session: Session | null }) {
   // into the page as you scroll. `.dark` scopes the token flip so every control
   // inside inherits the right foreground automatically.
   return (
-    <header className="dark sticky top-0 z-40 border-b border-white/10 bg-chrome text-foreground shadow-lift backdrop-blur supports-[backdrop-filter]:bg-chrome/95">
+    <header className="on-olive sticky top-0 z-40 border-b border-border bg-background text-foreground shadow-lift backdrop-blur supports-[backdrop-filter]:bg-background/95">
       <div className="container flex h-16 items-center gap-3">
         <MobileNav extra={extra} />
 

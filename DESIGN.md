@@ -176,8 +176,42 @@ ground, with the film frames set into it in ink.
   Whatever sits ON a gold fill flips with the fill; hard-coding `text-ink`
   gives you a button that is legible in one world and not the other.
 
+### The ground ladder
+
+Sections do not sit on one canvas. They step through a five-rung ladder, and a
+band opts into a rung with `<Section tone>` — never by setting a colour.
+
+| Rung | Token | Hex | Carries |
+|---|---|---|---|
+| 1 | `base` | #F9F6F1 | paper — the quiet default |
+| 2 | `offwhite` | #F0EBE0 | the reading canvas |
+| 3 | `raised` | #E9DEC3 | sand, the warm alternate |
+| 4 | `dusty` | #B7B79A | a FRAME — holds cards, never prose |
+| 5 | `olive` | #5D5D4B | the identity band |
+
+**Brand ratio (Al Diaar's proportions):** olive 30 · gold 20 · off-white 20 ·
+dusty olive 15 · black 15. Gold spends its share as VOICE, not ground — see the
+One Voice Rule. Measured on the landing page: olive 27.9%, off-white 32.3%,
+ink 20.0%, dusty olive 10.0%.
+
+**Two scoped grounds.** `.on-olive` and `.on-dusty` remap the entire token set
+the way `.dark` does, so every descendant resolves against the band it is
+actually on and a broken pair cannot be hand-built. Two rules they encode:
+
+- **Gold cannot sit on olive** (2.82:1) or dusty olive (2.52:1) at any brand
+  weight. On olive the accent role passes to **sand** (5.01:1); the gold token
+  itself re-pitches to 82% for the rare figure that must stay gold.
+- **Cards recess on olive, they do not invert.** A light card in a dark band
+  leaves `--muted-foreground` and `--gold` pointing the wrong way and the
+  byline and price vanish. Card sits at 26% (off-white 7.57:1) — this ground is
+  mid-dark, so there is more room below it than above.
+
+- **Dusty olive never carries running text.** Only 25% lightness or darker
+  clears 4.5:1 on it, so primary and secondary text would be indistinguishable.
+  It holds white cards and large type.
+
 ### Neutral
-- **Paper** (#FAF8F3): The page ground everywhere. ~60% of any surface.
+- **Paper** (#FAF8F3): The quiet default rung, not the universal ground.
 - **Card** (#FFFFFF): Raised surfaces — cards, panels, the sidebar rail.
 - **Muted** (#EFEBE2): Secondary fills, chips, inactive states.
 - **Ink** (#14141A): Primary text — and the ground *inside* a film frame.
@@ -209,6 +243,11 @@ state — nothing else. Not hover borders, not heading colour, not decorative
 fills. On any given screen gold covers well under 15% of surface. Its rarity is
 why price and the buy button read as valuable. Audit test: if two gold things
 compete for the eye on one screen, one of them is wrong.
+
+The brand ratio puts gold at 20%, and that is 20% of VOICE, not of ground. Gold
+owns prices, primary actions, eyebrows and figures across every band; it never
+becomes a section background. A gold ground would spend the rule for
+atmosphere, and the buy button would stop reading as the thing to press.
 
 **The Dark-Is-A-Frame Rule.** `.dark` describes footage, never chrome. It is
 scoped to the cinematic, to cover placeholders, and to overlays sitting on

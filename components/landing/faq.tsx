@@ -13,7 +13,7 @@ const FAQS = ['faq1', 'faq2', 'faq3', 'faq4', 'faq5'] as const
 
 export function LandingFaq() {
   return (
-    <Section tone="base">
+    <Section tone="offwhite">
       <div className="mb-10 max-w-2xl">
         <Headline lead={t('landing.faqLead')} bold={t('landing.faqBold')} size="lg" />
       </div>

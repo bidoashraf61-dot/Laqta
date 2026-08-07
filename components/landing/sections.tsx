@@ -230,7 +230,7 @@ export function HowItWorks() {
   ]
 
   return (
-    <Section tone="dusty">
+    <Section tone="base">
       <SectionHead title={t('landing.howTitle')} />
         <div className="grid gap-6 md:grid-cols-3">
           {steps.map((step, index) => (

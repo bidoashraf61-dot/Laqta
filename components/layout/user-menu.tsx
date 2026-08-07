@@ -21,7 +21,7 @@ import { t } from '@/lib/i18n'
 export function UserMenu({ session }: { session: Session | null }) {
   if (!session?.user) {
     return (
-      <Button asChild variant="gold" size="sm">
+      <Button asChild variant="outline" size="sm">
         <Link href="/sign-in">{t('auth.signIn')}</Link>
       </Button>
     )

@@ -142,7 +142,7 @@ export default async function StudioPage() {
 
         <Panel title={t('dash.trendViews')}>
           {hasHistory ? (
-            <TrendChart data={trend} />
+            <TrendChart data={trend} tone="money" />
           ) : (
             <EmptyState title={t('dash.noData')} description={t('dash.noDataHint')} />
           )}

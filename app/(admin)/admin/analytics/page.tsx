@@ -101,10 +101,10 @@ export default async function AdminAnalyticsPage({
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Panel title={t('dash.trendViews')}>
-              <TrendChart data={views} height={220} />
+              <TrendChart data={views} height={220} tone="reach" />
             </Panel>
             <Panel title={t('dash.trendPurchases')}>
-              <TrendChart data={purchases} height={220} />
+              <TrendChart data={purchases} height={220} tone="money" />
             </Panel>
           </div>
 

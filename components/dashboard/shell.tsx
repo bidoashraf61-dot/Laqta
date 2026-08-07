@@ -37,7 +37,7 @@ export function DashboardShell({
       <DashboardSidebar nav={nav} brand={t('brand.name')} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="on-olive sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background px-4 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/95">
+        <header className="dark sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/10 bg-chrome px-4 text-foreground backdrop-blur supports-[backdrop-filter]:bg-chrome/95">
           <MobileSidebar nav={nav} />
 
           {/* Slot the page can fill via the DashboardHeader below sits in the

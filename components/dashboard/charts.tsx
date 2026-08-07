@@ -44,9 +44,36 @@ import { formatNumber } from '@/lib/i18n'
  */
 const MONEY = 'hsl(43 56% 44%)'
 const NEUTRAL = 'hsl(240 10% 38%)'
+/*
+ * Three more series colours, and every one of them is SEMANTIC.
+ *
+ * The rule above still holds — a views line must not be gold, or gold stops
+ * meaning money — but "everything that is not money is grey" left almost every
+ * chart in the portal a single shade of ash. These give the other brand hues a
+ * job in the data rather than a decorative slot:
+ *
+ *   REACH     audience — views, impressions. Dusty olive, which does no work
+ *             as a ground (it cannot carry text) but reads well as a line.
+ *   POSITIVE  approvals, clearances, completions.
+ *   CAUTION   disputes, refunds, overdue.
+ *
+ * Dusty olive is pitched at 44% rather than its 66% ground value: on a white
+ * card the ground value is 2.05:1 and disappears. 44% gives 3.91:1, which sits
+ * alongside oasis (4.08) and clay (3.83) so no one series shouts.
+ */
+const REACH = 'hsl(59 17% 44%)'
+const POSITIVE = 'hsl(148 50% 37%)'
+const CAUTION = 'hsl(21 51% 50%)'
 
-type Tone = 'money' | 'neutral'
-const seriesColor = (tone: Tone) => (tone === 'money' ? MONEY : NEUTRAL)
+type Tone = 'money' | 'neutral' | 'reach' | 'positive' | 'caution'
+const TONES: Record<Tone, string> = {
+  money: MONEY,
+  neutral: NEUTRAL,
+  reach: REACH,
+  positive: POSITIVE,
+  caution: CAUTION,
+}
+const seriesColor = (tone: Tone) => TONES[tone]
 
 const CATEGORICAL = [
   'hsl(43 52% 48%)', // gold, a shade down so it holds on paper

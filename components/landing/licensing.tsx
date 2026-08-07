@@ -20,7 +20,7 @@ const RIGHTS = ['lic1', 'lic2', 'lic3', 'lic4'] as const
 
 export function LicensingRights() {
   return (
-    <Section tone="oasis">
+    <Section tone="offwhite">
       <div className="grid gap-12 md:grid-cols-2 md:items-center">
         <div className="max-w-xl">
           <Headline lead={t('landing.licenseLead')} bold={t('landing.licenseBold')} size="lg" />

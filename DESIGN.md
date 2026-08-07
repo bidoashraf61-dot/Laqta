@@ -186,13 +186,38 @@ band opts into a rung with `<Section tone>` — never by setting a colour.
 | 1 | `base` | #F9F6F1 | paper — the quiet default |
 | 2 | `offwhite` | #F0EBE0 | the reading canvas |
 | 3 | `raised` | #E9DEC3 | sand, the warm alternate |
-| 4 | `dusty` | #B7B79A | a FRAME — holds cards, never prose |
-| 5 | `olive` | #5D5D4B | the identity band |
+| 4 | `dusty` | #B7B79A | available, but NOT used as a ground — see below |
+| 5 | `olive` | #5D5D4B | the identity band, on three surfaces only |
 
-**Brand ratio (Al Diaar's proportions):** olive 30 · gold 20 · off-white 20 ·
-dusty olive 15 · black 15. Gold spends its share as VOICE, not ground — see the
-One Voice Rule. Measured on the landing page: olive 27.9%, off-white 32.3%,
-ink 20.0%, dusty olive 10.0%.
+**Light-first, black-framed, olive-punctuated.** The body is light: paper and
+off-white alternating, white cards, so the footage carries the colour. The app
+FRAME is black (`chrome` #1A1A1A) — header, sidebar rail, topbar, mobile nav.
+Dark olive is reserved for exactly three surfaces, each of which earns it:
+
+- **the collection band** — cards recess beautifully on olive, and it is the
+  "what you get" beat
+- **the creator CTA** — the ask, where maximum contrast pays
+- **the footer** — the bookend
+
+Measured on the landing page: off-white 27.7%, olive 26.6%, paper 24.3%,
+ink 20.1%, black chrome 1.3%.
+
+**Dusty olive is not a ground.** It cannot carry running text (only 25%
+lightness or darker clears 4.5:1 on it, so primary and secondary type would be
+indistinguishable) and as a band it pushed the portal darker than a footage
+marketplace wants. It lives in the DATA instead — the `reach` chart series,
+hairlines and subtle fills. Pitched at 44% there, not its 66% ground value,
+which is 2.05:1 on a white card and disappears.
+
+**The rest of the palette works in type, controls and data, never as ground:**
+
+| Colour | Job |
+|---|---|
+| Gold | money, primary action, active state — One Voice |
+| Oasis | cleared/verified, positive deltas, the `positive` series |
+| Clay | warnings, negative deltas, the `caution` series |
+| Sand | chips, tints, invoice and certificate surfaces |
+| Dusty olive | the `reach` series — views and audience |
 
 **Two scoped grounds.** `.on-olive` and `.on-dusty` remap the entire token set
 the way `.dark` does, so every descendant resolves against the band it is

@@ -14,10 +14,13 @@ import { cn } from '@/lib/utils'
  *
  *   <Headline lead="لقطات سعودية،" bold="بجودة سينمائية." />
  *
- * Both lines are SANS — the most geometric cut in the superfamily, and the only
- * one that holds open tracking at display size without falling apart. Falling
- * back to a single-line `<Headline>` is fine when the copy will not split — the
- * pairing is a tool, not a quota.
+ * Both lines are SERIF DISPLAY — the only cut in the superfamily with real pen
+ * modulation, the thick/thin alternation of a broad-nib qalam. That contrast is
+ * what makes an Arabic headline read as culture rather than as interface, and
+ * it is the reason headlines are not set in Sans: Sans is the flattest cut in
+ * the family, correct for a button and wrong for the first thing anyone sees.
+ * Falling back to a single-line `<Headline>` is fine when the copy will not
+ * split — the pairing is a tool, not a quota.
  *
  * Headlines are set OPEN via `.headline-airy`, which spaces WORDS rather than
  * letters. Arabic is cursive: letter-spacing pries apart glyphs that are meant
@@ -48,9 +51,20 @@ export function Headline({
   const scale =
     size === 'display' ? 'text-display' : size === 'headline' ? 'text-headline' : 'text-2xl'
 
-  // The statement line is Black (900), not Bold (700). Against the Light (300)
-  // lead the weight jump is the whole device — the heavier the statement, the
-  // more the pair reads as one voice dropping to a whisper then landing hard.
+  // The statement line is BOLD (700), not Black (900).
+  //
+  // Black is where Serif Display stops being a serif: at 900 the thin strokes
+  // fatten until the pen contrast that carries the whole cultural read
+  // collapses into a slab, and the headline lands back where Sans already was.
+  // 700 is the heaviest weight that still shows the modulation. Against the
+  // Light (300) lead the jump is four steps — more than enough for the pair to
+  // read as one voice dropping to a whisper and then landing.
+  //
+  // Every size lands on 700, including `lg`. `lg` is what the landing sections
+  // use, and a section headline is a statement — stepping it down to Medium
+  // made those lines quieter than the prose underneath them. Display's Medium
+  // lives in the dashboards instead (see DashboardHeader), where a page title
+  // is chrome rather than an argument. Three weights of Display: 300, 500, 700.
   return (
     <Tag
       className={cn(
@@ -63,40 +77,51 @@ export function Headline({
       {lead ? (
         <>
           <span className="block font-light">{lead}</span>
-          <span className="block font-black">{bold}</span>
+          <span className="block font-bold">{bold}</span>
         </>
       ) : (
-        <span className="font-black">{children ?? bold}</span>
+        <span className="font-bold">{children ?? bold}</span>
       )}
     </Tag>
   )
 }
 
 /**
- * Sub-headline — Serif Display.
+ * Sub-headline — Serif Text.
  *
  * One step below a Headline: the editorial voice that introduces a section or
- * carries a pull-quote. Serif Display's high contrast does the work here, where
- * it is large enough to show and not competing with the Sans headline above it.
+ * carries a pull-quote. It is deliberately NOT Serif Display. Two cuts of the
+ * same serif stacked at neighbouring sizes read as one font rendered badly —
+ * the reader sees a size change and a mismatch rather than a hierarchy. Serif
+ * Text is a genuinely different drawing: lower contrast, wider counters, cut to
+ * survive small. Under a Display headline it reads as the same voice speaking
+ * more quietly, which is what a sub-head is for.
+ *
+ * `weight` opens the family's range rather than pinning one cut: `quiet` (300)
+ * for a long lead-in that must not compete, `medium` (500) as the default, and
+ * `strong` (700) when the sub-head is carrying the section on its own.
  */
 export function SubHeadline({
   children,
   as: Tag = 'h3',
+  size = 'section',
+  weight = 'medium',
   className,
 }: {
   children: React.ReactNode
   as?: 'h2' | 'h3' | 'h4' | 'p'
+  size?: 'section' | 'panel' | 'card'
+  weight?: 'quiet' | 'medium' | 'strong'
   className?: string
 }) {
+  // Three rungs, all documented steps on the ramp: `section` introduces a
+  // full-bleed band, `panel` heads a column on a detail page, `card` titles an
+  // item inside a grid.
+  const scale = size === 'section' ? 'text-subhead' : size === 'panel' ? 'text-xl' : 'text-lg'
+  const cut = weight === 'quiet' ? 'font-light' : weight === 'strong' ? 'font-bold' : 'font-medium'
+
   return (
-    <Tag
-      className={cn(
-        'font-subhead text-[1.5rem] font-medium leading-[1.35] text-foreground/90 sm:text-[1.75rem]',
-        className,
-      )}
-    >
-      {children}
-    </Tag>
+    <Tag className={cn('font-subhead text-foreground/90', scale, cut, className)}>{children}</Tag>
   )
 }
 
@@ -131,11 +156,17 @@ export function Prose({
 }) {
   // Bigger than before, and tinted from the foreground rather than muted, so a
   // description reads as something to be read — not texture under the headline.
+  //
+  // The two sizes take different weights, because they are doing different
+  // jobs. `lg` is a lead paragraph sitting directly under a headline: at that
+  // size Regular is already dense, and Light (300) is what lets a large serif
+  // stay airy instead of turning into a grey slab. `base` is running text and
+  // holds Regular (400), the weight the face was drawn for.
   return (
     <div
       className={cn(
         'max-w-prose font-serif leading-[1.85] text-foreground/75',
-        size === 'lg' ? 'text-[1.35rem] leading-[1.75]' : 'text-[1.2rem]',
+        size === 'lg' ? 'text-[1.35rem] font-light leading-[1.75]' : 'text-[1.2rem] font-normal',
         className,
       )}
     >

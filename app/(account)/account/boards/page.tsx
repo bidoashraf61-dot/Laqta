@@ -18,7 +18,7 @@ export default async function BoardsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-headline font-semibold">{t('boards.title')}</h1>
+      <h1 className="font-display text-headline font-bold">{t('boards.title')}</h1>
 
       {boards.length === 0 ? (
         <EmptyState title={t('boards.empty')} description={t('boards.emptyHint')} />

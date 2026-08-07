@@ -21,7 +21,7 @@ export function LandingFaq() {
       <dl className="grid gap-x-12 gap-y-8 md:grid-cols-2">
         {FAQS.map((key) => (
           <div key={key}>
-            <dt className="font-semibold">{t(`landing.${key}Q`)}</dt>
+            <dt className="font-bold">{t(`landing.${key}Q`)}</dt>
             <dd className="mt-2 font-serif leading-[1.9] text-muted-foreground">
               {t(`landing.${key}A`)}
             </dd>

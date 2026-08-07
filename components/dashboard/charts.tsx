@@ -74,7 +74,7 @@ function ChartTooltip({
   return (
     <div className="rounded-md border border-border bg-card px-3 py-2 text-xs shadow-lift">
       <p className="mb-0.5 text-muted-foreground">{label}</p>
-      <p className="numeric font-semibold text-foreground">
+      <p className="numeric font-bold text-foreground">
         {formatNumber(payload[0].value)}
         {unit ? ` ${unit}` : ''}
       </p>

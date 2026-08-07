@@ -37,7 +37,7 @@ export function LicensingRights() {
                 <Check className="size-3.5" />
               </span>
               <div>
-                <p className="font-semibold">{t(`landing.${key}Title`)}</p>
+                <p className="font-bold">{t(`landing.${key}Title`)}</p>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                   {t(`landing.${key}Body`)}
                 </p>

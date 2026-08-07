@@ -57,7 +57,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
       </div>
 
       <div className="space-y-2 p-4">
-        <h2 className="line-clamp-2 font-semibold leading-snug group-hover:text-foreground">
+        <h2 className="line-clamp-2 font-bold leading-snug group-hover:text-foreground">
           <Bilingual ar={album.titleAr} en={album.titleEn} />
         </h2>
 

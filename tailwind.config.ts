@@ -123,6 +123,10 @@ const config: Config = {
         // slightly positive rather than the tight negative fit a serif needed.
         display: ['clamp(2.5rem, 5.4vw, 4.5rem)', { lineHeight: '1.06', letterSpacing: '0.005em' }],
         headline: ['clamp(1.6rem, 2.8vw, 2.375rem)', { lineHeight: '1.18', letterSpacing: '0.01em' }],
+        // The sub-headline step. Named rather than written as a literal at the
+        // call site so it is one documented rung on the ramp, not a magic number
+        // that drifts the next time someone nudges a section.
+        subhead: ['clamp(1.5rem, 2.2vw, 1.75rem)', { lineHeight: '1.35' }],
       },
       borderRadius: {
         lg: 'var(--radius)',

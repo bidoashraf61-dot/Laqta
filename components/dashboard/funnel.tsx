@@ -28,7 +28,7 @@ export function Funnel({ steps }: { steps: Array<{ label: string; value: number 
             <div className="mb-1.5 flex items-baseline justify-between gap-3 text-sm">
               <span className="text-muted-foreground">{step.label}</span>
               <span className="flex items-baseline gap-2">
-                <span className="numeric font-semibold">{formatNumber(step.value)}</span>
+                <span className="numeric font-bold">{formatNumber(step.value)}</span>
                 {index > 0 ? (
                   <span className="numeric text-xs text-muted-foreground">
                     {formatPercent(rate, 1)}

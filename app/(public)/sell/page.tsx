@@ -132,14 +132,14 @@ export default async function SellPage() {
       <Section tone="raised">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="rounded-lg border bg-card p-6">
-            <h3 className="flex items-center gap-2 font-display text-lg font-semibold">
+            <h3 className="flex items-center gap-2 font-subhead text-lg font-bold">
               <FileCheck2 className="size-5 text-gold" />
               {t('sell.keepTitle')}
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t('sell.keepBody')}</p>
           </div>
           <div className="rounded-lg border bg-card p-6">
-            <h3 className="flex items-center gap-2 font-display text-lg font-semibold">
+            <h3 className="flex items-center gap-2 font-subhead text-lg font-bold">
               <Coins className="size-5 text-gold" />
               {t('sell.frozenTitle')}
             </h3>
@@ -174,7 +174,7 @@ export default async function SellPage() {
         <dl className="mt-8 max-w-[62ch] space-y-6">
           {faqs.map((faq) => (
             <div key={faq.q}>
-              <dt className="font-semibold">{faq.q}</dt>
+              <dt className="font-bold">{faq.q}</dt>
               <dd className="mt-2 font-serif leading-[1.9] text-muted-foreground">{faq.a}</dd>
             </div>
           ))}

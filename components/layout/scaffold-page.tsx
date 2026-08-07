@@ -13,7 +13,7 @@ export function ScaffoldPage({ title, owner }: { title: string; owner: string })
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-headline font-semibold">{title}</h1>
+        <h1 className="font-display text-headline font-bold">{title}</h1>
         <Badge variant="neutral" className="ltr-island">
           {owner}
         </Badge>

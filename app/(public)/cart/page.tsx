@@ -22,7 +22,7 @@ export default async function CartPage() {
 
   return (
     <div className="container max-w-4xl py-10">
-      <h1 className="mb-6 font-display text-headline font-semibold">{t('cart.title')}</h1>
+      <h1 className="mb-6 font-display text-headline font-bold">{t('cart.title')}</h1>
 
       {cart.items.length === 0 ? (
         <EmptyState
@@ -72,7 +72,7 @@ export default async function CartPage() {
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className={strong ? 'font-semibold' : 'text-muted-foreground'}>{label}</span>
+      <span className={strong ? 'font-bold' : 'text-muted-foreground'}>{label}</span>
       <span className={strong ? 'numeric text-lg font-bold text-gold' : 'numeric'}>{value}</span>
     </div>
   )

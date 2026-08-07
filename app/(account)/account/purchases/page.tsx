@@ -18,7 +18,7 @@ export default async function PurchasesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-headline font-semibold">{t('library.purchasesTitle')}</h1>
+      <h1 className="font-display text-headline font-bold">{t('library.purchasesTitle')}</h1>
 
       {orders.length === 0 ? (
         <EmptyState title={t('state.empty')} />

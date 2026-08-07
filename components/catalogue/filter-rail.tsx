@@ -211,7 +211,7 @@ function FilterBody() {
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <p className="text-sm font-semibold">{title}</p>
+      <p className="text-sm font-bold">{title}</p>
       {children}
     </div>
   )

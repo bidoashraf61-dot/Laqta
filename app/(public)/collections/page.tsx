@@ -1,3 +1,4 @@
+import { SubHeadline } from '@/components/ui/typography'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { db } from '@/lib/db'
@@ -26,7 +27,7 @@ export default async function CollectionsPage() {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 font-display text-headline font-semibold">{t('catalogue.collectionsTitle')}</h1>
+      <h1 className="mb-6 font-display text-headline font-bold">{t('catalogue.collectionsTitle')}</h1>
       {collections.length === 0 ? (
         <EmptyState title={t('state.empty')} />
       ) : (
@@ -45,9 +46,13 @@ export default async function CollectionsPage() {
                   className="absolute inset-0 -z-10 size-full object-cover opacity-25"
                 />
               ) : null}
-              <p className="text-lg font-semibold group-hover:text-foreground">
+              {/* h2, not h3: this grid sits directly under the page h1 with no
+                  section heading in between, so h3 would skip a level. The same
+                  card on the landing page is an h3 because a section h2 heads it
+                  there — the level belongs to the position, not the component. */}
+              <SubHeadline as="h2" size="card" className="group-hover:text-foreground">
                 <Bilingual ar={collection.titleAr} en={collection.titleEn} />
-              </p>
+              </SubHeadline>
               {collection.descriptionAr ? (
                 <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                   {collection.descriptionAr}

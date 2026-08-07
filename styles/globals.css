@@ -10,14 +10,19 @@
  * second family to fall back to and no unicode-range split to maintain — an
  * Arabic page and a Latin proper noun are drawn by the same typeface.
  *
- *   Sans          → HEADLINES and titles, plus every control.
- *   Serif Display → sub-headlines and section leads.
- *   Serif Text    → normal reading text. Paragraphs, descriptions, prose.
+ *   Serif Display → HEADLINES. 300 lead → 700 statement, 500 at card size.
+ *   Serif Text    → sub-headlines and reading text. 300 / 400 / 500 / 700.
+ *   Sans          → interface. Controls, tables, labels. 400 / 500 / 700.
  *
- * That split is the point of licensing a superfamily. Sans is the most
- * geometric cut and the only one that holds open tracking at display size;
- * Serif Display's high contrast reads as editorial one step down; Serif Text
- * was drawn to survive at reading size and carries the body.
+ * That split is the point of licensing a superfamily, and so is the weight
+ * range inside each family — one weight per family would waste twelve of the
+ * fifteen files below.
+ *
+ * Serif Display carries the headlines because it is the only cut with real
+ * pen modulation: the thick/thin alternation of a broad-nib qalam, which is
+ * what makes an Arabic headline read as culture rather than as interface.
+ * Sans is the flattest cut in the family — correct for a button, wrong for
+ * the first thing a visitor sees.
  */
 
 @font-face {
@@ -145,20 +150,18 @@
     /*
      * Font roles.
      *
-     * Sans carries the HEADLINES — it is the loudest, most geometric cut in the
-     * superfamily and it holds open tracking without falling apart, which is
-     * what the reference's display treatment depends on. Serif Display steps
-     * down to sub-headlines, where its high contrast reads as editorial rather
-     * than shouty. Serif Text is the reading face: it was drawn to survive at
-     * body size, so it carries every paragraph on the site.
+     * Three families, three jobs, and every one of them uses a real range of
+     * its five weights — that spread is the point of licensing a superfamily.
      *
-     * Controls stay Sans — a button or a table cell is interface, not reading
-     * matter, and a serif control is the fastest way to make a dashboard feel
-     * slow.
+     *   Serif Display  headlines. Light 300 lead → Bold 700 statement. Bold,
+     *                  not Black: at 900 the pen modulation that makes Arabic
+     *                  read as calligraphy collapses into a slab.
+     *   Serif Text     sub-headlines and editorial prose. 300 / 400 / 500 / 700.
+     *   Sans           every control, table and label. 400 / 500 / 700.
      */
     --font-sans: 'Thmanyah Sans';
-    --font-display: 'Thmanyah Sans';
-    --font-subhead: 'Thmanyah Serif Display';
+    --font-display: 'Thmanyah Serif Display';
+    --font-subhead: 'Thmanyah Serif Text';
     --font-serif: 'Thmanyah Serif Text';
 
     /*

@@ -67,7 +67,7 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 font-display text-headline font-semibold">{t(TITLE_KEY[kind])}</h1>
+      <h1 className="mb-6 font-display text-headline font-bold">{t(TITLE_KEY[kind])}</h1>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {rows.map((row) => (
           <Link
@@ -83,7 +83,7 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
                 className="absolute inset-0 -z-10 size-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105"
               />
             ) : null}
-            <p className="font-semibold group-hover:text-foreground">
+            <p className="font-bold group-hover:text-foreground">
               <Bilingual ar={row.nameAr} en={row.nameEn} />
             </p>
             <p className="numeric mt-1 text-xs text-muted-foreground">
@@ -132,7 +132,7 @@ export async function TaxonomyHub({
       </nav>
 
       <header className="mb-6 space-y-2">
-        <h1 className="font-display text-headline font-semibold">
+        <h1 className="font-display text-headline font-bold">
           {t('nav.footage')} <Bilingual ar={entry.nameAr} en={entry.nameEn} />
         </h1>
         {entry.seoDescAr ? (

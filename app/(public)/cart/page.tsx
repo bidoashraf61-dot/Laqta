@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { CartLine } from '@/components/checkout/cart-line'
 import { formatMoney, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('cart.title') }
 
@@ -22,7 +23,7 @@ export default async function CartPage() {
 
   return (
     <div className="container max-w-4xl py-10">
-      <h1 className="mb-6 font-display text-headline font-bold">{t('cart.title')}</h1>
+      <PageTitle className="mb-6">{t('cart.title')}</PageTitle>
 
       {cart.items.length === 0 ? (
         <EmptyState

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 type ManifestClip = {
   id: string
@@ -58,9 +59,9 @@ export default async function LibraryAlbumPage({
         <Link href="/account/library" className="text-sm text-muted-foreground hover:text-foreground">
           ← {t('library.title')}
         </Link>
-        <h1 className="font-display text-headline font-bold">
+        <PageTitle>
           <Bilingual ar={entitlement.album.titleAr} en={entitlement.album.titleEn} />
-        </h1>
+        </PageTitle>
         <p className="numeric text-sm text-muted-foreground">
           {entitlement.orderItem.order.orderNumber}
         </p>

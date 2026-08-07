@@ -12,6 +12,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { AlbumCard } from '@/components/catalogue/album-card'
 import { LicencePicker } from '@/components/catalogue/licence-picker'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { PageTitle } from '@/components/ui/typography'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -154,9 +155,9 @@ export default async function AlbumPage({
           </div>
 
           <header className="space-y-3">
-            <h1 className="font-display text-headline font-bold">
+            <PageTitle>
               <Bilingual ar={album.titleAr} en={album.titleEn} />
-            </h1>
+            </PageTitle>
             <p className="text-muted-foreground">
               <Link href={`/creators/${album.creator.handle}`} className="hover:text-foreground">
                 {t('commerce.byCreator', { creator: album.creator.displayNameAr })}

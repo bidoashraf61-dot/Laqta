@@ -262,6 +262,49 @@ Every status value is set per ground so it clears 4.5:1 on the card it
 actually appears on. The amber that looked right on ink scored 3.33:1 on
 white — a warning nobody can read is not a warning.
 
+### Iconography
+
+Icons come from `components/ui/icons.tsx`, drawn on five forms documented in
+Saudi sources — nothing traced, nothing invented and labelled after the fact:
+
+| Form | Motif | Source |
+|---|---|---|
+| الرُّكن | triangular openings, parapet cuts | At-Turaif · al-Qatt · Sadu |
+| البلسنة | concentric diamond | Sadu weave · al-Qatt |
+| الأمشاط | "straight horizontal bands" on gypsum facades | Saudipedia, Najdi |
+| الخروز | "circular carvings", cylindrical columns | Saudipedia, Najdi |
+| القوس | wooden arched windows | Saudipedia, Najdi |
+
+Three icons draw a heritage OBJECT rather than applying a motif to a generic
+one: `Basket` is the palm-frond سلة الخوص, `Chest` the المندوس dowry chest,
+and `Forever` the band of interlocking diamonds carved into Najdi doors.
+
+**Brand icons only.** Functional affordances — close, chevrons, spinners, sort
+arrows, panel toggles — stay on lucide. A custom mark adds nothing to an X and
+costs the reader a beat deciding whether it means something.
+
+### Kashida — كشيدة
+
+Headlines elongate the join before a word's final letter, using U+0640 TATWEEL.
+`lib/arabic.ts` owns the rule; `Headline` and `PageTitle` apply it.
+
+**It is not letter-spacing.** Arabic is cursive; `letter-spacing` pries apart
+glyphs drawn joined and the word visibly breaks. Kashida lengthens the
+connecting stroke, so the word stays one line and simply becomes wider.
+
+Scale by size: display 4 units, headline 3, dashboard title 2. The function
+declines on its own after any of the fourteen letters that never join forward
+(ا أ إ آ ٱ د ذ ر ز و ؤ ة ى ء) and never splits the lam-alef ligature.
+
+**It only applies to plain strings.** A title carrying an album name or a
+creator's handle passes through untouched — elongating someone's name is not a
+flourish, it is a misspelling.
+
+**Gates must normalise it.** Any check matching rendered Arabic against
+dictionary copy has to strip `/\u0640+/g` first. `verify:hero`, `verify:auth`
+and `verify:journeys` all do; a missed strip in the auth matrix reads as
+"allowed" on a page that actually blocked.
+
 ### Named Rules
 **The One Voice Rule.** Gold means money, the primary action, or the active
 state — nothing else. Not hover borders, not heading colour, not decorative

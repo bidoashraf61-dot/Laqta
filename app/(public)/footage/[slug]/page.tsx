@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/toggles'
 import { Bilingual } from '@/components/ui/bilingual'
 import { ScrollArea } from '@/components/ui/overlays'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { PageTitle } from '@/components/ui/typography'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -133,9 +134,9 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           </div>
 
           <header className="space-y-2">
-            <h1 className="font-display text-headline font-bold">
+            <PageTitle>
               <Bilingual ar={clip.titleAr} en={clip.titleEn} />
-            </h1>
+            </PageTitle>
             {clip.descriptionAr ? (
               <p className="max-w-prose text-muted-foreground">{clip.descriptionAr}</p>
             ) : null}

@@ -4,6 +4,7 @@ import { ClipCard } from '@/components/catalogue/clip-card'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
 import type { ClipHit } from '@/lib/search'
+import { PageTitle } from '@/components/ui/typography'
 
 /**
  * A shared board, viewable WITHOUT an account.
@@ -94,7 +95,7 @@ export default async function SharedBoardPage({
   return (
     <div className="container py-10">
       <header className="mb-6 space-y-1">
-        <h1 className="font-display text-headline font-bold">{board.name}</h1>
+        <PageTitle>{board.name}</PageTitle>
         <p className="numeric text-sm text-muted-foreground">
           {hits.length} {t('boards.clips')}
         </p>

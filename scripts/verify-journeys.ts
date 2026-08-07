@@ -152,7 +152,7 @@ async function buyerJourney(context: BrowserContext) {
   })
 
   await guard('the album shows a price and a buy control', async () => {
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const hasPrice = /US\$|\$/.test(text)
     const buyLink = await page.locator('a[href^="/cart/add"]').count()
     step('the album shows a price and a buy control', hasPrice && buyLink > 0, `${buyLink} buy link(s)`)
@@ -175,7 +175,7 @@ async function buyerJourney(context: BrowserContext) {
     await clickThrough(page, 'a[href^="/cart/add"]')
     await page.goto(`${BASE}/cart`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1400)
-    const cart = await page.evaluate(() => document.body.innerText)
+    const cart = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const present = albumTitle.length > 0 && cart.includes(albumTitle.slice(0, 12))
     step('adding to cart puts the album in the cart', present, present ? albumTitle : 'album not in cart')
   })
@@ -183,7 +183,7 @@ async function buyerJourney(context: BrowserContext) {
   await guard('checkout renders a payable order', async () => {
     await page.goto(`${BASE}/checkout`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1400)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const hasTotal = /الإجمالي|المجموع/.test(text)
     step('checkout renders a payable order', hasTotal || /سلتك فارغة/.test(text), hasTotal ? 'has a total' : 'empty cart (valid)')
   })
@@ -213,7 +213,7 @@ async function creatorJourney(context: BrowserContext) {
   await guard('the studio overview renders (not an error boundary)', async () => {
     await page.goto(`${BASE}/studio`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1500)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const errored = text.includes('حدث خطأ')
     const hasNav = (await page.locator('aside a').count()) > 0
     step('the studio overview renders (not an error boundary)', !errored && hasNav, `${await page.locator('aside a').count()} nav links`)
@@ -239,14 +239,14 @@ async function creatorJourney(context: BrowserContext) {
   await guard('releases page states the permit rules', async () => {
     await page.goto(`${BASE}/studio/releases`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1200)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     step('releases page states the permit rules', /تصريح|تصاريح/.test(text))
   })
 
   await guard('payouts explains the hold before offering a withdrawal', async () => {
     await page.goto(`${BASE}/studio/payouts`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1300)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     // The 30-day hold must be stated — a creator who cannot see why their
     // balance is short assumes the platform is keeping it.
     step('payouts explains the hold before offering a withdrawal', /٣٠|30/.test(text) && /محجوز|تُحجز/.test(text))
@@ -255,7 +255,7 @@ async function creatorJourney(context: BrowserContext) {
   await guard('settings shows the commission share', async () => {
     await page.goto(`${BASE}/studio/settings`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1300)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     // ar-SA renders the Arabic percent sign ٪ (U+066A), not ASCII %.
     step('settings shows the commission share', /[%٪]/.test(text))
   })
@@ -293,7 +293,7 @@ async function adminJourney(context: BrowserContext) {
   await guard('the control panel renders (not an error boundary)', async () => {
     await page.goto(`${BASE}/admin`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1500)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const hasNav = (await page.locator('aside a').count()) > 0
     step('the control panel renders (not an error boundary)', !text.includes('حدث خطأ') && hasNav)
   })
@@ -301,7 +301,7 @@ async function adminJourney(context: BrowserContext) {
   await guard('the review queue is ordered by SLA', async () => {
     await page.goto(`${BASE}/admin/review`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1300)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     step('the review queue is ordered by SLA', /الموعد|قائمة المراجعة/.test(text))
   })
 
@@ -312,7 +312,7 @@ async function adminJourney(context: BrowserContext) {
       return
     }
     const landed = await clickThrough(page, 'a[href^="/admin/review/"]')
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     void landed
     // The gate must show the checklist, and approval must be refused until
     // every check is decided — the invariant the bypass fix restored.
@@ -323,14 +323,14 @@ async function adminJourney(context: BrowserContext) {
   await guard('the catalogue exposes pause and delist', async () => {
     await page.goto(`${BASE}/admin/catalogue`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1300)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     step('the catalogue exposes pause and delist', /إيقاف|سحب/.test(text))
   })
 
   await guard('orders expose the frozen commission rate per line', async () => {
     await page.goto(`${BASE}/admin/orders`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1400)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const empty = /لا توجد طلبات/.test(text)
     step(
       'orders expose the frozen commission rate per line',
@@ -342,7 +342,7 @@ async function adminJourney(context: BrowserContext) {
   await guard('payout queue groups by rail', async () => {
     await page.goto(`${BASE}/admin/payouts`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1300)
-    const text = await page.evaluate(() => document.body.innerText)
+    const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     step('payout queue groups by rail', /IBAN|Payoneer|Wise/i.test(text))
   })
 
@@ -361,7 +361,7 @@ async function guardMatrix(browser: Browser) {
       await page.goto(`${BASE}${route}`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(900)
       const url = page.url()
-      const body = await page.evaluate(() => document.body.innerText)
+      const body = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
       const blocked =
         url.includes('/sign-in') || url.includes('/forbidden') || /لا تملك صلاحية/.test(body)
       step(`anonymous is refused ${route}`, blocked, url.replace(BASE, ''))
@@ -378,7 +378,7 @@ async function guardMatrix(browser: Browser) {
     await cPage.waitForTimeout(1200)
     // middleware.ts REWRITES rather than redirects — the typed URL stays in the
     // address bar by design — so the forbidden page is proven by its content.
-    const body = await cPage.evaluate(() => document.body.innerText)
+    const body = await cPage.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const refused = /لا تملك صلاحية/.test(body)
     const leaked = /لوحة التحكم|قائمة المراجعة/.test(body) && !refused
     step('a creator is refused /admin', refused && !leaked, refused ? 'forbidden page' : 'ADMIN CONTENT LEAKED')

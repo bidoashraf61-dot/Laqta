@@ -5,6 +5,7 @@ import { getCart } from '../cart/actions'
 import { availableMethods } from '@/lib/payments'
 import { CheckoutForm } from '@/components/checkout/checkout-form'
 import { formatMoney, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('checkout.title') }
 
@@ -30,7 +31,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="container max-w-3xl py-10">
-      <h1 className="mb-6 font-display text-headline font-bold">{t('checkout.title')}</h1>
+      <PageTitle className="mb-6">{t('checkout.title')}</PageTitle>
 
       <div className="mb-6 space-y-1 rounded-lg border bg-card p-4">
         {cart.items.map((item) => (

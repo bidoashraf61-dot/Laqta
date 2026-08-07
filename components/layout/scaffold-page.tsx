@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 /**
  * Placeholder for a route the foundation guards but does not build.
@@ -13,7 +14,7 @@ export function ScaffoldPage({ title, owner }: { title: string; owner: string })
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-headline font-bold">{title}</h1>
+        <PageTitle>{title}</PageTitle>
         <Badge variant="neutral" className="ltr-island">
           {owner}
         </Badge>

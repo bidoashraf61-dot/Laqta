@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { cn } from '@/lib/utils'
+import { kashida } from '@/lib/arabic'
 
 /**
  * The type system.
@@ -39,6 +40,7 @@ export function Headline({
   children,
   as: Tag = 'h2',
   size = 'headline',
+  stretch = true,
   className,
 }: {
   lead?: string
@@ -46,10 +48,21 @@ export function Headline({
   children?: React.ReactNode
   as?: 'h1' | 'h2' | 'h3'
   size?: 'display' | 'headline' | 'lg'
+  /** Set false where the copy must stay literal — a name, a code, a quote. */
+  stretch?: boolean
   className?: string
 }) {
   const scale =
     size === 'display' ? 'text-display' : size === 'headline' ? 'text-headline' : 'text-2xl'
+
+  // Kashida, scaled to the size.
+  //
+  // The bigger the type, the further a scribe draws the stroke — at 72px two
+  // units barely register, and at 24px four turn a section head into a banner.
+  // `stretch` opts out; `kashida()` also declines on its own wherever the
+  // letters do not join (see lib/arabic.ts), so most copy needs no thought.
+  const units = size === 'display' ? 4 : size === 'headline' ? 3 : 2
+  const draw = (s?: string) => (stretch && s ? kashida(s, units) : s)
 
   // The statement line is BOLD (700), not Black (900).
   //
@@ -76,12 +89,44 @@ export function Headline({
     >
       {lead ? (
         <>
-          <span className="block font-light">{lead}</span>
-          <span className="block font-bold">{bold}</span>
+          <span className="block font-light">{draw(lead)}</span>
+          <span className="block font-bold">{draw(bold)}</span>
         </>
       ) : (
-        <span className="font-bold">{children ?? bold}</span>
+        <span className="font-bold">
+          {typeof children === 'string' ? draw(children) : (children ?? draw(bold))}
+        </span>
       )}
+    </Tag>
+  )
+}
+
+/**
+ * The page title — the h1 on a catalogue, account or document route.
+ *
+ * Its own component because the pattern was hand-written at thirty call sites,
+ * which meant the kashida rule would have had to be hand-written at thirty
+ * call sites too. One component, one rule.
+ *
+ * `stretch` is a no-op unless the child is a plain string, so a title carrying
+ * an album name, a creator's handle or a board's title passes through
+ * untouched without anyone having to remember to opt out. Elongating someone's
+ * name is not a typographic flourish, it is a misspelling.
+ */
+export function PageTitle({
+  children,
+  as: Tag = 'h1',
+  stretch = true,
+  className,
+}: {
+  children: React.ReactNode
+  as?: 'h1' | 'h2'
+  stretch?: boolean
+  className?: string
+}) {
+  return (
+    <Tag className={cn('font-display text-headline font-bold', className)}>
+      {stretch && typeof children === 'string' ? kashida(children, 3) : children}
     </Tag>
   )
 }

@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { EmptyState } from '@/components/ui/state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { formatDateTime, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('library.downloadsTitle') }
 
@@ -20,7 +21,7 @@ export default async function DownloadsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-headline font-bold">{t('library.downloadsTitle')}</h1>
+      <PageTitle>{t('library.downloadsTitle')}</PageTitle>
       {downloads.length === 0 ? (
         <EmptyState title={t('library.noDownloads')} />
       ) : (

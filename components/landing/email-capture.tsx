@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
 import { captureEmail } from '@/app/(public)/actions'
+import { PageTitle } from '@/components/ui/typography'
 
 /**
  * Launch-notification capture.
@@ -36,7 +37,7 @@ export function EmailCapture() {
   return (
     <section className="bg-off-white border-y border-olive/12">
       <div className="container max-w-xl py-16 text-center">
-        <h2 className="font-display text-headline font-bold">{t('landing.notifyTitle')}</h2>
+        <PageTitle as="h2">{t('landing.notifyTitle')}</PageTitle>
         <p className="mt-2 text-muted-foreground">{t('landing.notifyBody')}</p>
 
         {done ? (

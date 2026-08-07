@@ -5,6 +5,7 @@ import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 async function getCollection(slug: string) {
   return db.collection.findFirst({
@@ -82,9 +83,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   return (
     <div className="container py-10">
       <header className="mb-6 space-y-2">
-        <h1 className="font-display text-headline font-bold">
+        <PageTitle>
           <Bilingual ar={collection.titleAr} en={collection.titleEn} />
-        </h1>
+        </PageTitle>
         {collection.descriptionAr ? (
           <p className="max-w-prose text-muted-foreground">{collection.descriptionAr}</p>
         ) : null}

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatDate, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('library.title') }
 
@@ -22,7 +23,7 @@ export default async function LibraryPage() {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="font-display text-headline font-bold">{t('library.title')}</h1>
+        <PageTitle>{t('library.title')}</PageTitle>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <InfinityIcon className="size-4 text-gold" />
           {t('library.ownedForever')}

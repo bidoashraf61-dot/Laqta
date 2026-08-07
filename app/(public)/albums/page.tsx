@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { EmptyState } from '@/components/ui/state'
 import { formatNumber, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata: Metadata = {
   title: t('catalogue.albumsTitle'),
@@ -65,7 +66,7 @@ export default async function AlbumsPage({
   return (
     <div className="container-tight py-16">
       <header className="mb-6 space-y-1">
-        <h1 className="font-display text-headline font-bold">{t('catalogue.albumsTitle')}</h1>
+        <PageTitle>{t('catalogue.albumsTitle')}</PageTitle>
         <p className="text-muted-foreground">
           {t('catalogue.albumsSubtitle')} ·{' '}
           <span className="numeric">{formatNumber(albums.length)}</span>

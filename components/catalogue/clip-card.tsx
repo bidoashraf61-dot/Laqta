@@ -1,4 +1,4 @@
-import { BadgeCheck } from 'lucide-react'
+import { Cleared } from '@/components/ui/icons'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney, t } from '@/lib/i18n'
@@ -84,7 +84,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
             · <span className="numeric">{clip.album.clipCount}</span> {t('commerce.clip')}
           </span>
           {clip.album.clearedForCommercial ? (
-            <BadgeCheck
+            <Cleared
               className="size-3.5 shrink-0 text-success"
               aria-label={t('commerce.clearedForCommercial')}
             />

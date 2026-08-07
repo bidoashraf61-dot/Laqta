@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata: Metadata = {
   title: t('catalogue.creatorsTitle'),
@@ -26,7 +27,7 @@ export default async function CreatorsPage() {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 font-display text-headline font-bold">{t('catalogue.creatorsTitle')}</h1>
+      <PageTitle className="mb-6">{t('catalogue.creatorsTitle')}</PageTitle>
 
       {creators.length === 0 ? (
         <EmptyState title={t('state.empty')} />

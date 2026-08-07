@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { formatDate, t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 /**
  * The document surface.
@@ -38,7 +39,7 @@ export function DocumentPage({
   return (
     <article className="container-tight py-16 lg:py-24">
       <header className="mb-12 max-w-[62ch]">
-        <h1 className="font-display text-headline font-bold">{title}</h1>
+        <PageTitle>{title}</PageTitle>
         {summary ? (
           <p className="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">{summary}</p>
         ) : null}

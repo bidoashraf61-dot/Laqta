@@ -68,8 +68,12 @@ async function probe(jar: Jar, path: string) {
     redirect: 'manual',
   })
   if (response.status === 307 || response.status === 302) return 'redirected'
-  const body = await response.text()
-  // The 403 is a rewrite, so it arrives as 200 with the forbidden page.
+  // Strip kashida (U+0640) before matching. The forbidden page's title runs
+  // through PageTitle, which draws the joins out, so the rendered copy is
+  // "لا تملــك صلاحيــة الوصول" and a literal compare silently misses. A miss
+  // here reports 'allowed' for a page that actually blocked — a false pass on
+  // the role-guard matrix, which is the one place that must never happen.
+  const body = (await response.text()).replace(/\u0640+/g, '')
   if (body.includes('لا تملك صلاحية الوصول')) return 'forbidden'
   return response.ok ? 'allowed' : `http ${response.status}`
 }

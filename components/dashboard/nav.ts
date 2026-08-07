@@ -1,22 +1,11 @@
-import type { LucideIcon } from 'lucide-react'
+import type { ComponentType, SVGProps } from 'react'
 import {
-  BadgeCheck,
-  BarChart3,
-  Clapperboard,
-  FileText,
-  FolderTree,
   Gauge,
   Image,
-  LayoutGrid,
   Receipt,
-  Search,
-  Settings,
-  ShieldAlert,
-  ShoppingCart,
   Sparkles,
-  Users,
-  Wallet,
 } from 'lucide-react'
+import * as Laqta from '@/components/ui/icons'
 
 /**
  * Dashboard navigation.
@@ -26,15 +15,16 @@ import {
  * panel that a non-technical operator can scan by area (overview, content,
  * money, settings) rather than hunt through.
  *
- * `labelKey` is a messages dot-path; hrefs are absolute. Icons are lucide,
- * one visual family across the whole surface (Operate mode: consistent
- * affordances, no mixed icon sets).
+ * `labelKey` is a messages dot-path; hrefs are absolute. Icons are the Laqta
+ * set where the slot names a domain object — a clip, a creator, a licence —
+ * and lucide where it names an interface idea a custom mark would only make
+ * slower to read (a gauge, a receipt, a sparkle).
  */
 
 export type DashboardLink = {
   href: string
   labelKey: string
-  icon: LucideIcon
+  icon: ComponentType<SVGProps<SVGSVGElement>>
   /** Marks the section landing so nested routes still highlight it. */
   exact?: boolean
 }
@@ -61,26 +51,26 @@ export const STUDIO_NAV: DashboardSection[] = [
     titleKey: 'dash.sectionOverview',
     links: [
       { href: '/studio', labelKey: 'dash.overview', icon: Gauge, exact: true },
-      { href: '/studio/analytics', labelKey: 'dash.analytics', icon: BarChart3 },
+      { href: '/studio/analytics', labelKey: 'dash.analytics', icon: Laqta.Analytics },
     ],
   },
   {
     titleKey: 'dash.sectionContent',
     links: [
-      { href: '/studio/albums', labelKey: 'studio.albums', icon: LayoutGrid },
-      { href: '/studio/releases', labelKey: 'studio.releases', icon: FileText },
+      { href: '/studio/albums', labelKey: 'studio.albums', icon: Laqta.Album },
+      { href: '/studio/releases', labelKey: 'studio.releases', icon: Laqta.Licence },
     ],
   },
   {
     titleKey: 'dash.sectionMoney',
     links: [
-      { href: '/studio/earnings', labelKey: 'studio.earnings', icon: Wallet },
+      { href: '/studio/earnings', labelKey: 'studio.earnings', icon: Laqta.Chest },
       { href: '/studio/payouts', labelKey: 'dash.payouts', icon: Receipt },
     ],
   },
   {
     titleKey: 'dash.sectionSettings',
-    links: [{ href: '/studio/settings', labelKey: 'dash.settings', icon: Settings }],
+    links: [{ href: '/studio/settings', labelKey: 'dash.settings', icon: Laqta.Settings }],
   },
 ]
 
@@ -90,37 +80,37 @@ export const ADMIN_NAV: DashboardSection[] = [
     titleKey: 'dash.sectionOverview',
     links: [
       { href: '/admin', labelKey: 'dash.overview', icon: Gauge, exact: true },
-      { href: '/admin/analytics', labelKey: 'dash.analytics', icon: BarChart3 },
+      { href: '/admin/analytics', labelKey: 'dash.analytics', icon: Laqta.Analytics },
     ],
   },
   {
     titleKey: 'dash.sectionOperations',
     links: [
-      { href: '/admin/review', labelKey: 'admin.reviewQueue', icon: BadgeCheck },
-      { href: '/admin/creators', labelKey: 'admin.creators', icon: Users },
-      { href: '/admin/disputes', labelKey: 'admin.disputes', icon: ShieldAlert },
+      { href: '/admin/review', labelKey: 'admin.reviewQueue', icon: Laqta.Cleared },
+      { href: '/admin/creators', labelKey: 'admin.creators', icon: Laqta.Creator },
+      { href: '/admin/disputes', labelKey: 'admin.disputes', icon: Laqta.Dispute },
     ],
   },
   {
     titleKey: 'dash.sectionCatalogue',
     links: [
-      { href: '/admin/catalogue', labelKey: 'admin.catalogue', icon: Clapperboard },
-      { href: '/admin/taxonomy', labelKey: 'admin.taxonomyEditor', icon: FolderTree },
+      { href: '/admin/catalogue', labelKey: 'admin.catalogue', icon: Laqta.Clip },
+      { href: '/admin/taxonomy', labelKey: 'admin.taxonomyEditor', icon: Laqta.Category },
       { href: '/admin/merchandising', labelKey: 'dash.merchandising', icon: Image },
-      { href: '/admin/reports', labelKey: 'admin.zeroResults', icon: Search },
+      { href: '/admin/reports', labelKey: 'admin.zeroResults', icon: Laqta.Search },
     ],
   },
   {
     titleKey: 'dash.sectionMoney',
     links: [
-      { href: '/admin/orders', labelKey: 'admin.orders', icon: ShoppingCart },
-      { href: '/admin/payouts', labelKey: 'admin.payoutRuns', icon: Wallet },
+      { href: '/admin/orders', labelKey: 'admin.orders', icon: Laqta.Basket },
+      { href: '/admin/payouts', labelKey: 'admin.payoutRuns', icon: Laqta.Chest },
       { href: '/admin/promos', labelKey: 'dash.promos', icon: Sparkles },
     ],
   },
   {
     titleKey: 'dash.sectionSettings',
-    links: [{ href: '/admin/settings', labelKey: 'dash.settings', icon: Settings }],
+    links: [{ href: '/admin/settings', labelKey: 'dash.settings', icon: Laqta.Settings }],
   },
 ]
 

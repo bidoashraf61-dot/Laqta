@@ -1,4 +1,4 @@
-import { SubHeadline } from '@/components/ui/typography'
+import { SubHeadline, PageTitle } from '@/components/ui/typography'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { db } from '@/lib/db'
@@ -27,7 +27,7 @@ export default async function CollectionsPage() {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 font-display text-headline font-bold">{t('catalogue.collectionsTitle')}</h1>
+      <PageTitle className="mb-6">{t('catalogue.collectionsTitle')}</PageTitle>
       {collections.length === 0 ? (
         <EmptyState title={t('state.empty')} />
       ) : (

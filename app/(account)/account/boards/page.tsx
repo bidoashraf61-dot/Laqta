@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/state'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { t } from '@/lib/i18n'
+import { PageTitle } from '@/components/ui/typography'
 
 export const metadata = { title: t('boards.title') }
 
@@ -18,7 +19,7 @@ export default async function BoardsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-headline font-bold">{t('boards.title')}</h1>
+      <PageTitle>{t('boards.title')}</PageTitle>
 
       {boards.length === 0 ? (
         <EmptyState title={t('boards.empty')} description={t('boards.emptyHint')} />

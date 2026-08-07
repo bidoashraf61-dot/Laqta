@@ -45,6 +45,7 @@ No server action mutates anything on this route; the only write is the search lo
 - **Search engine** — Postgres today. `SearchDriver` is the boundary for a future Meilisearch driver; nothing in the route layer changes when it lands.
 
 ## Invariants
+- Clip thumbnails carry a real `alt` from `catalogue.altClipThumb`. Previously `alt=""`, which §A4 bans.
 - Only `live` albums are searchable — a draft or in-review album in results is a 404 with extra steps.
 - Only `ingestStatus='ready'` clips are searchable.
 - Every clip result carries its album ribbon (album title, price, clip count, clearance). Stripping the ribbon teaches buyers they are buying one clip and breaks them at checkout.

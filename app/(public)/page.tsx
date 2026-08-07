@@ -35,13 +35,13 @@ export const metadata: Metadata = {
     locale: 'ar_SA',
     url: '/',
     title: `${t('brand.name')} — ${t('brand.tagline')}`,
-    description: t('brand.promise'),
+    description: t('brand.seo.home'),
     images: [{ url: '/hero/06-alula.jpg', width: 1920, height: 1080, alt: t('brand.tagline') }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${t('brand.name')} — ${t('brand.tagline')}`,
-    description: t('brand.promise'),
+    description: t('brand.seo.home'),
     images: ['/hero/06-alula.jpg'],
   },
 }

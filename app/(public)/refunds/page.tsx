@@ -5,7 +5,7 @@ import { t } from '@/lib/i18n'
 
 export const metadata = {
   title: t('footer.refunds'),
-  description: t('brand.promise'),
+  description: t('brand.seo.refunds'),
 }
 
 export default function RefundsPage() {

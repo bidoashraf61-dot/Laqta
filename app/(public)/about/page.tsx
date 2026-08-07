@@ -5,7 +5,7 @@ import { t } from '@/lib/i18n'
 
 export const metadata = {
   title: t('footer.about'),
-  description: t('brand.promise'),
+  description: t('brand.seo.about'),
 }
 
 export default function AboutPage() {

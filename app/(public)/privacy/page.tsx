@@ -5,7 +5,7 @@ import { t } from '@/lib/i18n'
 
 export const metadata = {
   title: t('footer.privacy'),
-  description: t('brand.promise'),
+  description: t('brand.seo.privacy'),
 }
 
 export default function PrivacyPage() {

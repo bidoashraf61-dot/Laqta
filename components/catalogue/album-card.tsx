@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney, t } from '@/lib/i18n'
@@ -35,7 +34,12 @@ export function albumHref(album: { creatorHandle: string; slug: string }) {
 
 export function AlbumCard({ album, className }: { album: AlbumCardData; className?: string }) {
   return (
-    <Link
+    // A plain anchor, not next/link. The client router intermittently fetches
+    // a card's route and then declines to commit, so the click does nothing —
+    // see "Client-router navigations that never commit" in CLAUDE.md. This is
+    // the buyer's primary path to the thing they can actually purchase, so it
+    // takes the reliable navigation rather than the fast one.
+    <a
       href={albumHref(album)}
       className={cn(
         'group block overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground/25',
@@ -71,7 +75,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
           </span>
         </div>
       </div>
-    </Link>
+    </a>
   )
 }
 

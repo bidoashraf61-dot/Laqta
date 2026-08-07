@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { BadgeCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
@@ -33,7 +32,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
         className,
       )}
     >
-      <Link href={`/footage/${clip.slug}`} className="block">
+      <a href={`/footage/${clip.slug}`} className="block">
         <div className="relative aspect-video overflow-hidden bg-muted">
           {clip.thumbnail ? (
             <img
@@ -63,11 +62,11 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
         <h2 className="line-clamp-2 px-3 pt-3 text-sm font-medium leading-snug group-hover:text-foreground">
           <Bilingual ar={clip.titleAr} en={clip.titleEn} />
         </h2>
-      </Link>
+      </a>
 
       {/* The ribbon. Its own link, so the buyer can go straight to the thing
           they can actually purchase without passing through the clip page. */}
-      <Link
+      <a
         href={albumHref({ creatorHandle: clip.album.creatorHandle, slug: clip.album.slug })}
         className="mt-2 block border-t bg-secondary/40 px-3 py-2 transition-colors hover:bg-secondary"
       >
@@ -91,7 +90,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
             />
           ) : null}
         </p>
-      </Link>
+      </a>
     </article>
   )
 }

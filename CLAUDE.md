@@ -22,6 +22,30 @@ Concretely, before writing or changing any user-facing UI:
 If a request would break a design rule, say so and reconcile with the user
 before shipping — do not quietly split the difference.
 
+## ⚠️ Hard rule: the spec is updated in the same change as the code
+
+**`specs/` is the shared memory between sessions. A change that edits a surface
+without editing its spec is an incomplete change.** A future session reads the
+spec, believes it, and builds on a lie.
+
+Concretely, for every change to a portal surface:
+
+1. **Read the spec first.** `specs/admin/<route>.md` for admin,
+   the matching file elsewhere in `specs/` for other areas. Do not change a page
+   you have not read the spec for.
+2. **Update the spec in the same commit as the code** — never "later", never a
+   follow-up commit. Content, design and behaviour all count: new or removed
+   controls, changed copy, a new state or empty state, a changed data query,
+   a new invariant, a changed verification gate.
+3. **Keep `specs/admin/README.md` in sync too** — the route table, the Coverage
+   section and the "Dead ends worth knowing" list are part of the spec. If a
+   change closes a dead end or adds gate coverage, that list changes with it.
+4. **Match the house format**: Route/Access/Rendering line, Purpose, Data in,
+   Controls table, States, Invariants, Verified by. Do not invent a new shape.
+
+If a change turns out to be pure refactor with no user-visible or behavioural
+delta, say so explicitly rather than silently skipping the spec.
+
 ## Language & direction
 
 Arabic only. RTL by default. Logical properties only (`ms/me/ps/pe`,
@@ -84,6 +108,25 @@ a regression fails the suite rather than reaching an operator.
   interfaces with honest local drivers — no gateway/S3 yet.
 - Hero video is staged in `public/hero/vid/` (gitignored); wiring is gated on a
   user go-signal.
+
+## Specs are the shared memory — update them with every change
+
+`specs/` holds a functional spec per route (`specs/studio/`, `specs/admin/`, …).
+They are how one session hands the truth to the next, so they must never lag the
+code.
+
+- **Read the route's spec before changing that route.** Not the code first —
+  the spec first.
+- **Update the spec in the same change**, not afterwards and not "later".
+  Content, behaviour, layout, copy, controls, data shown, what's deliberately
+  not wired — if the page changed, the spec changes with it.
+- **A change is not done until its spec matches the shipped page.** This ranks
+  alongside the verification gates, not below them.
+- Keep the area `README.md` table accurate when a route is added, removed or
+  repurposed.
+
+A spec that describes a page that no longer exists is worse than no spec: the
+next session trusts it and builds on a false premise.
 
 ## Git
 

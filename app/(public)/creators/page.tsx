@@ -26,7 +26,7 @@ export default async function CreatorsPage() {
 
   return (
     <div className="container-tight py-16">
-      <h1 className="mb-6 font-display text-headline font-semibold">{t('catalogue.creatorsTitle')}</h1>
+      <h1 className="mb-6 font-display text-headline font-bold">{t('catalogue.creatorsTitle')}</h1>
 
       {creators.length === 0 ? (
         <EmptyState title={t('state.empty')} />
@@ -39,11 +39,11 @@ export default async function CreatorsPage() {
               className="rounded-lg border bg-card p-5 transition-colors hover:border-foreground/25"
             >
               <div className="flex items-center gap-3">
-                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-semibold">
+                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-bold">
                   {creator.displayNameAr.charAt(0)}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate font-semibold">
+                  <p className="truncate font-bold">
                     <Bilingual ar={creator.displayNameAr} en={creator.displayNameEn} />
                   </p>
                   <p className="text-sm text-muted-foreground">

@@ -133,7 +133,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           </div>
 
           <header className="space-y-2">
-            <h1 className="font-display text-headline font-semibold">
+            <h1 className="font-display text-headline font-bold">
               <Bilingual ar={clip.titleAr} en={clip.titleEn} />
             </h1>
             {clip.descriptionAr ? (
@@ -166,7 +166,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           <Separator />
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-semibold">{t('catalogue.specs')}</h2>
+            <h2 className="mb-3 font-subhead text-xl font-bold">{t('catalogue.specs')}</h2>
             <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
               <Spec label={t('catalogue.duration')} value={formatDuration(Number(clip.durationS))} numeric />
               <Spec label={t('catalogue.dimensions')} value={`${clip.width}×${clip.height}`} numeric />
@@ -185,7 +185,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
               intent into an album purchase. */}
           {siblings.length > 0 ? (
             <section>
-              <h2 className="mb-3 font-display text-xl font-semibold">{t('catalogue.clipsInAlbum')}</h2>
+              <h2 className="mb-3 font-subhead text-xl font-bold">{t('catalogue.clipsInAlbum')}</h2>
               <ScrollArea className="w-full">
                 <div className="flex gap-3 pb-3">
                   {siblings.map((sibling) => (
@@ -221,7 +221,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           <Card className="border-gold/30">
             <CardContent className="space-y-4 p-5">
               <p className="text-sm text-muted-foreground">{t('catalogue.partOfAlbum')}</p>
-              <Link href={albumUrl} className="block text-lg font-semibold hover:text-foreground">
+              <Link href={albumUrl} className="block text-lg font-bold hover:text-foreground">
                 <Bilingual ar={clip.album.titleAr} en={clip.album.titleEn} />
               </Link>
 

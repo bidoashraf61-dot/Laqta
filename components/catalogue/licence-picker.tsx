@@ -119,7 +119,7 @@ function TierOption({
       )}
     >
       <span className="flex items-baseline justify-between gap-2">
-        <span className="text-sm font-semibold">{label}</span>
+        <span className="text-sm font-bold">{label}</span>
         <span className="numeric text-sm">{price}</span>
       </span>
       <span className="mt-1 block text-xs text-muted-foreground">{hint}</span>

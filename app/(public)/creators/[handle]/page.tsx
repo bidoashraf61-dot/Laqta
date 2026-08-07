@@ -81,11 +81,11 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
   return (
     <div className="container py-10">
       <header className="mb-8 flex items-start gap-4">
-        <span className="grid size-16 shrink-0 place-items-center rounded-full bg-secondary text-2xl font-semibold">
+        <span className="grid size-16 shrink-0 place-items-center rounded-full bg-secondary text-2xl font-bold">
           {creator.displayNameAr.charAt(0)}
         </span>
         <div className="min-w-0 space-y-1">
-          <h1 className="font-display text-headline font-semibold">
+          <h1 className="font-display text-headline font-bold">
             <Bilingual ar={creator.displayNameAr} en={creator.displayNameEn} />
           </h1>
           <p className="text-sm text-muted-foreground">

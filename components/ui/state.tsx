@@ -81,7 +81,7 @@ function EmptyState({
       <div className="grid size-12 place-items-center rounded-full bg-gold/12 text-gold [&_svg]:size-6">
         {icon ?? <Inbox />}
       </div>
-      <h2 className="font-display text-lg font-semibold">{title}</h2>
+      <h2 className="text-lg font-bold">{title}</h2>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       ) : null}
@@ -112,7 +112,7 @@ function ErrorState({
       role="alert"
     >
       <AlertTriangle className="size-8 text-destructive" />
-      <h2 className="font-display text-lg font-semibold">{title}</h2>
+      <h2 className="text-lg font-bold">{title}</h2>
       {description ? (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       ) : null}
@@ -147,7 +147,7 @@ function Alert({
 }
 
 function AlertTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h5 className={cn('mb-1 font-semibold leading-none', className)} {...props} />
+  return <h5 className={cn('mb-1 font-bold leading-none', className)} {...props} />
 }
 
 function AlertDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {

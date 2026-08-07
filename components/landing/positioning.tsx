@@ -10,7 +10,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Headline, Prose, Section } from '@/components/ui/typography'
+import { Headline, Prose, Section, SubHeadline } from '@/components/ui/typography'
 import { accentChip, cycleAccent, type Accent } from '@/components/ui/accent'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/i18n'
@@ -60,7 +60,9 @@ export function TheSolution() {
             <span className={cn('mb-4 grid size-11 place-items-center rounded-md', accentChip[accent])}>
               <Icon className="size-5" />
             </span>
-            <p className="text-lg font-semibold">{t(`landing.${key}Title`)}</p>
+            <SubHeadline as="h3" size="card">
+              {t(`landing.${key}Title`)}
+            </SubHeadline>
             <p className="mt-2 leading-relaxed text-muted-foreground">{t(`landing.${key}Body`)}</p>
           </div>
         ))}
@@ -106,7 +108,7 @@ export function TheProblem() {
         {PROBLEMS.map(({ icon: Icon, key }) => (
           <div key={key} className="bg-background p-6">
             <Icon className="mb-3 size-5 text-destructive/70" />
-            <p className="font-semibold">{t(`landing.${key}Title`)}</p>
+            <p className="font-bold">{t(`landing.${key}Title`)}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
               {t(`landing.${key}Body`)}
             </p>
@@ -142,7 +144,7 @@ export function WhoItsFor() {
             >
               <Icon className="size-5" />
             </span>
-            <p className="font-semibold">{t(`landing.${key}Title`)}</p>
+            <p className="font-bold">{t(`landing.${key}Title`)}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
               {t(`landing.${key}Body`)}
             </p>

@@ -31,7 +31,7 @@ export function MobileNav({ extra }: { extra: NavItem[] }) {
         aria-current={active ? 'page' : undefined}
         className={cn(
           'rounded-md px-3 py-2 text-base transition-colors hover:bg-accent',
-          active && 'bg-accent font-semibold text-gold',
+          active && 'bg-accent font-bold text-gold',
         )}
       >
         {t(item.labelKey)}

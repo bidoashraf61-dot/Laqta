@@ -65,7 +65,7 @@ export default async function AlbumsPage({
   return (
     <div className="container-tight py-16">
       <header className="mb-6 space-y-1">
-        <h1 className="font-display text-headline font-semibold">{t('catalogue.albumsTitle')}</h1>
+        <h1 className="font-display text-headline font-bold">{t('catalogue.albumsTitle')}</h1>
         <p className="text-muted-foreground">
           {t('catalogue.albumsSubtitle')} ·{' '}
           <span className="numeric">{formatNumber(albums.length)}</span>

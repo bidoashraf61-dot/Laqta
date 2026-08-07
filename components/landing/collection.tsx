@@ -53,7 +53,7 @@ function Testimonial() {
         {t('landing.testimonialQuote')}
       </blockquote>
       <figcaption className="mt-6 text-sm text-muted-foreground">
-        <span className="font-semibold text-foreground">{t('landing.testimonialName')}</span>
+        <span className="font-bold text-foreground">{t('landing.testimonialName')}</span>
         {' · '}
         {t('landing.testimonialRole')}
       </figcaption>

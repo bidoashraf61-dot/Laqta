@@ -52,7 +52,7 @@ export function CartLine({
     <Card>
       <CardContent className="flex flex-wrap items-center gap-4 p-4">
         <div className="min-w-0 flex-1">
-          <p className="font-semibold">
+          <p className="font-bold">
             <Bilingual ar={titleAr} en={titleEn} />
           </p>
           <p className="text-sm text-muted-foreground">

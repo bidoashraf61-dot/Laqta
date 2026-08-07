@@ -152,7 +152,7 @@ export function HeroCinematic() {
             <div className="mt-9 flex flex-wrap gap-3">
               <Link
                 href="/albums"
-                className="inline-flex h-12 items-center rounded-md bg-gold px-6 text-base font-semibold text-gold-foreground shadow-glow transition-colors hover:bg-gold-400"
+                className="inline-flex h-12 items-center rounded-md bg-gold px-6 text-base font-bold text-gold-foreground shadow-glow transition-colors hover:bg-gold-400"
               >
                 {t('landing.browseAlbums')}
               </Link>

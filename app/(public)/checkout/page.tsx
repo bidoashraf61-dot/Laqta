@@ -30,7 +30,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="container max-w-3xl py-10">
-      <h1 className="mb-6 font-display text-headline font-semibold">{t('checkout.title')}</h1>
+      <h1 className="mb-6 font-display text-headline font-bold">{t('checkout.title')}</h1>
 
       <div className="mb-6 space-y-1 rounded-lg border bg-card p-4">
         {cart.items.map((item) => (
@@ -44,7 +44,7 @@ export default async function CheckoutPage() {
           <span className="numeric">{formatMoney(cart.vatAmount, currency)}</span>
         </div>
         <div className="flex justify-between gap-4 pt-1">
-          <span className="font-semibold">{t('cart.total')}</span>
+          <span className="font-bold">{t('cart.total')}</span>
           <span className="numeric text-lg font-bold text-gold">
             {formatMoney(cart.total, currency)}
           </span>

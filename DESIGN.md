@@ -28,9 +28,21 @@ typography:
   headline:
     fontFamily: "Thmanyah Serif Display, Georgia, serif"
     fontSize: "clamp(1.5rem, 2.6vw, 2.125rem)"
-    fontWeight: 600
+    fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "-0.01em"
+  headline-lead:
+    fontFamily: "Thmanyah Serif Display, Georgia, serif"
+    fontSize: "clamp(1.5rem, 2.6vw, 2.125rem)"
+    fontWeight: 300
+    lineHeight: 1.2
+    letterSpacing: "-0.01em"
+  subhead:
+    fontFamily: "Thmanyah Serif Text, Georgia, serif"
+    fontSize: "clamp(1.5rem, 2.2vw, 1.75rem)"
+    fontWeight: 500
+    lineHeight: 1.35
+    letterSpacing: "normal"
   prose:
     fontFamily: "Thmanyah Serif Text, Georgia, serif"
     fontSize: "1.2rem"
@@ -40,7 +52,7 @@ typography:
   prose-lead:
     fontFamily: "Thmanyah Serif Text, Georgia, serif"
     fontSize: "1.35rem"
-    fontWeight: 400
+    fontWeight: 300
     lineHeight: 1.75
     letterSpacing: "normal"
   body:

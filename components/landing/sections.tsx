@@ -58,7 +58,7 @@ export function TrustStrip({
       <div className="container-tight grid grid-cols-2 gap-6 py-10 md:grid-cols-4">
         {items.map((item) => (
           <div key={item.label} className="text-center">
-            <p className="numeric font-display text-3xl font-black text-gold">{item.value}</p>
+            <p className="numeric font-display text-3xl font-bold text-gold">{item.value}</p>
             <p className="mt-1 text-sm text-muted-foreground">{item.label}</p>
           </div>
         ))}
@@ -165,7 +165,7 @@ export function BrowseTiles({
                 className="absolute inset-0 -z-10 size-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105"
               />
             ) : null}
-            <p className="font-semibold group-hover:text-foreground">
+            <p className="font-bold group-hover:text-foreground">
               <Bilingual ar={tile.nameAr} en={tile.nameEn} />
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -203,11 +203,11 @@ export function TopCreators({
             href={`/creators/${creator.handle}`}
             className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:border-foreground/25"
           >
-            <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-semibold">
+            <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-bold">
               {creator.nameAr.charAt(0)}
             </span>
             <span className="min-w-0">
-              <span className="block truncate font-semibold">
+              <span className="block truncate font-bold">
                 <Bilingual ar={creator.nameAr} en={creator.nameEn} />
               </span>
               <span className="block text-sm text-muted-foreground">

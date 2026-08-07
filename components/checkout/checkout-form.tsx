@@ -64,7 +64,7 @@ export function CheckoutForm({
       <Card>
         <CardContent className="space-y-4 p-6 text-center">
           <CheckCircle2 className="mx-auto size-10 text-success" />
-          <h2 className="font-display text-xl font-semibold">{t('checkout.successTitle')}</h2>
+          <h2 className="text-xl font-bold">{t('checkout.successTitle')}</h2>
           <p className="numeric text-sm text-muted-foreground">
             {t('checkout.orderNumber')}: {done.orderNumber}
           </p>
@@ -87,7 +87,7 @@ export function CheckoutForm({
   return (
     <form action={onSubmit} className="space-y-6">
       <section className="space-y-4">
-        <h2 className="font-semibold">{t('checkout.billing')}</h2>
+        <h2 className="font-bold">{t('checkout.billing')}</h2>
 
         <div className="flex gap-2" role="radiogroup" aria-label={t('checkout.billing')}>
           <Toggle
@@ -147,7 +147,7 @@ export function CheckoutForm({
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-semibold">{t('checkout.paymentMethod')}</h2>
+        <h2 className="font-bold">{t('checkout.paymentMethod')}</h2>
         <div className="grid gap-2" role="radiogroup" aria-label={t('checkout.paymentMethod')}>
           {methods.map((option) => (
             <button

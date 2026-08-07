@@ -53,7 +53,7 @@ export function DocumentPage({
       <div className="max-w-[62ch] space-y-10">
         {sections.map((section) => (
           <section key={section.heading}>
-            <h2 className="font-display text-xl font-semibold">{section.heading}</h2>
+            <h2 className="font-subhead text-xl font-bold">{section.heading}</h2>
             {section.body.map((paragraph) => (
               <p key={paragraph} className="mt-3 font-serif leading-[1.9] text-foreground/85">
                 {paragraph}

@@ -2,6 +2,9 @@
 
 import { z } from 'zod'
 import { db } from '@/lib/db'
+import { auth } from '@/lib/auth'
+import { ownsAlbum, recomputeAlbumRating } from '@/lib/reviews'
+import { revalidatePath } from 'next/cache'
 
 const emailSchema = z.string().email()
 
@@ -81,4 +84,57 @@ export async function requestFootage(
   }
 
   return { ok: true, messageKey: 'request.received' }
+}
+
+const reviewSchema = z.object({
+  albumId: z.string().min(1),
+  rating: z.coerce.number().int().min(1).max(5),
+  body: z.string().trim().max(1200).optional(),
+})
+
+/**
+ * Leave a verdict on an album you own.
+ *
+ * ── Ownership is enforced, not encouraged ──────────────────────────────────
+ * A review is worth something only because the person writing it paid. Without
+ * an `Entitlement` there is no review, which puts review-bombing and
+ * competitor sabotage a purchase away rather than a signup away.
+ *
+ * ── Upsert, not create ─────────────────────────────────────────────────────
+ * One verdict per buyer per album. A buyer who changes their mind should be
+ * able to say so; stacking ten reviews from one account should be impossible.
+ * The unique constraint backs this up at the database level.
+ */
+export async function reviewAlbum(
+  formData: FormData,
+): Promise<{ ok: boolean; messageKey: string }> {
+  const session = await auth()
+  if (!session?.user?.id) return { ok: false, messageKey: 'review.signInFirst' }
+
+  const parsed = reviewSchema.safeParse({
+    albumId: formData.get('albumId'),
+    rating: formData.get('rating'),
+    body: formData.get('body') || undefined,
+  })
+  if (!parsed.success) return { ok: false, messageKey: 'review.invalid' }
+
+  const { albumId, rating, body } = parsed.data
+
+  if (!(await ownsAlbum(session.user.id, albumId))) {
+    return { ok: false, messageKey: 'review.mustOwn' }
+  }
+
+  try {
+    await db.albumReview.upsert({
+      where: { albumId_userId: { albumId, userId: session.user.id } },
+      update: { rating, bodyAr: body ?? null },
+      create: { albumId, userId: session.user.id, rating, bodyAr: body ?? null },
+    })
+    await recomputeAlbumRating(albumId)
+  } catch {
+    return { ok: false, messageKey: 'auth.somethingWentWrong' }
+  }
+
+  revalidatePath('/albums', 'layout')
+  return { ok: true, messageKey: 'review.thanks' }
 }

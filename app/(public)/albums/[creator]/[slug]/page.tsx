@@ -13,6 +13,9 @@ import { AlbumCard } from '@/components/catalogue/album-card'
 import { LicencePicker } from '@/components/catalogue/licence-picker'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { PageTitle } from '@/components/ui/typography'
+import { AlbumReviews } from '@/components/catalogue/reviews'
+import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
+import { auth } from '@/lib/auth'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -97,6 +100,13 @@ export default async function AlbumPage({
   const album = await getAlbum(creatorHandle, slug)
   if (!album) notFound()
 
+  const session = await auth()
+  const [reviews, owns, ownReview] = await Promise.all([
+    getAlbumReviews(album.id),
+    session?.user?.id ? ownsAlbum(session.user.id, album.id) : Promise.resolve(false),
+    session?.user?.id ? getOwnReview(session.user.id, album.id) : Promise.resolve(null),
+  ])
+
   const others = await db.album.findMany({
     where: { status: 'live', creatorId: album.creatorId, id: { not: album.id } },
     take: 4,
@@ -105,6 +115,8 @@ export default async function AlbumPage({
       titleAr: true,
       titleEn: true,
       priceStandard: true,
+      ratingAvg: true,
+      ratingCount: true,
       compareAtPrice: true,
       offerLabelAr: true,
       currency: true,
@@ -338,6 +350,18 @@ export default async function AlbumPage({
           </ul>
         </aside>
       </div>
+
+      <div className="mt-14">
+        <AlbumReviews
+          albumId={album.id}
+          reviews={reviews}
+          ratingAvg={album.ratingAvg == null ? null : Number(album.ratingAvg)}
+          ratingCount={album.ratingCount}
+          canReview={owns}
+          ownReview={ownReview}
+          signedIn={session?.user?.id != null}
+        />
+      </div>
     </div>
   )
 }
@@ -373,7 +397,13 @@ function ProductJsonLd({
   priceStandard,
   url,
 }: {
-  album: { titleAr: string; descriptionAr: string | null; currency: string }
+  album: {
+    titleAr: string
+    descriptionAr: string | null
+    currency: string
+    ratingAvg: unknown
+    ratingCount: number
+  }
   priceStandard: number
   url: string
 }) {
@@ -390,6 +420,20 @@ function ProductJsonLd({
       availability: 'https://schema.org/InStock',
       url,
     },
+    // §A3 asks for AggregateRating "when reviews exist" — and only then.
+    // Emitting a rating block with zero reviews is a structured-data
+    // violation Google penalises, not a harmless empty field.
+    ...(album.ratingCount > 0 && album.ratingAvg != null
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: Number(album.ratingAvg).toFixed(1),
+            reviewCount: album.ratingCount,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   }
   return (
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />

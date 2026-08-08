@@ -177,6 +177,12 @@ export type FootageTile = {
   titleEn: string
   aspectRatio: string | null
   thumbKey: string | null
+  /**
+   * A short muted loop for hover preview. NULL until the transcode pipeline
+   * exists, and the tile simply does not play — the poster stays. Never let a
+   * missing preview become a broken <video>.
+   */
+  previewKey: string | null
   album: {
     creatorHandle: string
     slug: string
@@ -209,6 +215,7 @@ export async function getFootageWall(take = 12): Promise<FootageTile[]> {
       titleEn: true,
       aspectRatio: true,
       thumbnailKeys: true,
+      proxyKey: true,
       album: {
         select: {
           slug: true,
@@ -230,6 +237,11 @@ export async function getFootageWall(take = 12): Promise<FootageTile[]> {
     titleEn: row.titleEn,
     aspectRatio: row.aspectRatio,
     thumbKey: row.thumbnailKeys[0] ?? null,
+    // Only serve a preview that is actually a playable URL. Object-storage
+    // keys ("proxies/demo/…") are not URLs and would render a broken <video>;
+    // until the transcode pipeline resolves them, anything not rooted at "/"
+    // is treated as absent.
+    previewKey: row.proxyKey?.startsWith('/') ? row.proxyKey : null,
     album: {
       creatorHandle: row.album.creator.handle,
       slug: row.album.slug,

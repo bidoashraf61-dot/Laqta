@@ -34,6 +34,9 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- Footage tiles play a muted loop on hover. The `<video>` is created on FIRST hover, not at mount — twelve tiles is twelve decoders, and Safari caps simultaneous decoders per page. Play is triggered from an effect, never the event handler: on first hover React has not committed the element yet, so a handler-side `play()` hits a null ref and the tile silently stays a still.
+- A tile with no `previewKey` stays a poster. `previewKey` is NULL unless the stored proxy is a real URL (`/`-rooted) — an object-storage key would render a black rectangle where a photograph was.
+- Hover is never the only route: the whole tile is a link and an explicit «افتح الألبوم» control is shown, because hover does not exist on touch. Under `prefers-reduced-motion` the loop never starts.
 - **Special offers render nothing when no album is on offer.** `getOfferAlbums()` filters `compareAtPrice != null`; an "offers" heading over an empty grid advertises that there are none.
 - The struck-through number is the stored `compareAtPrice`, never a recomputed percentage — a percentage can drift from what was actually charged. `priceStandard` is always what the buyer pays.
 - The saving is stated in words as well as shown by the strike (`landing.offersHint`), because assistive tech announces `<s>` inconsistently.

@@ -34,6 +34,8 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- Light/dark is a **user preference**, applied to `html.dark` by an inline pre-paint script (`lib/theme.ts`) so the page never flashes the wrong theme. Default is `system`; only an explicit pick is persisted, so "follow my OS" survives as an absence rather than a stored guess. The olive and dusty band scopes are theme-stable by design.
+- Resolution claims: **1080p ships today, 4K is the ceiling.** 6K was removed everywhere — no generation model produces it, so it was an unverifiable spec claim on a page a buyer checks.
 - The collection band renders album **packs** (5:7 boxed products), not 16:9 cards — see specs/public/albums.md.
 - **No page on this site may claim the footage was filmed in the Kingdom or that permits were cleared.** The catalogue is AI-generated (`docs/website-content.md` §0). `landing.heroBody`, `landing.solution1Body` and `landing.collectionBody` all carried that claim and were corrected; the landing FAQ's permits guarantee was replaced with the AI disclosure (`landing.faq4Q/A`).
 - The AI disclosure appears in the footer of every route via `brand.aiNotice`, so no page can be reached that does not carry it.

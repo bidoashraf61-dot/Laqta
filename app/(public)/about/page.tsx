@@ -4,6 +4,7 @@ import { ABOUT } from '@/content/legal'
 import { t } from '@/lib/i18n'
 
 export const metadata = {
+  alternates: { canonical: '/about' },
   title: t('footer.about'),
   description: t('brand.seo.about'),
 }

@@ -10,6 +10,7 @@ import { formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/footage' },
   title: t('catalogue.footageTitle'),
   description: t('catalogue.footageSubtitle'),
 }

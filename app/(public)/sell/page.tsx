@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Headline, Prose, Section } from '@/components/ui/typography'
 import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
+import { FaqSchema } from '@/components/catalogue/faq-schema'
 
 export const metadata = {
+  alternates: { canonical: '/sell' },
   title: t('sell.title'),
   description: t('sell.intro'),
 }
@@ -170,6 +172,7 @@ export default async function SellPage() {
       </Section>
 
       <Section tone="raised">
+        <FaqSchema pairs={faqs} />
         <Headline lead={t('sell.faqTitle')} bold={t('nav.help')} size="lg" />
         <dl className="mt-8 max-w-[62ch] space-y-6">
           {faqs.map((faq) => (

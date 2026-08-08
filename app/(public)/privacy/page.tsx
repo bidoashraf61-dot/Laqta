@@ -4,6 +4,7 @@ import { PRIVACY, EFFECTIVE_FROM } from '@/content/legal'
 import { t } from '@/lib/i18n'
 
 export const metadata = {
+  alternates: { canonical: '/privacy' },
   title: t('footer.privacy'),
   description: t('brand.seo.privacy'),
 }

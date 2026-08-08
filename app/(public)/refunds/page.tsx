@@ -4,6 +4,7 @@ import { REFUNDS, EFFECTIVE_FROM } from '@/content/legal'
 import { t } from '@/lib/i18n'
 
 export const metadata = {
+  alternates: { canonical: '/refunds' },
   title: t('footer.refunds'),
   description: t('brand.seo.refunds'),
 }

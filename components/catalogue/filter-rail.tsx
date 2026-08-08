@@ -68,6 +68,40 @@ const SHOT_SIZE: Option[] = [
   { value: 'Aerial', label: 'جوية' },
 ]
 
+/**
+ * Duration windows, not a slider.
+ *
+ * Every competitor exposes duration, and it was the largest gap in this rail:
+ * an editor cutting a six-second social bumper and one looking for a thirty-
+ * second establishing hold are doing different jobs. Buckets rather than a
+ * two-handled range control because the buckets ARE the jobs, and a range
+ * slider is the least usable control on a touch screen.
+ *
+ * `value` is "min-max" in seconds; an open upper bound omits the second half.
+ */
+const DURATION: Option[] = [
+  { value: '0-5', label: 'أقل من ٥ ثوانٍ' },
+  { value: '5-10', label: '٥ – ١٠ ثوانٍ' },
+  { value: '10-20', label: '١٠ – ٢٠ ثانية' },
+  { value: '20-', label: 'أكثر من ٢٠ ثانية' },
+]
+
+/** Matches the values written by prisma/seed.ts. */
+const TIME_OF_DAY: Option[] = [
+  { value: 'golden hour', label: 'الساعة الذهبية' },
+  { value: 'blue hour', label: 'الساعة الزرقاء' },
+  { value: 'dusk', label: 'الغسق' },
+  { value: 'night', label: 'ليل' },
+  { value: 'midday', label: 'الظهيرة' },
+]
+
+const SEASON: Option[] = [
+  { value: 'winter', label: 'شتاء' },
+  { value: 'spring', label: 'ربيع' },
+  { value: 'summer', label: 'صيف' },
+  { value: 'autumn', label: 'خريف' },
+]
+
 export function FilterRail({ className }: { className?: string }) {
   return (
     <>
@@ -117,6 +151,27 @@ function FilterBody() {
 
   const active = (key: string, value: string) => params.get(key) === value
   const toggle = (key: string, value: string) => setParam(key, active(key, value) ? null : value)
+
+  // Duration is one visible choice backed by TWO params, so it cannot go
+  // through `toggle`. Writing them separately would also push two history
+  // entries for one click.
+  const durationActive = (bucket: string) => {
+    const [min, max] = bucket.split('-')
+    return (params.get('dmin') ?? '') === min && (params.get('dmax') ?? '') === max
+  }
+  const pickDuration = (bucket: string) => {
+    const next = new URLSearchParams(params.toString())
+    if (durationActive(bucket)) {
+      next.delete('dmin')
+      next.delete('dmax')
+    } else {
+      const [min, max] = bucket.split('-')
+      min ? next.set('dmin', min) : next.delete('dmin')
+      max ? next.set('dmax', max) : next.delete('dmax')
+    }
+    next.delete('page')
+    router.push(`${pathname}?${next.toString()}`, { scroll: false })
+  }
 
   const hasFilters = [...params.keys()].some((key) => key !== 'q' && key !== 'page')
 
@@ -177,6 +232,22 @@ function FilterBody() {
 
       <Group title={t('catalogue.shotSize')}>
         <Chips options={SHOT_SIZE} isActive={(v) => active('shot', v)} onPick={(v) => toggle('shot', v)} />
+      </Group>
+
+      <Group title={t('catalogue.duration')}>
+        <Chips
+          options={DURATION}
+          isActive={(v) => durationActive(v)}
+          onPick={(v) => pickDuration(v)}
+        />
+      </Group>
+
+      <Group title={t('catalogue.timeOfDay')}>
+        <Chips options={TIME_OF_DAY} isActive={(v) => active('time', v)} onPick={(v) => toggle('time', v)} />
+      </Group>
+
+      <Group title={t('catalogue.season')}>
+        <Chips options={SEASON} isActive={(v) => active('season', v)} onPick={(v) => toggle('season', v)} />
       </Group>
 
       <Separator />

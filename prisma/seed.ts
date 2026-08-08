@@ -52,6 +52,12 @@ const POSTERS = {
   alula: ['/hero/06-alula.jpg', '/hero/07-qasr-al-farid.jpg'],
   desert: ['/hero/08-empty-quarter.jpg', '/hero/09-edge-of-the-world.jpg'],
   riyadh: ['/hero/03-riyadh-NIGHT.jpg'],
+  diriyah: ['/hero/12-diriyah.jpg'],
+  jeddah: ['/hero/11-jeddah.jpg'],
+  redsea: ['/hero/10-red-sea.jpg'],
+  makkah: ['/hero/04-makkah-NIGHT.jpg'],
+  clouds: ['/hero/05-cloud-DAWN.jpg', '/hero/02-cloud-NIGHT.jpg'],
+  window: ['/hero/13-window-MORNING.jpg', '/hero/00-window-NIGHT.jpg'],
 } as const
 
 const poster = (set: keyof typeof POSTERS, index: number) =>
@@ -1074,6 +1080,135 @@ async function main() {
     }
     console.log(`  analytics — ${rows} daily rows across ${liveAlbums.length} albums (90 days)`)
   }
+
+  // ── Catalogue depth ───────────────────────────────────────────────────────
+  //
+  // A launch catalogue of one live album makes every album surface — the
+  // landing shelf, the offers rail, a creator profile — render as an empty
+  // state, which is indistinguishable from a broken page during review. These
+  // are placeholders with real posters, real clip rows and real taxonomy
+  // links, so the grids, filters and offer pricing can all be exercised.
+  //
+  // `compareAtPrice` is set on a few of them and left NULL on the rest: an
+  // offer rail that is 100% offers teaches the eye that the strike-through
+  // means nothing.
+  const EXTRA_ALBUMS: Array<{
+    slug: string
+    titleAr: string
+    titleEn: string
+    descAr: string
+    posters: keyof typeof POSTERS
+    clips: number
+    price: number
+    compareAt?: number
+    offerAr?: string
+    loc?: string
+    cat?: string
+    featured?: boolean
+  }> = [
+    { slug: 'diriyah-najdi-architecture', titleAr: 'الدرعية — عمارة نجدية', titleEn: 'Diriyah — Najdi Architecture',
+      descAr: 'أربع وعشرون لقطة للطين النجدي عند الغروب وبعد المغرب، بتدرّج واحد.', posters: 'diriyah',
+      clips: 24, price: 399, compareAt: 599, offerAr: 'عرض الإطلاق', loc: 'diriyah', cat: 'heritage', featured: true },
+    { slug: 'riyadh-skyline-night', titleAr: 'الرياض — أفق الليل', titleEn: 'Riyadh — Night Skyline',
+      descAr: 'ستّ عشرة لقطة لأبراج الرياض من الغروب حتى منتصف الليل.', posters: 'riyadh',
+      clips: 16, price: 199, loc: 'riyadh', cat: 'cityscapes' },
+    { slug: 'jeddah-waterfront', titleAr: 'جدة — الواجهة البحرية', titleEn: 'Jeddah — Waterfront',
+      descAr: 'أربع عشرة لقطة للكورنيش والبحر الأحمر في الساعة الزرقاء.', posters: 'jeddah',
+      clips: 14, price: 199, compareAt: 299, offerAr: 'عرض الإطلاق', loc: 'jeddah', cat: 'cityscapes' },
+    { slug: 'red-sea-reefs', titleAr: 'البحر الأحمر — شعاب وسواحل', titleEn: 'Red Sea — Reefs & Coast',
+      descAr: 'عشرون لقطة جوية للشعاب والمياه الضحلة عند الظهيرة.', posters: 'redsea',
+      clips: 20, price: 399, loc: 'red-sea', cat: 'coast-marine', featured: true },
+    { slug: 'edge-of-the-world-cliffs', titleAr: 'حافة العالم — منحدرات طويق', titleEn: 'Edge of the World — Tuwaiq Cliffs',
+      descAr: 'ثماني عشرة لقطة للجرف عند الفجر وفي الغبار الخفيف.', posters: 'desert',
+      clips: 18, price: 399, loc: 'edge-of-the-world', cat: 'desert-nature' },
+    { slug: 'empty-quarter-dawn', titleAr: 'الربع الخالي — فجر الكثبان', titleEn: 'Empty Quarter — Dune Dawn',
+      descAr: 'اثنتا عشرة لقطة للكثبان قبل الشروق مباشرة.', posters: 'desert',
+      clips: 12, price: 199, compareAt: 279, offerAr: 'عرض محدود', loc: 'rub-al-khali', cat: 'desert-nature' },
+    { slug: 'aerial-clouds-above', titleAr: 'فوق الغيوم — لقطات ارتفاع', titleEn: 'Above the Clouds — Altitude',
+      descAr: 'خمس عشرة لقطة فوق طبقة الغيوم عند الفجر وبعد الغروب.', posters: 'clouds',
+      clips: 15, price: 199, cat: 'aerials' },
+    { slug: 'cabin-window-series', titleAr: 'من النافذة — سلسلة الطيران', titleEn: 'From the Window — Flight Series',
+      descAr: 'عشر لقطات من نافذة الطائرة، صباحاً وليلاً.', posters: 'window',
+      clips: 10, price: 79, cat: 'transport' },
+    { slug: 'alula-hegra-detail', titleAr: 'العلا — تفاصيل الحِجر', titleEn: 'AlUla — Hegra Details',
+      descAr: 'اثنتا عشرة لقطة قريبة للواجهات المنحوتة.', posters: 'alula',
+      clips: 12, price: 199, loc: 'alula', cat: 'heritage' },
+    { slug: 'riyadh-streets-day', titleAr: 'الرياض — شوارع النهار', titleEn: 'Riyadh — Daytime Streets',
+      descAr: 'إحدى وعشرون لقطة للحركة والمشاة في وسط المدينة.', posters: 'riyadh',
+      clips: 21, price: 399, compareAt: 549, offerAr: 'عرض الإطلاق', loc: 'riyadh', cat: 'people-lifestyle' },
+  ]
+
+  let made = 0
+  for (const [n, a] of EXTRA_ALBUMS.entries()) {
+    const existing = await db.album.findUnique({ where: { slug: a.slug } })
+    if (existing) continue
+    const album = await db.album.create({
+      data: {
+        creatorId: n % 3 === 0 ? creator2.id : creator.id,
+        slug: a.slug,
+        titleAr: a.titleAr,
+        titleEn: a.titleEn,
+        descriptionAr: a.descAr,
+        descriptionEn: a.titleEn,
+        status: 'live',
+        tier: 'pro',
+        priceStandard: a.price,
+        priceExtended: a.price * 3,
+        compareAtPrice: a.compareAt ?? null,
+        offerLabelAr: a.offerAr ?? null,
+        clearanceStatus: 'full',
+        clearedForCommercial: true,
+        isFeatured: a.featured ?? false,
+        featureRank: a.featured ? n + 2 : null,
+        licenceVersionId: licences.standard.id,
+        publishedAt: daysAgo(120 - n * 7),
+        ratingAvg: 4.3 + (n % 6) * 0.1,
+        viewCount: 400 + n * 137,
+      },
+    })
+
+    for (let i = 0; i < a.clips; i++) {
+      await db.clip.create({
+        data: {
+          albumId: album.id,
+          orderIndex: i,
+          slug: `${a.slug}-${String(i + 1).padStart(2, '0')}`,
+          titleAr: `${a.titleAr} — لقطة ${i + 1}`,
+          titleEn: `${a.titleEn} — Shot ${i + 1}`,
+          durationS: 6 + (i % 6) * 2,
+          width: 1920,
+          height: 1080,
+          fps: 24,
+          codec: 'h264',
+          bitrateKbps: 40_000,
+          colourProfile: 'Rec.709',
+          aspectRatio: '16:9',
+          hasPeople: a.cat === 'people-lifestyle',
+          identifiableFaces: false,
+          cameraMovement: (['static', 'pan', 'orbit', 'push in'] as const)[i % 4],
+          shotSize: (['wide', 'medium', 'close'] as const)[i % 3],
+          timeOfDay: i % 2 === 0 ? 'golden hour' : 'blue hour',
+          thumbnailKeys: [poster(a.posters, i)],
+          ingestStatus: 'ready',
+          checksum: `demo-${a.slug}-${i}`,
+        },
+      })
+    }
+
+    const cover = await db.clip.findFirst({ where: { albumId: album.id }, orderBy: { orderIndex: 'asc' } })
+    await db.album.update({
+      where: { id: album.id },
+      data: { clipCount: a.clips, coverClipId: cover?.id ?? null, totalRuntimeS: a.clips * 10 },
+    })
+
+    for (const [kind, slug] of [['location', a.loc], ['category', a.cat]] as const) {
+      if (!slug) continue
+      const tx = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
+      if (tx) await db.albumTaxonomy.create({ data: { albumId: album.id, taxonomyId: tx.id } })
+    }
+    made += 1
+  }
+  console.log(`  catalogue — ${made} extra live albums (${EXTRA_ALBUMS.filter((a) => a.compareAt).length} on offer)`)
 
   console.log('Seed complete.')
 }

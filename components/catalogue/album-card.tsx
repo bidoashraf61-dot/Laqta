@@ -35,6 +35,8 @@ export type AlbumCardData = {
   titleAr: string
   titleEn: string
   priceStandard: number
+  compareAtPrice: number | null
+  offerLabelAr: string | null
   currency: string
   clipCount: number
   totalRuntimeS: number
@@ -122,7 +124,11 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
 
           <div className="absolute inset-x-0 top-0 z-[2] flex items-start justify-between p-3">
             <span className="font-display text-base font-bold text-gold-200">{t('brand.name')}</span>
-            {album.clearedForCommercial ? (
+            {album.offerLabelAr ? (
+              <Badge variant="destructive" className="bg-clay/90 backdrop-blur">
+                {album.offerLabelAr}
+              </Badge>
+            ) : album.clearedForCommercial ? (
               <Badge variant="success" className="bg-ink/70 backdrop-blur">
                 {t('commerce.clearedForCommercial')}
               </Badge>
@@ -139,8 +145,19 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
               <Bilingual ar={album.titleAr} en={album.titleEn} />
             </h2>
             <div className="flex items-baseline justify-between gap-2 pt-0.5">
-              <span className="numeric text-base font-bold text-gold-200">
-                {formatMoney(album.priceStandard, album.currency)}
+              <span className="flex items-baseline gap-2">
+                <span className="numeric text-base font-bold text-gold-200">
+                  {formatMoney(album.priceStandard, album.currency)}
+                </span>
+                {/* The original price, struck through. `line-through` alone is
+                    colour-blind-safe; the offer badge above carries the same
+                    information in words, so the saving is never signalled by
+                    colour or decoration on its own. */}
+                {album.compareAtPrice ? (
+                  <s className="numeric text-xs text-off-white/55 decoration-clay">
+                    {formatMoney(album.compareAtPrice, album.currency)}
+                  </s>
+                ) : null}
               </span>
               <span className="truncate text-xs text-off-white/70">
                 {t('commerce.byCreator', { creator: album.creatorNameAr })}

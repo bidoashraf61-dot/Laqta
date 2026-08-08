@@ -15,6 +15,8 @@ const ALBUM_CARD_SELECT = {
   titleAr: true,
   titleEn: true,
   priceStandard: true,
+  compareAtPrice: true,
+  offerLabelAr: true,
   currency: true,
   clipCount: true,
   totalRuntimeS: true,
@@ -28,6 +30,8 @@ type AlbumRow = {
   titleAr: string
   titleEn: string
   priceStandard: unknown
+  compareAtPrice: unknown
+  offerLabelAr: string | null
   currency: string
   clipCount: number
   totalRuntimeS: number
@@ -54,6 +58,11 @@ async function toCards(rows: AlbumRow[]): Promise<AlbumCardData[]> {
     titleAr: row.titleAr,
     titleEn: row.titleEn,
     priceStandard: Number(row.priceStandard),
+    // NULL when the album is not on offer. Kept as the ORIGINAL price rather
+    // than a percentage: a percentage has to be recomputed to display and can
+    // drift from what was actually charged.
+    compareAtPrice: row.compareAtPrice == null ? null : Number(row.compareAtPrice),
+    offerLabelAr: row.offerLabelAr,
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,
@@ -71,6 +80,24 @@ export async function getFeaturedAlbums(take = 8) {
       { salesCount: 'desc' },
       { publishedAt: 'desc' },
     ],
+    take,
+    select: ALBUM_CARD_SELECT,
+  })
+  return toCards(rows as AlbumRow[])
+}
+
+/**
+ * Albums currently on offer.
+ *
+ * Ordered by the size of the saving, so the strongest offer leads. An album
+ * with no `compareAtPrice` is not on offer and never appears here — the rail
+ * disappears entirely rather than rendering an empty "offers" heading, which
+ * would advertise that there are none.
+ */
+export async function getOfferAlbums(take = 8) {
+  const rows = await db.album.findMany({
+    where: { status: 'live', compareAtPrice: { not: null } },
+    orderBy: [{ compareAtPrice: 'desc' }, { publishedAt: 'desc' }],
     take,
     select: ALBUM_CARD_SELECT,
   })

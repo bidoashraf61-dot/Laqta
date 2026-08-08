@@ -4,9 +4,9 @@ import { FootageWall } from '@/components/landing/footage-wall'
 import { TheCollection } from '@/components/landing/collection'
 import { LicensingRights } from '@/components/landing/licensing'
 import { LandingFaq } from '@/components/landing/faq'
-import { CreatorCta, HowItWorks } from '@/components/landing/sections'
+import { AlbumShelf, CreatorCta, HowItWorks, SpecialOffers } from '@/components/landing/sections'
 import { EmailCapture } from '@/components/landing/email-capture'
-import { getFeaturedAlbums, getFootageWall } from '@/lib/catalogue'
+import { getFeaturedAlbums, getFootageWall, getOfferAlbums } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
@@ -59,7 +59,12 @@ export default async function HomePage() {
   // and the considered collection do the selling, and nothing on the page
   // counts albums, creators, or clips out loud. As the catalogue grows the
   // same two queries simply return more.
-  const [albums, footage] = await Promise.all([getFeaturedAlbums(6), getFootageWall(12)])
+  const [albums, footage, offers, shelf] = await Promise.all([
+    getFeaturedAlbums(6),
+    getFootageWall(12),
+    getOfferAlbums(4),
+    getFeaturedAlbums(8),
+  ])
 
   return (
     <>
@@ -71,6 +76,8 @@ export default async function HomePage() {
           works teaches the model, the FAQ clears the leftover objections. */}
       <FootageWall footage={footage} />
       <TheCollection albums={albums} />
+      <SpecialOffers albums={offers} />
+      <AlbumShelf albums={shelf} />
       <LicensingRights />
       <HowItWorks />
       <LandingFaq />

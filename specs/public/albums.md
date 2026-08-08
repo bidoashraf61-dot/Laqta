@@ -26,6 +26,7 @@ Read-only. **There is no sort UI on this page** — the `?sort` parameter is hon
 - **Unbounded** — no pagination; the page grows linearly with the catalogue.
 
 ## Invariants
+- Album cards render as a **pack** — a 5:7 boxed product with a hinged spine and lid (`.pack-*` in globals.css), not a 16:9 thumbnail. The offer is «تشتري مرة واحدة وتملكها للأبد»; a thumbnail is the grammar of something you stream, a box of something you own. Each album's pack colour is derived from its slug, so it is the same colour on every surface.
 - Album cover images carry a real `alt` built from `catalogue.altAlbumCover` («ألبوم {album} — {count} لقطة سعودية»). `docs/website-content.md` §A4 bans an empty alt; these shipped as `alt=""`.
 - Only `status='live'` albums appear.
 - Every card shows a price — the albums-only positioning collapses without it.

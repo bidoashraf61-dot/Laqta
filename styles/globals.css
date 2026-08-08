@@ -366,6 +366,66 @@
   }
 }
 
+@layer components {
+  /*
+   * The album pack.
+   *
+   * An album is sold outright — «تشتري مرة واحدة وتملكها للأبد» — and a flat
+   * thumbnail is the wrong object for that sentence. A thumbnail is something
+   * you stream past; a box is something you own. So the card is a real box:
+   * three visible planes, hinged in CSS, no image assets and no JavaScript.
+   *
+   * The spine hinges on the INLINE-END edge, which is the right in RTL — the
+   * edge the eye reaches first here. `rotateY` is negative so that edge turns
+   * toward the viewer; positive would swing it away and the box would collapse
+   * back into a rotated card, which is exactly what it looked like on the
+   * first pass.
+   */
+  .pack {
+    perspective: 1250px;
+  }
+
+  .pack-box {
+    transform-style: preserve-3d;
+    transform: rotateX(5deg) rotateY(-15deg);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .group:hover .pack-box {
+    transform: rotateX(3deg) rotateY(-7deg);
+  }
+
+  .pack-face {
+    transform-style: preserve-3d;
+    box-shadow:
+      22px 26px 46px -18px hsl(var(--ink) / 0.5),
+      0 2px 6px hsl(var(--ink) / 0.2);
+  }
+
+  /* The two side planes. Both are hinged, not drawn — so a colour change on
+     the pack changes all three faces at once and they cannot drift apart. */
+  .pack-spine {
+    transform-origin: 100% 50%;
+    transform: rotateY(-90deg);
+    filter: brightness(0.72);
+  }
+
+  .pack-lid {
+    transform-origin: 50% 0;
+    transform: rotateX(90deg);
+    filter: brightness(1.18);
+  }
+
+  /* A box that reorients on hover is decoration; motion sickness is not. */
+  @media (prefers-reduced-motion: reduce) {
+    .pack-box,
+    .group:hover .pack-box {
+      transition: none;
+      transform: rotateY(-8deg);
+    }
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

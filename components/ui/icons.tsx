@@ -177,18 +177,19 @@ export function Category(props: IconProps) {
 }
 
 /**
- * A camera — and the one icon whose heritage is detailing rather than object,
- * because no heritage object means "content creator". It carries the Najdi
- * door's round-headed iron nails and a الخروز lens with a الركن aperture.
+ * A person — الخروز for the head, الرُّكن for the shoulders.
+ *
+ * This was a camera, and the camera was the problem: `Clip` and the album pack
+ * already speak camera, so a third camera-shaped mark said "device" where the
+ * word says "maker". A creator is a person before they are equipment. Two
+ * documented forms, no metaphor stretched to fit, and it survives 16px because
+ * a circle over a triangle is the most legible silhouette in the set.
  */
 export function Creator(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M2.8 7.6h4L8.4 5h7.2l1.6 2.6h4v12.2H2.8z" />
-      <circle cx="12" cy="13.6" r="3.5" />
-      <path d="M12 11.8 13.7 14.6h-3.4Z" />
-      <circle cx="5.5" cy="10.3" r=".7" />
-      <circle cx="18.5" cy="10.3" r=".7" />
+      <circle cx="12" cy="7.4" r="3.6" />
+      <path d="M4.4 20.6 12 13.4l7.6 7.2Z" />
     </Icon>
   )
 }

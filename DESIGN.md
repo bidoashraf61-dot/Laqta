@@ -283,6 +283,24 @@ and `Forever` the band of interlocking diamonds carved into Najdi doors.
 arrows, panel toggles — stay on lucide. A custom mark adds nothing to an X and
 costs the reader a beat deciding whether it means something.
 
+### The album pack
+
+An album card is a **boxed product**, not a thumbnail: a 5:7 face with a spine
+hinged on the inline-end edge and a lid, all in CSS (`.pack-*`). The offer is
+«تشتري مرة واحدة وتملكها للأبد» — a thumbnail is the visual grammar of a
+streaming catalogue, a box of something you own.
+
+`rotateY` must stay NEGATIVE so the spine edge turns toward the viewer; a
+positive angle swings it away and the box collapses back into a rotated card.
+The face keeps `preserve-3d`, so cover art needs its own clipped child —
+`overflow:hidden` on a preserve-3d element flattens its children.
+
+Pack colour is derived from the album SLUG, never the grid index, so an album
+is the same colour on the landing page, in search and on a creator profile.
+
+This gives up the 16:9 crop deliberately, closing an open item in
+docs/design-language.md.
+
 ### Kashida — كشيدة
 
 Headlines elongate the join before a word's final letter, using U+0640 TATWEEL.

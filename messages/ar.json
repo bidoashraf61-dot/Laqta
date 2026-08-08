@@ -889,5 +889,15 @@
     "outOf": "من ٥",
     "count": "تقييم",
     "verified": "مشترٍ موثّق"
+  },
+  "media": {
+    "play": "تشغيل",
+    "pause": "إيقاف",
+    "muted": "بلا صوت",
+    "showreelLead": "كل اللقطات،",
+    "showreelBold": "في دقيقة واحدة.",
+    "showreelAlt": "عرض مجمّع للقطات من الكتالوج",
+    "trailerAlt": "تريلر ألبوم {album}",
+    "trailerTitle": "تريلر الألبوم"
   }
 }

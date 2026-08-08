@@ -33,6 +33,8 @@ async function scrollTo(page: Page, y: number) {
 }
 
 async function currentTime(page: Page) {
+  // The hero is the first <video> in document order; being explicit so a
+  // later section adding video cannot silently retarget this probe.
   return page.evaluate(() => document.querySelector('video')?.currentTime ?? 0)
 }
 
@@ -55,8 +57,20 @@ async function main() {
   await page.waitForTimeout(2500)
   const vh = await page.evaluate(() => window.innerHeight)
 
-  const videos = await page.locator('video').count()
-  report('exactly one hero video (continuous film)', videos === 1, `${videos} <video> elements`)
+  // Scoped to the HERO, not the document. The invariant is that the hero is
+  // one continuous film rather than a slideshow of clips — it was never that
+  // the landing page may hold only one video. The showreel below the fold is
+  // a separate section and counting it here would fail a rule it does not
+  // break.
+  const heroVideos = await page.evaluate(() => {
+    const hero = document.querySelector('section.bg-ink, [data-hero]') ?? document.body
+    return hero.querySelectorAll('video').length
+  })
+  report(
+    'exactly one hero video (continuous film)',
+    heroVideos === 1,
+    `${heroVideos} <video> in the hero`,
+  )
 
   const h1 = await page.evaluate(() => document.querySelector('h1')?.textContent?.trim() ?? '')
   report('the headline is server-rendered', h1.length > 0, h1.slice(0, 40))

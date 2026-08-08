@@ -1169,6 +1169,10 @@ async function main() {
         priceStandard: a.price,
         priceExtended: a.price * 3,
         compareAtPrice: a.compareAt ?? null,
+        // Dev only, same standing as the clip proxies: a real trailer is cut
+        // per album once the pipeline exists. Gitignored, so a fresh checkout
+        // has none and the page correctly leads with the cover still.
+        trailerKey: DEMO_LOOPS[n % DEMO_LOOPS.length],
         offerLabelAr: a.offerAr ?? null,
         clearanceStatus: 'full',
         clearedForCommercial: true,

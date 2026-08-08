@@ -34,6 +34,8 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- The shots section leads with a **showreel** that plays on intersection, not on `autoplay`. A bare autoplay decodes a video four screens down before anyone has seen it, burning a phone's battery and data. Threshold is 0.5 — a 10% threshold fires while the section is still a sliver at the bottom of the viewport.
+- Autoplaying video is always muted (browsers refuse audio autoplay outright) and always carries a visible pause control: WCAG asks for a mechanism to stop anything moving for more than five seconds, and autoplay that cannot be stopped is a dark pattern. Under `prefers-reduced-motion` it never starts on its own — verified.
 - The testimonial is the LAST content section, after the creator pitch rather than inside the album band. Its copy is still a placeholder — a fabricated testimonial is a trust and legal risk, so it must be swapped for a real attributable quote before launch.
 - `RequestFootage` turns the catalogue's dead end into its strongest feature: on a shot library "we don't have that" is permanent, here it is a production job. No account required to submit.
 - FAQ blocks emit `FAQPage` JSON-LD generated from the SAME dictionary keys the component renders (`components/catalogue/faq-schema.tsx`). Google treats a mismatch between marked-up and visible answers as spam, so the schema must never be hand-written alongside the copy. Kashida is stripped from the marked-up strings.

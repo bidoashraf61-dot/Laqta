@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { HoverPreview } from '@/components/catalogue/hover-preview'
 import { Bilingual } from '@/components/ui/bilingual'
 import { Headline, Section } from '@/components/ui/typography'
 import type { FootageTile } from '@/lib/catalogue'
@@ -32,7 +33,7 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
       {/* CSS columns, not grid: mixed aspect ratios flow without being forced
           to a single crop — a 9:16 vertical stays vertical, honest about the
           product. `break-inside-avoid` keeps a tile from splitting a column. */}
-      <div className="columns-2 gap-3 sm:columns-3 lg:columns-4 [&>*]:mb-3">
+      <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5">
         {footage.map((tile) => (
           <Link
             key={tile.slug}
@@ -41,18 +42,11 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
             className="group relative block break-inside-avoid overflow-hidden rounded-lg border bg-muted transition-colors hover:border-foreground/25"
           >
             <div className={cn('relative overflow-hidden', aspectClass(tile.aspectRatio))}>
-              {tile.thumbKey ? (
-                <img
-                  src={tile.thumbKey}
-                  alt=""
-                  loading="lazy"
-                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="dark grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
-                  <span className="text-2xl font-bold text-gold/30">{t('brand.name')}</span>
-                </div>
-              )}
+              <HoverPreview
+                src={tile.previewKey}
+                poster={tile.thumbKey}
+                alt={t('catalogue.altClipThumb', { clip: tile.titleAr })}
+              />
 
               <PreviewWatermark />
 
@@ -62,8 +56,13 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
                 <span className="line-clamp-2 text-xs font-medium text-sand">
                   <Bilingual ar={tile.album.titleAr} en={tile.album.titleEn} />
                 </span>
-                <span className="numeric shrink-0 rounded-full bg-gold px-2.5 py-1 text-xs font-bold text-gold-foreground">
-                  {formatMoney(tile.album.priceStandard, tile.album.currency)}
+                <span className="flex shrink-0 items-center gap-2">
+                  <span className="numeric rounded-full bg-gold px-2.5 py-1 text-xs font-bold text-gold-foreground">
+                    {formatMoney(tile.album.priceStandard, tile.album.currency)}
+                  </span>
+                  <span className="rounded-full border border-sand/50 px-2.5 py-1 text-xs font-medium text-sand">
+                    {t('catalogue.openAlbum')}
+                  </span>
                 </span>
               </div>
             </div>

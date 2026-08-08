@@ -60,6 +60,14 @@ const POSTERS = {
   window: ['/hero/13-window-MORNING.jpg', '/hero/00-window-NIGHT.jpg'],
 } as const
 
+/** Hero segments reused as stand-in clip loops. See the note at proxyKey. */
+const DEMO_LOOPS = [
+  '/hero/vid/05-07_dawn-cloud_alula_qasr-m.mp4',
+  '/hero/vid/02-04_night-cloud_riyadh_makkah-m.mp4',
+  '/hero/vid/10-12_red-sea_jeddah_diriyah-m.mp4',
+  '/hero/vid/12-13_diriyah_to_morning-window-m.mp4',
+] as const
+
 const poster = (set: keyof typeof POSTERS, index: number) =>
   POSTERS[set][index % POSTERS[set].length]
 
@@ -1189,6 +1197,12 @@ async function main() {
           shotSize: (['wide', 'medium', 'close'] as const)[i % 3],
           timeOfDay: i % 2 === 0 ? 'golden hour' : 'blue hour',
           thumbnailKeys: [poster(a.posters, i)],
+          // Dev only: the hero segments stand in for per-clip proxies so the
+          // hover-to-play interaction can be built and tested before the
+          // transcode pipeline exists. They live in public/hero/vid, which is
+          // gitignored — a fresh checkout has no video and the tile correctly
+          // falls back to its poster.
+          proxyKey: DEMO_LOOPS[i % DEMO_LOOPS.length],
           ingestStatus: 'ready',
           checksum: `demo-${a.slug}-${i}`,
         },

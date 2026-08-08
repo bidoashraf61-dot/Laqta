@@ -215,7 +215,8 @@
     "previous": "السابق",
     "breadcrumb": "مسار التنقّل",
     "altAlbumCover": "ألبوم {album} — {count} لقطة سعودية",
-    "altClipThumb": "لقطة {clip}"
+    "altClipThumb": "لقطة {clip}",
+    "openAlbum": "افتح الألبوم"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",

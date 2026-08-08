@@ -45,6 +45,10 @@ No server action mutates anything on this route; the only write is the search lo
 - **Search engine** — Postgres today. `SearchDriver` is the boundary for a future Meilisearch driver; nothing in the route layer changes when it lands.
 
 ## Invariants
+- Facets now cover: cleared/editorial, resolution, aspect, frame rate, colour profile, camera movement, shot size, **duration**, **time of day**, **season**, people, faces, plus taxonomy (location/category/tag). Benchmarked against arabsstock (resolution, FPS, length, usage, licence, country), Artlist (theme, shot type, people) and Envato (orientation, resolution, frame rate, duration, time of day).
+- **Duration is buckets, not a slider.** The buckets are the jobs — a six-second social bumper versus a thirty-second establishing hold — and a two-handled range control is the least usable widget on a touch screen.
+- Duration is one visible choice backed by TWO params (`dmin`/`dmax`), so it bypasses the generic `toggle` and writes both in a single history entry; going through `setParam` twice would push two entries for one click.
+- Every option table carries an English label alongside the Arabic so an English surface can reuse the same vocabulary instead of inventing a second one that drifts.
 - Clip thumbnails carry a real `alt` from `catalogue.altClipThumb`. Previously `alt=""`, which §A4 bans.
 - Only `live` albums are searchable — a draft or in-review album in results is a 404 with extra steps.
 - Only `ingestStatus='ready'` clips are searchable.

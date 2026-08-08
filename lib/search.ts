@@ -42,6 +42,14 @@ export type ClipFilters = {
   cameraMovement?: string
   shotSize?: string
   timeOfDay?: string
+  season?: string
+  /**
+   * Duration window in seconds. An editor cutting a 6-second social bumper and
+   * one looking for a 30-second establishing hold are doing different jobs;
+   * every competitor exposes this and it was the largest gap in the rail.
+   */
+  minDurationS?: number
+  maxDurationS?: number
   fps?: number
   hasPeople?: boolean
   identifiableFaces?: boolean
@@ -156,6 +164,15 @@ const postgresDriver: SearchDriver = {
       ...(filters.cameraMovement ? { cameraMovement: filters.cameraMovement } : {}),
       ...(filters.shotSize ? { shotSize: filters.shotSize } : {}),
       ...(filters.timeOfDay ? { timeOfDay: filters.timeOfDay } : {}),
+      ...(filters.season ? { season: filters.season } : {}),
+      ...(filters.minDurationS != null || filters.maxDurationS != null
+        ? {
+            durationS: {
+              ...(filters.minDurationS != null ? { gte: filters.minDurationS } : {}),
+              ...(filters.maxDurationS != null ? { lte: filters.maxDurationS } : {}),
+            },
+          }
+        : {}),
       ...(filters.fps ? { fps: filters.fps } : {}),
       ...(filters.hasPeople != null ? { hasPeople: filters.hasPeople } : {}),
       ...(filters.identifiableFaces != null

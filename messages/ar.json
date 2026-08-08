@@ -167,7 +167,7 @@
     "colourProfile": "ملف الألوان",
     "cameraMovement": "حركة الكاميرا",
     "shotSize": "حجم اللقطة",
-    "timeOfDay": "وقت التصوير",
+    "timeOfDay": "وقت اليوم",
     "people": "الأشخاص",
     "peopleWith": "مع أشخاص",
     "peopleWithout": "بدون أشخاص",
@@ -223,7 +223,12 @@
     "creatorSince": "عضو منذ",
     "creatorFeatured": "ألبومات مختارة",
     "creatorAll": "كل الألبومات",
-    "altCreatorAvatar": "صورة {name}"
+    "altCreatorAvatar": "صورة {name}",
+    "season": "الفصل",
+    "durUnder5": "أقل من ٥ ثوانٍ",
+    "dur5to10": "٥ – ١٠ ثوانٍ",
+    "dur10to20": "١٠ – ٢٠ ثانية",
+    "dur20plus": "أكثر من ٢٠ ثانية"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",

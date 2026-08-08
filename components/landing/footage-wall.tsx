@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { HoverPreview } from '@/components/catalogue/hover-preview'
@@ -26,8 +27,15 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
 
   return (
     <Section tone="base">
-      <div className="mb-10 max-w-2xl">
-        <Headline lead={t('landing.wallLead')} bold={t('landing.wallBold')} size="lg" />
+      <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div className="max-w-2xl">
+          <Headline lead={t('landing.wallLead')} bold={t('landing.wallBold')} size="lg" />
+        </div>
+        {/* The way through to the full grid and every facet. Without it the
+            wall is a dead end — twelve tiles and no route to the other 170. */}
+        <Button asChild variant="outline" size="sm">
+          <Link href="/footage">{t('landing.viewAll')}</Link>
+        </Button>
       </div>
 
       {/* CSS columns, not grid: mixed aspect ratios flow without being forced

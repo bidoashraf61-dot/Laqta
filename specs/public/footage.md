@@ -45,6 +45,10 @@ No server action mutates anything on this route; the only write is the search lo
 - **Search engine** — Postgres today. `SearchDriver` is the boundary for a future Meilisearch driver; nothing in the route layer changes when it lands.
 
 ## Invariants
+- `/locations` and `/categories` **308 to this page**. Both indexes were walls of tiles that mostly read "0" on a launch-scale catalogue — pages whose whole job was to advertise how little there is. Browsing by location or category is a FILTER and now composes with every other facet instead of being a separate journey.
+- The redirects live in `next.config.mjs`, NOT as `redirect()` in a page. A render-time redirect on a statically generated route served the destination's HTML at the original URL — a 200 duplicate, which is worse for search than the page it replaced. Verified in a browser before switching: URL unchanged, status 200.
+- The individual hubs (`/locations/[slug]`, `/categories/[slug]`) are NOT redirected and stay in the sitemap at 0.9. They carry ~2,590 words each and `sitemap.ts` calls them the main organic differentiator.
+- The landing footage wall carries a view-all control to this page; without it the wall is a dead end at twelve tiles.
 - Facets now cover: cleared/editorial, resolution, aspect, frame rate, colour profile, camera movement, shot size, **duration**, **time of day**, **season**, people, faces, plus taxonomy (location/category/tag). Benchmarked against arabsstock (resolution, FPS, length, usage, licence, country), Artlist (theme, shot type, people) and Envato (orientation, resolution, frame rate, duration, time of day).
 - **Duration is buckets, not a slider.** The buckets are the jobs — a six-second social bumper versus a thirty-second establishing hold — and a two-handled range control is the least usable widget on a touch screen.
 - Duration is one visible choice backed by TWO params (`dmin`/`dmax`), so it bypasses the generic `toggle` and writes both in a single history entry; going through `setParam` twice would push two entries for one click.

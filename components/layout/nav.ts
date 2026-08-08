@@ -20,8 +20,6 @@ export type NavItem = {
 export const PRIMARY_NAV: NavItem[] = [
   { href: '/footage', labelKey: 'nav.footage' },
   { href: '/albums', labelKey: 'nav.albums' },
-  { href: '/categories', labelKey: 'nav.categories' },
-  { href: '/locations', labelKey: 'nav.locations' },
   { href: '/collections', labelKey: 'nav.collections' },
   { href: '/creators', labelKey: 'nav.creators' },
 ]

@@ -30,9 +30,7 @@ is never purchasable on its own, so every clip surface carries its album ribbon.
 | `/footage/[slug]` | One clip, crawlable, funnelling to its album | [footage-slug.md](footage-slug.md) |
 | `/albums` | Every live album as a priced poster card | [albums.md](albums.md) |
 | `/albums/[creator]/[slug]` | The PDP: full clip grid, both licence tiers, clearance | [albums-creator-slug.md](albums-creator-slug.md) |
-| `/categories` | Active category tiles with counts | [categories.md](categories.md) |
 | `/categories/[slug]` | Category SEO hub with its clips | [categories-slug.md](categories-slug.md) |
-| `/locations` | Active location tiles with counts | [locations.md](locations.md) |
 | `/locations/[slug]` | Location SEO hub — the main differentiator surface | [locations-slug.md](locations-slug.md) |
 | `/collections` | Published editorial collections | [collections.md](collections.md) |
 | `/collections/[slug]` | The live albums inside one collection | [collections-slug.md](collections-slug.md) |

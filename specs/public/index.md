@@ -34,6 +34,8 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- The testimonial is the LAST content section, after the creator pitch rather than inside the album band. Its copy is still a placeholder — a fabricated testimonial is a trust and legal risk, so it must be swapped for a real attributable quote before launch.
+- `RequestFootage` turns the catalogue's dead end into its strongest feature: on a shot library "we don't have that" is permanent, here it is a production job. No account required to submit.
 - FAQ blocks emit `FAQPage` JSON-LD generated from the SAME dictionary keys the component renders (`components/catalogue/faq-schema.tsx`). Google treats a mismatch between marked-up and visible answers as spam, so the schema must never be hand-written alongside the copy. Kashida is stripped from the marked-up strings.
 - Footage tiles play a muted loop on hover. The `<video>` is created on FIRST hover, not at mount — twelve tiles is twelve decoders, and Safari caps simultaneous decoders per page. Play is triggered from an effect, never the event handler: on first hover React has not committed the element yet, so a handler-side `play()` hits a null ref and the tile silently stays a still.
 - A tile with no `previewKey` stays a poster. `previewKey` is NULL unless the stored proxy is a real URL (`/`-rooted) — an object-storage key would render a black rectangle where a photograph was.

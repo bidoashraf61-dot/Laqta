@@ -4,8 +4,15 @@ import { FootageWall } from '@/components/landing/footage-wall'
 import { TheCollection } from '@/components/landing/collection'
 import { LicensingRights } from '@/components/landing/licensing'
 import { LandingFaq } from '@/components/landing/faq'
-import { AlbumShelf, CreatorCta, HowItWorks, SpecialOffers } from '@/components/landing/sections'
+import {
+  AlbumShelf,
+  CreatorCta,
+  HowItWorks,
+  SpecialOffers,
+  Testimonial,
+} from '@/components/landing/sections'
 import { EmailCapture } from '@/components/landing/email-capture'
+import { RequestFootage } from '@/components/landing/request-footage'
 import { getFeaturedAlbums, getFootageWall, getOfferAlbums } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 
@@ -81,7 +88,11 @@ export default async function HomePage() {
       <LicensingRights />
       <HowItWorks />
       <LandingFaq />
+      <RequestFootage />
       <CreatorCta />
+      {/* Last content section, per the brief: the customer voice closes the
+          page, after the pitch rather than in the middle of it. */}
+      <Testimonial />
       <EmailCapture />
     </>
   )

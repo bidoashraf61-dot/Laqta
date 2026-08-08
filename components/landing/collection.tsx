@@ -32,31 +32,6 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
         </div>
       )}
 
-      <Testimonial />
     </Section>
-  )
-}
-
-/**
- * One customer voice, set as an editorial pull-quote rather than a card.
- *
- * NOTE FOR THE OWNER: the quote and attribution below are placeholders. Swap
- * `landing.testimonialQuote` / `testimonialName` / `testimonialRole` in
- * messages/ar.json for a real, attributable customer quote before launch — a
- * fabricated testimonial is both a trust and a legal risk. Until then this
- * renders as an obvious placeholder, not a fake claim.
- */
-function Testimonial() {
-  return (
-    <figure className="mx-auto mt-16 max-w-3xl text-center">
-      <blockquote className="font-display text-2xl font-light leading-[1.5] text-foreground/90">
-        {t('landing.testimonialQuote')}
-      </blockquote>
-      <figcaption className="mt-6 text-sm text-muted-foreground">
-        <span className="font-bold text-foreground">{t('landing.testimonialName')}</span>
-        {' · '}
-        {t('landing.testimonialRole')}
-      </figcaption>
-    </figure>
   )
 }

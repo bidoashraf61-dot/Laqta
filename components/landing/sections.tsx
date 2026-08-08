@@ -223,6 +223,54 @@ export function TopCreators({
   )
 }
 
+/**
+ * Special offers.
+ *
+ * Renders NOTHING when no album is on offer. An "offers" heading above an
+ * empty grid advertises that there are none, which is worse than not having
+ * the section — the same reason the footage wall returns null when the
+ * catalogue is empty.
+ *
+ * The saving is stated in words (`offersHint`) as well as shown by the strike,
+ * because a struck-through number is a visual convention that assistive tech
+ * announces inconsistently.
+ */
+export function SpecialOffers({ albums }: { albums: AlbumCardData[] }) {
+  if (albums.length === 0) return null
+  return (
+    <Section tone="dusty">
+      <div className="mb-8 max-w-2xl">
+        <Headline lead={t('landing.offersLead')} bold={t('landing.offersBold')} size="lg" />
+        <p className="mt-3 text-sm text-foreground/70">{t('landing.offersHint')}</p>
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {albums.map((album) => (
+          <AlbumCard key={album.slug} album={album} />
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+/** The full shelf — the browse-everything entry point on the landing page. */
+export function AlbumShelf({ albums }: { albums: AlbumCardData[] }) {
+  if (albums.length === 0) return null
+  return (
+    <Section tone="base">
+      <SectionHead
+        title={t('landing.shelfBold')}
+        subtitle={t('landing.shelfLead')}
+        href="/albums"
+      />
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {albums.map((album) => (
+          <AlbumCard key={album.slug} album={album} />
+        ))}
+      </div>
+    </Section>
+  )
+}
+
 export function HowItWorks() {
   const steps = [
     { icon: Laqta.Search, title: t('landing.howStep1Title'), body: t('landing.howStep1Body') },

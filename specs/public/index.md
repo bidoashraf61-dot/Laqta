@@ -34,6 +34,9 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- **Special offers render nothing when no album is on offer.** `getOfferAlbums()` filters `compareAtPrice != null`; an "offers" heading over an empty grid advertises that there are none.
+- The struck-through number is the stored `compareAtPrice`, never a recomputed percentage — a percentage can drift from what was actually charged. `priceStandard` is always what the buyer pays.
+- The saving is stated in words as well as shown by the strike (`landing.offersHint`), because assistive tech announces `<s>` inconsistently.
 - Light/dark is a **user preference**, applied to `html.dark` by an inline pre-paint script (`lib/theme.ts`) so the page never flashes the wrong theme. Default is `system`; only an explicit pick is persisted, so "follow my OS" survives as an absence rather than a stored guess. The olive and dusty band scopes are theme-stable by design.
 - Resolution claims: **1080p ships today, 4K is the ceiling.** 6K was removed everywhere — no generation model produces it, so it was an unverifiable spec claim on a page a buyer checks.
 - The collection band renders album **packs** (5:7 boxed products), not 16:9 cards — see specs/public/albums.md.

@@ -173,10 +173,15 @@ function BreadcrumbJsonLd({
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: t('nav.home'), item: SITE_URL },
       {
+        // The middle crumb points at the SHOTS page, not at `/locations` or
+        // `/categories`. Those indexes now 301 to it, and a breadcrumb that
+        // resolves through a redirect wastes the hop and muddies the trail a
+        // crawler records. `BASE` is still correct for the canonical below —
+        // the hub routes themselves are untouched.
         '@type': 'ListItem',
         position: 2,
-        name: t(TITLE_KEY[kind]),
-        item: `${SITE_URL}${BASE[kind]}`,
+        name: t('nav.footage'),
+        item: `${SITE_URL}/footage`,
       },
       {
         '@type': 'ListItem',

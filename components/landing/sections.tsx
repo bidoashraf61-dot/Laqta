@@ -271,6 +271,63 @@ export function AlbumShelf({ albums }: { albums: AlbumCardData[] }) {
   )
 }
 
+/**
+ * The Collection — the albums, as the considered pitch.
+ *
+ * Framed as "المجموعة الأولى" (the first collection) rather than a library:
+ * with a young catalogue, owning the smallness reads as curation, not
+ * shortage. Each album is a full poster card carrying its own price, so the
+ * "buy the album, not the clip" model is legible at a glance.
+ *
+ * A single customer voice sits under the shelf, right where the buyer is
+ * weighing the albums — the placement the conversion research points to.
+ */
+export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
+  return (
+    <Section tone="olive">
+      <div className="mb-10 max-w-2xl">
+        <Headline lead={t('landing.collectionLead')} bold={t('landing.collectionBold')} size="lg" />
+      </div>
+
+      {albums.length === 0 ? (
+        <EmptyState title={t('state.empty')} />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {albums.map((album) => (
+            <AlbumCard key={album.slug} album={album} />
+          ))}
+        </div>
+      )}
+    </Section>
+  )
+}
+
+/**
+ * One customer voice, set as an editorial pull-quote rather than a card.
+ *
+ * NOTE FOR THE OWNER: the quote and attribution below are placeholders. Swap
+ * `landing.testimonialQuote` / `testimonialName` / `testimonialRole` in
+ * messages/ar.json for a real, attributable customer quote before launch — a
+ * fabricated testimonial is both a trust and a legal risk. Until then this
+ * renders as an obvious placeholder, not a fake claim.
+ */
+export function Testimonial() {
+  return (
+    <Section tone="offwhite">
+      <figure className="mx-auto max-w-3xl text-center">
+        <blockquote className="font-display text-2xl font-light leading-[1.5] text-foreground/90">
+          {t('landing.testimonialQuote')}
+        </blockquote>
+        <figcaption className="mt-6 text-sm text-muted-foreground">
+          <span className="font-bold text-foreground">{t('landing.testimonialName')}</span>
+          {' · '}
+          {t('landing.testimonialRole')}
+        </figcaption>
+      </figure>
+    </Section>
+  )
+}
+
 export function HowItWorks() {
   const steps = [
     { icon: Laqta.Search, title: t('landing.howStep1Title'), body: t('landing.howStep1Body') },

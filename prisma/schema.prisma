@@ -229,21 +229,22 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts       Account[]
-  sessions       Session[]
-  creator        Creator?
-  boards         Board[]
-  cart           Cart?
-  orders         Order[]
-  entitlements   Entitlement[]
-  downloads      Download[]
-  reviewTasks    ReviewTask[]    @relation("ReviewTaskReviewer")
-  verifiedRels   Release[]       @relation("ReleaseVerifier")
-  auditLogs      AuditLog[]      @relation("AuditActor")
-  impersonations Impersonation[] @relation("ImpersonationAdmin")
-  impersonated   Impersonation[] @relation("ImpersonationTarget")
-  disputes       Dispute[]       @relation("DisputeAssignee")
-  cmsEntries     CmsEntry[]      @relation("CmsAuthor")
+  accounts        Account[]
+  sessions        Session[]
+  creator         Creator?
+  boards          Board[]
+  cart            Cart?
+  orders          Order[]
+  entitlements    Entitlement[]
+  downloads       Download[]
+  reviewTasks     ReviewTask[]     @relation("ReviewTaskReviewer")
+  verifiedRels    Release[]        @relation("ReleaseVerifier")
+  auditLogs       AuditLog[]       @relation("AuditActor")
+  impersonations  Impersonation[]  @relation("ImpersonationAdmin")
+  impersonated    Impersonation[]  @relation("ImpersonationTarget")
+  disputes        Dispute[]        @relation("DisputeAssignee")
+  footageRequests FootageRequest[]
+  cmsEntries      CmsEntry[]       @relation("CmsAuthor")
 
   @@index([role, status])
 }
@@ -1273,4 +1274,48 @@ model Impersonation {
 
   @@index([adminId, startedAt])
   @@index([targetUserId, startedAt])
+}
+
+/// A buyer asking for footage that does not exist yet.
+///
+/// This is the feature none of the Arabic competitors offer, and it only works
+/// because the catalogue is generated rather than shot: a request for "الطائف
+/// في الضباب" is a production job, not an expedition. It is also the cheapest
+/// demand signal available — every row is a customer telling us what to build
+/// next, with an address to notify when it lands.
+model FootageRequest {
+  id String @id @default(cuid())
+
+  /// Free text, in the buyer's own words. Deliberately not a taxonomy pick:
+  /// the value of this table is the phrasing we did not think of.
+  briefAr      String
+  /// Optional structured hints, when the buyer used the picker.
+  locationSlug String?
+  categorySlug String?
+
+  /// Where to reply. Kept separate from User because most requests will come
+  /// from people who have not signed up yet — requiring an account first is
+  /// how you never hear the request.
+  email  String
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  status           FootageRequestStatus @default(open)
+  /// Operator note — why it was declined, or which album fulfilled it.
+  resolutionNote   String?
+  /// Set when an album ships that answers this request.
+  fulfilledAlbumId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+enum FootageRequestStatus {
+  open
+  planned
+  fulfilled
+  declined
 }

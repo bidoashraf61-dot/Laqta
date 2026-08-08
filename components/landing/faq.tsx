@@ -1,5 +1,6 @@
 import { Headline, Section } from '@/components/ui/typography'
 import { t } from '@/lib/i18n'
+import { FaqSchema } from '@/components/catalogue/faq-schema'
 
 /**
  * The landing FAQ.
@@ -14,6 +15,7 @@ const FAQS = ['faq1', 'faq2', 'faq3', 'faq4', 'faq5'] as const
 export function LandingFaq() {
   return (
     <Section tone="offwhite">
+      <FaqSchema pairs={FAQS.map((key) => ({ q: t(`landing.${key}Q`), a: t(`landing.${key}A`) }))} />
       <div className="mb-10 max-w-2xl">
         <Headline lead={t('landing.faqLead')} bold={t('landing.faqBold')} size="lg" />
       </div>

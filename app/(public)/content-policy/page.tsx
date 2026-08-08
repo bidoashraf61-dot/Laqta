@@ -4,6 +4,7 @@ import { CONTENT_POLICY, EFFECTIVE_FROM } from '@/content/legal'
 import { t } from '@/lib/i18n'
 
 export const metadata = {
+  alternates: { canonical: '/content-policy' },
   title: t('footer.contentPolicy'),
   description: t('brand.seo.contentPolicy'),
 }

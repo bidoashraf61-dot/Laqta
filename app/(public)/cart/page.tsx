@@ -12,7 +12,8 @@ import { CartLine } from '@/components/checkout/cart-line'
 import { formatMoney, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 
-export const metadata = { title: t('cart.title') }
+export const metadata = {
+  alternates: { canonical: '/cart' }, title: t('cart.title') }
 
 export default async function CartPage() {
   const session = await auth()

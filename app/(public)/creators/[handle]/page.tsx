@@ -4,8 +4,8 @@ import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
-import { PageTitle } from '@/components/ui/typography'
+import { t, formatNumber, formatDate } from '@/lib/i18n'
+import { PageTitle, SubHeadline } from '@/components/ui/typography'
 
 async function getCreator(handle: string) {
   return db.creator.findFirst({
@@ -17,6 +17,8 @@ async function getCreator(handle: string) {
       bioAr: true,
       city: true,
       country: true,
+      approvedAt: true,
+      user: { select: { image: true } },
       albums: {
         where: { status: 'live' },
         orderBy: { publishedAt: 'desc' },
@@ -32,6 +34,8 @@ async function getCreator(handle: string) {
           totalRuntimeS: true,
           clearedForCommercial: true,
           coverClipId: true,
+          isFeatured: true,
+          viewCount: true,
         },
       },
     },
@@ -83,33 +87,89 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
     coverKey: album.coverClipId ? (coverById.get(album.coverClipId) ?? null) : null,
   }))
 
+  const totalClips = creator.albums.reduce((sum, a) => sum + a.clipCount, 0)
+  const totalViews = creator.albums.reduce((sum, a) => sum + a.viewCount, 0)
+  const joined = creator.approvedAt ? formatDate(creator.approvedAt) : '—'
+  const featuredSlugs = new Set(creator.albums.filter((a) => a.isFeatured).map((a) => a.slug))
+  const featured = albums.filter((a) => featuredSlugs.has(a.slug))
+
   return (
     <div className="container py-10">
-      <header className="mb-8 flex items-start gap-4">
-        <span className="grid size-16 shrink-0 place-items-center rounded-full bg-secondary text-2xl font-bold">
-          {creator.displayNameAr.charAt(0)}
-        </span>
-        <div className="min-w-0 space-y-1">
+      <header className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-start">
+        {creator.user?.image ? (
+          <img
+            src={creator.user.image}
+            alt={t('catalogue.altCreatorAvatar', { name: creator.displayNameAr })}
+            className="size-20 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <span
+            role="img"
+            aria-label={t('catalogue.altCreatorAvatar', { name: creator.displayNameAr })}
+            className="grid size-20 shrink-0 place-items-center rounded-full bg-secondary font-display text-3xl font-bold"
+          >
+            {creator.displayNameAr.charAt(0)}
+          </span>
+        )}
+        <div className="min-w-0 space-y-2">
           <PageTitle>
             <Bilingual ar={creator.displayNameAr} en={creator.displayNameEn} />
           </PageTitle>
-          <p className="text-sm text-muted-foreground">
-            {creator.city ? `${creator.city} · ` : ''}
-            <span className="numeric">{albums.length}</span> {t('commerce.album')}
-          </p>
+          {creator.city ? <p className="text-sm text-muted-foreground">{creator.city}</p> : null}
           {creator.bioAr ? (
-            <p className="max-w-prose pt-2 font-serif text-base text-muted-foreground">{creator.bioAr}</p>
+            <p className="max-w-prose font-serif text-base text-muted-foreground">{creator.bioAr}</p>
           ) : null}
         </div>
       </header>
 
+      {/*
+        Public analytics only.
+        Views and catalogue size are the creator's shopfront and help a buyer
+        judge them. Sales counts and revenue are NOT here: they are the
+        creator's commercial position, and publishing them on a profile they
+        cannot opt out of would expose it to their competitors and clients.
+      */}
+      <dl className="mb-10 grid grid-cols-2 gap-4 rounded-lg border bg-card p-5 sm:grid-cols-4">
+        {[
+          { v: formatNumber(albums.length), k: t('catalogue.creatorAlbums') },
+          { v: formatNumber(totalClips), k: t('catalogue.creatorClips') },
+          { v: formatNumber(totalViews), k: t('catalogue.creatorViews') },
+          { v: joined, k: t('catalogue.creatorSince') },
+        ].map((s) => (
+          <div key={s.k}>
+            <dt className="text-xs text-muted-foreground">{s.k}</dt>
+            <dd className="numeric mt-1 text-xl font-bold">{s.v}</dd>
+          </div>
+        ))}
+      </dl>
+
       {albums.length === 0 ? (
         <EmptyState title={t('state.empty')} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {albums.map((album) => (
-            <AlbumCard key={album.slug} album={album} />
-          ))}
+        <div className="space-y-10">
+          {featured.length > 0 ? (
+            <section>
+              <SubHeadline as="h2" size="panel" weight="strong" className="mb-4">
+                {t('catalogue.creatorFeatured')}
+              </SubHeadline>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {featured.map((album) => (
+                  <AlbumCard key={album.slug} album={album} />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <section>
+            <SubHeadline as="h2" size="panel" weight="strong" className="mb-4">
+              {t('catalogue.creatorAll')}
+            </SubHeadline>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {albums.map((album) => (
+                <AlbumCard key={album.slug} album={album} />
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </div>

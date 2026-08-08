@@ -216,7 +216,14 @@
     "breadcrumb": "مسار التنقّل",
     "altAlbumCover": "ألبوم {album} — {count} لقطة سعودية",
     "altClipThumb": "لقطة {clip}",
-    "openAlbum": "افتح الألبوم"
+    "openAlbum": "افتح الألبوم",
+    "creatorAlbums": "ألبوم منشور",
+    "creatorClips": "لقطة",
+    "creatorViews": "مشاهدة",
+    "creatorSince": "عضو منذ",
+    "creatorFeatured": "ألبومات مختارة",
+    "creatorAll": "كل الألبومات",
+    "altCreatorAvatar": "صورة {name}"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",

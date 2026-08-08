@@ -370,13 +370,19 @@ model Album {
   status AlbumStatus @default(draft)
   tier   AlbumTier   @default(standard)
 
-  priceStandard  Decimal  @db.Decimal(10, 2)
-  priceExtended  Decimal  @db.Decimal(10, 2)
+  priceStandard Decimal @db.Decimal(10, 2)
+  priceExtended Decimal @db.Decimal(10, 2)
   /// The price this album is normally sold at, when it is currently on offer.
   /// NULL means "no offer" — it is deliberately not a discount percentage,
   /// because a percentage has to be recomputed to display and can drift from
   /// what was actually charged. The struck-through number a buyer sees is the
   /// number stored here, and `priceStandard` is always what they pay.
+  /// A short cut of the album, shown large at the top of its page. NULL until
+  /// one is produced — the page then leads with the cover still instead of an
+  /// empty player, which is the difference between "no trailer yet" and
+  /// "broken".
+  trailerKey    String?
+
   compareAtPrice Decimal? @db.Decimal(10, 2)
   /// Short offer label, e.g. «عرض الإطلاق». NULL when compareAtPrice is NULL.
   offerLabelAr   String?

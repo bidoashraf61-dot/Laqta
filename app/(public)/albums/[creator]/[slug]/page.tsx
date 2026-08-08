@@ -16,6 +16,7 @@ import { PageTitle } from '@/components/ui/typography'
 import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
+import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -117,6 +118,7 @@ export default async function AlbumPage({
       priceStandard: true,
       ratingAvg: true,
       ratingCount: true,
+      trailerKey: true,
       compareAtPrice: true,
       offerLabelAr: true,
       currency: true,
@@ -151,12 +153,27 @@ export default async function AlbumPage({
 
       <div className="grid gap-10 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-8">
-          {/* Trailer slot. Auto-cut from the clips at ingest; until that
-              pipeline exists the cover still stands in, which is honest rather
-              than an empty player. */}
+          {/* The trailer, large and first: a buyer judges an album by how it
+              cuts, not by one frame. Where no trailer has been produced the
+              cover still stands in — an empty player would read as broken
+              rather than as "not made yet". */}
           <div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
-            {hero ? (
-              <img src={hero} alt="" className="size-full object-cover" />
+            {album.trailerKey ? (
+              <AutoplayVideo
+                src={album.trailerKey}
+                poster={hero}
+                label={t('media.trailerAlt', { album: album.titleAr })}
+                className="size-full rounded-none border-0"
+              />
+            ) : hero ? (
+              <img
+                src={hero}
+                alt={t('catalogue.altAlbumCover', {
+                  album: album.titleAr,
+                  count: String(album.clipCount),
+                })}
+                className="size-full object-cover"
+              />
             ) : (
               <div className="grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
                 <span className="text-4xl font-bold text-gold/30">{t('brand.name')}</span>

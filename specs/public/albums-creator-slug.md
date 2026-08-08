@@ -34,6 +34,7 @@ The conversion page: show every clip in the album, both licence prices, and the 
 - **Sole album by this creator** — the "other albums" section is hidden.
 
 ## Invariants
+- The page leads with the album **trailer** (`Album.trailerKey`), because a buyer judges an album by how it cuts, not by one frame. Where no trailer exists the cover still stands in — an empty player reads as broken rather than as "not made yet".
 - Only `status='live'` albums are reachable; a live album must be matched by both slug and creator handle.
 - The full clip list is shown — total transparency about what is bought is the pitch against a subscription.
 - Extended licence is unavailable for editorial-only albums, everywhere.

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { HoverPreview } from '@/components/catalogue/hover-preview'
+import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { Bilingual } from '@/components/ui/bilingual'
 import { Headline, Section } from '@/components/ui/typography'
 import type { FootageTile } from '@/lib/catalogue'
@@ -37,6 +38,17 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
           <Link href="/footage">{t('landing.viewAll')}</Link>
         </Button>
       </div>
+
+      {/* The showreel: every shot cut together, so a buyer can judge the
+          whole catalogue in one viewing before deciding whether to browse it
+          tile by tile. It plays when the section arrives and stops when it
+          leaves — see AutoplayVideo for why that is not plain `autoplay`. */}
+      <AutoplayVideo
+        src="/hero/vid/hero-web-m.mp4"
+        poster="/hero/06-alula.jpg"
+        label={t('media.showreelAlt')}
+        className="mb-10 aspect-video w-full"
+      />
 
       {/* CSS columns, not grid: mixed aspect ratios flow without being forced
           to a single crop — a 9:16 vertical stays vertical, honest about the

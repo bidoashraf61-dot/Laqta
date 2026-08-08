@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Session } from 'next-auth'
 import { ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { SearchEntry } from '@/components/layout/search-entry'
 import { UserMenu } from '@/components/layout/user-menu'
 import { MobileNav } from '@/components/layout/mobile-nav'
@@ -66,6 +67,7 @@ export function SiteHeader({ session }: { session: Session | null }) {
             </Link>
           </Button>
 
+          <ThemeToggle />
           <UserMenu session={session} />
         </div>
       </div>

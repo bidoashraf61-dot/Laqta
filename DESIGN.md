@@ -335,11 +335,18 @@ owns prices, primary actions, eyebrows and figures across every band; it never
 becomes a section background. A gold ground would spend the rule for
 atmosphere, and the buy button would stop reading as the thing to press.
 
-**The Dark-Is-A-Frame Rule.** `.dark` describes footage, never chrome. It is
-scoped to the cinematic, to cover placeholders, and to overlays sitting on
-imagery. The document is paper. A surface that reaches for `.dark` to look
-premium has misread the system — on this ground, premium comes from the frames
-being the only dark things on screen.
+**The Dark-Is-A-Frame Rule — now scoped to the LIGHT theme.** Within the light
+theme `.dark` still describes footage, never chrome: it is scoped to the
+cinematic, to cover placeholders, and to overlays sitting on imagery. A light-
+theme surface that reaches for `.dark` to look premium has misread the system.
+
+**Dark mode is a separate axis and a user preference.** `html.dark` is set by
+the visitor's own choice (or their OS), persists in `localStorage`, and is
+applied by an inline script before first paint so the page never flashes the
+wrong theme. It is not a styling device a component may reach for — components
+still never opt themselves into dark; they read semantic tokens and let the
+root decide. The olive and dusty band scopes are deliberately theme-stable:
+an identity ground is the same colour in both worlds.
 
 **The Status-Only Colour Rule.** Oasis, clay and destructive appear only as
 state — a badge, an alert, a ledger sign. They are never a brand accent and

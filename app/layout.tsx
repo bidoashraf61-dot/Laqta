@@ -5,6 +5,7 @@ import { direction, locale, t } from '@/lib/i18n'
 import { Providers } from '@/components/layout/providers'
 import { Toaster } from '@/components/ui/toast'
 import '@/styles/globals.css'
+import { THEME_SCRIPT } from '@/lib/theme'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -58,6 +59,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang={locale} dir={direction} suppressHydrationWarning>
+      <head>
+        {/* Sets html.dark before first paint. Anything React renders is too
+            late — the page would paint paper and repaint ink. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh bg-background font-sans text-foreground">
         <Providers session={session}>
           <a

@@ -21,7 +21,7 @@ The clip-level search and filter surface: a buyer finds a shot here, then buys t
 | Header search field (`SearchEntry`) | Client push | `/footage?q=…` |
 | Cleared-for-commercial checkbox | `FilterRail` → `router.push` | Sets `?cleared=1` → `album.clearedForCommercial=true` |
 | Editorial-only checkbox | `router.push` | `?editorial=1` → `album.clearanceStatus='editorial_only'` |
-| Resolution chips (HD/4K/6K) | `router.push` | `?minWidth=1920\|3840\|6144` → `Clip.width >= n` |
+| Resolution chips (1080p/4K) | `router.push` | `?minWidth=1920\|3840` → `Clip.width >= n`. 6K was removed — no generation model produces it, so the chip was an unverifiable spec claim. |
 | Aspect chips | `router.push` | `?aspect=16:9\|9:16\|1:1\|2.39:1` |
 | Frame-rate chips | `router.push` | `?fps=24\|25\|30\|50\|60` |
 | Colour-profile chips | `router.push` | `?colour=D-Log\|S-Log3\|Rec.709` |

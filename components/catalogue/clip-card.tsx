@@ -23,7 +23,10 @@ import { PreviewWatermark } from '@/components/catalogue/watermark'
  * ────────────────────────────────────────────────────────────────────────────
  */
 export function ClipCard({ clip, className }: { clip: ClipHit; className?: string }) {
-  const resolution = clip.width >= 6000 ? '6K' : clip.width >= 3840 ? '4K' : 'HD'
+  // 4K is the ceiling. There is no generation model that outputs 6K, so a 6K
+  // chip was a spec claim a buyer could check and find false; most of the
+  // catalogue ships 1080p today.
+  const resolution = clip.width >= 3840 ? '4K' : clip.width >= 1920 ? '1080p' : 'HD'
 
   return (
     <article

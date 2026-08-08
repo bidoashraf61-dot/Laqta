@@ -27,9 +27,8 @@ import { cn } from '@/lib/utils'
 type Option = { value: string; label: string }
 
 const RESOLUTIONS: Option[] = [
-  { value: '1920', label: 'HD' },
+  { value: '1920', label: '1080p' },
   { value: '3840', label: '4K' },
-  { value: '6144', label: '6K' },
 ]
 
 const ASPECTS: Option[] = [

@@ -244,6 +244,7 @@ model User {
   impersonated    Impersonation[]  @relation("ImpersonationTarget")
   disputes        Dispute[]        @relation("DisputeAssignee")
   footageRequests FootageRequest[]
+  albumReviews    AlbumReview[]
   cmsEntries      CmsEntry[]       @relation("CmsAuthor")
 
   @@index([role, status])
@@ -394,13 +395,18 @@ model Album {
   /// Drives the buyer-facing "cleared for commercial use ✅" filter.
   clearedForCommercial Boolean @default(false)
 
-  isFeatured  Boolean   @default(false)
+  isFeatured  Boolean       @default(false)
   featureRank Int?
   publishedAt DateTime?
   delistedAt  DateTime?
-  salesCount  Int       @default(0)
-  ratingAvg   Decimal?  @db.Decimal(3, 2)
-  viewCount   Int       @default(0)
+  salesCount  Int           @default(0)
+  ratingAvg   Decimal?      @db.Decimal(3, 2)
+  /// Number of published reviews behind `ratingAvg`. Stored rather than
+  /// counted on read: an average without its sample size is not a rating, it
+  /// is a rumour — "5.0" from one buyer must not outrank "4.6" from ninety.
+  ratingCount Int           @default(0)
+  reviews     AlbumReview[]
+  viewCount   Int           @default(0)
 
   /// Licence text in force. Frozen onto every OrderItem at purchase.
   licenceVersionId String?
@@ -1318,4 +1324,49 @@ enum FootageRequestStatus {
   planned
   fulfilled
   declined
+}
+
+/// A buyer's verdict on an album they actually own.
+///
+/// ── Why ownership is enforced, not encouraged ──────────────────────────────
+/// A review carries weight only because the person writing it paid. The write
+/// path checks for an `Entitlement` on the album; without one there is no
+/// review, which makes review-bombing and competitor sabotage a purchase away
+/// rather than a signup away. The unique constraint stops one buyer stacking
+/// ten reviews on the same album.
+///
+/// ── Why it is moderated ────────────────────────────────────────────────────
+/// Reviews are user text on a commercial page. `status` defaults to
+/// `published` because a queue nobody empties silences honest buyers, but an
+/// operator can hide one without deleting it — a deleted review is an argument
+/// with a customer you cannot reconstruct.
+model AlbumReview {
+  id String @id @default(cuid())
+
+  albumId String
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// 1–5. Enforced in the action, not by the database, so an invalid value
+  /// returns a message rather than a 500.
+  rating Int
+  /// Optional. A star with no words is still a signal worth keeping.
+  bodyAr String?
+
+  status         AlbumReviewStatus @default(published)
+  /// Why an operator hid it. Never shown to the public.
+  moderationNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One verdict per buyer per album.
+  @@unique([albumId, userId])
+  @@index([albumId, status, createdAt])
+}
+
+enum AlbumReviewStatus {
+  published
+  hidden
 }

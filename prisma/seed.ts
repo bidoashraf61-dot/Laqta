@@ -764,7 +764,13 @@ async function main() {
   // Five orders at different ages so the 30-day hold is visible: the oldest
   // four have cleared, the newest is still held. Commission is resolved ONCE
   // here and written to the OrderItem — nothing downstream recomputes it.
-  if ((await db.order.count()) === 0) {
+  // Guarded on ENTITLEMENTS, not orders. Guarding the whole purchase block on
+  // `order.count() === 0` meant that once orders existed the block never ran
+  // again — so when the entitlement write was added later it was skipped
+  // forever, leaving five paid orders whose buyers owned nothing and could
+  // download nothing. An all-or-nothing guard on one entity is how a seed
+  // drifts out of sync with its own schema.
+  if ((await db.entitlement.count()) === 0) {
     const clips = await db.clip.findMany({
       where: { albumId: liveAlbum.id },
       orderBy: { orderIndex: 'asc' },

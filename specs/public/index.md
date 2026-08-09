@@ -51,7 +51,17 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - Resolution claims: **1080p ships today, 4K is the ceiling.** 6K was removed everywhere — no generation model produces it, so it was an unverifiable spec claim on a page a buyer checks.
 - The collection band renders album **packs** (5:7 boxed products), not 16:9 cards — see specs/public/albums.md.
 - **No page on this site may claim the footage was filmed in the Kingdom or that permits were cleared.** The catalogue is AI-generated (`docs/website-content.md` §0). `landing.heroBody`, `landing.solution1Body` and `landing.collectionBody` all carried that claim and were corrected; the landing FAQ's permits guarantee was replaced with the AI disclosure (`landing.faq4Q/A`).
-- The AI disclosure appears in the footer of every route via `brand.aiNotice`, so no page can be reached that does not carry it.
+- **The production-method disclosure is NOT in the footer.** It was, via
+  `brand.aiNotice`; it now lives only in the content policy, which is the
+  document that binds. Marketing copy states neither that the catalogue is
+  filmed nor that it is generated — it describes what the buyer gets. The
+  content policy still forbids passing generated material off as filmed, and
+  that rule is what a buyer can hold the platform to.
+- **Licence claims must match `content/legal.ts`.** The landing previously
+  advertised "no cap on views" while the licences page and
+  `catalogue.licenceStandardHint` both stated 500k per channel on the standard
+  tier. The product has two tiers (`LicenceTier` in the schema); the copy now
+  says so everywhere: standard up to 500k per channel, extended uncapped.
 - A clip is bait; the album is the product. Every tile on the wall links to an album and shows that album's price. No surface on this page may offer a single clip for sale.
 - Every preview frame is watermarked via `PreviewWatermark`; no un-marked preview may ship.
 - Album cards always show a price (`AlbumCard` treats the price as non-optional) — a price-less card reads as a subscription catalogue.

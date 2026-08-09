@@ -97,7 +97,7 @@ async function main() {
     return {
       wall: text.includes('تصفّح باللقطة') || text.includes('واشترِ بالألبوم'),
       collection: text.includes('المجموعة الأولى') || text.includes('كل لقطة مقصودة'),
-      licensing: text.includes('تغطّي كل استخداماتك') || text.includes('رخصة واحدة'),
+      licensing: text.includes('شراء واحد') || text.includes('وترخيص لا ينتهي'),
     }
   })
   report('footage wall renders below the hero', sections.wall)

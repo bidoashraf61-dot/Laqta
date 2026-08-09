@@ -29,3 +29,11 @@ Read-only. Linked from the landing page's licensing band (`landing.licenseCta`).
 
 ## Verified by
 `verify:arabic`, `audit`.
+
+## Invariant added with the bilingual launch
+
+The two tiers are the product (`LicenceTier` in `prisma/schema.prisma`).
+Standard covers ordinary commercial use up to five hundred thousand views per
+channel; extended costs 3× and lifts the ceiling, adding resale products. **No
+surface may claim an uncapped standard licence** — the landing did, for a while,
+in both languages, while this page said otherwise.

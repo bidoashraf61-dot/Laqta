@@ -7,6 +7,8 @@ import { EmptyState } from '@/components/ui/state'
 import { t, formatNumber, formatDate } from '@/lib/i18n'
 import { PageTitle, SubHeadline } from '@/components/ui/typography'
 
+const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+
 async function getCreator(handle: string) {
   return db.creator.findFirst({
     where: { handle, status: 'approved' },
@@ -93,8 +95,30 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
   const featuredSlugs = new Set(creator.albums.filter((a) => a.isFeatured).map((a) => a.slug))
   const featured = albums.filter((a) => featuredSlugs.has(a.slug))
 
+  // On a marketplace the creators ARE the expertise signal — E-E-A-T's first
+  // two letters. The profile emitted no schema at all, so an engine had a page
+  // full of authorship evidence and no way to read it as a person.
+  const personLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person',
+      name: creator.displayNameAr,
+      alternateName: creator.displayNameEn,
+      url: `${SITE_URL}/creators/${creator.handle}`,
+      ...(creator.bioAr ? { description: creator.bioAr } : {}),
+      ...(creator.user?.image ? { image: creator.user.image } : {}),
+      ...(creator.city ? { homeLocation: { '@type': 'Place', name: creator.city } } : {}),
+      worksFor: { '@type': 'Organization', name: t('brand.name'), url: SITE_URL },
+    },
+  }
+
   return (
     <div className="container py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
+      />
       <header className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-start">
         {creator.user?.image ? (
           <img

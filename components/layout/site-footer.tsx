@@ -2,13 +2,9 @@ import Link from 'next/link'
 import { Separator } from '@/components/ui/toggles'
 import { FOOTER_LEGAL } from '@/components/layout/nav'
 import { t } from '@/lib/i18n'
+import { SOCIAL } from '@/lib/brand'
 
-const SOCIAL = [
-  { href: 'https://x.com/laqta_sa', label: 'X' },
-  { href: 'https://instagram.com/laqta.sa', label: 'Instagram' },
-  { href: 'https://youtube.com/@laqta', label: 'YouTube' },
-  { href: 'https://linkedin.com/company/laqta', label: 'LinkedIn' },
-]
+
 
 export function SiteFooter() {
   const year = new Date().getFullYear()

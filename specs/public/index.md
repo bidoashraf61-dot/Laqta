@@ -34,6 +34,8 @@ Sell the albums-only model to a first-time buyer: a scroll-scrubbed hero film, a
 - **Testimonial is a placeholder** — `landing.testimonialQuote/Name/Role` in `messages/ar.json` are not a real customer quote; flagged in-code as must-replace before launch.
 
 ## Invariants
+- `Organization` carries **`logo` and `sameAs`**. Their absence was the largest GEO gap: `sameAs` is what lets an engine bind «لقطة» to an entity rather than a phrase, and without a logo a knowledge panel has nothing to show. Both read from `lib/brand.ts`, which the footer also reads — two copies of the social list would drift the first time an account moved.
+- The logo at `/brand/laqta-logo.png` is **INTERIM**: a 512² render of the live-text wordmark, enough to satisfy `Organization.logo` (≥112²). `docs/design-language.md` still records the real logo as open. Replace it, do not build on it.
 - The shots section leads with a **showreel** that plays on intersection, not on `autoplay`. A bare autoplay decodes a video four screens down before anyone has seen it, burning a phone's battery and data. Threshold is 0.5 — a 10% threshold fires while the section is still a sliver at the bottom of the viewport.
 - Autoplaying video is always muted (browsers refuse audio autoplay outright) and always carries a visible pause control: WCAG asks for a mechanism to stop anything moving for more than five seconds, and autoplay that cannot be stopped is a dark pattern. Under `prefers-reduced-motion` it never starts on its own — verified.
 - The testimonial is the LAST content section, after the creator pitch rather than inside the album band. Its copy is still a placeholder — a fabricated testimonial is a trust and legal risk, so it must be swapped for a real attributable quote before launch.

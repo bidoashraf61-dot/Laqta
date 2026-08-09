@@ -25,6 +25,7 @@ Read-only.
 - `Collection.heroMedia` is not rendered on this page (only on the index tile).
 
 ## Invariants
+- A collection with no live albums is **`noindex, follow`**. Dropping it from the sitemap is not enough on its own: a page merely absent from the sitemap can still be found and indexed through an internal link. `follow` stays on so the crawler still walks through to what it links.
 - Only live albums are shown, regardless of what the collection contains.
 - Every card shows a price and carries `PreviewWatermark` on its cover.
 

@@ -1,14 +1,14 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu } from 'lucide-react'
 import { navSections, type DashboardNav } from './nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Mobile dashboard nav — the same sections in a drawer.
@@ -18,6 +18,8 @@ import { cn } from '@/lib/utils'
  * open after a tap feels broken.
  */
 export function MobileSidebar({ nav }: { nav: DashboardNav }) {
+  const t = useT()
+
   const sections = navSections(nav)
   const pathname = usePathname()
   const [open, setOpen] = useState(false)

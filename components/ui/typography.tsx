@@ -81,7 +81,7 @@ export function Headline({
   return (
     <Tag
       className={cn(
-        'font-display text-balance leading-[1.12]',
+        'text-balance font-display leading-[1.12]',
         size === 'display' ? 'headline-airy-wide' : 'headline-airy',
         scale,
         className,
@@ -228,14 +228,7 @@ export function Prose({
  * full-bleed panels. `tone` is the only knob.
  */
 export type SectionTone =
-  | 'base'
-  | 'offwhite'
-  | 'raised'
-  | 'warm'
-  | 'dusty'
-  | 'olive'
-  | 'accent'
-  | 'oasis'
+  'base' | 'offwhite' | 'raised' | 'warm' | 'dusty' | 'olive' | 'accent' | 'oasis'
 
 /**
  * The ground ladder, lightest to darkest.

@@ -141,22 +141,24 @@ async function main() {
     await page.goto(`${BASE}/studio/settings`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(900)
 
-    const city = page.locator('#city')
+    // The city split into an Arabic and an English column when the storefront
+    // became bilingual; the Arabic one is the round-trip probe.
+    const city = page.locator('#cityAr')
     const original = await city.inputValue()
     const probe = original === 'الرياض' ? 'جدة' : 'الرياض'
     await city.fill(probe)
-    await page.locator('form', { has: page.locator('#city') }).locator('button[type="submit"]').click()
+    await page.locator('form', { has: page.locator('#cityAr') }).locator('button[type="submit"]').click()
     await page.waitForTimeout(2200)
 
     // Reload rather than trust the optimistic UI: the point is that it PERSISTED.
     await page.goto(`${BASE}/studio/settings`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(900)
-    const saved = await page.locator('#city').inputValue()
+    const saved = await page.locator('#cityAr').inputValue()
     report('profile form persists a change', saved === probe, `${original} → ${saved}`)
 
     // Restore.
-    await page.locator('#city').fill(original)
-    await page.locator('form', { has: page.locator('#city') }).locator('button[type="submit"]').click()
+    await page.locator('#cityAr').fill(original)
+    await page.locator('form', { has: page.locator('#cityAr') }).locator('button[type="submit"]').click()
     await page.waitForTimeout(2000)
     report('no errors on the settings flow', errors.length === 0, errors.slice(0, 2).join(' | '))
     await page.close()

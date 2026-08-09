@@ -1,23 +1,56 @@
 import ar from '@/messages/ar.json'
+import en from '@/messages/en.json'
+import { BCP47, currentLocale, DIRECTION, type Locale } from '@/lib/locale'
 
 /**
  * Copy and formatting.
  *
- * Laqta ships in Arabic only. There is no locale segment in the URL, no
- * language switcher, and no second dictionary — `laqta.sa/albums`, not
- * `laqta.sa/ar/albums`.
+ * Laqta ships in Arabic and English. Arabic is the default and owns the bare
+ * path — `laqta.sa/albums` — while English is served under `/en/albums`, which
+ * the middleware rewrites onto the same route tree. Every string here follows
+ * whichever locale the current request resolved to.
  *
- * This is the *interface* language. The catalogue itself stays bilingual:
- * `Album.titleEn`, `Clip.titleEn` and the taxonomy's English synonyms are all
- * still populated, because they carry the transliterations that let an Arabic
- * query match English-tagged footage ("AlUla" ↔ "العلا"), and because creators
- * are worldwide. Dropping English from the UI is not dropping it from the data.
+ * This is the *interface* language, and it is separate from the catalogue's own
+ * bilingualism: `Album.titleEn`, `Clip.titleEn` and the taxonomy's English
+ * synonyms carry the transliterations that let an Arabic query match
+ * English-tagged footage ("AlUla" ↔ "العلا"). Those are data, and they are
+ * populated in both languages regardless of which one the interface is in.
  */
 
+const DICTIONARIES = { ar, en } as const
+
+/**
+ * Arabic is the fallback for BOTH dictionaries.
+ *
+ * A key missing from `en.json` renders its Arabic rather than the raw dot-path.
+ * A half-translated screen is a shipping reality; a screen of `landing.faq3Q`
+ * is a bug report. The gap is still visible — it is Arabic on an English page —
+ * but the page works.
+ */
+function lookup(dict: unknown, key: string): unknown {
+  return key.split('.').reduce<unknown>((acc, part) => {
+    if (acc && typeof acc === 'object' && part in acc) {
+      return (acc as Record<string, unknown>)[part]
+    }
+    return undefined
+  }, dict)
+}
+
+/**
+ * @deprecated Constants from the Arabic-only era. They describe the DEFAULT,
+ * not the request — reading them on an English page silently yields Arabic.
+ * Use `activeDirection()` / `activeBcp47()`.
+ */
 export const locale = 'ar' as const
 export const direction = 'rtl' as const
-/** BCP-47 tag used for all Intl formatting. */
 export const bcp47 = 'ar-SA'
+
+export function activeDirection() {
+  return DIRECTION[currentLocale()]
+}
+export function activeBcp47() {
+  return BCP47[currentLocale()]
+}
 
 type Messages = typeof ar
 
@@ -26,12 +59,24 @@ type Messages = typeof ar
  * the key itself, so a gap is loud on screen rather than an invisible blank.
  */
 export function t(key: string, vars?: Record<string, string | number>): string {
-  const value = key.split('.').reduce<unknown>((acc, part) => {
-    if (acc && typeof acc === 'object' && part in acc) {
-      return (acc as Record<string, unknown>)[part]
-    }
-    return undefined
-  }, ar as Messages)
+  return translate(currentLocale(), key, vars)
+}
+
+/**
+ * The lookup itself, with the locale passed in.
+ *
+ * `t()` reads the locale from the ambient store, which only exists in the RSC
+ * render. Client components have their own source for it (see lib/i18n-client)
+ * and call this directly, so the dictionary logic lives in one place instead of
+ * being written twice and drifting.
+ */
+export function translate(
+  active: Locale,
+  key: string,
+  vars?: Record<string, string | number>,
+): string {
+  let value = lookup(DICTIONARIES[active], key)
+  if (typeof value !== 'string' && active !== 'ar') value = lookup(ar as Messages, key)
 
   if (typeof value !== 'string') return key
   if (!vars) return value
@@ -57,25 +102,27 @@ export function formatMoney(
 ) {
   const value = typeof amount === 'string' ? Number(amount) : amount
   const numbering = options.arabicDigits ? '-u-nu-arab' : '-u-nu-latn'
-  return new Intl.NumberFormat(`${bcp47}${numbering}`, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  })
-    .format(Number.isFinite(value) ? value : 0)
-    // Same bidi hygiene as formatDate: `ar-SA` wraps the currency run in
-    // directional marks. Money is always shown in an isolated `.numeric` span,
-    // so the marks are redundant at best and a reorder risk at worst — drop them.
-    .replace(BIDI_MARKS, '')
+  return (
+    new Intl.NumberFormat(`${activeBcp47()}${numbering}`, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })
+      .format(Number.isFinite(value) ? value : 0)
+      // Same bidi hygiene as formatDate: `ar-SA` wraps the currency run in
+      // directional marks. Money is always shown in an isolated `.numeric` span,
+      // so the marks are redundant at best and a reorder risk at worst — drop them.
+      .replace(BIDI_MARKS, '')
+  )
 }
 
 export function formatNumber(value: number) {
-  return new Intl.NumberFormat(`${bcp47}-u-nu-latn`).format(value)
+  return new Intl.NumberFormat(`${activeBcp47()}-u-nu-latn`).format(value)
 }
 
 export function formatPercent(fraction: number, digits = 1) {
-  return new Intl.NumberFormat(`${bcp47}-u-nu-latn`, {
+  return new Intl.NumberFormat(`${activeBcp47()}-u-nu-latn`, {
     style: 'percent',
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -95,7 +142,7 @@ const BIDI_MARKS = /[‎‏؜]/g
 
 export function formatDate(value: Date | string) {
   const date = typeof value === 'string' ? new Date(value) : value
-  return new Intl.DateTimeFormat(`${bcp47}-u-nu-latn-ca-gregory`, {
+  return new Intl.DateTimeFormat(`${activeBcp47()}-u-nu-latn-ca-gregory`, {
     dateStyle: 'medium',
   })
     .format(date)
@@ -104,7 +151,7 @@ export function formatDate(value: Date | string) {
 
 export function formatDateTime(value: Date | string) {
   const date = typeof value === 'string' ? new Date(value) : value
-  return new Intl.DateTimeFormat(`${bcp47}-u-nu-latn-ca-gregory`, {
+  return new Intl.DateTimeFormat(`${activeBcp47()}-u-nu-latn-ca-gregory`, {
     dateStyle: 'medium',
     timeStyle: 'short',
   })

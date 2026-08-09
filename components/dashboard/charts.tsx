@@ -140,13 +140,7 @@ export function TrendChart({
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis
-            dataKey="label"
-            fontSize={11}
-            tickLine={false}
-            axisLine={false}
-            minTickGap={24}
-          />
+          <XAxis dataKey="label" fontSize={11} tickLine={false} axisLine={false} minTickGap={24} />
           {/* Every Laqta metric is a count or a whole-riyal figure, so the
               axis must not invent fractional ticks — a "1.5 sales" gridline is
               a data-viz lie about a discrete quantity. */}

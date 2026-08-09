@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { Pause, Play } from 'lucide-react'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * A large video that plays itself when it scrolls into view.
@@ -39,6 +39,8 @@ export function AutoplayVideo({
   label: string
   className?: string
 }) {
+  const t = useT()
+
   const ref = React.useRef<HTMLVideoElement | null>(null)
   const [playing, setPlaying] = React.useState(false)
   const [reduced, setReduced] = React.useState(false)
@@ -78,7 +80,9 @@ export function AutoplayVideo({
     const el = ref.current
     if (!el) return
     if (el.paused) {
-      el.play().then(() => setPlaying(true)).catch(() => {})
+      el.play()
+        .then(() => setPlaying(true))
+        .catch(() => {})
     } else {
       el.pause()
       setPlaying(false)

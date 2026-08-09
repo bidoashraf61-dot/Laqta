@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import { Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * List controls — search and filters, driven through the URL.
@@ -53,6 +53,8 @@ function useParamHref() {
  * request per character and short enough that the list feels immediate.
  */
 export function SearchBox({ placeholder, param = 'q' }: { placeholder: string; param?: string }) {
+  const t = useT()
+
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -130,14 +132,13 @@ export function FilterChips({
   param?: string
   allLabel?: string
 }) {
+  const t = useT()
+
   const params = useSearchParams()
   const href = useParamHref()
   const active = params.get(param)
 
-  const chips: FilterOption[] = [
-    { value: '', label: allLabel ?? t('dash.filterAll') },
-    ...options,
-  ]
+  const chips: FilterOption[] = [{ value: '', label: allLabel ?? t('dash.filterAll') }, ...options]
 
   return (
     <div className="flex flex-wrap items-center gap-1.5" role="group">
@@ -156,9 +157,7 @@ export function FilterChips({
             )}
           >
             {chip.label}
-            {chip.count != null ? (
-              <span className="numeric opacity-60">{chip.count}</span>
-            ) : null}
+            {chip.count != null ? <span className="numeric opacity-60">{chip.count}</span> : null}
           </a>
         )
       })}
@@ -168,6 +167,8 @@ export function FilterChips({
 
 /** 7 / 30 / 90-day window for the analytics surfaces. */
 export function RangePicker({ param = 'days' }: { param?: string }) {
+  const t = useT()
+
   const params = useSearchParams()
   const href = useParamHref()
   const active = params.get(param) ?? '30'
@@ -193,9 +194,7 @@ export function RangePicker({ param = 'days' }: { param?: string }) {
             aria-current={selected ? 'true' : undefined}
             className={cn(
               'rounded-[5px] px-2.5 py-1 text-xs font-medium transition-colors',
-              selected
-                ? 'bg-gold/12 text-gold'
-                : 'text-muted-foreground hover:text-foreground',
+              selected ? 'bg-gold/12 text-gold' : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {range.label}

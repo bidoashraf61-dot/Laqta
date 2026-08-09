@@ -1,6 +1,8 @@
 'use client'
 
 import { Toaster as SonnerToaster, toast } from 'sonner'
+import { useLocale, useT } from '@/lib/i18n-client'
+import { DIRECTION } from '@/lib/locale'
 
 /**
  * Toasts.
@@ -14,14 +16,17 @@ import { Toaster as SonnerToaster, toast } from 'sonner'
  *   toast.success('تم الحفظ')
  */
 function Toaster() {
+  const t = useT()
+  const locale = useLocale()
+
   return (
     <SonnerToaster
-      dir="rtl"
+      dir={DIRECTION[locale]}
       position="bottom-right"
       // Sonner labels its live region "Notifications" by default. That string
       // is never drawn, so it survives any visual review — but a screen reader
-      // would announce the toast container in English.
-      containerAriaLabel="الإشعارات"
+      // would announce the toast container in the wrong language.
+      containerAriaLabel={t('state.notifications')}
       theme="dark"
       closeButton
       toastOptions={{

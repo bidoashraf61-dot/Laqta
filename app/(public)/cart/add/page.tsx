@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import type { LicenceTier } from '@prisma/client'
 import { auth } from '@/lib/auth'
 import { addToCart } from '../actions'
+import { requestLocale } from '@/lib/locale-request'
 
 /**
  * Add-to-cart landing.
@@ -15,6 +16,16 @@ export default async function AddToCartPage({
 }: {
   searchParams: Promise<{ album?: string; tier?: string }>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { album, tier } = await searchParams
   if (!album) redirect('/albums')
 

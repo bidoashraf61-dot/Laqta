@@ -99,7 +99,7 @@ export async function getCart(userId: string) {
               currency: true,
               clipCount: true,
               clearanceStatus: true,
-              creator: { select: { handle: true, displayNameAr: true } },
+              creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
             },
           },
         },

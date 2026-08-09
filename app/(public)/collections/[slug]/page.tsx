@@ -6,6 +6,8 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import { pickLocalised } from '@/lib/locale'
+import { requestLocale } from '@/lib/locale-request'
 
 async function getCollection(slug: string) {
   return db.collection.findFirst({
@@ -23,12 +25,13 @@ async function getCollection(slug: string) {
               priceStandard: true,
               compareAtPrice: true,
               offerLabelAr: true,
+              offerLabelEn: true,
               currency: true,
               clipCount: true,
               totalRuntimeS: true,
               clearedForCommercial: true,
               coverClipId: true,
-              creator: { select: { handle: true, displayNameAr: true } },
+              creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
             },
           },
         },
@@ -54,14 +57,24 @@ export async function generateMetadata({
   const empty = collection.albums.every((row) => row.album.status !== 'live')
 
   return {
-    title: collection.titleAr,
-    description: collection.descriptionAr ?? undefined,
+    title: pickLocalised(collection.titleAr, collection.titleEn),
+    description: pickLocalised(collection.descriptionAr, collection.descriptionEn) ?? undefined,
     alternates: { canonical: `/collections/${slug}` },
     ...(empty ? { robots: { index: false, follow: true } } : {}),
   }
 }
 
 export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { slug } = await params
   const collection = await getCollection(slug)
   if (!collection) notFound()
@@ -81,11 +94,13 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
     slug: album.slug,
     creatorHandle: album.creator.handle,
     creatorNameAr: album.creator.displayNameAr,
+    creatorNameEn: album.creator.displayNameEn,
     titleAr: album.titleAr,
     titleEn: album.titleEn,
     priceStandard: Number(album.priceStandard),
     compareAtPrice: album.compareAtPrice == null ? null : Number(album.compareAtPrice),
     offerLabelAr: album.offerLabelAr,
+    offerLabelEn: album.offerLabelEn,
     currency: album.currency,
     clipCount: album.clipCount,
     totalRuntimeS: album.totalRuntimeS,
@@ -99,8 +114,10 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         <PageTitle>
           <Bilingual ar={collection.titleAr} en={collection.titleEn} />
         </PageTitle>
-        {collection.descriptionAr ? (
-          <p className="max-w-prose text-muted-foreground">{collection.descriptionAr}</p>
+        {pickLocalised(collection.descriptionAr, collection.descriptionEn) ? (
+          <p className="max-w-prose text-muted-foreground">
+            {pickLocalised(collection.descriptionAr, collection.descriptionEn)}
+          </p>
         ) : null}
       </header>
 

@@ -119,7 +119,15 @@ async function resolveTaxonomy(query: string) {
 
   const candidates = await db.taxonomy.findMany({
     where: { isActive: true },
-    select: { id: true, kind: true, slug: true, nameAr: true, nameEn: true, synonymsAr: true, synonymsEn: true },
+    select: {
+      id: true,
+      kind: true,
+      slug: true,
+      nameAr: true,
+      nameEn: true,
+      synonymsAr: true,
+      synonymsEn: true,
+    },
   })
 
   return candidates.filter((row) => {
@@ -187,7 +195,11 @@ const postgresDriver: SearchDriver = {
         OR: [
           { location: { slug: filters.location } },
           { taxonomy: { some: { taxonomy: { kind: 'location', slug: filters.location } } } },
-          { album: { taxonomy: { some: { taxonomy: { kind: 'location', slug: filters.location } } } } },
+          {
+            album: {
+              taxonomy: { some: { taxonomy: { kind: 'location', slug: filters.location } } },
+            },
+          },
         ],
       })
     }
@@ -195,7 +207,11 @@ const postgresDriver: SearchDriver = {
       andClauses.push({
         OR: [
           { taxonomy: { some: { taxonomy: { kind: 'category', slug: filters.category } } } },
-          { album: { taxonomy: { some: { taxonomy: { kind: 'category', slug: filters.category } } } } },
+          {
+            album: {
+              taxonomy: { some: { taxonomy: { kind: 'category', slug: filters.category } } },
+            },
+          },
         ],
       })
     }
@@ -274,7 +290,7 @@ const postgresDriver: SearchDriver = {
               currency: true,
               clipCount: true,
               clearedForCommercial: true,
-              creator: { select: { handle: true, displayNameAr: true } },
+              creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
             },
           },
         },

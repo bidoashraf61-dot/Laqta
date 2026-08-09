@@ -313,7 +313,10 @@ model Creator {
   bioEn         String?
   showreelUrl   String?
   country       String        @default("EG") // ISO-3166-1 alpha-2
-  city          String?
+  /// Free text the creator types, so it is bilingual like every other display
+  /// column rather than a lookup: a city we have no code for is still a city.
+  cityAr        String?
+  cityEn        String?
   status        CreatorStatus @default(pending)
   tier          CreatorTier   @default(standard)
 
@@ -385,7 +388,10 @@ model Album {
 
   compareAtPrice Decimal? @db.Decimal(10, 2)
   /// Short offer label, e.g. «عرض الإطلاق». NULL when compareAtPrice is NULL.
+  /// Bilingual like every other display column: the English storefront shows an
+  /// offer badge too, and a single-language column meant it read Arabic there.
   offerLabelAr   String?
+  offerLabelEn   String?
   currency       String   @default("USD")
 
   coverClipId    String?

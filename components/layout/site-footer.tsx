@@ -1,10 +1,8 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Separator } from '@/components/ui/toggles'
 import { FOOTER_LEGAL } from '@/components/layout/nav'
 import { t } from '@/lib/i18n'
 import { SOCIAL } from '@/lib/brand'
-
-
 
 export function SiteFooter() {
   const year = new Date().getFullYear()

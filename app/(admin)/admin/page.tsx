@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { AlertTriangle, BadgeCheck, Clock, Eye, ShoppingBag, Users, Wallet } from 'lucide-react'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -9,8 +9,18 @@ import { EmptyState } from '@/components/ui/state'
 import { DashboardHeader, Panel, StatGrid, StatTile } from '@/components/dashboard/primitives'
 import { TrendChart } from '@/components/dashboard/charts'
 import { formatDate, formatMoney, formatNumber, t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('admin.title') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('admin.title'),
+  }
+}
 
 /**
  * Admin overview.
@@ -21,6 +31,16 @@ export const metadata = { title: t('admin.title') }
  * a missed review SLA is the only thing here with a promise attached to it.
  */
 export default async function AdminPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   await requireAdmin()
 
   const now = new Date()

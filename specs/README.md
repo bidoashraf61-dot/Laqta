@@ -40,10 +40,18 @@ downloads restates them, and no surface may work around them:
 - [`admin/`](./admin) — the operator control panel
 - [`auth/`](./auth) — sign-in, sign-up and the guard model
 - [`api/`](./api) — route handlers
+- [`localisation.md`](./localisation.md) — the Arabic/English contract, cross-cutting
 
 The two frozen invariants have no separate document: they are stated above, enforced
 in `lib/orders.ts` (entitlement snapshot, commission freeze) and `lib/admin.ts`
 (refund reversal at the frozen rate), and restated by every spec that touches them.
+
+## The bilingual surface
+
+Arabic owns the bare path; English is served under `/en` by a middleware
+rewrite onto the same route tree. Any spec describing a public route describes
+**both** its languages. See [`localisation.md`](./localisation.md) for the URL
+contract, how a request resolves its language, and the SEO rules.
 
 ## Coverage
 

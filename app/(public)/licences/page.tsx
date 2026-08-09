@@ -1,15 +1,34 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { DocumentPage } from '@/components/layout/document-page'
 import { LICENCES, EFFECTIVE_FROM } from '@/content/legal'
 import { t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
+import { localeAlternates } from '@/lib/locale'
 
-export const metadata = {
-  alternates: { canonical: '/licences' },
-  title: t('footer.licences'),
-  description: t('brand.seo.licences'),
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    alternates: localeAlternates('/licences'),
+    title: t('footer.licences'),
+    description: t('brand.seo.licences'),
+  }
 }
 
-export default function LicencesPage() {
+export default async function LicencesPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   return (
     <DocumentPage
       title={t('footer.licences')}

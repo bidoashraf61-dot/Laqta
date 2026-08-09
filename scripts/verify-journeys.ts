@@ -261,23 +261,24 @@ async function creatorJourney(context: BrowserContext) {
   })
 
   await guard('a settings change persists through a reload', async () => {
-    const city = page.locator('#city')
+    // Split into Arabic and English columns when the storefront went bilingual.
+    const city = page.locator('#cityAr')
     if ((await city.count()) === 0) {
-      step('a settings change persists through a reload', false, 'no city field')
+      step('a settings change persists through a reload', false, 'no cityAr field')
       return
     }
     const original = await city.inputValue()
     const probe = original === 'الرياض' ? 'جدة' : 'الرياض'
     await city.fill(probe)
-    await page.locator('form', { has: page.locator('#city') }).locator('button[type="submit"]').click()
+    await page.locator('form', { has: page.locator('#cityAr') }).locator('button[type="submit"]').click()
     await page.waitForTimeout(2200)
     await page.goto(`${BASE}/studio/settings`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1200)
-    const saved = await page.locator('#city').inputValue()
+    const saved = await page.locator('#cityAr').inputValue()
     step('a settings change persists through a reload', saved === probe, `${original} → ${saved}`)
     // Restore so the run is idempotent.
-    await page.locator('#city').fill(original)
-    await page.locator('form', { has: page.locator('#city') }).locator('button[type="submit"]').click()
+    await page.locator('#cityAr').fill(original)
+    await page.locator('form', { has: page.locator('#cityAr') }).locator('button[type="submit"]').click()
     await page.waitForTimeout(1800)
   })
 

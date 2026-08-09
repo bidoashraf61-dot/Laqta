@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import type { Prisma } from '@prisma/client'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -11,8 +11,18 @@ import { ActionButton } from '@/components/dashboard/form'
 import { RefundControl } from '@/components/admin/refund-control'
 import { markOrderPaid } from '@/app/(admin)/admin/actions'
 import { formatDate, formatMoney, formatPercent, t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('admin.orders') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('admin.orders'),
+  }
+}
 
 /**
  * Orders.
@@ -28,6 +38,16 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: Promise<{ q?: string; status?: string }>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   await requireAdmin()
   const { q, status } = await searchParams
 

@@ -1,18 +1,35 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Eye, Percent, ShoppingBag, Wallet } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'
 import { creatorTrend, summary, topAlbums } from '@/lib/analytics'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { DashboardHeader, Panel, StatGrid, StatTile } from '@/components/dashboard/primitives'
 import { BarSeries, TrendChart } from '@/components/dashboard/charts'
 import { RangePicker } from '@/components/dashboard/toolbar'
 import { Funnel } from '@/components/dashboard/funnel'
 import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('dash.analytics') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('dash.analytics'),
+  }
+}
 
 /** Only these windows are accepted — an arbitrary `?days=9999` is a table scan. */
 function resolveDays(value: string | undefined) {
@@ -35,6 +52,16 @@ export default async function StudioAnalyticsPage({
 }: {
   searchParams: Promise<{ days?: string }>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const user = await requireCreator()
   if (!user.creatorId) redirect('/sell')
 

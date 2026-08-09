@@ -6,6 +6,8 @@ import { formatDuration, cn } from '@/lib/utils'
 import type { ClipHit } from '@/lib/search'
 import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { pickLocalised } from '@/lib/locale'
+import { Anchor } from '@/components/ui/link'
 
 /**
  * The clip card — and the album ribbon underneath it.
@@ -35,12 +37,12 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
         className,
       )}
     >
-      <a href={`/footage/${clip.slug}`} className="block">
+      <Anchor href={`/footage/${clip.slug}`} className="block">
         <div className="relative aspect-video overflow-hidden bg-muted">
           {clip.thumbnail ? (
             <img
               src={clip.thumbnail}
-              alt={t('catalogue.altClipThumb', { clip: clip.titleAr })}
+              alt={t('catalogue.altClipThumb', { clip: pickLocalised(clip.titleAr, clip.titleEn) })}
               loading="lazy"
               className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -65,11 +67,11 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
         <h2 className="line-clamp-2 px-3 pt-3 text-sm font-medium leading-snug group-hover:text-foreground">
           <Bilingual ar={clip.titleAr} en={clip.titleEn} />
         </h2>
-      </a>
+      </Anchor>
 
       {/* The ribbon. Its own link, so the buyer can go straight to the thing
           they can actually purchase without passing through the clip page. */}
-      <a
+      <Anchor
         href={albumHref({ creatorHandle: clip.album.creatorHandle, slug: clip.album.slug })}
         className="mt-2 block border-t bg-secondary/40 px-3 py-2 transition-colors hover:bg-secondary"
       >
@@ -93,7 +95,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
             />
           ) : null}
         </p>
-      </a>
+      </Anchor>
     </article>
   )
 }

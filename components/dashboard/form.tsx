@@ -7,8 +7,8 @@ import { Button, type ButtonProps } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
 import { Spinner } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * The two ways a dashboard mutates something.
@@ -27,6 +27,8 @@ export function SubmitButton({
   className,
   ...props
 }: ButtonProps & { children?: ReactNode }) {
+  const t = useT()
+
   const { pending } = useFormStatus()
   return (
     <Button type="submit" disabled={pending} className={cn(className)} {...props}>
@@ -54,6 +56,8 @@ export function SettingsForm({
   submitLabel?: string
   className?: string
 }) {
+  const t = useT()
+
   const [state, formAction] = useActionState(action, null)
 
   return (
@@ -105,6 +109,8 @@ export function ActionButton({
   icon?: ReactNode
   className?: string
 }) {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
 

@@ -53,11 +53,7 @@ type Trend = { label: string; value: number }
  * Fill a continuous daily series between two dates, so a gap day renders as
  * zero rather than collapsing the axis. Recharts wants one point per day.
  */
-function fillDays(
-  rows: Array<{ day: Date; value: number }>,
-  from: Date,
-  to: Date,
-): Trend[] {
+function fillDays(rows: Array<{ day: Date; value: number }>, from: Date, to: Date): Trend[] {
   const byDay = new Map(rows.map((row) => [startOfDay(row.day).getTime(), row.value]))
   const out: Trend[] = []
   for (let t = startOfDay(from).getTime(); t <= startOfDay(to).getTime(); t += DAY_MS) {
@@ -89,10 +85,7 @@ export async function creatorTrend(
   return fillDays(
     rows.map((row) => ({
       day: row.day,
-      value:
-        metric === 'revenue'
-          ? Number(row._sum.revenue ?? 0)
-          : Number(row._sum[metric] ?? 0),
+      value: metric === 'revenue' ? Number(row._sum.revenue ?? 0) : Number(row._sum[metric] ?? 0),
     })),
     from,
     to,
@@ -100,10 +93,7 @@ export async function creatorTrend(
 }
 
 /** Platform-wide trend for a metric — the admin overview. */
-export async function platformTrend(
-  metric: 'views' | 'purchases' | 'revenue',
-  days = 30,
-) {
+export async function platformTrend(metric: 'views' | 'purchases' | 'revenue', days = 30) {
   const to = new Date()
   const from = new Date(to.getTime() - (days - 1) * DAY_MS)
 
@@ -117,10 +107,7 @@ export async function platformTrend(
   return fillDays(
     rows.map((row) => ({
       day: row.day,
-      value:
-        metric === 'revenue'
-          ? Number(row._sum.revenue ?? 0)
-          : Number(row._sum[metric] ?? 0),
+      value: metric === 'revenue' ? Number(row._sum.revenue ?? 0) : Number(row._sum[metric] ?? 0),
     })),
     from,
     to,
@@ -128,10 +115,7 @@ export async function platformTrend(
 }
 
 /** Totals for a window, with the delta vs the previous window of equal length. */
-export async function summary(
-  scope: { creatorId?: string },
-  days = 30,
-) {
+export async function summary(scope: { creatorId?: string }, days = 30) {
   const now = new Date()
   const from = new Date(now.getTime() - (days - 1) * DAY_MS)
   const prevFrom = new Date(from.getTime() - days * DAY_MS)

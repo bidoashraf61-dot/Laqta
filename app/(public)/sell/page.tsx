@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { BadgeCheck, Coins, FileCheck2, Send, Upload } from 'lucide-react'
 import { db } from '@/lib/db'
 import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
@@ -7,11 +7,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Headline, Prose, Section } from '@/components/ui/typography'
 import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
 import { FaqSchema } from '@/components/catalogue/faq-schema'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
+import { localeAlternates } from '@/lib/locale'
 
-export const metadata = {
-  alternates: { canonical: '/sell' },
-  title: t('sell.title'),
-  description: t('sell.intro'),
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    alternates: localeAlternates('/sell'),
+    title: t('sell.title'),
+    description: t('sell.intro'),
+  }
 }
 
 const TIER_LABEL = {
@@ -33,6 +42,16 @@ const TIER_LABEL = {
  * this page is also the entry point of the creator funnel, not just marketing.
  */
 export default async function SellPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const [clips, creators] = await Promise.all([
     db.clip.count({ where: { album: { status: 'live' } } }),
     db.creator.count({ where: { status: 'approved' } }),
@@ -62,7 +81,13 @@ export default async function SellPage() {
   return (
     <>
       <section className="container-tight py-20 lg:py-28">
-        <Headline as="h1" size="display" lead={t('sell.lead')} bold={t('sell.boldLead')} className="max-w-3xl" />
+        <Headline
+          as="h1"
+          size="display"
+          lead={t('sell.lead')}
+          bold={t('sell.boldLead')}
+          className="max-w-3xl"
+        />
         <Prose className="mt-6 max-w-xl">{t('sell.intro')}</Prose>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild variant="gold" size="lg">
@@ -138,7 +163,9 @@ export default async function SellPage() {
               <FileCheck2 className="size-5 text-gold" />
               {t('sell.keepTitle')}
             </h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t('sell.keepBody')}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {t('sell.keepBody')}
+            </p>
           </div>
           <div className="rounded-lg border bg-card p-6">
             <h3 className="flex items-center gap-2 font-subhead text-lg font-bold">
@@ -186,7 +213,12 @@ export default async function SellPage() {
 
       <Section tone="accent">
         <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-          <Headline lead={t('sell.lead')} bold={t('sell.boldLead')} size="lg" className="max-w-xl" />
+          <Headline
+            lead={t('sell.lead')}
+            bold={t('sell.boldLead')}
+            size="lg"
+            className="max-w-xl"
+          />
           <Button asChild variant="gold" size="lg">
             <Link href="/sign-up?role=creator">{t('sell.apply')}</Link>
           </Button>

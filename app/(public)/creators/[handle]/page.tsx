@@ -6,6 +6,8 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t, formatNumber, formatDate } from '@/lib/i18n'
 import { PageTitle, SubHeadline } from '@/components/ui/typography'
+import { pickLocalised } from '@/lib/locale'
+import { requestLocale } from '@/lib/locale-request'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -17,7 +19,9 @@ async function getCreator(handle: string) {
       displayNameAr: true,
       displayNameEn: true,
       bioAr: true,
-      city: true,
+      bioEn: true,
+      cityAr: true,
+      cityEn: true,
       country: true,
       approvedAt: true,
       user: { select: { image: true } },
@@ -31,6 +35,7 @@ async function getCreator(handle: string) {
           priceStandard: true,
           compareAtPrice: true,
           offerLabelAr: true,
+          offerLabelEn: true,
           currency: true,
           clipCount: true,
           totalRuntimeS: true,
@@ -53,13 +58,23 @@ export async function generateMetadata({
   const creator = await getCreator(handle)
   if (!creator) return { title: t('state.notFound') }
   return {
-    title: creator.displayNameAr,
-    description: creator.bioAr ?? undefined,
+    title: pickLocalised(creator.displayNameAr, creator.displayNameEn),
+    description: pickLocalised(creator.bioAr, creator.bioEn) ?? undefined,
     alternates: { canonical: `/creators/${handle}` },
   }
 }
 
 export default async function CreatorPage({ params }: { params: Promise<{ handle: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { handle } = await params
   const creator = await getCreator(handle)
   if (!creator) notFound()
@@ -77,11 +92,13 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
     slug: album.slug,
     creatorHandle: creator.handle,
     creatorNameAr: creator.displayNameAr,
+    creatorNameEn: creator.displayNameEn,
     titleAr: album.titleAr,
     titleEn: album.titleEn,
     priceStandard: Number(album.priceStandard),
     compareAtPrice: album.compareAtPrice == null ? null : Number(album.compareAtPrice),
     offerLabelAr: album.offerLabelAr,
+    offerLabelEn: album.offerLabelEn,
     currency: album.currency,
     clipCount: album.clipCount,
     totalRuntimeS: album.totalRuntimeS,
@@ -103,12 +120,21 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
     '@type': 'ProfilePage',
     mainEntity: {
       '@type': 'Person',
-      name: creator.displayNameAr,
+      name: pickLocalised(creator.displayNameAr, creator.displayNameEn),
       alternateName: creator.displayNameEn,
       url: `${SITE_URL}/creators/${creator.handle}`,
-      ...(creator.bioAr ? { description: creator.bioAr } : {}),
+      ...(pickLocalised(creator.bioAr, creator.bioEn)
+        ? { description: pickLocalised(creator.bioAr, creator.bioEn) as string }
+        : {}),
       ...(creator.user?.image ? { image: creator.user.image } : {}),
-      ...(creator.city ? { homeLocation: { '@type': 'Place', name: creator.city } } : {}),
+      ...(pickLocalised(creator.cityAr, creator.cityEn)
+        ? {
+            homeLocation: {
+              '@type': 'Place',
+              name: pickLocalised(creator.cityAr, creator.cityEn),
+            },
+          }
+        : {}),
       worksFor: { '@type': 'Organization', name: t('brand.name'), url: SITE_URL },
     },
   }
@@ -123,25 +149,35 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
         {creator.user?.image ? (
           <img
             src={creator.user.image}
-            alt={t('catalogue.altCreatorAvatar', { name: creator.displayNameAr })}
+            alt={t('catalogue.altCreatorAvatar', {
+              name: pickLocalised(creator.displayNameAr, creator.displayNameEn),
+            })}
             className="size-20 shrink-0 rounded-full object-cover"
           />
         ) : (
           <span
             role="img"
-            aria-label={t('catalogue.altCreatorAvatar', { name: creator.displayNameAr })}
+            aria-label={t('catalogue.altCreatorAvatar', {
+              name: pickLocalised(creator.displayNameAr, creator.displayNameEn),
+            })}
             className="grid size-20 shrink-0 place-items-center rounded-full bg-secondary font-display text-3xl font-bold"
           >
-            {creator.displayNameAr.charAt(0)}
+            {pickLocalised(creator.displayNameAr, creator.displayNameEn).charAt(0)}
           </span>
         )}
         <div className="min-w-0 space-y-2">
           <PageTitle>
             <Bilingual ar={creator.displayNameAr} en={creator.displayNameEn} />
           </PageTitle>
-          {creator.city ? <p className="text-sm text-muted-foreground">{creator.city}</p> : null}
-          {creator.bioAr ? (
-            <p className="max-w-prose font-serif text-base text-muted-foreground">{creator.bioAr}</p>
+          {pickLocalised(creator.cityAr, creator.cityEn) ? (
+            <p className="text-sm text-muted-foreground">
+              {pickLocalised(creator.cityAr, creator.cityEn)}
+            </p>
+          ) : null}
+          {pickLocalised(creator.bioAr, creator.bioEn) ? (
+            <p className="max-w-prose font-serif text-base text-muted-foreground">
+              {pickLocalised(creator.bioAr, creator.bioEn)}
+            </p>
           ) : null}
         </div>
       </header>

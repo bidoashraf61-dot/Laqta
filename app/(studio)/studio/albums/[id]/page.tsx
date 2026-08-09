@@ -11,8 +11,19 @@ import { BackLink } from '@/components/dashboard/primitives'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { specLabel } from '@/lib/spec-labels'
+import { requestLocale } from '@/lib/locale-request'
 
 export default async function StudioAlbumPage({ params }: { params: Promise<{ id: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { id } = await params
   const user = await requireCreator()
 
@@ -99,7 +110,9 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
       {album.status === 'draft' || album.status === 'changes_requested' ? (
         <SubmitButton albumId={album.id} canSubmit={gate.ok} reasons={gate.reasons} />
       ) : (
-        <Badge variant="neutral">{t(`studio.${album.status === 'in_review' ? 'inReview' : album.status}`)}</Badge>
+        <Badge variant="neutral">
+          {t(`studio.${album.status === 'in_review' ? 'inReview' : album.status}`)}
+        </Badge>
       )}
 
       <section>

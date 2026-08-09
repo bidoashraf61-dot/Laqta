@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { LogOut, ShieldCheck, User as UserIcon } from 'lucide-react'
@@ -15,10 +15,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ACCOUNT_NAV, roleNav } from '@/components/layout/nav'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /** Account menu, or a sign-in button when signed out. */
 export function UserMenu({ session }: { session: Session | null }) {
+  const t = useT()
+
   if (!session?.user) {
     return (
       <Button asChild variant="outline" size="sm">

@@ -9,8 +9,10 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/toggles'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/overlays'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useLocale, useT } from '@/lib/i18n-client'
+import type { Locale } from '@/lib/locale'
+import { specLabel } from '@/lib/spec-labels'
 
 /**
  * The filter rail.
@@ -24,7 +26,17 @@ import { cn } from '@/lib/utils'
  * real sales.
  */
 
-type Option = { value: string; label: string }
+/**
+ * `label` is optional on purpose.
+ *
+ * Resolution, aspect and frame rate are the same string in every language, so
+ * they carry their label. Everything else is a stored English term — `Drone`,
+ * `golden hour` — whose display form depends on the interface language, and
+ * baking one language's label into a module constant is precisely how the
+ * Arabic rail ended up on the English page. Those carry a `kind` and are
+ * resolved through `specLabel` at render; durations carry a message key.
+ */
+type Option = { value: string; label?: string; kind?: string; labelKey?: string }
 
 const RESOLUTIONS: Option[] = [
   { value: '1920', label: '1080p' },
@@ -53,19 +65,19 @@ const COLOUR: Option[] = [
 ]
 
 const MOVEMENT: Option[] = [
-  { value: 'Drone', label: 'درون' },
-  { value: 'Gimbal', label: 'جيمبل' },
-  { value: 'Handheld', label: 'محمولة' },
-  { value: 'Static', label: 'ثابتة' },
-  { value: 'Slider', label: 'سلايدر' },
-  { value: 'Crane', label: 'كرين' },
+  { value: 'Drone', kind: 'movement' },
+  { value: 'Gimbal', kind: 'movement' },
+  { value: 'Handheld', kind: 'movement' },
+  { value: 'Static', kind: 'movement' },
+  { value: 'Slider', kind: 'movement' },
+  { value: 'Crane', kind: 'movement' },
 ]
 
 const SHOT_SIZE: Option[] = [
-  { value: 'Wide', label: 'واسعة' },
-  { value: 'Medium', label: 'متوسطة' },
-  { value: 'Close-up', label: 'قريبة' },
-  { value: 'Aerial', label: 'جوية' },
+  { value: 'Wide', kind: 'shotSize' },
+  { value: 'Medium', kind: 'shotSize' },
+  { value: 'Close-up', kind: 'shotSize' },
+  { value: 'Aerial', kind: 'shotSize' },
 ]
 
 /**
@@ -80,33 +92,38 @@ const SHOT_SIZE: Option[] = [
  * `value` is "min-max" in seconds; an open upper bound omits the second half.
  */
 const DURATION: Option[] = [
-  { value: '0-5', label: 'أقل من ٥ ثوانٍ' },
-  { value: '5-10', label: '٥ – ١٠ ثوانٍ' },
-  { value: '10-20', label: '١٠ – ٢٠ ثانية' },
-  { value: '20-', label: 'أكثر من ٢٠ ثانية' },
+  { value: '0-5', labelKey: 'catalogue.durUnder5' },
+  { value: '5-10', labelKey: 'catalogue.dur5to10' },
+  { value: '10-20', labelKey: 'catalogue.dur10to20' },
+  { value: '20-', labelKey: 'catalogue.dur20plus' },
 ]
 
 /** Matches the values written by prisma/seed.ts. */
 const TIME_OF_DAY: Option[] = [
-  { value: 'golden hour', label: 'الساعة الذهبية' },
-  { value: 'blue hour', label: 'الساعة الزرقاء' },
-  { value: 'dusk', label: 'الغسق' },
-  { value: 'night', label: 'ليل' },
-  { value: 'midday', label: 'الظهيرة' },
+  { value: 'golden hour', kind: 'timeOfDay' },
+  { value: 'blue hour', kind: 'timeOfDay' },
+  { value: 'dusk', kind: 'timeOfDay' },
+  { value: 'night', kind: 'timeOfDay' },
+  { value: 'midday', kind: 'timeOfDay' },
 ]
 
 const SEASON: Option[] = [
-  { value: 'winter', label: 'شتاء' },
-  { value: 'spring', label: 'ربيع' },
-  { value: 'summer', label: 'صيف' },
-  { value: 'autumn', label: 'خريف' },
+  { value: 'winter', kind: 'season' },
+  { value: 'spring', kind: 'season' },
+  { value: 'summer', kind: 'season' },
+  { value: 'autumn', kind: 'season' },
 ]
 
 export function FilterRail({ className }: { className?: string }) {
+  const t = useT()
+
   return (
     <>
       {/* Desktop: a persistent rail. */}
-      <aside className={cn('hidden w-64 shrink-0 lg:block', className)} aria-label={t('catalogue.filters')}>
+      <aside
+        className={cn('hidden w-64 shrink-0 lg:block', className)}
+        aria-label={t('catalogue.filters')}
+      >
         <FilterBody />
       </aside>
 
@@ -132,6 +149,8 @@ export function FilterRail({ className }: { className?: string }) {
 }
 
 function FilterBody() {
+  const t = useT()
+
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -211,27 +230,52 @@ function FilterBody() {
       </div>
 
       <Group title={t('catalogue.resolution')}>
-        <Chips options={RESOLUTIONS} isActive={(v) => active('minWidth', v)} onPick={(v) => toggle('minWidth', v)} />
+        <Chips
+          options={RESOLUTIONS}
+          isActive={(v) => active('minWidth', v)}
+          onPick={(v) => toggle('minWidth', v)}
+        />
       </Group>
 
       <Group title={t('catalogue.aspect')}>
-        <Chips options={ASPECTS} isActive={(v) => active('aspect', v)} onPick={(v) => toggle('aspect', v)} />
+        <Chips
+          options={ASPECTS}
+          isActive={(v) => active('aspect', v)}
+          onPick={(v) => toggle('aspect', v)}
+        />
       </Group>
 
       <Group title={t('catalogue.frameRate')}>
-        <Chips options={FRAME_RATES} isActive={(v) => active('fps', v)} onPick={(v) => toggle('fps', v)} numeric />
+        <Chips
+          options={FRAME_RATES}
+          isActive={(v) => active('fps', v)}
+          onPick={(v) => toggle('fps', v)}
+          numeric
+        />
       </Group>
 
       <Group title={t('catalogue.colourProfile')}>
-        <Chips options={COLOUR} isActive={(v) => active('colour', v)} onPick={(v) => toggle('colour', v)} />
+        <Chips
+          options={COLOUR}
+          isActive={(v) => active('colour', v)}
+          onPick={(v) => toggle('colour', v)}
+        />
       </Group>
 
       <Group title={t('catalogue.cameraMovement')}>
-        <Chips options={MOVEMENT} isActive={(v) => active('movement', v)} onPick={(v) => toggle('movement', v)} />
+        <Chips
+          options={MOVEMENT}
+          isActive={(v) => active('movement', v)}
+          onPick={(v) => toggle('movement', v)}
+        />
       </Group>
 
       <Group title={t('catalogue.shotSize')}>
-        <Chips options={SHOT_SIZE} isActive={(v) => active('shot', v)} onPick={(v) => toggle('shot', v)} />
+        <Chips
+          options={SHOT_SIZE}
+          isActive={(v) => active('shot', v)}
+          onPick={(v) => toggle('shot', v)}
+        />
       </Group>
 
       <Group title={t('catalogue.duration')}>
@@ -243,11 +287,19 @@ function FilterBody() {
       </Group>
 
       <Group title={t('catalogue.timeOfDay')}>
-        <Chips options={TIME_OF_DAY} isActive={(v) => active('time', v)} onPick={(v) => toggle('time', v)} />
+        <Chips
+          options={TIME_OF_DAY}
+          isActive={(v) => active('time', v)}
+          onPick={(v) => toggle('time', v)}
+        />
       </Group>
 
       <Group title={t('catalogue.season')}>
-        <Chips options={SEASON} isActive={(v) => active('season', v)} onPick={(v) => toggle('season', v)} />
+        <Chips
+          options={SEASON}
+          isActive={(v) => active('season', v)}
+          onPick={(v) => toggle('season', v)}
+        />
       </Group>
 
       <Separator />
@@ -287,6 +339,18 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   )
 }
 
+/**
+ * The label this option shows in the language the page is in: its own string
+ * when it has one, a message key for the duration buckets, and otherwise the
+ * stored technical term run through the same table the clip pages use — so a
+ * chip and the spec it filters on can never disagree.
+ */
+function optionLabel(option: Option, t: (key: string) => string, locale: Locale): string {
+  if (option.label) return option.label
+  if (option.labelKey) return t(option.labelKey)
+  return specLabel(option.kind ?? '', option.value, locale) ?? option.value
+}
+
 function Chips({
   options,
   isActive,
@@ -298,28 +362,34 @@ function Chips({
   onPick: (value: string) => void
   numeric?: boolean
 }) {
+  const t = useT()
+  const locale = useLocale()
+
   return (
     <div className="flex flex-wrap gap-2">
-      {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => onPick(option.value)}
-          aria-pressed={isActive(option.value)}
-          className={cn(
-            'rounded-full border px-3 py-1 text-xs transition-colors',
-            numeric && 'numeric',
-            // Codec and profile names are Latin identifiers, not copy — they
-            // stay Latin but must be isolated inside an Arabic rail.
-            /[A-Za-z]/.test(option.label) && 'ltr-island',
-            isActive(option.value)
-              ? 'border-gold bg-gold/15 text-gold'
-              : 'border-input text-muted-foreground hover:border-foreground/25 hover:text-foreground',
-          )}
-        >
-          {option.label}
-        </button>
-      ))}
+      {options.map((option) => {
+        const label = optionLabel(option, t, locale)
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onPick(option.value)}
+            aria-pressed={isActive(option.value)}
+            className={cn(
+              'rounded-full border px-3 py-1 text-xs transition-colors',
+              numeric && 'numeric',
+              // Codec and profile names are Latin identifiers, not copy — they
+              // stay Latin but must be isolated inside an Arabic rail.
+              /[A-Za-z]/.test(label) && 'ltr-island',
+              isActive(option.value)
+                ? 'border-gold bg-gold/15 text-gold'
+                : 'border-input text-muted-foreground hover:border-foreground/25 hover:text-foreground',
+            )}
+          >
+            {label}
+          </button>
+        )
+      })}
     </div>
   )
 }

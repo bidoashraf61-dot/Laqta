@@ -38,7 +38,9 @@ export function Funnel({ steps }: { steps: Array<{ label: string; value: number 
             </div>
             <div className="h-2.5 w-full overflow-hidden rounded-sm bg-muted">
               <div
-                className={isLast ? 'h-full rounded-sm bg-gold' : 'h-full rounded-sm bg-foreground/25'}
+                className={
+                  isLast ? 'h-full rounded-sm bg-gold' : 'h-full rounded-sm bg-foreground/25'
+                }
                 style={{ inlineSize: `${Math.max(share * 100, step.value > 0 ? 1.5 : 0)}%` }}
               />
             </div>

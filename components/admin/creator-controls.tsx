@@ -7,7 +7,7 @@ import { Field } from '@/components/ui/label'
 import { Input, NativeSelect } from '@/components/ui/input'
 import { ActionButton, SettingsForm } from '@/components/dashboard/form'
 import { approveCreator, setCreatorCommission, setCreatorStatus } from '@/app/(admin)/admin/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Per-creator controls.
@@ -28,6 +28,8 @@ export function CreatorControls({
   tier: string
   overridePercent: string
 }) {
+  const t = useT()
+
   const [open, setOpen] = useState(false)
 
   return (

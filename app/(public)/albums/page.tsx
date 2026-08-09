@@ -4,11 +4,19 @@ import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card
 import { EmptyState } from '@/components/ui/state'
 import { formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import { requestLocale } from '@/lib/locale-request'
+import { localeAlternates } from '@/lib/locale'
 
-export const metadata: Metadata = {
-  title: t('catalogue.albumsTitle'),
-  description: t('catalogue.albumsSubtitle'),
-  alternates: { canonical: '/albums' },
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('catalogue.albumsTitle'),
+    description: t('catalogue.albumsSubtitle'),
+    alternates: localeAlternates('/albums'),
+  }
 }
 
 export default async function AlbumsPage({
@@ -16,6 +24,16 @@ export default async function AlbumsPage({
 }: {
   searchParams: Promise<{ sort?: string }>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { sort } = await searchParams
 
   const rows = await db.album.findMany({
@@ -33,12 +51,13 @@ export default async function AlbumsPage({
       priceStandard: true,
       compareAtPrice: true,
       offerLabelAr: true,
+      offerLabelEn: true,
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
       clearedForCommercial: true,
       coverClipId: true,
-      creator: { select: { handle: true, displayNameAr: true } },
+      creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
     },
   })
 
@@ -55,11 +74,13 @@ export default async function AlbumsPage({
     slug: row.slug,
     creatorHandle: row.creator.handle,
     creatorNameAr: row.creator.displayNameAr,
+    creatorNameEn: row.creator.displayNameEn,
     titleAr: row.titleAr,
     titleEn: row.titleEn,
     priceStandard: Number(row.priceStandard),
     compareAtPrice: row.compareAtPrice == null ? null : Number(row.compareAtPrice),
     offerLabelAr: row.offerLabelAr,
+    offerLabelEn: row.offerLabelEn,
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,

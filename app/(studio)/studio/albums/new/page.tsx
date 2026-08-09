@@ -7,8 +7,18 @@ import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { SettingsForm } from '@/components/dashboard/form'
 import { createAlbum } from '@/app/(studio)/studio/actions'
 import { formatMoney, formatNumber, t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('studio.newAlbum') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('studio.newAlbum'),
+  }
+}
 
 /**
  * New album.
@@ -19,6 +29,16 @@ export const metadata = { title: t('studio.newAlbum') }
  * afterwards, on the album's own page.
  */
 export default async function NewAlbumPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const user = await requireCreator()
   if (!user.creatorId) redirect('/sell')
 
@@ -51,7 +71,7 @@ export default async function NewAlbumPage() {
               {bands.map((band, index) => (
                 <label
                   key={band.id}
-                  className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 transition-colors has-[:checked]:border-gold/40 has-[:checked]:bg-gold/8 hover:border-foreground/25"
+                  className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 transition-colors hover:border-foreground/25 has-[:checked]:border-gold/40 has-[:checked]:bg-gold/8"
                 >
                   <input
                     type="radio"

@@ -1,17 +1,36 @@
 import { SubHeadline, PageTitle } from '@/components/ui/typography'
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
+import { requestLocale } from '@/lib/locale-request'
+import { localeAlternates } from '@/lib/locale'
+import { pickLocalised } from '@/lib/locale'
 
-export const metadata: Metadata = {
-  title: t('catalogue.collectionsTitle'),
-  alternates: { canonical: '/collections' },
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('catalogue.collectionsTitle'),
+    alternates: localeAlternates('/collections'),
+  }
 }
 
 export default async function CollectionsPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const collections = await db.collection.findMany({
     where: { isPublished: true },
     orderBy: [{ isFeatured: 'desc' }, { sortOrder: 'asc' }],
@@ -20,6 +39,7 @@ export default async function CollectionsPage() {
       titleAr: true,
       titleEn: true,
       descriptionAr: true,
+      descriptionEn: true,
       heroMedia: true,
       _count: { select: { albums: true } },
     },
@@ -53,9 +73,9 @@ export default async function CollectionsPage() {
               <SubHeadline as="h2" size="card" className="group-hover:text-foreground">
                 <Bilingual ar={collection.titleAr} en={collection.titleEn} />
               </SubHeadline>
-              {collection.descriptionAr ? (
+              {pickLocalised(collection.descriptionAr, collection.descriptionEn) ? (
                 <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                  {collection.descriptionAr}
+                  {pickLocalised(collection.descriptionAr, collection.descriptionEn)}
                 </p>
               ) : null}
               <p className="numeric mt-3 text-xs text-muted-foreground">

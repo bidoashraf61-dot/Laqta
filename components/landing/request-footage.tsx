@@ -4,7 +4,7 @@ import * as React from 'react'
 import { requestFootage } from '@/app/(public)/actions'
 import { Button } from '@/components/ui/button'
 import { Headline, Section } from '@/components/ui/typography'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * "Ask for footage that does not exist yet."
@@ -25,6 +25,8 @@ import { t } from '@/lib/i18n'
  * wall in front of the request is how you never hear it.
  */
 export function RequestFootage({ compact = false }: { compact?: boolean }) {
+  const t = useT()
+
   const [state, setState] = React.useState<{ ok: boolean; messageKey: string } | null>(null)
   const [pending, startTransition] = React.useTransition()
 

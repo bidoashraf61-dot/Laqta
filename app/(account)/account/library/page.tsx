@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Infinity as InfinityIcon } from 'lucide-react'
 import { requireUser } from '@/lib/auth'
 import { getLibrary } from '@/lib/orders'
@@ -9,14 +9,34 @@ import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatDate, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('library.title') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('library.title'),
+  }
+}
 
 /**
  * The library — the post-purchase home, and where the ownership promise is
  * kept or broken. Every clip listed comes from the frozen manifest.
  */
 export default async function LibraryPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const user = await requireUser()
   const library = await getLibrary(user.id)
 
@@ -63,7 +83,8 @@ export default async function LibraryPage() {
                 <p className="text-sm text-muted-foreground">
                   {t('commerce.byCreator', { creator: entry.album.creator.displayNameAr })} ·{' '}
                   <span className="numeric">{entry.clips.length}</span> {t('library.clips')} ·{' '}
-                  {t('library.purchasedOn')} <span className="numeric">{formatDate(entry.grantedAt)}</span>
+                  {t('library.purchasedOn')}{' '}
+                  <span className="numeric">{formatDate(entry.grantedAt)}</span>
                 </p>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">

@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { HelpCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/overlays'
-import { formatMoney, t } from '@/lib/i18n'
+import { formatMoney } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Licence tier selector and the buy button.
@@ -33,6 +34,8 @@ export function LicencePicker({
   currency: string
   editorialOnly: boolean
 }) {
+  const t = useT()
+
   const [tier, setTier] = useState<'standard' | 'extended'>('standard')
   const price = tier === 'extended' ? priceExtended : priceStandard
 

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { auth } from '@/lib/auth'
 import { search, logSearch, type ClipFilters } from '@/lib/search'
 import { ClipCard } from '@/components/catalogue/clip-card'
@@ -8,11 +8,19 @@ import { EmptyState } from '@/components/ui/state'
 import { Button } from '@/components/ui/button'
 import { formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import { requestLocale } from '@/lib/locale-request'
+import { localeAlternates } from '@/lib/locale'
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/footage' },
-  title: t('catalogue.footageTitle'),
-  description: t('catalogue.footageSubtitle'),
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    alternates: localeAlternates('/footage'),
+    title: t('catalogue.footageTitle'),
+    description: t('catalogue.footageSubtitle'),
+  }
 }
 
 type SearchParams = Record<string, string | string[] | undefined>
@@ -55,6 +63,16 @@ export default async function FootagePage({
 }: {
   searchParams: Promise<SearchParams>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const params = await searchParams
   const filters = toFilters(params)
   const [result, session] = await Promise.all([search(filters), auth()])
@@ -135,12 +153,7 @@ function SortLinks({ params }: { params: SearchParams }) {
   return (
     <nav className="flex flex-wrap gap-1" aria-label={t('catalogue.sort')}>
       {options.map(([value, label]) => (
-        <Button
-          key={value}
-          asChild
-          variant={current === value ? 'secondary' : 'ghost'}
-          size="sm"
-        >
+        <Button key={value} asChild variant={current === value ? 'secondary' : 'ghost'} size="sm">
           <Link href={buildHref(params, { sort: value, page: null })}>{label}</Link>
         </Button>
       ))}

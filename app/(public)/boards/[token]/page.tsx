@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
 import type { ClipHit } from '@/lib/search'
 import { PageTitle } from '@/components/ui/typography'
+import { requestLocale } from '@/lib/locale-request'
 
 /**
  * A shared board, viewable WITHOUT an account.
@@ -17,11 +18,17 @@ import { PageTitle } from '@/components/ui/typography'
  * Every clip still carries its album ribbon and price, because the client
  * looking at this is exactly the person deciding what to approve.
  */
-export default async function SharedBoardPage({
-  params,
-}: {
-  params: Promise<{ token: string }>
-}) {
+export default async function SharedBoardPage({ params }: { params: Promise<{ token: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { token } = await params
 
   const board = await db.board.findFirst({
@@ -53,7 +60,7 @@ export default async function SharedBoardPage({
                   currency: true,
                   clipCount: true,
                   clearedForCommercial: true,
-                  creator: { select: { handle: true, displayNameAr: true } },
+                  creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
                 },
               },
             },

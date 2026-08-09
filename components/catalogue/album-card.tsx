@@ -1,9 +1,11 @@
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney, t } from '@/lib/i18n'
+import { pickLocalised } from '@/lib/locale'
 import { formatDuration } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { Anchor } from '@/components/ui/link'
 
 /**
  * The album pack.
@@ -37,12 +39,14 @@ export type AlbumCardData = {
   priceStandard: number
   compareAtPrice: number | null
   offerLabelAr: string | null
+  offerLabelEn: string | null
   currency: string
   clipCount: number
   totalRuntimeS: number
   clearedForCommercial: boolean
   coverKey: string | null
   creatorNameAr: string
+  creatorNameEn: string
 }
 
 export function albumHref(album: { creatorHandle: string; slug: string }) {
@@ -81,7 +85,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
     // see "Client-router navigations that never commit" in CLAUDE.md. This is
     // the buyer's primary path to the thing they can actually purchase, so it
     // takes the reliable navigation rather than the fast one.
-    <a href={albumHref(album)} className={cn('group pack block', className)}>
+    <Anchor href={albumHref(album)} className={cn('pack group block', className)}>
       <div className="pack-box">
         <div className="pack-face relative aspect-[5/7] rounded-sm">
           {/* The art is its own clipped layer: the face has to keep
@@ -93,7 +97,9 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
             <span
               aria-hidden
               className="absolute inset-0"
-              style={{ background: `linear-gradient(155deg, hsl(${hue} / 0.4) 0%, transparent 46%)` }}
+              style={{
+                background: `linear-gradient(155deg, hsl(${hue} / 0.4) 0%, transparent 46%)`,
+              }}
             />
             <span
               aria-hidden
@@ -107,14 +113,14 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
               legend is unreadable, and an unreadable label is noise. */}
           <span
             aria-hidden
-            className="pack-spine absolute inset-block-0 end-0 w-[7%] min-w-[18px] rounded-s-sm"
+            className="pack-spine inset-block-0 absolute end-0 w-[7%] min-w-[18px] rounded-s-sm"
             style={{ background: `hsl(${hue})` }}
           />
 
           {/* Lid — what is in the box, before you read the title. */}
           <span
             aria-hidden
-            className="pack-lid absolute inset-inline-0 top-0 flex h-[7%] min-h-[22px] items-center justify-between rounded-t-sm px-3"
+            className="pack-lid inset-inline-0 absolute top-0 flex h-[7%] min-h-[22px] items-center justify-between rounded-t-sm px-3"
             style={{ background: `hsl(${hue})` }}
           >
             <span className="numeric text-xs font-bold tracking-wide text-off-white/90">
@@ -123,10 +129,12 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
           </span>
 
           <div className="absolute inset-x-0 top-0 z-[2] flex items-start justify-between p-3">
-            <span className="font-display text-base font-bold text-gold-200">{t('brand.name')}</span>
+            <span className="font-display text-base font-bold text-gold-200">
+              {t('brand.name')}
+            </span>
             {album.offerLabelAr ? (
               <Badge variant="destructive" className="bg-clay/90 backdrop-blur">
-                {album.offerLabelAr}
+                <Bilingual ar={album.offerLabelAr} en={album.offerLabelEn} />
               </Badge>
             ) : album.clearedForCommercial ? (
               <Badge variant="success" className="bg-ink/70 backdrop-blur">
@@ -160,13 +168,18 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
                 ) : null}
               </span>
               <span className="truncate text-xs text-off-white/70">
-                {t('commerce.byCreator', { creator: album.creatorNameAr })}
+                {/* Flattened rather than a <Bilingual>: this is interpolated into a
+                    sentence ("by {creator}"), and an element there would split the
+                    message into fragments a translator cannot reorder. */}
+                {t('commerce.byCreator', {
+                  creator: pickLocalised(album.creatorNameAr, album.creatorNameEn),
+                })}
               </span>
             </div>
           </div>
         </div>
       </div>
-    </a>
+    </Anchor>
   )
 }
 
@@ -177,7 +190,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
  */
 function coverAlt(album: AlbumCardData) {
   return t('catalogue.altAlbumCover', {
-    album: album.titleAr,
+    album: pickLocalised(album.titleAr, album.titleEn),
     count: String(album.clipCount),
   })
 }

@@ -1,12 +1,12 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 import { navSections, type DashboardNav } from './nav'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Dashboard sidebar.
@@ -22,13 +22,9 @@ import { cn } from '@/lib/utils'
  * muted until hovered. Collapsed, it shows icons only with the label as a
  * native tooltip.
  */
-export function DashboardSidebar({
-  nav,
-  brand,
-}: {
-  nav: DashboardNav
-  brand: string
-}) {
+export function DashboardSidebar({ nav, brand }: { nav: DashboardNav; brand: string }) {
+  const t = useT()
+
   const sections = navSections(nav)
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
@@ -58,7 +54,11 @@ export function DashboardSidebar({
           aria-label={t(collapsed ? 'dash.expand' : 'dash.collapse')}
           className="ms-auto grid size-8 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
-          {collapsed ? <PanelRightOpen className="size-4" /> : <PanelRightClose className="size-4" />}
+          {collapsed ? (
+            <PanelRightOpen className="size-4" />
+          ) : (
+            <PanelRightClose className="size-4" />
+          )}
         </button>
       </div>
 

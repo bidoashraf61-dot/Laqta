@@ -48,9 +48,31 @@ delta, say so explicitly rather than silently skipping the spec.
 
 ## Language & direction
 
-Arabic only. RTL by default. Logical properties only (`ms/me/ps/pe`,
-`start/end`) — never `left`/`right`/`ml`/`mr`. Any Latin run inside Arabic is
-isolated with `.ltr-island` or `.numeric`. `npm run verify:arabic` must pass.
+**Arabic and English.** Arabic is the default and owns the bare path
+(`/albums`); English is served under `/en/albums` by a middleware **rewrite**
+onto the same route tree — there is no `app/[locale]` segment and no route file
+exists twice. `specs/localisation.md` is the contract; read it before touching
+anything that renders copy.
+
+Non-negotiables:
+
+- **Every route segment resolves the locale itself** — `await requestLocale()`
+  as the first statement of every page, layout, `loading.tsx` and
+  `generateMetadata`. It is NOT inherited from the root layout: a segment sits
+  inside a Suspense boundary and can render before the layout above it finishes
+  awaiting, which produced an English header over an Arabic body.
+- **Client components use `useT()` / `useLocale()`**, never `t()` or
+  `currentLocale()`. Server-rendering a client component is a second React
+  render and does not share the RSC `cache()` scope.
+- **Database copy goes through `<Bilingual ar en />`**, or `pickLocalised(ar, en)`
+  where JSX cannot go — `alt`, `aria-label`, JSON-LD, `generateMetadata`. Those
+  attributes are where Arabic leaked longest; no visual review catches them.
+- Fallback is always **towards Arabic**, never towards a blank or a dot-path.
+
+Logical properties only (`ms/me/ps/pe`, `start/end`) — never
+`left`/`right`/`ml`/`mr`. Any Latin run inside Arabic is isolated with
+`.ltr-island` or `.numeric`. `npm run verify:arabic` must pass **in both
+directions**.
 
 ## Verification gates (must stay green)
 
@@ -61,7 +83,9 @@ isolated with `.ltr-island` or `.numeric`. `npm run verify:arabic` must pass.
 - `verify:entitlement` — buy → mutate album → library unchanged
 - `verify:money` — commission frozen; refund reverses the frozen rate
 - `verify:auth` — both sign-in rails, 2FA, role-guard matrix
-- `verify:arabic` — no English leaking into any route
+- `verify:arabic` — no English leaking into an Arabic route, and no Arabic
+  leaking into an English one; plus the shell, the `/ar` 308s, and that `/en`
+  serves 200 without bypassing a role guard
 - `verify:hero` — the cinematic mounts, scrubs both ways, survives a flick
 - `verify:flows` — dashboard controls actually mutate and navigate
 - `audit` — every route in real Chrome at desktop + phone: script errors,

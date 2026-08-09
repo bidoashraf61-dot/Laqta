@@ -29,9 +29,6 @@ export function FaqSchema({ pairs }: { pairs: Array<{ q: string; a: string }> })
   }
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
-    />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }} />
   )
 }

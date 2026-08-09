@@ -11,8 +11,18 @@ import { ReleaseLinker, type LinkableClip } from '@/components/studio/release-li
 import { createRelease } from '@/app/(studio)/studio/actions'
 import { formatDate, t } from '@/lib/i18n'
 import { UserText } from '@/components/ui/bilingual'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('studio.releases') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('studio.releases'),
+  }
+}
 
 const TYPE_LABEL: Record<string, string> = {
   model: 'dash.releaseModel',
@@ -29,6 +39,16 @@ const TYPE_LABEL: Record<string, string> = {
  * leads with what each release covers, not with when it was uploaded.
  */
 export default async function StudioReleasesPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const user = await requireCreator()
   if (!user.creatorId) redirect('/sell')
 

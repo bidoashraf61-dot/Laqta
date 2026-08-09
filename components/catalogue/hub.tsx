@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import { pickLocalised } from '@/lib/locale'
 
 /**
  * Taxonomy hubs — `/locations/[slug]` and `/categories/[slug]`.
@@ -33,10 +34,11 @@ export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
   const entry = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
   if (!entry) return { title: t('state.notFound') }
 
-  const title = entry.seoTitleAr ?? `${t('nav.footage')} ${entry.nameAr}`
+  const name = pickLocalised(entry.nameAr, entry.nameEn)
+  const title = pickLocalised(entry.seoTitleAr, entry.seoTitleEn) ?? `${t('nav.footage')} ${name}`
   const description =
-    entry.seoDescAr ??
-    `${t('brand.tagline')} — ${entry.nameAr}. ${t('brand.promise')}`
+    pickLocalised(entry.seoDescAr, entry.seoDescEn) ??
+    `${t('brand.tagline')} — ${name}. ${t('brand.promise')}`
 
   return {
     title,
@@ -129,7 +131,7 @@ export async function TaxonomyHub({
           {t(TITLE_KEY[kind])}
         </Link>
         {' / '}
-        <span className="text-foreground">{entry.nameAr}</span>
+        <span className="text-foreground">{pickLocalised(entry.nameAr, entry.nameEn)}</span>
       </nav>
 
       <header className="mb-6 space-y-2">
@@ -137,7 +139,9 @@ export async function TaxonomyHub({
           {t('nav.footage')} <Bilingual ar={entry.nameAr} en={entry.nameEn} />
         </PageTitle>
         {entry.seoDescAr ? (
-          <p className="max-w-prose font-serif text-base text-muted-foreground">{entry.seoDescAr}</p>
+          <p className="max-w-prose font-serif text-base text-muted-foreground">
+            {pickLocalised(entry.seoDescAr, entry.seoDescEn)}
+          </p>
         ) : null}
         <p className="numeric text-sm text-muted-foreground">
           {t('catalogue.resultsCount', { count: formatNumber(result.total) })}

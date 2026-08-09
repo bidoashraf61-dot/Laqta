@@ -7,8 +7,18 @@ import { ActionButton } from '@/components/dashboard/form'
 import { PromoEditor, type PromoValue } from '@/components/admin/promo-editor'
 import { togglePromoActive } from '@/app/(admin)/admin/actions'
 import { formatDate, formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('dash.promos') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('dash.promos'),
+  }
+}
 
 function dateInput(value: Date | null) {
   return value ? value.toISOString().slice(0, 10) : null
@@ -22,6 +32,16 @@ function dateInput(value: Date | null) {
  * that distinction is the first thing support needs.
  */
 export default async function AdminPromosPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   await requireAdmin()
 
   const promos = await db.promoCode.findMany({ orderBy: [{ isActive: 'desc' }, { code: 'asc' }] })
@@ -50,7 +70,8 @@ export default async function AdminPromosPage() {
               kind: promo.kind,
               value: String(Number(promo.value)),
               maxRedemptions: promo.maxRedemptions,
-              minOrderTotal: promo.minOrderTotal != null ? String(Number(promo.minOrderTotal)) : null,
+              minOrderTotal:
+                promo.minOrderTotal != null ? String(Number(promo.minOrderTotal)) : null,
               startsAt: dateInput(promo.startsAt),
               endsAt: dateInput(promo.endsAt),
               isActive: promo.isActive,

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
 import { ActionButton } from '@/components/dashboard/form'
 import { setDisputeStatus } from '@/app/(admin)/admin/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Dispute verbs.
@@ -19,6 +19,8 @@ import { t } from '@/lib/i18n'
  * the reversible act is cheap, the final one costs a sentence.
  */
 export function DisputeControls({ disputeId, status }: { disputeId: string; status: string }) {
+  const t = useT()
+
   const router = useRouter()
   const [resolving, setResolving] = useState(false)
   const [resolution, setResolution] = useState('')

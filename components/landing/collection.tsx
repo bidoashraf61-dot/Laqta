@@ -31,7 +31,6 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
           ))}
         </div>
       )}
-
     </Section>
   )
 }

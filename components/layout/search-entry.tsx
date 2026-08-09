@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Header search entry.
@@ -18,6 +18,8 @@ import { t } from '@/lib/i18n'
  * lands on the right-hand side of the box without a second rule.
  */
 export function SearchEntry({ className }: { className?: string }) {
+  const t = useT()
+
   const router = useRouter()
   const [value, setValue] = useState('')
 

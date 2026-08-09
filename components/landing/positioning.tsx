@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import {
   Building2,
   Clapperboard,
@@ -57,7 +57,9 @@ export function TheSolution() {
       <div className="grid gap-6 sm:grid-cols-3">
         {SOLUTIONS.map(({ icon: Icon, key, accent }) => (
           <div key={key} className="rounded-lg border bg-card p-6">
-            <span className={cn('mb-4 grid size-11 place-items-center rounded-md', accentChip[accent])}>
+            <span
+              className={cn('mb-4 grid size-11 place-items-center rounded-md', accentChip[accent])}
+            >
               <Icon className="size-5" />
             </span>
             <SubHeadline as="h3" size="card">

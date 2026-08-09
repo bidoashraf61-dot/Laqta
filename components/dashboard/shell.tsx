@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { ExternalLink } from 'lucide-react'
 import type { Session } from 'next-auth'
 import type { DashboardNav } from './nav'

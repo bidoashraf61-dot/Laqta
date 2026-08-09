@@ -12,8 +12,19 @@ import { ReviewChecklist } from '@/components/admin/review-checklist'
 import { BackLink } from '@/components/dashboard/primitives'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
+import { requestLocale } from '@/lib/locale-request'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { id } = await params
   await requireAdmin()
 
@@ -51,10 +62,10 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   const consistency = analyseConsistency(task.album.clips)
   const checklist = normaliseChecklist(task.checklist)
 
-  const releases = task.album.clips.flatMap((clip) =>
-    clip.releaseLinks.map((link) => link.release),
-  )
-  const uniqueReleases = [...new Map(releases.map((r) => [`${r.type}-${r.referenceNumber}`, r])).values()]
+  const releases = task.album.clips.flatMap((clip) => clip.releaseLinks.map((link) => link.release))
+  const uniqueReleases = [
+    ...new Map(releases.map((r) => [`${r.type}-${r.referenceNumber}`, r])).values(),
+  ]
 
   return (
     <div className="space-y-6">
@@ -67,8 +78,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           <UserText>
             {t('commerce.byCreator', { creator: task.album.creator.displayNameAr })}
           </UserText>{' '}
-          ·{' '}
-          <span className="ltr-island">{task.album.creator.country}</span> ·{' '}
+          · <span className="ltr-island">{task.album.creator.country}</span> ·{' '}
           <span className="numeric">{task.album.clipCount}</span> {t('studio.clips')} ·{' '}
           <span className="numeric">
             {formatMoney(Number(task.album.priceStandard), task.album.currency)}

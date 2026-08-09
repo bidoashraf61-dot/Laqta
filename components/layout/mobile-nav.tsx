@@ -1,15 +1,16 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/toggles'
+import { LocaleToggle } from '@/components/layout/locale-toggle'
 import { PRIMARY_NAV, type NavItem } from '@/components/layout/nav'
 import { cn } from '@/lib/utils'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Mobile drawer.
@@ -18,6 +19,8 @@ import { t } from '@/lib/i18n'
  * under the thumb that opened it, matching every native app on the device.
  */
 export function MobileNav({ extra }: { extra: NavItem[] }) {
+  const t = useT()
+
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
@@ -54,6 +57,12 @@ export function MobileNav({ extra }: { extra: NavItem[] }) {
           {PRIMARY_NAV.map(link)}
           <Separator className="my-3" />
           {extra.map(link)}
+          {/* On phones the header has no room for the language control, and a
+              reader who lands on the wrong one needs a way out from wherever the
+              navigation lives. */}
+          <div className="mt-4 border-t pt-4">
+            <LocaleToggle className="w-full justify-start px-3" />
+          </div>
         </nav>
       </SheetContent>
     </Sheet>

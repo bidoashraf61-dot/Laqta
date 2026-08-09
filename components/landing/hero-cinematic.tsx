@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Headline, Prose } from '@/components/ui/typography'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * The scroll-scrubbed hero.
@@ -24,6 +24,8 @@ import { t } from '@/lib/i18n'
  * get the headline whether or not the film ever scrubs.
  */
 export function HeroCinematic() {
+  const t = useT()
+
   const wrapRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const copyRef = useRef<HTMLDivElement>(null)

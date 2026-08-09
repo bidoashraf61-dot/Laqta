@@ -82,9 +82,7 @@ function EmptyState({
         {icon ?? <Inbox />}
       </div>
       <h2 className="text-lg font-bold">{title}</h2>
-      {description ? (
-        <p className="max-w-md text-sm text-muted-foreground">{description}</p>
-      ) : null}
+      {description ? <p className="max-w-md text-sm text-muted-foreground">{description}</p> : null}
       {action}
     </div>
   )
@@ -113,9 +111,7 @@ function ErrorState({
     >
       <AlertTriangle className="size-8 text-destructive" />
       <h2 className="text-lg font-bold">{title}</h2>
-      {description ? (
-        <p className="max-w-md text-sm text-muted-foreground">{description}</p>
-      ) : null}
+      {description ? <p className="max-w-md text-sm text-muted-foreground">{description}</p> : null}
       {onRetry && retryLabel ? (
         <Button variant="outline" onClick={onRetry}>
           {retryLabel}

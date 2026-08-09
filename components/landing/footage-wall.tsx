@@ -24,6 +24,25 @@ import { pickLocalised } from '@/lib/locale'
  * and price surface; the price is the one gold thing on the tile, and only the
  * hovered tile shows it — so the One Voice Rule holds across the wall.
  */
+/**
+ * ⚠️ PLACEHOLDER — awaiting the real showreel cut.
+ *
+ * This currently points at the hero's own file, which is a cinematic sequence
+ * rather than a catalogue reel. It is here so the section, the player and the
+ * autoplay behaviour are all real and reviewable; only the footage is stand-in.
+ *
+ * To ship the real one: drop the cut at `public/hero/vid/showreel-web.mp4`,
+ * point `SHOWREEL_SRC` at it, and set `SHOWREEL_POSTER` to a frame from it.
+ * Nothing else changes — that is the whole reason these are constants rather
+ * than literals inline on the element, where "temporary" becomes permanent
+ * because nobody can see that it was ever temporary.
+ *
+ * `public/hero/vid/` is gitignored (staged media, see CLAUDE.md), so the file
+ * is dropped in locally and by the deploy, not committed.
+ */
+const SHOWREEL_SRC = '/hero/vid/hero-web-m.mp4'
+const SHOWREEL_POSTER = '/hero/06-alula.jpg'
+
 export function FootageWall({ footage }: { footage: FootageTile[] }) {
   if (footage.length === 0) return null
 
@@ -45,8 +64,8 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
           tile by tile. It plays when the section arrives and stops when it
           leaves — see AutoplayVideo for why that is not plain `autoplay`. */}
       <AutoplayVideo
-        src="/hero/vid/hero-web-m.mp4"
-        poster="/hero/06-alula.jpg"
+        src={SHOWREEL_SRC}
+        poster={SHOWREEL_POSTER}
         label={t('media.showreelAlt')}
         className="mb-10 aspect-video w-full"
       />

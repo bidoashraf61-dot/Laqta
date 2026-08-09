@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { auth } from '@/lib/auth'
 import { t } from '@/lib/i18n'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

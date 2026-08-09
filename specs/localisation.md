@@ -80,12 +80,25 @@ Arabic leaked longest, because no visual review catches them.
 
 | Control | Element | Does |
 |---|---|---|
-| Language toggle | plain `<a>` in the site header | Switches to the same path in the other language, label in the **target** language (`EN` / `ع`) |
+| Language toggle | plain `<a>` in the site header, and in the mobile nav sheet | Switches to the same path in the other language, label in the **target** language (`EN` / `ع`) |
 
 A plain anchor, not `next/link`: `dir` and `lang` live on `<html>`, which a
 client-side navigation does not re-run — a soft switch would load English
 strings into a document still marked `dir="rtl"`. (It also sidesteps the
 client-router commit failure recorded in `CLAUDE.md`.)
+
+### Internal links
+
+Every internal link goes through `components/ui/link.tsx` — `Link` (wrapping
+`next/link`) or `Anchor` (for the deliberate hard navigations). They prefix
+`/en` when the locale is English and leave absolute URLs, `mailto:`, hashes and
+already-prefixed paths alone.
+
+**Import `Link` from `@/components/ui/link`, never from `next/link`.** A bare
+`href="/albums"` on an English page navigates to the *Arabic* albums page: one
+click and the reader is out of the translation with nothing to tell them why.
+A helper applied per call site is a thing you can forget across ~130 hrefs;
+the wrapper makes the correct behaviour the default.
 
 ## States
 
@@ -120,3 +133,10 @@ client-router commit failure recorded in `CLAUDE.md`.)
 un-isolated English; English routes must contain no Arabic. Also asserts the
 document shell in both languages, the `/ar` 308s, that `/en` serves 200, and
 that `/en/admin` still refuses a signed-out visitor.
+
+Elements carrying an explicit `lang` are excluded from both passes: `lang` is
+the standards-defined way to declare a foreign run, and it is what the audit
+asks every foreign run to do. The language switcher is the honest case — its
+label is deliberately in the language it switches to. `<html>` is excluded from
+that exclusion, or the first match swallows the whole document and the check
+silently becomes a no-op.

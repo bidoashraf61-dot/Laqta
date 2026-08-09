@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Infinity as InfinityIcon } from 'lucide-react'
 import { requireUser } from '@/lib/auth'
 import { getLibrary } from '@/lib/orders'

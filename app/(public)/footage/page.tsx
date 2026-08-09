@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { auth } from '@/lib/auth'
 import { search, logSearch, type ClipFilters } from '@/lib/search'
 import { ClipCard } from '@/components/catalogue/clip-card'

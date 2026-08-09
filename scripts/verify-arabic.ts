@@ -161,6 +161,32 @@ async function adminJar(): Promise<Jar> {
  * "every foreign run is isolated"; `<bdi>` satisfies that, and the content
  * inside it is user data rather than untranslated UI copy.
  */
+/**
+ * Removes any element that DECLARES itself to be in another language.
+ *
+ * `lang` on an element is the standards-defined way to say "this run is not the
+ * page's language", and it is exactly what this audit asserts every foreign run
+ * must do. The language switcher is the honest case: its label is deliberately
+ * in the language it switches TO, carries `lang` and `dir` for that language,
+ * and a screen reader consequently pronounces it correctly. Flagging it would
+ * be flagging the very declaration the rule asks for.
+ *
+ * Strips the whole element, so its attributes leave with it — `aria-label` is
+ * where this text actually lives, and `attributeCopy` scans the raw HTML.
+ *
+ * `<html>` is excluded, and not as a tidiness measure: it carries the page's own
+ * `lang`, so without the exclusion the very first match is the entire document.
+ * The callback then returns it unchanged (the language does match), the regex
+ * has consumed everything, and the function silently becomes a no-op — which is
+ * exactly how it first shipped.
+ */
+function stripForeignRuns(html: string, pageLang: string) {
+  return html.replace(
+    /<(?!html\b)([a-z]+)\b[^>]*\blang="([^"]+)"[^>]*>[\s\S]*?<\/\1>/gi,
+    (match, _tag, lang: string) => (lang.split('-')[0] === pageLang ? match : ' '),
+  )
+}
+
 function visibleText(html: string) {
   return html
     .replace(/<head[\s\S]*?<\/head>/gi, '')
@@ -205,7 +231,8 @@ async function auditRoutes() {
   for (const route of ROUTES) {
     const response = await fetch(`${BASE}${route}`, { headers: { Cookie: cookieHeader(jar) } })
     const html = await response.text()
-    const body = `${visibleText(html)} ${attributeCopy(html)}`
+    const scoped = stripForeignRuns(html, 'ar')
+    const body = `${visibleText(scoped)} ${attributeCopy(scoped)}`
     const offenders = latinOffenders(body)
 
     if (!ARABIC.test(body)) {
@@ -288,7 +315,8 @@ async function auditEnglishRoutes() {
   for (const route of ROUTES.filter((r) => !AUTHED.some((a) => r.startsWith(a)))) {
     const path = route === '/' ? '/en' : `/en${route}`
     const html = await fetch(`${BASE}${path}`).then((r) => r.text())
-    const text = `${visibleText(html)} ${attributeCopy(html)}`
+    const scoped = stripForeignRuns(html, 'en')
+    const text = `${visibleText(scoped)} ${attributeCopy(scoped)}`
     const arabic = ALLOWED.has(path) ? [] : text.match(/[\u0600-\u06FF][\u0600-\u06FF\s\u0640]{2,}/g)
     const ok = !arabic || arabic.length === 0
     if (!ok) failures += 1

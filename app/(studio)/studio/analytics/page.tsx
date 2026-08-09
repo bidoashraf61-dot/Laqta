@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Eye, Percent, ShoppingBag, Wallet } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'
 import { creatorTrend, summary, topAlbums } from '@/lib/analytics'

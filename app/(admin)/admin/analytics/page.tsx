@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Eye, Percent, ShoppingBag, Wallet } from 'lucide-react'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'

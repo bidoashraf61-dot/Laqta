@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { DocumentPage } from '@/components/layout/document-page'
 import { CONTACT } from '@/content/legal'
 import { t } from '@/lib/i18n'

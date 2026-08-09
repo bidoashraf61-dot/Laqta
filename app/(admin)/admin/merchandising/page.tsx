@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { Badge } from '@/components/ui/badge'

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, Download, FileText, Receipt } from 'lucide-react'
 import { db } from '@/lib/db'

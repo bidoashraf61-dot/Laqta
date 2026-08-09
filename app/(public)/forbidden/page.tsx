@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { ShieldAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/i18n'

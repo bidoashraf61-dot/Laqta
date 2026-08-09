@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { BadgeCheck, Coins, FileCheck2, Send, Upload } from 'lucide-react'
 import { db } from '@/lib/db'
 import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'

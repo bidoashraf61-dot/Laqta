@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { redirect } from 'next/navigation'
 import { AlertTriangle, Eye, Percent, ShoppingBag, TrendingUp, Wallet } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'

@@ -1,7 +1,8 @@
 'use client'
 
 import { usePathname, useSearchParams } from 'next/navigation'
-import { currentLocale, localePath } from '@/lib/locale'
+import { useLocale } from '@/lib/i18n-client'
+import { localePath } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 
 /**
@@ -21,6 +22,11 @@ import { cn } from '@/lib/utils'
  * into a document still marked `dir="rtl"` — every line of English laid out
  * right-to-left. A full document load is not a cost here, it is the requirement.
  *
+ * ── The locale comes from context, not from `currentLocale()` ───────────────
+ * This is a client component, and the server's locale store is invisible to
+ * one. Reading it here silently returned the default, so on the English page
+ * the control offered to switch you to English.
+ *
  * ── Why the label is in the target language ─────────────────────────────────
  * "English" on the Arabic page, "العربية" on the English one. A switcher
  * labelled in the language you are already reading asks you to guess what it
@@ -29,7 +35,7 @@ import { cn } from '@/lib/utils'
 export function LocaleToggle({ className }: { className?: string }) {
   const pathname = usePathname() ?? '/'
   const params = useSearchParams()
-  const active = currentLocale()
+  const active = useLocale()
   const target = active === 'ar' ? 'en' : 'ar'
 
   const query = params?.toString()
@@ -45,7 +51,7 @@ export function LocaleToggle({ className }: { className?: string }) {
       hrefLang={target}
       aria-label={target === 'en' ? 'Switch to English' : 'التبديل إلى العربية'}
       className={cn(
-        'grid h-9 min-w-9 place-items-center rounded-md px-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         className,
       )}
     >

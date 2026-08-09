@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

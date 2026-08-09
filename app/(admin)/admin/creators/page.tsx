@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import type { Prisma } from '@prisma/client'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'

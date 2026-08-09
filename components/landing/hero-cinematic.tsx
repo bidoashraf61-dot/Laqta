@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Headline, Prose } from '@/components/ui/typography'
 import { useT } from '@/lib/i18n-client'
 

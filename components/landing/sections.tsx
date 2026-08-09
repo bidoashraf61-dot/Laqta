@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { ArrowLeft } from 'lucide-react'
 import * as Laqta from '@/components/ui/icons'
 import { Badge } from '@/components/ui/badge'

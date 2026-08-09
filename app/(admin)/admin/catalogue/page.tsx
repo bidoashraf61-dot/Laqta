@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { Pause, Play, Star, Trash2 } from 'lucide-react'
 import type { Prisma } from '@prisma/client'
 import { requireAdmin } from '@/lib/auth'

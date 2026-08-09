@@ -5,6 +5,7 @@ import { pickLocalised } from '@/lib/locale'
 import { formatDuration } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { Anchor } from '@/components/ui/link'
 
 /**
  * The album pack.
@@ -84,7 +85,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
     // see "Client-router navigations that never commit" in CLAUDE.md. This is
     // the buyer's primary path to the thing they can actually purchase, so it
     // takes the reliable navigation rather than the fast one.
-    <a href={albumHref(album)} className={cn('pack group block', className)}>
+    <Anchor href={albumHref(album)} className={cn('pack group block', className)}>
       <div className="pack-box">
         <div className="pack-face relative aspect-[5/7] rounded-sm">
           {/* The art is its own clipped layer: the face has to keep
@@ -178,7 +179,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
           </div>
         </div>
       </div>
-    </a>
+    </Anchor>
   )
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { LogOut, ShieldCheck, User as UserIcon } from 'lucide-react'

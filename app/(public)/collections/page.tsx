@@ -1,6 +1,6 @@
 import { SubHeadline, PageTitle } from '@/components/ui/typography'
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'

@@ -283,6 +283,22 @@ and `Forever` the band of interlocking diamonds carved into Najdi doors.
 arrows, panel toggles — stay on lucide. A custom mark adds nothing to an X and
 costs the reader a beat deciding whether it means something.
 
+### Touch targets
+
+Every interactive control clears **44×44** under `pointer: coarse`. The design
+scale is built for a mouse — `size="sm"` is 36px, `default` 40px — which reads
+as tight-but-fine on a desktop and fiddly on a phone.
+
+Keyed on **pointer type, not a width breakpoint**. A phone in landscape is
+wider than some tablets and a touchscreen laptop is wide and still touched;
+the question is what is doing the pointing. Desktop density is untouched.
+
+`min-height`, never `height`, so a control that is already taller is not
+squashed. Footer, header and nav text links take `padding-block` instead —
+turning a text link into a 44px flex box would break the line rhythm of the
+column it sits in. Links inside running prose are deliberately excluded: they
+are judged by their line box, and padding one would tear the paragraph apart.
+
 ### The album pack
 
 An album card is a **boxed product**, not a thumbnail: a 5:7 face with a spine

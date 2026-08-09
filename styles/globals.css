@@ -368,6 +368,61 @@
 
 @layer components {
   /*
+   * Touch targets.
+   *
+   * The design scale is built for a mouse: `size="sm"` is 36px tall and
+   * `default` is 40px, both of which read as tight-but-fine on a desktop and
+   * as fiddly on a phone. Apple and Android both ask for ~44px, and a filter
+   * chip or a pagination arrow that misses by 8px is the difference between a
+   * tap and three taps.
+   *
+   * Keyed on `pointer: coarse`, NOT on a width breakpoint. A phone in
+   * landscape is wider than some tablets, and a touchscreen laptop is wide and
+   * still touched — the question is what is doing the pointing, not how many
+   * pixels across the viewport is. Desktop keeps its density untouched.
+   *
+   * `min-height` rather than `height`, so a control that is already taller
+   * (a textarea, a wrapped button) is never squashed.
+   */
+  @media (pointer: coarse) {
+    button,
+    [role='button'],
+    a[class*='inline-flex'],
+    input:not([type='checkbox']):not([type='radio']),
+    select {
+      min-height: 44px;
+    }
+
+    /*
+     * Navigation text links — footer columns, header menus. These are plain
+     * <a> with type classes, so the rule above (which keys on inline-flex)
+     * never reached them: they sat at 20px, the line-height of the text.
+     * Padding rather than min-height, because turning a text link into a
+     * 44px flex box would break the line rhythm of the column it sits in.
+     *
+     * Scoped to footer and nav. A link inside running prose is judged by its
+     * line box, not by a 44px rule, and padding one would tear a paragraph
+     * apart.
+     */
+    footer a,
+    nav a,
+    header a {
+      /* 0.85rem, not 0.75: the footer's line box is 18px, so 0.75 landed at
+         42px — two short of the floor, which is the kind of near-miss that
+         passes a glance and fails a thumb. */
+      padding-block: 0.85rem;
+    }
+
+    /* Icon-only controls need the width too, or they stay a 36px square. */
+    button[class*='size-9'],
+    button[class*='size-8'],
+    a[class*='size-9'],
+    a[class*='size-8'] {
+      min-width: 44px;
+    }
+  }
+
+  /*
    * The album pack.
    *
    * An album is sold outright — «تشتري مرة واحدة وتملكها للأبد» — and a flat

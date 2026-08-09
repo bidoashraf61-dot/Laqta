@@ -269,7 +269,7 @@ export const CONTENT_POLICY: DocumentSection[] = [
       'Footage from inside the Kingdom, at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album is the single largest cause of refund requests, because the editor ends up with material that will not cut together on one timeline.',
     ],
     body: [
-      'لقطات مصوّرة داخل المملكة، بجودة 4K فأعلى، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو ملفات الألوان داخل ألبوم واحد هو السبب الأول لطلبات الاسترجاع، لأن المونتير يجد نفسه أمام مواد لا تُركّب على تايم لاين واحد.',
+      'لقطات من داخل المملكة، بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو ملفات الألوان داخل ألبوم واحد هو السبب الأول لطلبات الاسترجاع، لأن المونتير يجد نفسه أمام مواد لا تُركّب على تايم لاين واحد.',
     ],
   },
   {

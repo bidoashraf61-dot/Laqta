@@ -9,7 +9,8 @@ import { Input, NativeSelect, Textarea } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
 import { refund } from '@/app/(admin)/admin/actions'
-import { formatMoney, t } from '@/lib/i18n'
+import { formatMoney } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Refund one order line.
@@ -29,6 +30,8 @@ export function RefundControl({
   remaining: number
   currency: string
 }) {
+  const t = useT()
+
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(String(remaining))

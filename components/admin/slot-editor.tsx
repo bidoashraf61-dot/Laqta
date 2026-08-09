@@ -7,7 +7,7 @@ import { Field } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { SettingsForm } from '@/components/dashboard/form'
 import { saveSlot } from '@/app/(admin)/admin/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 export type SlotValue = {
   id: string
@@ -34,6 +34,8 @@ export type SlotValue = {
  * being able to run a launch and marketing having to file a ticket.
  */
 export function SlotEditor({ slot }: { slot: SlotValue }) {
+  const t = useT()
+
   const [open, setOpen] = useState(false)
 
   return (
@@ -55,10 +57,16 @@ export function SlotEditor({ slot }: { slot: SlotValue }) {
             <input type="hidden" name="id" value={slot.id} />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={`${t('dash.slotTitle')} — ${t('dash.termAr')}`} htmlFor={`ta-${slot.id}`}>
+              <Field
+                label={`${t('dash.slotTitle')} — ${t('dash.termAr')}`}
+                htmlFor={`ta-${slot.id}`}
+              >
                 <Input id={`ta-${slot.id}`} name="titleAr" defaultValue={slot.titleAr ?? ''} />
               </Field>
-              <Field label={`${t('dash.slotTitle')} — ${t('dash.termEn')}`} htmlFor={`te-${slot.id}`}>
+              <Field
+                label={`${t('dash.slotTitle')} — ${t('dash.termEn')}`}
+                htmlFor={`te-${slot.id}`}
+              >
                 <Input
                   id={`te-${slot.id}`}
                   name="titleEn"
@@ -69,10 +77,20 @@ export function SlotEditor({ slot }: { slot: SlotValue }) {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={`${t('dash.slotSubtitle')} — ${t('dash.termAr')}`} htmlFor={`sa-${slot.id}`}>
-                <Input id={`sa-${slot.id}`} name="subtitleAr" defaultValue={slot.subtitleAr ?? ''} />
+              <Field
+                label={`${t('dash.slotSubtitle')} — ${t('dash.termAr')}`}
+                htmlFor={`sa-${slot.id}`}
+              >
+                <Input
+                  id={`sa-${slot.id}`}
+                  name="subtitleAr"
+                  defaultValue={slot.subtitleAr ?? ''}
+                />
               </Field>
-              <Field label={`${t('dash.slotSubtitle')} — ${t('dash.termEn')}`} htmlFor={`se-${slot.id}`}>
+              <Field
+                label={`${t('dash.slotSubtitle')} — ${t('dash.termEn')}`}
+                htmlFor={`se-${slot.id}`}
+              >
                 <Input
                   id={`se-${slot.id}`}
                   name="subtitleEn"
@@ -84,7 +102,11 @@ export function SlotEditor({ slot }: { slot: SlotValue }) {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={`${t('dash.slotCta')} — ${t('dash.termAr')}`} htmlFor={`ca-${slot.id}`}>
-                <Input id={`ca-${slot.id}`} name="ctaLabelAr" defaultValue={slot.ctaLabelAr ?? ''} />
+                <Input
+                  id={`ca-${slot.id}`}
+                  name="ctaLabelAr"
+                  defaultValue={slot.ctaLabelAr ?? ''}
+                />
               </Field>
               <Field label={`${t('dash.slotCta')} — ${t('dash.termEn')}`} htmlFor={`ce-${slot.id}`}>
                 <Input

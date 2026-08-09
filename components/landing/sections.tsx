@@ -11,6 +11,7 @@ import { formatNumber, t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { Headline, Prose, Section } from '@/components/ui/typography'
 import { accentChip, cycleAccent, TILE_TINT } from '@/components/ui/accent'
+import { pickLocalised } from '@/lib/locale'
 
 /** Section heading with an optional "view all" on the opposite edge. */
 function SectionHead({
@@ -205,7 +206,7 @@ export function TopCreators({
             className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:border-foreground/25"
           >
             <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-lg font-bold">
-              {creator.nameAr.charAt(0)}
+              {pickLocalised(creator.nameAr, creator.nameEn).charAt(0)}
             </span>
             <span className="min-w-0">
               <span className="block truncate font-bold">
@@ -338,31 +339,31 @@ export function HowItWorks() {
   return (
     <Section tone="base">
       <SectionHead title={t('landing.howTitle')} />
-        <div className="grid gap-6 md:grid-cols-3">
-          {steps.map((step, index) => (
-            <Card key={step.title}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={cn(
-                      'grid size-10 place-items-center rounded-full',
-                      accentChip[cycleAccent(index)],
-                    )}
-                  >
-                    <step.icon className="size-5" />
-                  </span>
-                  <span className="numeric text-sm text-muted-foreground">{index + 1}</span>
-                </div>
-                <CardTitle className="pt-2">{step.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{step.body}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <Card key={step.title}>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <span
+                  className={cn(
+                    'grid size-10 place-items-center rounded-full',
+                    accentChip[cycleAccent(index)],
+                  )}
+                >
+                  <step.icon className="size-5" />
+                </span>
+                <span className="numeric text-sm text-muted-foreground">{index + 1}</span>
+              </div>
+              <CardTitle className="pt-2">{step.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">{step.body}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-        {/* The positioning, stated outright. It is the single thing that
+      {/* The positioning, stated outright. It is the single thing that
             separates Laqta from every subscription library buyers know. */}
       {/* The positioning, stated outright — the one line that separates Laqta
           from every subscription library buyers already know. */}

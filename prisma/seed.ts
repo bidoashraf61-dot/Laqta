@@ -363,7 +363,7 @@ async function main() {
       vatNumber: '300012345600003',
       billingAddress: {
         line1: 'طريق الملك فهد',
-        city: 'الرياض',
+        cityAr: 'الرياض', cityEn: 'Riyadh',
         region: 'منطقة الرياض',
         postalCode: '12211',
         country: 'SA',
@@ -399,7 +399,7 @@ async function main() {
       bioEn:
         'Cairo-based aerial cinematographer specialising in desert landscapes and heritage sites across the Arabian Peninsula. Shoots 24p cinema LOG.',
       country: 'EG',
-      city: 'القاهرة',
+      cityAr: 'القاهرة', cityEn: 'Cairo',
       status: 'approved',
       tier: 'silver',
       isExclusive: true,
@@ -440,7 +440,7 @@ async function main() {
       bioAr: 'مخرجة ومصوّرة من الرياض. أعمل على قصص المدينة والحياة اليومية.',
       bioEn: 'Director and DP from Riyadh working on city stories and everyday life.',
       country: 'SA',
-      city: 'الرياض',
+      cityAr: 'الرياض', cityEn: 'Riyadh',
       status: 'approved',
       tier: 'standard',
       payoutMethod: 'iban',
@@ -1116,19 +1116,20 @@ async function main() {
     price: number
     compareAt?: number
     offerAr?: string
+    offerEn?: string
     loc?: string
     cat?: string
     featured?: boolean
   }> = [
     { slug: 'diriyah-najdi-architecture', titleAr: 'الدرعية — عمارة نجدية', titleEn: 'Diriyah — Najdi Architecture',
       descAr: 'أربع وعشرون لقطة للطين النجدي عند الغروب وبعد المغرب، بتدرّج واحد.', posters: 'diriyah',
-      clips: 24, price: 399, compareAt: 599, offerAr: 'عرض الإطلاق', loc: 'diriyah', cat: 'heritage', featured: true },
+      clips: 24, price: 399, compareAt: 599, offerAr: 'عرض الإطلاق', offerEn: 'Launch offer', loc: 'diriyah', cat: 'heritage', featured: true },
     { slug: 'riyadh-skyline-night', titleAr: 'الرياض — أفق الليل', titleEn: 'Riyadh — Night Skyline',
       descAr: 'ستّ عشرة لقطة لأبراج الرياض من الغروب حتى منتصف الليل.', posters: 'riyadh',
       clips: 16, price: 199, loc: 'riyadh', cat: 'cityscapes' },
     { slug: 'jeddah-waterfront', titleAr: 'جدة — الواجهة البحرية', titleEn: 'Jeddah — Waterfront',
       descAr: 'أربع عشرة لقطة للكورنيش والبحر الأحمر في الساعة الزرقاء.', posters: 'jeddah',
-      clips: 14, price: 199, compareAt: 299, offerAr: 'عرض الإطلاق', loc: 'jeddah', cat: 'cityscapes' },
+      clips: 14, price: 199, compareAt: 299, offerAr: 'عرض الإطلاق', offerEn: 'Launch offer', loc: 'jeddah', cat: 'cityscapes' },
     { slug: 'red-sea-reefs', titleAr: 'البحر الأحمر — شعاب وسواحل', titleEn: 'Red Sea — Reefs & Coast',
       descAr: 'عشرون لقطة جوية للشعاب والمياه الضحلة عند الظهيرة.', posters: 'redsea',
       clips: 20, price: 399, loc: 'red-sea', cat: 'coast-marine', featured: true },
@@ -1137,7 +1138,7 @@ async function main() {
       clips: 18, price: 399, loc: 'edge-of-the-world', cat: 'desert-nature' },
     { slug: 'empty-quarter-dawn', titleAr: 'الربع الخالي — فجر الكثبان', titleEn: 'Empty Quarter — Dune Dawn',
       descAr: 'اثنتا عشرة لقطة للكثبان قبل الشروق مباشرة.', posters: 'desert',
-      clips: 12, price: 199, compareAt: 279, offerAr: 'عرض محدود', loc: 'rub-al-khali', cat: 'desert-nature' },
+      clips: 12, price: 199, compareAt: 279, offerAr: 'عرض محدود', offerEn: 'Limited offer', loc: 'rub-al-khali', cat: 'desert-nature' },
     { slug: 'aerial-clouds-above', titleAr: 'فوق الغيوم — لقطات ارتفاع', titleEn: 'Above the Clouds — Altitude',
       descAr: 'خمس عشرة لقطة فوق طبقة الغيوم عند الفجر وبعد الغروب.', posters: 'clouds',
       clips: 15, price: 199, cat: 'aerials' },
@@ -1149,7 +1150,7 @@ async function main() {
       clips: 12, price: 199, loc: 'alula', cat: 'heritage' },
     { slug: 'riyadh-streets-day', titleAr: 'الرياض — شوارع النهار', titleEn: 'Riyadh — Daytime Streets',
       descAr: 'إحدى وعشرون لقطة للحركة والمشاة في وسط المدينة.', posters: 'riyadh',
-      clips: 21, price: 399, compareAt: 549, offerAr: 'عرض الإطلاق', loc: 'riyadh', cat: 'people-lifestyle' },
+      clips: 21, price: 399, compareAt: 549, offerAr: 'عرض الإطلاق', offerEn: 'Launch offer', loc: 'riyadh', cat: 'people-lifestyle' },
   ]
 
   let made = 0
@@ -1174,6 +1175,7 @@ async function main() {
         // has none and the page correctly leads with the cover still.
         trailerKey: DEMO_LOOPS[n % DEMO_LOOPS.length],
         offerLabelAr: a.offerAr ?? null,
+        offerLabelEn: a.offerEn ?? null,
         clearanceStatus: 'full',
         clearedForCommercial: true,
         isFeatured: a.featured ?? false,

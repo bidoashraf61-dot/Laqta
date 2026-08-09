@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { Moon, Sun } from 'lucide-react'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { THEME_KEY } from '@/lib/theme'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Light / dark toggle.
@@ -34,6 +34,8 @@ function apply(theme: Theme) {
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
+  const t = useT()
+
   const [theme, setTheme] = React.useState<Theme>('system')
 
   // Read once on mount. The class is already correct by now — THEME_SCRIPT set

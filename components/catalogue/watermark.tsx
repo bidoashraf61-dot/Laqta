@@ -24,11 +24,11 @@ export function PreviewWatermark({ className }: { className?: string }) {
     <div
       aria-hidden
       className={cn(
-        'pointer-events-none absolute inset-0 z-[1] overflow-hidden select-none',
+        'pointer-events-none absolute inset-0 z-[1] select-none overflow-hidden',
         className,
       )}
     >
-      <div className="absolute inset-[-25%] flex flex-wrap content-center items-center justify-center gap-x-8 gap-y-6 rotate-[-24deg] opacity-[0.16]">
+      <div className="absolute inset-[-25%] flex rotate-[-24deg] flex-wrap content-center items-center justify-center gap-x-8 gap-y-6 opacity-[0.16]">
         {marks.map((_, index) => (
           <span
             key={index}

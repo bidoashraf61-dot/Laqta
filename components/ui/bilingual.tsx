@@ -1,21 +1,35 @@
+'use client'
+
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { isArabic } from '@/lib/i18n'
+import { useLocale } from '@/lib/i18n-client'
 
 /**
  * Direction islands.
  *
- * Every catalogue record carries both an Arabic and an English string. The UI
- * is Arabic, but the English side is still present in the data — and whenever
- * a Latin run is rendered inside Arabic (a creator's English handle, a camera
- * model, a file key) the browser's bidi algorithm will drag its punctuation
- * and numerals to the wrong end of the surrounding sentence unless it is
- * isolated.
+ * Every catalogue record carries both an Arabic and an English string.
  *
  *   <Bilingual ar={album.titleAr} en={album.titleEn} />
  *
- * renders the Arabic string, falls back to English when Arabic is missing,
- * and marks whichever it used with the correct island.
+ * picks the side matching the interface language, falls back to the other when
+ * that side is empty, and marks whichever it actually used with the right
+ * direction island.
+ *
+ * ── Why the island matters even so ──────────────────────────────────────────
+ * Whenever a Latin run lands inside Arabic (a creator's English handle, a
+ * camera model, a file key) the browser's bidi algorithm drags its punctuation
+ * and numerals to the wrong end of the surrounding sentence unless it is
+ * isolated. That is true in both directions, and it is why the island follows
+ * the string that WON rather than the page's language: an English title on an
+ * Arabic page and an Arabic title on an English page are the same problem
+ * mirrored.
+ *
+ * ── Why this is a client component ──────────────────────────────────────────
+ * It is a presentational leaf with no server-only dependency, and it is
+ * rendered from both trees. A client component reads the locale from context,
+ * which works in either; a server-only read would silently fall back to Arabic
+ * everywhere this is used inside a client component.
  */
 
 function RtlIsland({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
@@ -35,7 +49,10 @@ function Bilingual({
   en: string | null | undefined
   className?: string
 }) {
-  const value = ar ?? en
+  const locale = useLocale()
+  // Fall back rather than blank: a record with no English title is a content
+  // gap, and showing its Arabic is far better than showing nothing.
+  const value = locale === 'en' ? en || ar : ar || en
   if (!value) return null
 
   // Which script actually won, not which one we hoped for — a record with no
@@ -65,13 +82,7 @@ function Numeric({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>)
  * to `dir="auto"` with `unicode-bidi: isolate`, so each value picks its own
  * direction and none of them can leak into the Arabic sentence around it.
  */
-function UserText({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function UserText({ children, className }: { children: React.ReactNode; className?: string }) {
   return <bdi className={className}>{children}</bdi>
 }
 

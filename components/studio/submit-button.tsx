@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
-import { t } from '@/lib/i18n'
 import { submitAlbum } from '@/app/(studio)/studio/actions'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Submit for review.
@@ -24,6 +24,8 @@ export function SubmitButton({
   canSubmit: boolean
   reasons: string[]
 }) {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

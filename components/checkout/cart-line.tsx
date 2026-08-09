@@ -7,9 +7,10 @@ import type { LicenceTier } from '@prisma/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Bilingual } from '@/components/ui/bilingual'
-import { formatMoney, t } from '@/lib/i18n'
+import { formatMoney } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { removeFromCart, setTier } from '@/app/(public)/cart/actions'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * A cart line with the licence tier editable in place.
@@ -39,6 +40,8 @@ export function CartLine({
   currency: string
   editorialOnly: boolean
 }) {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
 

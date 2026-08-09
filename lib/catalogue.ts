@@ -17,12 +17,13 @@ const ALBUM_CARD_SELECT = {
   priceStandard: true,
   compareAtPrice: true,
   offerLabelAr: true,
+  offerLabelEn: true,
   currency: true,
   clipCount: true,
   totalRuntimeS: true,
   clearedForCommercial: true,
   coverClipId: true,
-  creator: { select: { handle: true, displayNameAr: true } },
+  creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
 } as const
 
 type AlbumRow = {
@@ -32,12 +33,13 @@ type AlbumRow = {
   priceStandard: unknown
   compareAtPrice: unknown
   offerLabelAr: string | null
+  offerLabelEn: string | null
   currency: string
   clipCount: number
   totalRuntimeS: number
   clearedForCommercial: boolean
   coverClipId: string | null
-  creator: { handle: string; displayNameAr: string }
+  creator: { handle: string; displayNameAr: string; displayNameEn: string }
 }
 
 async function toCards(rows: AlbumRow[]): Promise<AlbumCardData[]> {
@@ -55,6 +57,7 @@ async function toCards(rows: AlbumRow[]): Promise<AlbumCardData[]> {
     slug: row.slug,
     creatorHandle: row.creator.handle,
     creatorNameAr: row.creator.displayNameAr,
+    creatorNameEn: row.creator.displayNameEn,
     titleAr: row.titleAr,
     titleEn: row.titleEn,
     priceStandard: Number(row.priceStandard),
@@ -63,6 +66,7 @@ async function toCards(rows: AlbumRow[]): Promise<AlbumCardData[]> {
     // drift from what was actually charged.
     compareAtPrice: row.compareAtPrice == null ? null : Number(row.compareAtPrice),
     offerLabelAr: row.offerLabelAr,
+    offerLabelEn: row.offerLabelEn,
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,
@@ -149,7 +153,8 @@ export async function getTopCreators(take = 6) {
       handle: true,
       displayNameAr: true,
       displayNameEn: true,
-      city: true,
+      cityAr: true,
+      cityEn: true,
       country: true,
       _count: { select: { albums: true } },
     },
@@ -158,7 +163,8 @@ export async function getTopCreators(take = 6) {
     handle: row.handle,
     nameAr: row.displayNameAr,
     nameEn: row.displayNameEn,
-    city: row.city,
+    cityAr: row.cityAr,
+    cityEn: row.cityEn,
     country: row.country,
     albumCount: row._count.albums,
   }))

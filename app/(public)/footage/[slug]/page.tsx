@@ -14,6 +14,8 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { ScrollArea } from '@/components/ui/overlays'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { PageTitle } from '@/components/ui/typography'
+import { pickLocalised } from '@/lib/locale'
+import { requestLocale } from '@/lib/locale-request'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -39,6 +41,7 @@ async function getClip(slug: string) {
       titleAr: true,
       titleEn: true,
       descriptionAr: true,
+      descriptionEn: true,
       durationS: true,
       width: true,
       height: true,
@@ -56,8 +59,10 @@ async function getClip(slug: string) {
       thumbnailKeys: true,
       previewHlsKey: true,
       // masterKey stays out of every catalogue query.
-      location: { select: { slug: true, nameAr: true } },
-      taxonomy: { select: { taxonomy: { select: { kind: true, slug: true, nameAr: true } } } },
+      location: { select: { slug: true, nameAr: true, nameEn: true } },
+      taxonomy: {
+        select: { taxonomy: { select: { kind: true, slug: true, nameAr: true, nameEn: true } } },
+      },
       album: {
         select: {
           slug: true,
@@ -68,11 +73,18 @@ async function getClip(slug: string) {
           clipCount: true,
           clearedForCommercial: true,
           clearanceStatus: true,
-          creator: { select: { handle: true, displayNameAr: true } },
+          creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
           clips: {
             orderBy: { orderIndex: 'asc' },
             take: 12,
-            select: { id: true, slug: true, titleAr: true, thumbnailKeys: true, durationS: true },
+            select: {
+              id: true,
+              slug: true,
+              titleAr: true,
+              titleEn: true,
+              thumbnailKeys: true,
+              durationS: true,
+            },
           },
         },
       },
@@ -90,20 +102,31 @@ export async function generateMetadata({
   if (!clip) return { title: t('state.notFound') }
 
   return {
-    title: clip.titleAr,
+    title: pickLocalised(clip.titleAr, clip.titleEn),
     description:
-      clip.descriptionAr ?? `${clip.titleAr} — ${t('commerce.fromAlbum', { album: clip.album.titleAr })}`,
+      pickLocalised(clip.descriptionAr, clip.descriptionEn) ??
+      `${pickLocalised(clip.titleAr, clip.titleEn)} — ${t('commerce.fromAlbum', { album: pickLocalised(clip.album.titleAr, clip.album.titleEn) })}`,
     alternates: { canonical: `/footage/${slug}` },
     openGraph: {
       type: 'video.other',
       locale: 'ar_SA',
-      title: clip.titleAr,
+      title: pickLocalised(clip.titleAr, clip.titleEn),
       images: clip.thumbnailKeys[0] ? [clip.thumbnailKeys[0]] : [],
     },
   }
 }
 
 export default async function ClipPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { slug } = await params
   const clip = await getClip(slug)
   if (!clip) notFound()
@@ -137,15 +160,17 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
             <PageTitle>
               <Bilingual ar={clip.titleAr} en={clip.titleEn} />
             </PageTitle>
-            {clip.descriptionAr ? (
-              <p className="max-w-prose text-muted-foreground">{clip.descriptionAr}</p>
+            {pickLocalised(clip.descriptionAr, clip.descriptionEn) ? (
+              <p className="max-w-prose text-muted-foreground">
+                {pickLocalised(clip.descriptionAr, clip.descriptionEn)}
+              </p>
             ) : null}
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {clip.location ? (
                 <Link href={`/locations/${clip.location.slug}`}>
                   <Badge variant="neutral" className="gap-1">
                     <MapPin className="size-3" />
-                    {clip.location.nameAr}
+                    {pickLocalised(clip.location.nameAr, clip.location.nameEn)}
                   </Badge>
                 </Link>
               ) : null}
@@ -158,7 +183,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                       : `/categories/${taxonomy.slug}`
                   }
                 >
-                  <Badge variant="neutral">{taxonomy.nameAr}</Badge>
+                  <Badge variant="neutral">{pickLocalised(taxonomy.nameAr, taxonomy.nameEn)}</Badge>
                 </Link>
               ))}
             </div>
@@ -169,16 +194,30 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
           <section>
             <h2 className="mb-3 font-subhead text-xl font-bold">{t('catalogue.specs')}</h2>
             <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
-              <Spec label={t('catalogue.duration')} value={formatDuration(Number(clip.durationS))} numeric />
-              <Spec label={t('catalogue.dimensions')} value={`${clip.width}×${clip.height}`} numeric />
+              <Spec
+                label={t('catalogue.duration')}
+                value={formatDuration(Number(clip.durationS))}
+                numeric
+              />
+              <Spec
+                label={t('catalogue.dimensions')}
+                value={`${clip.width}×${clip.height}`}
+                numeric
+              />
               <Spec label={t('catalogue.frameRate')} value={String(Number(clip.fps))} numeric />
               <Spec label={t('catalogue.aspect')} value={clip.aspectRatio ?? '—'} numeric />
               <Spec label={t('catalogue.codec')} value={clip.codec ?? '—'} />
               <Spec label={t('catalogue.colourProfile')} value={clip.colourProfile ?? '—'} />
               <Spec label={t('catalogue.camera')} value={clip.camera ?? '—'} />
               <Spec label={t('catalogue.lens')} value={clip.lens ?? '—'} />
-              <Spec label={t('catalogue.cameraMovement')} value={specLabel('movement', clip.cameraMovement) ?? '—'} />
-              <Spec label={t('catalogue.shotSize')} value={specLabel('shotSize', clip.shotSize) ?? '—'} />
+              <Spec
+                label={t('catalogue.cameraMovement')}
+                value={specLabel('movement', clip.cameraMovement) ?? '—'}
+              />
+              <Spec
+                label={t('catalogue.shotSize')}
+                value={specLabel('shotSize', clip.shotSize) ?? '—'}
+              />
             </dl>
           </section>
 
@@ -207,7 +246,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                         <PreviewWatermark />
                       </div>
                       <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
-                        {sibling.titleAr}
+                        {pickLocalised(sibling.titleAr, sibling.titleEn)}
                       </p>
                     </Link>
                   ))}
@@ -273,13 +312,7 @@ function Spec({ label, value, numeric }: { label: string; value: string; numeric
   return (
     <div className="flex justify-between gap-4 border-b border-border/60 py-1.5">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd
-        className={cn(
-          'text-sm font-medium',
-          numeric && 'numeric',
-          latin && 'ltr-island',
-        )}
-      >
+      <dd className={cn('text-sm font-medium', numeric && 'numeric', latin && 'ltr-island')}>
         {value}
       </dd>
     </div>
@@ -290,15 +323,24 @@ function VideoJsonLd({
   clip,
   url,
 }: {
-  clip: { titleAr: string; descriptionAr: string | null; thumbnailKeys: string[]; durationS: unknown }
+  clip: {
+    titleAr: string
+    titleEn: string
+    descriptionAr: string | null
+    descriptionEn: string | null
+    thumbnailKeys: string[]
+    durationS: unknown
+  }
   url: string
 }) {
   const seconds = Math.round(Number(clip.durationS))
   const data = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
-    name: clip.titleAr,
-    description: clip.descriptionAr ?? clip.titleAr,
+    name: pickLocalised(clip.titleAr, clip.titleEn),
+    description:
+      pickLocalised(clip.descriptionAr, clip.descriptionEn) ??
+      pickLocalised(clip.titleAr, clip.titleEn),
     thumbnailUrl: clip.thumbnailKeys,
     // ISO-8601 duration.
     duration: `PT${Math.floor(seconds / 60)}M${seconds % 60}S`,

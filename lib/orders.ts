@@ -71,7 +71,14 @@ export async function checkout({
       creator: { select: { id: true, tier: true, commissionRateOverride: true } },
       clips: {
         orderBy: { orderIndex: 'asc' },
-        select: { id: true, slug: true, titleAr: true, titleEn: true, masterKey: true, proxyKey: true },
+        select: {
+          id: true,
+          slug: true,
+          titleAr: true,
+          titleEn: true,
+          masterKey: true,
+          proxyKey: true,
+        },
       },
     },
   })
@@ -297,7 +304,7 @@ export async function getLibrary(userId: string) {
           slug: true,
           titleAr: true,
           titleEn: true,
-          creator: { select: { handle: true, displayNameAr: true } },
+          creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
         },
       },
       orderItem: {

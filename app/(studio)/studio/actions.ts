@@ -331,7 +331,8 @@ export async function updateProfile(_state: Result | null, formData: FormData): 
       displayNameEn,
       bioAr: String(formData.get('bioAr') ?? '').trim() || null,
       bioEn: String(formData.get('bioEn') ?? '').trim() || null,
-      city: String(formData.get('city') ?? '').trim() || null,
+      cityAr: String(formData.get('cityAr') ?? '').trim() || null,
+      cityEn: String(formData.get('cityEn') ?? '').trim() || null,
       country:
         String(formData.get('country') ?? '')
           .trim()

@@ -17,6 +17,8 @@ import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
 import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
+import { requestLocale } from '@/lib/locale-request'
+import { pickLocalised } from '@/lib/locale'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -40,12 +42,15 @@ async function getAlbum(creatorHandle: string, slug: string) {
           displayNameAr: true,
           displayNameEn: true,
           bioAr: true,
-          city: true,
+          cityAr: true,
+          cityEn: true,
           country: true,
         },
       },
-      licenceVersion: { select: { titleAr: true, bodyAr: true } },
-      taxonomy: { select: { taxonomy: { select: { kind: true, slug: true, nameAr: true } } } },
+      licenceVersion: { select: { titleAr: true, titleEn: true, bodyAr: true, bodyEn: true } },
+      taxonomy: {
+        select: { taxonomy: { select: { kind: true, slug: true, nameAr: true, nameEn: true } } },
+      },
       clips: {
         orderBy: { orderIndex: 'asc' },
         select: {
@@ -79,14 +84,15 @@ export async function generateMetadata({
   if (!album) return { title: t('state.notFound') }
 
   return {
-    title: album.titleAr,
-    description: album.descriptionAr ?? t('catalogue.albumsSubtitle'),
+    title: pickLocalised(album.titleAr, album.titleEn),
+    description:
+      pickLocalised(album.descriptionAr, album.descriptionEn) ?? t('catalogue.albumsSubtitle'),
     alternates: { canonical: `/albums/${creator}/${slug}` },
     openGraph: {
       type: 'website',
       locale: 'ar_SA',
-      title: album.titleAr,
-      description: album.descriptionAr ?? '',
+      title: pickLocalised(album.titleAr, album.titleEn),
+      description: pickLocalised(album.descriptionAr, album.descriptionEn) ?? '',
       images: album.clips[0]?.thumbnailKeys[0] ? [album.clips[0].thumbnailKeys[0]] : [],
     },
   }
@@ -97,6 +103,16 @@ export default async function AlbumPage({
 }: {
   params: Promise<{ creator: string; slug: string }>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { creator: creatorHandle, slug } = await params
   const album = await getAlbum(creatorHandle, slug)
   if (!album) notFound()
@@ -121,12 +137,13 @@ export default async function AlbumPage({
       trailerKey: true,
       compareAtPrice: true,
       offerLabelAr: true,
+      offerLabelEn: true,
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
       clearedForCommercial: true,
       coverClipId: true,
-      creator: { select: { handle: true, displayNameAr: true } },
+      creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
     },
   })
 
@@ -162,14 +179,16 @@ export default async function AlbumPage({
               <AutoplayVideo
                 src={album.trailerKey}
                 poster={hero}
-                label={t('media.trailerAlt', { album: album.titleAr })}
+                label={t('media.trailerAlt', {
+                  album: pickLocalised(album.titleAr, album.titleEn),
+                })}
                 className="size-full rounded-none border-0"
               />
             ) : hero ? (
               <img
                 src={hero}
                 alt={t('catalogue.altAlbumCover', {
-                  album: album.titleAr,
+                  album: pickLocalised(album.titleAr, album.titleEn),
                   count: String(album.clipCount),
                 })}
                 className="size-full object-cover"
@@ -191,12 +210,14 @@ export default async function AlbumPage({
             </PageTitle>
             <p className="text-muted-foreground">
               <Link href={`/creators/${album.creator.handle}`} className="hover:text-foreground">
-                {t('commerce.byCreator', { creator: album.creator.displayNameAr })}
+                {t('commerce.byCreator', {
+                  creator: pickLocalised(album.creator.displayNameAr, album.creator.displayNameEn),
+                })}
               </Link>
             </p>
-            {album.descriptionAr ? (
+            {pickLocalised(album.descriptionAr, album.descriptionEn) ? (
               <p className="max-w-prose font-serif text-[1.2rem] leading-[1.85] text-foreground/75">
-                {album.descriptionAr}
+                {pickLocalised(album.descriptionAr, album.descriptionEn)}
               </p>
             ) : null}
 
@@ -210,7 +231,7 @@ export default async function AlbumPage({
                       : `/categories/${taxonomy.slug}`
                   }
                 >
-                  <Badge variant="neutral">{taxonomy.nameAr}</Badge>
+                  <Badge variant="neutral">{pickLocalised(taxonomy.nameAr, taxonomy.nameEn)}</Badge>
                 </Link>
               ))}
             </div>
@@ -275,9 +296,7 @@ export default async function AlbumPage({
               />
               <Spec
                 label={t('catalogue.dimensions')}
-                value={
-                  album.clips[0] ? `${album.clips[0].width}×${album.clips[0].height}` : '—'
-                }
+                value={album.clips[0] ? `${album.clips[0].width}×${album.clips[0].height}` : '—'}
                 numeric
               />
               <Spec label={t('catalogue.codec')} value={album.clips[0]?.codec ?? '—'} />
@@ -304,14 +323,16 @@ export default async function AlbumPage({
             </div>
             {album.licenceVersion ? (
               <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-                {album.licenceVersion.bodyAr}
+                {pickLocalised(album.licenceVersion.bodyAr, album.licenceVersion.bodyEn)}
               </p>
             ) : null}
           </section>
 
           {others.length > 0 ? (
             <section>
-              <h2 className="mb-4 font-subhead text-xl font-bold">{t('catalogue.byCreatorOther')}</h2>
+              <h2 className="mb-4 font-subhead text-xl font-bold">
+                {t('catalogue.byCreatorOther')}
+              </h2>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {others.map((other) => (
                   <AlbumCard
@@ -320,11 +341,14 @@ export default async function AlbumPage({
                       slug: other.slug,
                       creatorHandle: other.creator.handle,
                       creatorNameAr: other.creator.displayNameAr,
+                      creatorNameEn: other.creator.displayNameEn,
                       titleAr: other.titleAr,
                       titleEn: other.titleEn,
                       priceStandard: Number(other.priceStandard),
-                      compareAtPrice: other.compareAtPrice == null ? null : Number(other.compareAtPrice),
+                      compareAtPrice:
+                        other.compareAtPrice == null ? null : Number(other.compareAtPrice),
                       offerLabelAr: other.offerLabelAr,
+                      offerLabelEn: other.offerLabelEn,
                       currency: other.currency,
                       clipCount: other.clipCount,
                       totalRuntimeS: other.totalRuntimeS,
@@ -396,13 +420,7 @@ function Spec({ label, value, numeric }: { label: string; value: string; numeric
   return (
     <div className="flex justify-between gap-4 border-b border-border/60 py-1.5">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd
-        className={cn(
-          'text-sm font-medium',
-          numeric && 'numeric',
-          latin && 'ltr-island',
-        )}
-      >
+      <dd className={cn('text-sm font-medium', numeric && 'numeric', latin && 'ltr-island')}>
         {value}
       </dd>
     </div>
@@ -416,7 +434,9 @@ function ProductJsonLd({
 }: {
   album: {
     titleAr: string
+    titleEn: string
     descriptionAr: string | null
+    descriptionEn: string | null
     currency: string
     ratingAvg: unknown
     ratingCount: number
@@ -427,8 +447,8 @@ function ProductJsonLd({
   const data = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: album.titleAr,
-    description: album.descriptionAr ?? undefined,
+    name: pickLocalised(album.titleAr, album.titleEn),
+    description: pickLocalised(album.descriptionAr, album.descriptionEn) ?? undefined,
     url,
     offers: {
       '@type': 'Offer',

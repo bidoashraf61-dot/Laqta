@@ -8,7 +8,7 @@ import { Input, NativeSelect } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/toggles'
 import { SettingsForm } from '@/components/dashboard/form'
 import { saveTaxonomy } from '@/app/(admin)/admin/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 export type TermValue = {
   id?: string
@@ -42,6 +42,8 @@ export function TaxonomyEditor({
   parents: ParentOption[]
   trigger?: 'add' | 'edit'
 }) {
+  const t = useT()
+
   const [open, setOpen] = useState(false)
   const id = term?.id ?? 'new'
 
@@ -139,7 +141,10 @@ export function TaxonomyEditor({
               />
             </Field>
 
-            <Field label={`${t('dash.termSynonyms')} — ${t('dash.termEn')}`} htmlFor={`synEn-${id}`}>
+            <Field
+              label={`${t('dash.termSynonyms')} — ${t('dash.termEn')}`}
+              htmlFor={`synEn-${id}`}
+            >
               <Input
                 id={`synEn-${id}`}
                 name="synonymsEn"

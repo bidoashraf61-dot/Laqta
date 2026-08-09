@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Separator } from '@/components/ui/toggles'
 import { PRIMARY_NAV, type NavItem } from '@/components/layout/nav'
 import { cn } from '@/lib/utils'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Mobile drawer.
@@ -18,6 +18,8 @@ import { t } from '@/lib/i18n'
  * under the thumb that opened it, matching every native app on the device.
  */
 export function MobileNav({ extra }: { extra: NavItem[] }) {
+  const t = useT()
+
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 

@@ -8,7 +8,7 @@ import { Input, NativeSelect } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/toggles'
 import { SettingsForm } from '@/components/dashboard/form'
 import { savePromo } from '@/app/(admin)/admin/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 export type PromoValue = {
   id: string
@@ -24,6 +24,8 @@ export type PromoValue = {
 
 /** Create or edit a promo code. */
 export function PromoEditor({ promo }: { promo?: PromoValue }) {
+  const t = useT()
+
   const [open, setOpen] = useState(false)
   const id = promo?.id ?? 'new'
 

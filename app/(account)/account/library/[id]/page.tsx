@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import { requestLocale } from '@/lib/locale-request'
 
 type ManifestClip = {
   id: string
@@ -28,11 +29,17 @@ type ManifestClip = {
  * still downloadable — that is the promise being kept, and it is the reason
  * this page never touches `album.clips`.
  */
-export default async function LibraryAlbumPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function LibraryAlbumPage({ params }: { params: Promise<{ id: string }> }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const { id } = await params
   const user = await requireUser()
 
@@ -56,7 +63,10 @@ export default async function LibraryAlbumPage({
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <Link href="/account/library" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href="/account/library"
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
           ← {t('library.title')}
         </Link>
         <PageTitle>

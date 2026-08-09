@@ -7,13 +7,13 @@ Edit the public creator profile and the private payout rail, and state the creat
 current revenue share.
 
 ## Data in
-- `Creator.findUnique` by session `creatorId` — the whole row. Read for: `tier`, `lifetimeGmv`, `commissionRateOverride`, `isExclusive`, `handle`, `displayNameAr/En`, `bioAr/En`, `city`, `country`, `showreelUrl`, `payoutMethod`, `iban`, `bankName`, `beneficiaryName`, `payoneerEmail`, `wiseEmail`, `taxResidency`.
+- `Creator.findUnique` by session `creatorId` — the whole row. Read for: `tier`, `lifetimeGmv`, `commissionRateOverride`, `isExclusive`, `handle`, `displayNameAr/En`, `bioAr/En`, `cityAr` / `cityEn`, `country`, `showreelUrl`, `payoutMethod`, `iban`, `bankName`, `beneficiaryName`, `payoneerEmail`, `wiseEmail`, `taxResidency`.
 - `TIER_RATES` from `lib/commission.ts` — the displayed share is `1 − platformRate`, where `platformRate` is `commissionRateOverride` if set, else `TIER_RATES[tier] − (isExclusive ? 0.05 : 0)`.
 
 ## Controls
 | Control | Action | Effect |
 |---|---|---|
-| Profile form → «حفظ» | `updateProfile` | Updates `handle`, `displayNameAr/En`, `bioAr/En`, `city`, `country` (upper-cased, defaults `SA`), `showreelUrl`; revalidates `/studio/settings` and `/creators/{handle}` |
+| Profile form → «حفظ» | `updateProfile` | Updates `handle`, `displayNameAr/En`, `bioAr/En`, `cityAr` / `cityEn`, `country` (upper-cased, defaults `SA`), `showreelUrl`; revalidates `/studio/settings` and `/creators/{handle}` |
 | `handle` | form field, `pattern="[a-z0-9][a-z0-9\-]{1,38}"` | Lower-cased and re-validated server-side against `HANDLE_PATTERN`; uniqueness checked against other creators |
 | Payout form → «حفظ» | `updatePayoutDetails` | Updates `payoutMethod`, `iban` (whitespace stripped, upper-cased), `bankName`, `beneficiaryName`, `payoneerEmail`, `wiseEmail`, `taxResidency` (upper-cased); writes `AuditLog` `creator.payout_details.update`; revalidates `/studio/settings` |
 | «الأمان» button | Link → `/account/security` | Navigation only — 2FA lives outside the studio |
@@ -36,4 +36,4 @@ The commission panel is display-only: neither tier nor override is editable here
 - Editing the handle revalidates the old path's cache entry for the new handle only (`/creators/{handle}`); the previous public URL is not redirected.
 
 ## Verified by
-`verify:flows` (fills `#city`, submits, reloads and asserts the value persisted, then restores it; asserts no console errors), `verify:arabic`, `audit`.
+`verify:flows` (fills `#cityAr`, submits, reloads and asserts the value persisted, then restores it; asserts no console errors), `verify:arabic`, `audit`.

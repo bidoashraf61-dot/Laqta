@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Field, Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { Card, CardContent } from '@/components/ui/card'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/lib/payments'
 import { placeOrder } from '@/app/(public)/checkout/actions'
+import { useT } from '@/lib/i18n-client'
 
 const METHOD_LABEL: Record<PaymentMethod, string> = {
   card: 'checkout.methodCard',
@@ -41,6 +41,8 @@ export function CheckoutForm({
     vatNumber: string
   }
 }) {
+  const t = useT()
+
   const [pending, startTransition] = useTransition()
   const [entity, setEntity] = useState(defaults.billingEntityType)
   const [method, setMethod] = useState<PaymentMethod>(methods[0] ?? 'bank_transfer')
@@ -158,7 +160,9 @@ export function CheckoutForm({
               onClick={() => setMethod(option)}
               className={cn(
                 'rounded-md border p-3 text-start text-sm transition-colors',
-                method === option ? 'border-gold bg-gold/10' : 'border-input hover:border-foreground/25',
+                method === option
+                  ? 'border-gold bg-gold/10'
+                  : 'border-input hover:border-foreground/25',
               )}
             >
               {t(METHOD_LABEL[option])}

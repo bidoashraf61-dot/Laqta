@@ -15,9 +15,9 @@ import {
   type CheckState,
   type Checklist,
 } from '@/lib/review-checklist'
-import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { submitReview } from '@/app/(admin)/admin/actions'
+import { useT } from '@/lib/i18n-client'
 
 const STATE_LABEL: Record<CheckState, string> = {
   pending: 'admin.checkPending',
@@ -39,6 +39,8 @@ const STATE_LABEL: Record<CheckState, string> = {
  * through, which is why they are enforced rather than advised.
  */
 export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: Checklist }) {
+  const t = useT()
+
   const router = useRouter()
   const [checklist, setChecklist] = useState<Checklist>(initial)
   const [note, setNote] = useState('')
@@ -138,7 +140,11 @@ export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: 
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="default" disabled={!gate.ok || pending} onClick={() => decide('approve')}>
+          <Button
+            variant="default"
+            disabled={!gate.ok || pending}
+            onClick={() => decide('approve')}
+          >
             {t('admin.approve')}
           </Button>
           <Button variant="outline" disabled={pending} onClick={() => decide('request_changes')}>

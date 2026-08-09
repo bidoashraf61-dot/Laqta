@@ -6,12 +6,29 @@ import { MIN_PAYOUT_USD } from '@/lib/studio'
 import { storageConfigured } from '@/lib/storage'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { formatDate, formatMoney, formatPercent, t } from '@/lib/i18n'
 import { UserText } from '@/components/ui/bilingual'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('dash.platformSettings') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('dash.platformSettings'),
+  }
+}
 
 const TIER_LABEL: Record<string, string> = {
   standard: 'dash.tierStandard',
@@ -30,6 +47,16 @@ const TIER_LABEL: Record<string, string> = {
  * Silver creator get" without reading TypeScript.
  */
 export default async function AdminSettingsPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   await requireAdmin()
 
   const [licence, recentAudit] = await Promise.all([

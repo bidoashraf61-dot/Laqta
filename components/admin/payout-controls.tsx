@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
 import { ActionButton } from '@/components/dashboard/form'
 import { approvePayout, markPayoutPaid } from '@/app/(admin)/admin/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Payout verbs.
@@ -18,6 +18,8 @@ import { t } from '@/lib/i18n'
  * disputes.
  */
 export function PayoutControls({ payoutId, status }: { payoutId: string; status: string }) {
+  const t = useT()
+
   const router = useRouter()
   const [reference, setReference] = useState('')
   const [pending, startTransition] = useTransition()

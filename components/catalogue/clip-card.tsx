@@ -6,6 +6,7 @@ import { formatDuration, cn } from '@/lib/utils'
 import type { ClipHit } from '@/lib/search'
 import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { pickLocalised } from '@/lib/locale'
 
 /**
  * The clip card — and the album ribbon underneath it.
@@ -40,7 +41,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
           {clip.thumbnail ? (
             <img
               src={clip.thumbnail}
-              alt={t('catalogue.altClipThumb', { clip: clip.titleAr })}
+              alt={t('catalogue.altClipThumb', { clip: pickLocalised(clip.titleAr, clip.titleEn) })}
               loading="lazy"
               className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />

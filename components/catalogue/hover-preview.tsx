@@ -39,8 +39,7 @@ export function HoverPreview({
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
 
   const reduced =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const [hovered, setHovered] = React.useState(false)
 

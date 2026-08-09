@@ -9,10 +9,12 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
-import { t } from '@/lib/i18n'
 import { beginTwoFactorEnrolment, confirmTwoFactor, disableTwoFactor } from './actions'
+import { useT } from '@/lib/i18n-client'
 
 export function TwoFactorCard({ enabled, mandatory }: { enabled: boolean; mandatory: boolean }) {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [secret, setSecret] = useState<string | null>(null)

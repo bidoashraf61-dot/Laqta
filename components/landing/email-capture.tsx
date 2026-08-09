@@ -5,9 +5,9 @@ import { MailCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
 import { captureEmail } from '@/app/(public)/actions'
 import { PageTitle } from '@/components/ui/typography'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Launch-notification capture.
@@ -18,6 +18,8 @@ import { PageTitle } from '@/components/ui/typography'
  * own model then.
  */
 export function EmailCapture() {
+  const t = useT()
+
   const [pending, startTransition] = useTransition()
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,7 +37,7 @@ export function EmailCapture() {
   }
 
   return (
-    <section className="bg-off-white border-y border-olive/12">
+    <section className="border-y border-olive/12 bg-off-white">
       <div className="container max-w-xl py-16 text-center">
         <PageTitle as="h2">{t('landing.notifyTitle')}</PageTitle>
         <p className="mt-2 text-muted-foreground">{t('landing.notifyBody')}</p>

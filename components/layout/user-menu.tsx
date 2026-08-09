@@ -15,10 +15,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ACCOUNT_NAV, roleNav } from '@/components/layout/nav'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 /** Account menu, or a sign-in button when signed out. */
 export function UserMenu({ session }: { session: Session | null }) {
+  const t = useT()
+
   if (!session?.user) {
     return (
       <Button asChild variant="outline" size="sm">

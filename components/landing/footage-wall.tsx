@@ -9,6 +9,7 @@ import { Headline, Section } from '@/components/ui/typography'
 import type { FootageTile } from '@/lib/catalogue'
 import { formatMoney, t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { pickLocalised } from '@/lib/locale'
 
 /**
  * The footage wall.
@@ -58,14 +59,18 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
           <Link
             key={tile.slug}
             href={albumHref(tile.album)}
-            aria-label={t('commerce.fromAlbum', { album: tile.album.titleAr })}
+            aria-label={t('commerce.fromAlbum', {
+              album: pickLocalised(tile.album.titleAr, tile.album.titleEn),
+            })}
             className="group relative block break-inside-avoid overflow-hidden rounded-lg border bg-muted transition-colors hover:border-foreground/25"
           >
             <div className={cn('relative overflow-hidden', aspectClass(tile.aspectRatio))}>
               <HoverPreview
                 src={tile.previewKey}
                 poster={tile.thumbKey}
-                alt={t('catalogue.altClipThumb', { clip: tile.titleAr })}
+                alt={t('catalogue.altClipThumb', {
+                  clip: pickLocalised(tile.titleAr, tile.titleEn),
+                })}
               />
 
               <PreviewWatermark />

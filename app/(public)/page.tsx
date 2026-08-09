@@ -16,42 +16,50 @@ import { RequestFootage } from '@/components/landing/request-footage'
 import { getFeaturedAlbums, getFootageWall, getOfferAlbums } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
+import { requestLocale } from '@/lib/locale-request'
+import { localeAlternates } from '@/lib/locale'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
-export const metadata: Metadata = {
-  title: `${t('brand.name')} — ${t('brand.tagline')}`,
-  description: `${t('brand.promise')} ${t('landing.featuredSubtitle')}`,
-  keywords: [
-    'لقطات فيديو سعودية',
-    'مكتبة لقطات سعودية',
-    'فوتاج سعودي',
-    'لقطات الرياض',
-    'لقطات العلا',
-    'لقطات الدرعية',
-    'لقطات جدة',
-    'تصوير جوي السعودية',
-    'لقطات للحملات الإعلانية السعودية',
-    'مواد فيديو للجهات الحكومية',
-    'stock footage Saudi Arabia',
-    'Saudi b-roll',
-    'Arabic stock video',
-  ],
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    locale: 'ar_SA',
-    url: '/',
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
     title: `${t('brand.name')} — ${t('brand.tagline')}`,
-    description: t('brand.seo.home'),
-    images: [{ url: '/hero/06-alula.jpg', width: 1920, height: 1080, alt: t('brand.tagline') }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${t('brand.name')} — ${t('brand.tagline')}`,
-    description: t('brand.seo.home'),
-    images: ['/hero/06-alula.jpg'],
-  },
+    description: `${t('brand.promise')} ${t('landing.featuredSubtitle')}`,
+    keywords: [
+      'لقطات فيديو سعودية',
+      'مكتبة لقطات سعودية',
+      'فوتاج سعودي',
+      'لقطات الرياض',
+      'لقطات العلا',
+      'لقطات الدرعية',
+      'لقطات جدة',
+      'تصوير جوي السعودية',
+      'لقطات للحملات الإعلانية السعودية',
+      'مواد فيديو للجهات الحكومية',
+      'stock footage Saudi Arabia',
+      'Saudi b-roll',
+      'Arabic stock video',
+    ],
+    alternates: localeAlternates('/'),
+    openGraph: {
+      type: 'website',
+      locale: 'ar_SA',
+      url: '/',
+      title: `${t('brand.name')} — ${t('brand.tagline')}`,
+      description: t('brand.seo.home'),
+      images: [{ url: '/hero/06-alula.jpg', width: 1920, height: 1080, alt: t('brand.tagline') }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${t('brand.name')} — ${t('brand.tagline')}`,
+      description: t('brand.seo.home'),
+      images: ['/hero/06-alula.jpg'],
+    },
+  }
 }
 
 /**
@@ -63,6 +71,16 @@ export const metadata: Metadata = {
  * client JS to become visible.
  */
 export default async function HomePage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   // A young catalogue is presented by depth, not breadth: the wall of frames
   // and the considered collection do the selling, and nothing on the page
   // counts albums, creators, or clips out loud. As the catalogue grows the

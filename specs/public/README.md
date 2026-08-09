@@ -17,7 +17,9 @@ Three kinds of surface share this group:
 - **Marketing and policy** — `/`, `/sell`, and the seven document pages, which render
   compile-time prose from `content/legal.ts` through `components/layout/document-page.tsx`.
 
-Cross-cutting rules that apply to every route here: Arabic only, RTL, logical properties;
+Cross-cutting rules that apply to every route here: Arabic on the bare path and
+English under `/en` (see [`../localisation.md`](../localisation.md)), RTL for
+Arabic and LTR for English, logical properties only;
 every preview frame carries `PreviewWatermark`; every album surface shows a price; a clip
 is never purchasable on its own, so every clip surface carries its album ribbon.
 

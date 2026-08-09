@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { ErrorState } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 export default function GlobalError({
   error,
@@ -11,6 +11,8 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useT()
+
   useEffect(() => {
     // Replace with the real reporter once observability is picked.
     console.error(error)

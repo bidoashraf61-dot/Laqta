@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/toggles'
 import { toast } from '@/components/ui/toast'
 import { setReleaseClips } from '@/app/(studio)/studio/actions'
-import { t } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 export type LinkableClip = {
   id: string
@@ -33,6 +33,8 @@ export function ReleaseLinker({
   clips: LinkableClip[]
   linked: string[]
 }) {
+  const t = useT()
+
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set(linked))

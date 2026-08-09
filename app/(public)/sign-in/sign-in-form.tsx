@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Field } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
 import { signInWithEmail, requestPhoneCode, signInWithPhone } from './actions'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Sign-in.
@@ -18,6 +18,8 @@ import { signInWithEmail, requestPhoneCode, signInWithPhone } from './actions'
  * option behind "other methods" loses them.
  */
 export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
+  const t = useT()
+
   return (
     <Tabs defaultValue="email" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
@@ -36,6 +38,8 @@ export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
 }
 
 function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -79,12 +83,7 @@ function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
       </Field>
 
       {needsTotp ? (
-        <Field
-          label={t('auth.twoFactor')}
-          htmlFor="totp"
-          hint={t('auth.twoFactorPrompt')}
-          required
-        >
+        <Field label={t('auth.twoFactor')} htmlFor="totp" hint={t('auth.twoFactorPrompt')} required>
           <Input
             id="totp"
             name="totp"
@@ -113,6 +112,8 @@ function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
 }
 
 function PhoneForm({ callbackUrl }: { callbackUrl?: string }) {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

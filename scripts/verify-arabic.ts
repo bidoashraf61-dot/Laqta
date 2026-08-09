@@ -5,7 +5,8 @@
  *
  * Crawls every route as a signed-in admin, strips the markup, and fails on any
  * visible Latin text that is not deliberately marked as an isolated foreign
- * run. Also proves the retired locale prefixes still redirect.
+ * run. Arabic owns the bare path; English lives under `/en` and is checked by
+ * its own pass here, so a leak in either direction fails the suite.
  *
  * ── The rule it enforces ────────────────────────────────────────────────────
  * Latin is allowed only inside `.ltr-island`, `.numeric`, or `<code>`. That is
@@ -226,20 +227,23 @@ async function auditRoutes() {
 }
 
 async function auditShell() {
-  console.log('\nDocument shell and retired locale prefixes')
+  console.log('\nDocument shell, the /en surface, and the retired /ar prefix')
 
-  const html = await fetch(`${BASE}/`).then((r) => r.text())
-  const tag = html.match(/<html[^>]*>/)?.[0] ?? ''
-  const shellOk = tag.includes('lang="ar"') && tag.includes('dir="rtl"')
-  if (!shellOk) failures += 1
-  console.log(`  ${shellOk ? 'PASS' : 'FAIL'}  / → ${tag}`)
+  for (const [path, lang, dir] of [
+    ['/', 'ar', 'rtl'],
+    ['/en', 'en', 'ltr'],
+  ]) {
+    const html = await fetch(`${BASE}${path}`).then((r) => r.text())
+    const tag = html.match(/<html[^>]*>/)?.[0] ?? ''
+    const ok = tag.includes(`lang="${lang}"`) && tag.includes(`dir="${dir}"`)
+    if (!ok) failures += 1
+    console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${path} → ${tag}`)
+  }
 
-  // The site was briefly bilingual. Those URLs must not 404.
+  // `/ar` was retired when Arabic took the bare path. Those URLs must not 404.
   for (const [from, expected] of [
     ['/ar', '/'],
-    ['/en', '/'],
     ['/ar/albums', '/albums'],
-    ['/en/sign-in', '/sign-in'],
   ]) {
     const response = await fetch(`${BASE}${from}`, { redirect: 'manual' })
     const location = response.headers.get('location') ?? ''
@@ -247,13 +251,57 @@ async function auditShell() {
     if (!ok) failures += 1
     console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${from} → ${location || `${response.status}, no redirect`}`)
   }
+
+  // `/en` must SERVE, not redirect — it is the English surface, and a redirect
+  // here would quietly delete the translation from the index.
+  for (const path of ['/en', '/en/albums', '/en/sign-in']) {
+    const response = await fetch(`${BASE}${path}`, { redirect: 'manual' })
+    const ok = response.status === 200
+    if (!ok) failures += 1
+    console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${path} → ${response.status}`)
+  }
+
+  // A role guard must not be bypassable by adding a locale prefix.
+  const guarded = await fetch(`${BASE}/en/admin`, { redirect: 'manual' })
+  const guardOk = guarded.status === 307 || guarded.status === 302
+  if (!guardOk) failures += 1
+  console.log(`  ${guardOk ? 'PASS' : 'FAIL'}  /en/admin (signed out) → ${guarded.status}`)
+}
+
+/**
+ * The mirror of `auditRoutes`: every English route must be free of Arabic.
+ *
+ * A one-directional check would pass a site where `/en` silently served Arabic,
+ * which is exactly the failure this feature is most likely to regress into.
+ */
+async function auditEnglishRoutes() {
+  console.log('\nEnglish routes')
+
+  // Signed-out fetches only: the dashboards are Arabic-only operator tools and
+  // are not part of the English surface.
+  const AUTHED = ['/account', '/studio', '/admin']
+
+  // `العلا`/`العُلا` appear in the About page ON PURPOSE, as the worked example
+  // of Arabic search variants reaching one record. They are content, not a leak.
+  const ALLOWED = new Set(['/en/about'])
+
+  for (const route of ROUTES.filter((r) => !AUTHED.some((a) => r.startsWith(a)))) {
+    const path = route === '/' ? '/en' : `/en${route}`
+    const html = await fetch(`${BASE}${path}`).then((r) => r.text())
+    const text = `${visibleText(html)} ${attributeCopy(html)}`
+    const arabic = ALLOWED.has(path) ? [] : text.match(/[\u0600-\u06FF][\u0600-\u06FF\s\u0640]{2,}/g)
+    const ok = !arabic || arabic.length === 0
+    if (!ok) failures += 1
+    console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${path}${ok ? '' : ` — ${[...new Set(arabic)].slice(0, 3).join(' · ')}`}`)
+  }
 }
 
 async function main() {
   await auditRoutes()
+  await auditEnglishRoutes()
   await auditShell()
   console.log(
-    failures === 0 ? '\nEvery route is fully Arabic.' : `\n${failures} check(s) failed.`,
+    failures === 0 ? '\nArabic routes are fully Arabic; English routes are fully English.' : `\n${failures} check(s) failed.`,
   )
   process.exitCode = failures === 0 ? 0 : 1
 }

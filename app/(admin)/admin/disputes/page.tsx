@@ -10,8 +10,18 @@ import { StatusBadge, statusLabel, statusValues } from '@/components/dashboard/s
 import { DisputeControls } from '@/components/admin/dispute-controls'
 import { formatDate, formatNumber, t } from '@/lib/i18n'
 import { UserText } from '@/components/ui/bilingual'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('admin.disputes') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('admin.disputes'),
+  }
+}
 
 const TYPE_LABEL: Record<string, string> = {
   dmca: 'dash.disputeDmca',
@@ -33,6 +43,16 @@ export default async function AdminDisputesPage({
 }: {
   searchParams: Promise<{ status?: string }>
 }) {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   await requireAdmin()
   const { status } = await searchParams
 
@@ -50,7 +70,12 @@ export default async function AdminDisputesPage({
       include: {
         assignee: { select: { name: true } },
         album: {
-          select: { titleAr: true, titleEn: true, slug: true, creator: { select: { handle: true } } },
+          select: {
+            titleAr: true,
+            titleEn: true,
+            slug: true,
+            creator: { select: { handle: true } },
+          },
         },
       },
     }),

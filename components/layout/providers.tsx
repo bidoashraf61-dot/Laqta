@@ -15,13 +15,7 @@ import { TooltipProvider } from '@/components/ui/overlays'
  * runs backwards — the class of RTL bug that only shows up once someone
  * actually uses a keyboard.
  */
-export function Providers({
-  children,
-  session,
-}: {
-  children: ReactNode
-  session: Session | null
-}) {
+export function Providers({ children, session }: { children: ReactNode; session: Session | null }) {
   return (
     <SessionProvider session={session}>
       <DirectionProvider dir="rtl">

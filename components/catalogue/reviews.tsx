@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button'
 import { SubHeadline } from '@/components/ui/typography'
 import { UserText } from '@/components/ui/bilingual'
 import type { AlbumReviewData } from '@/lib/reviews'
-import { formatDate, formatNumber, t } from '@/lib/i18n'
+import { formatDate, formatNumber } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
 
 /**
  * Buyer reviews, under the album they are about.
@@ -30,7 +31,10 @@ function Stars({ value, label }: { value: number; label?: string }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={cn('size-4', n <= Math.round(value) ? 'fill-gold text-gold' : 'text-muted-foreground/40')}
+          className={cn(
+            'size-4',
+            n <= Math.round(value) ? 'fill-gold text-gold' : 'text-muted-foreground/40',
+          )}
         />
       ))}
     </span>
@@ -55,6 +59,8 @@ export function AlbumReviews({
   /** The viewer's existing review, so the form opens on what they gave. */
   ownReview: { rating: number; bodyAr: string | null } | null
 }) {
+  const t = useT()
+
   const [state, setState] = React.useState<{ ok: boolean; messageKey: string } | null>(null)
   const [rating, setRating] = React.useState(ownReview?.rating ?? 5)
   const [pending, startTransition] = React.useTransition()

@@ -4,8 +4,6 @@ import { FOOTER_LEGAL } from '@/components/layout/nav'
 import { t } from '@/lib/i18n'
 import { SOCIAL } from '@/lib/brand'
 
-
-
 export function SiteFooter() {
   const year = new Date().getFullYear()
 

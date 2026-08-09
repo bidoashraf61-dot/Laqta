@@ -13,8 +13,18 @@ import { SettingsForm } from '@/components/dashboard/form'
 import { updatePayoutDetails, updateProfile } from '@/app/(studio)/studio/actions'
 import { TIER_RATES } from '@/lib/commission'
 import { formatMoney, formatPercent, t } from '@/lib/i18n'
+import type { Metadata } from 'next'
+import { requestLocale } from '@/lib/locale-request'
 
-export const metadata = { title: t('dash.settings') }
+export async function generateMetadata(): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
+  return {
+    title: t('dash.settings'),
+  }
+}
 
 const TIER_LABEL: Record<string, string> = {
   standard: 'dash.tierStandard',
@@ -31,6 +41,16 @@ const TIER_LABEL: Record<string, string> = {
  * block saving a corrected IBAN.
  */
 export default async function StudioSettingsPage() {
+  // Resolve the locale before rendering anything.
+  //
+  // Not inherited from the root layout: a route segment sits inside a Suspense
+  // boundary, so React can begin rendering this page while the layout above it
+  // is still awaiting. Whichever finishes first wins, which made the language of
+  // a page depend on whether it happened to hit the database — the header came
+  // out English and the body Arabic. Each segment resolves it itself, and the
+  // call is a cached header read plus an idempotent write.
+  await requestLocale()
+
   const user = await requireCreator()
   if (!user.creatorId) redirect('/sell')
 
@@ -102,7 +122,13 @@ export default async function StudioSettingsPage() {
             </Field>
 
             <Field label={t('dash.bioAr')} htmlFor="bioAr">
-              <Textarea id="bioAr" name="bioAr" rows={3} maxLength={600} defaultValue={creator.bioAr ?? ''} />
+              <Textarea
+                id="bioAr"
+                name="bioAr"
+                rows={3}
+                maxLength={600}
+                defaultValue={creator.bioAr ?? ''}
+              />
             </Field>
             <Field label={t('dash.bioEn')} htmlFor="bioEn">
               <Textarea
@@ -116,8 +142,21 @@ export default async function StudioSettingsPage() {
             </Field>
 
             <div className="grid gap-5 sm:grid-cols-3">
-              <Field label={t('dash.city')} htmlFor="city">
-                <Input id="city" name="city" maxLength={60} defaultValue={creator.city ?? ''} />
+              <Field label={t('dash.cityAr')} htmlFor="cityAr">
+                <Input
+                  id="cityAr"
+                  name="cityAr"
+                  maxLength={60}
+                  defaultValue={creator.cityAr ?? ''}
+                />
+              </Field>
+              <Field label={t('dash.cityEn')} htmlFor="cityEn">
+                <Input
+                  id="cityEn"
+                  name="cityEn"
+                  maxLength={60}
+                  defaultValue={creator.cityEn ?? ''}
+                />
               </Field>
               <Field label={t('dash.country')} htmlFor="country">
                 <Input
@@ -162,10 +201,21 @@ export default async function StudioSettingsPage() {
 
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label={t('dash.iban')} htmlFor="iban">
-                <Input id="iban" name="iban" dir="ltr" maxLength={34} defaultValue={creator.iban ?? ''} />
+                <Input
+                  id="iban"
+                  name="iban"
+                  dir="ltr"
+                  maxLength={34}
+                  defaultValue={creator.iban ?? ''}
+                />
               </Field>
               <Field label={t('dash.bankName')} htmlFor="bankName">
-                <Input id="bankName" name="bankName" maxLength={80} defaultValue={creator.bankName ?? ''} />
+                <Input
+                  id="bankName"
+                  name="bankName"
+                  maxLength={80}
+                  defaultValue={creator.bankName ?? ''}
+                />
               </Field>
             </div>
 

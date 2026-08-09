@@ -84,7 +84,8 @@ export async function decideReview(input: ReviewDecisionInput) {
 
   if (input.decision === 'approve') {
     const gate = canApprove(checklist)
-    if (!gate.ok) return { ok: false as const, messageKey: 'admin.cannotApprove', detail: gate.reason }
+    if (!gate.ok)
+      return { ok: false as const, messageKey: 'admin.cannotApprove', detail: gate.reason }
   }
 
   if (input.decision !== 'approve' && !input.note.trim()) {
@@ -137,7 +138,10 @@ export async function decideReview(input: ReviewDecisionInput) {
     detail: { note: input.note, cleared },
   })
 
-  return { ok: true as const, messageKey: `admin.${input.decision === 'approve' ? 'approved' : input.decision === 'reject' ? 'rejected' : 'changesSent'}` }
+  return {
+    ok: true as const,
+    messageKey: `admin.${input.decision === 'approve' ? 'approved' : input.decision === 'reject' ? 'rejected' : 'changesSent'}`,
+  }
 }
 
 /**

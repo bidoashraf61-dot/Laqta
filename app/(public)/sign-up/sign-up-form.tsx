@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
 import { signUpWithEmail } from '../sign-in/actions'
+import { useT } from '@/lib/i18n-client'
 
 export function SignUpForm() {
+  const t = useT()
+
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

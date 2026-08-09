@@ -51,9 +51,11 @@ export function SiteFooter() {
 
         <Separator className="my-8" />
 
+        {/* The production-method disclosure is not here. It lives in the
+            content policy, which is the document that BINDS — a footer badge is
+            marketing chrome, and the policy is what a buyer can hold us to. */}
         <p className="text-xs text-muted-foreground">
-          <span className="numeric">{year}</span> © {t('brand.name')} — {t('brand.aiNotice')} —{' '}
-          {t('footer.rights')}
+          <span className="numeric">{year}</span> © {t('brand.name')} — {t('footer.rights')}
         </p>
       </div>
     </footer>

@@ -29,11 +29,11 @@ export const TERMS: DocumentSection[] = [
     heading: 'من نحن وما الذي تشتريه',
     headingEn: 'Who we are and what you are buying',
     bodyEn: [
-      'Laqta is a digital marketplace for footage filmed inside the Kingdom of Saudi Arabia. The platform connects creators with buyers and claims no ownership of the material listed: the rights to every clip remain with its creator, and what you buy is a licence of defined scope, not ownership of the material itself.',
+      'Laqta is a digital marketplace for footage of the Kingdom of Saudi Arabia. The platform connects creators with buyers and claims no ownership of the material listed: the rights to every clip remain with its creator, and what you buy is a licence of defined scope, not ownership of the material itself.',
       'The unit of sale is the album, not the individual clip. When a purchase completes, the list of clips included in your order is fixed exactly as it stood at the moment of payment, and stays yours to download with no time limit \u2014 even if the creator later edits the album or removes it from the catalogue.',
     ],
     body: [
-      'لقطة سوق رقمي للقطات المصوّرة داخل المملكة العربية السعودية. المنصّة تصل بين المصوّرين وبين المشترين، ولا تدّعي ملكية المواد المعروضة: تظل حقوق كل لقطة لصانعها، وما تشتريه أنت هو ترخيص استخدام محدّد النطاق، لا ملكية المادة نفسها.',
+      'لقطة سوق رقمي للقطات من داخل المملكة العربية السعودية. المنصّة تصل بين صنّاع المحتوى وبين المشترين، ولا تدّعي ملكية المواد المعروضة: تظل حقوق كل لقطة لصانعها، وما تشتريه أنت هو ترخيص استخدام محدّد النطاق، لا ملكية المادة نفسها.',
       'الوحدة المعروضة للبيع هي الألبوم، لا اللقطة المفردة. عند إتمام الشراء تُثبَّت قائمة اللقطات المشمولة في طلبك كما هي لحظة الدفع، وتبقى ملكك للتحميل بلا حد زمني حتى لو عدّل الصانع الألبوم أو أزاله من الكتالوج لاحقاً.',
     ],
   },
@@ -416,12 +416,12 @@ export const ABOUT: DocumentSection[] = [
     heading: 'لماذا وُجدت لقطة',
     headingEn: 'Why Laqta exists',
     bodyEn: [
-      'Search for \u201cRiyadh\u201d in any global footage library and you will find the same skyline shot from a plane, and scenes whose photographer could not tell one district from another. The problem is not the price \u2014 it is that whoever shot that footage did not know the place.',
+      'Search for \u201cRiyadh\u201d in any global footage library and you will find the same skyline from a plane, and scenes that cannot tell one district from another. The problem is not the price \u2014 it is that whoever assembled that library did not know the place.',
       'Laqta is a Saudi footage library: made inside the Kingdom, with complete clearances, and indexed under place names as the people who live there say them \u2014 not as a machine translates them.',
     ],
     body: [
-      'ابحث عن "الرياض" في أي مكتبة لقطات عالمية وستجد الأفق نفسه مصوَّراً من الطائرة، ومشاهد لا يعرف مصوّرها الفرق بين حيّ وحيّ. المشكلة ليست السعر، بل أن من صوّر تلك اللقطات لم يكن يعرف المكان.',
-      'لقطة مكتبة لقطات سعودية: مصوّرة داخل المملكة، بتصاريح مكتملة، ومفهرسة بأسماء الأماكن كما ينطقها أهلها — لا كما تُترجم آلياً.',
+      'ابحث عن "الرياض" في أي مكتبة لقطات عالمية وستجد الأفق نفسه من الطائرة، ومشاهد لا تعرف الفرق بين حيّ وحيّ. المشكلة ليست السعر، بل أن من جمع تلك اللقطات لم يكن يعرف المكان.',
+      'لقطة مكتبة لقطات سعودية: مادتها من داخل المملكة، تُراجَع قبل النشر، ومفهرسة بأسماء الأماكن كما ينطقها أهلها — لا كما تُترجم آلياً.',
     ],
   },
   {
@@ -473,10 +473,10 @@ export const CONTACT: DocumentSection[] = [
     heading: 'صنّاع المحتوى',
     headingEn: 'Creators',
     bodyEn: [
-      'If you shoot and want to list your material, start from the \u201cSell your footage\u201d page. Partnership and exclusivity questions go to the same channel.',
+      'If you make Saudi material and want to list it, start from the \u201cSell your footage\u201d page. Partnership and exclusivity questions go to the same channel.',
     ],
     body: [
-      'إن كنت مصوّراً وتريد عرض مادتك، ابدأ من صفحة "بِع لقطاتك". أسئلة الشراكات والحصريات تُرسل على القناة نفسها.',
+      'إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة "بِع لقطاتك". أسئلة الشراكات والحصريات تُرسل على القناة نفسها.',
     ],
   },
   {

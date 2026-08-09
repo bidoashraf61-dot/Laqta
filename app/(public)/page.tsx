@@ -15,6 +15,7 @@ import { EmailCapture } from '@/components/landing/email-capture'
 import { RequestFootage } from '@/components/landing/request-footage'
 import { getFeaturedAlbums, getFootageWall, getOfferAlbums } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
+import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -130,6 +131,17 @@ function StructuredData() {
         alternateName: 'Laqta',
         url: SITE_URL,
         slogan: t('brand.tagline'),
+        // The two fields whose absence was the biggest GEO gap in the audit.
+        // `sameAs` is what lets an engine bind "لقطة" to an actual entity
+        // instead of treating it as a phrase; without a logo the knowledge
+        // panel and rich results have nothing to show.
+        logo: {
+          '@type': 'ImageObject',
+          url: `${SITE_URL}${LOGO_PATH}`,
+          width: LOGO_SIZE,
+          height: LOGO_SIZE,
+        },
+        sameAs: SOCIAL.map((s) => s.href),
         areaServed: ['SA', 'AE', 'EG', 'KW', 'QA', 'BH', 'OM'],
       },
     ],

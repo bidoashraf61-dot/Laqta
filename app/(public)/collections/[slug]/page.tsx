@@ -45,10 +45,19 @@ export async function generateMetadata({
   const { slug } = await params
   const collection = await getCollection(slug)
   if (!collection) return { title: t('state.notFound') }
+
+  // A collection with no live albums renders eighteen words and a heading.
+  // It is dropped from the sitemap, and noindexed here too — a page that is
+  // merely absent from the sitemap can still be found and indexed through an
+  // internal link, and thirty of these drag the whole domain. `follow` stays
+  // on so the crawler still walks through to whatever is linked from it.
+  const empty = collection.albums.every((row) => row.album.status !== 'live')
+
   return {
     title: collection.titleAr,
     description: collection.descriptionAr ?? undefined,
     alternates: { canonical: `/collections/${slug}` },
+    ...(empty ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

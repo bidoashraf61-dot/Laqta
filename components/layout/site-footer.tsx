@@ -54,9 +54,14 @@ export function SiteFooter() {
         {/* The production-method disclosure is not here. It lives in the
             content policy, which is the document that BINDS — a footer badge is
             marketing chrome, and the policy is what a buyer can hold us to. */}
-        <p className="text-xs text-muted-foreground">
-          <span className="numeric">{year}</span> © {t('brand.name')} — {t('footer.rights')}
-        </p>
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-baseline sm:justify-between">
+          <p className="text-xs text-muted-foreground">
+            {t('footer.rights')} {t('brand.name')} © <span className="numeric">{year}</span>
+          </p>
+          {/* The brand line, last thing on the page — the one claim the whole
+              catalogue is making, in the buyer's own words. */}
+          <p className="font-subhead text-xs text-muted-foreground">{t('footer.tagline')}</p>
+        </div>
       </div>
     </footer>
   )

@@ -137,33 +137,21 @@ export function HeroCinematic() {
             <Prose size="lg" className="mt-6 max-w-xl text-foreground/85">
               {t('landing.heroBody')}
             </Prose>
-            <ul className="mt-8 flex flex-wrap gap-2.5">
-              {[
-                t('landing.trustResolution'),
-                t('landing.trustCleared'),
-                t('landing.heroChipNoSub'),
-              ].map((chip) => (
-                <li
-                  key={chip}
-                  className="rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold"
-                >
-                  {chip}
-                </li>
-              ))}
-            </ul>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link
-                href="/albums"
+                href="/footage"
                 className="inline-flex h-12 items-center rounded-md bg-gold px-6 text-base font-bold text-gold-foreground shadow-glow transition-colors hover:bg-gold-400"
               >
-                {t('landing.browseAlbums')}
+                {t('landing.heroExplore')}
               </Link>
-              <Link
-                href="/sell"
+              {/* Scrolls to the showreel in the footage wall below — a plain
+                  anchor so a same-page hash never depends on the client router. */}
+              <a
+                href="#showreel"
                 className="inline-flex h-12 items-center rounded-md border border-foreground/25 px-6 text-base font-medium text-foreground transition-colors hover:border-foreground/50"
               >
-                {t('landing.sellCta')}
-              </Link>
+                {t('landing.heroWatchTrailer')}
+              </a>
             </div>
           </div>
 

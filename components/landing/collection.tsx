@@ -1,7 +1,8 @@
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
+import { Button } from '@/components/ui/button'
+import { Link } from '@/components/ui/link'
 import { EmptyState } from '@/components/ui/state'
-import { Headline } from '@/components/ui/typography'
-import { Section } from '@/components/ui/typography'
+import { Headline, Section } from '@/components/ui/typography'
 import { t } from '@/lib/i18n'
 
 /**
@@ -18,8 +19,9 @@ import { t } from '@/lib/i18n'
 export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
   return (
     <Section tone="olive">
-      <div className="mb-10 max-w-2xl">
+      <div className="mx-auto mb-10 max-w-2xl text-center">
         <Headline lead={t('landing.collectionLead')} bold={t('landing.collectionBold')} size="lg" />
+        <p className="mt-4 text-muted-foreground">{t('landing.collectionBody')}</p>
       </div>
 
       {albums.length === 0 ? (
@@ -31,6 +33,16 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
           ))}
         </div>
       )}
+
+      {/* Occasion hook, then the way through to the full catalogue. */}
+      <p className="mt-12 text-center font-serif text-lg text-foreground/80">
+        {t('landing.collectionOccasion')}
+      </p>
+      <div className="mt-6 flex justify-center">
+        <Button asChild variant="gold" size="lg">
+          <Link href="/albums">{t('landing.collectionViewAll')}</Link>
+        </Button>
+      </div>
     </Section>
   )
 }

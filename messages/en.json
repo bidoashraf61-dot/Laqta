@@ -4,7 +4,6 @@
     "tagline": "The Saudi footage library",
     "promise": "Saudi footage albums under a full commercial licence. Pay once and own them for life, with no subscriptions.",
     "forWhom": "For content creators and companies, and anyone working on a Saudi brand or a campaign about the Kingdom.",
-    "aiNotice": "AI-generated content",
     "seo": {
       "home": "Ready-to-edit Saudi footage albums in high resolution, landscape and vertical. Saudi cinematic content that saves you hours of production, with a full commercial licence and a one-time payment for life — no subscriptions.",
       "licences": "Two licences, no more: standard covers broadcast, cinema, billboards and paid advertising up to five hundred thousand views per channel; extended has no ceiling and permits resale. Both are permanent and neither expires.",
@@ -548,5 +547,8 @@
     "searchCreators": "Search by creator name or handle",
     "colCreator": "Creator",
     "approveCreator": "Approve creator"
+  },
+  "admin": {
+    "creators": "Creators"
   }
 }

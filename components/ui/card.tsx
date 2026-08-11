@@ -19,11 +19,20 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 )
 CardHeader.displayName = 'CardHeader'
 
-const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h2 ref={ref} className={cn('text-lg font-bold leading-tight', className)} {...props} />
-  ),
-)
+/**
+ * `as` exists for the page whose card IS the page.
+ *
+ * An <h2> is right for a card in a grid of cards. On sign-in and sign-up the
+ * card is the entire page, so its title is the page title — and leaving it an
+ * <h2> left those routes with no <h1> at all. Every guarded route redirects to
+ * sign-in when signed out, so that single omission reported as 46 findings.
+ */
+const CardTitle = React.forwardRef<
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement> & { as?: 'h1' | 'h2' | 'h3' }
+>(({ className, as: Tag = 'h2', ...props }, ref) => (
+  <Tag ref={ref} className={cn('text-lg font-bold leading-tight', className)} {...props} />
+))
 CardTitle.displayName = 'CardTitle'
 
 const CardDescription = React.forwardRef<

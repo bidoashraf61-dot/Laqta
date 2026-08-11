@@ -37,7 +37,7 @@ export function EmailCapture() {
   }
 
   return (
-    <section className="border-y border-olive/12 bg-off-white">
+    <section className="border-y border-border bg-ground-quiet">
       <div className="container max-w-xl py-16 text-center">
         <PageTitle as="h2">{t('landing.notifyTitle')}</PageTitle>
         <p className="mt-2 text-muted-foreground">{t('landing.notifyBody')}</p>

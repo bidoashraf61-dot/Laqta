@@ -98,7 +98,7 @@ export function RequestFootage({ compact = false }: { compact?: boolean }) {
     <Section tone="olive">
       <div className="mx-auto max-w-2xl">
         <Headline lead={t('request.lead')} bold={t('request.bold')} size="lg" />
-        <p className="mt-4 text-foreground/80">{t('request.body')}</p>
+        <p className="mt-4 text-foreground">{t('request.body')}</p>
         {form}
       </div>
     </Section>

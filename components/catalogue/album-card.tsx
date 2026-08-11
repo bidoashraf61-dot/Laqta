@@ -123,7 +123,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
             className="pack-lid inset-inline-0 absolute top-0 flex h-[7%] min-h-[22px] items-center justify-between rounded-t-sm px-3"
             style={{ background: `hsl(${hue})` }}
           >
-            <span className="numeric text-xs font-bold tracking-wide text-off-white/90">
+            <span className="numeric text-xs font-bold tracking-wide text-off-white">
               {album.clipCount} · {formatDuration(album.totalRuntimeS)}
             </span>
           </span>
@@ -133,7 +133,7 @@ export function AlbumCard({ album, className }: { album: AlbumCardData; classNam
               {t('brand.name')}
             </span>
             {album.offerLabelAr ? (
-              <Badge variant="destructive" className="bg-clay/90 backdrop-blur">
+              <Badge variant="destructive" className="bg-clay-fill text-off-white backdrop-blur">
                 <Bilingual ar={album.offerLabelAr} en={album.offerLabelEn} />
               </Badge>
             ) : album.clearedForCommercial ? (

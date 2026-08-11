@@ -2,7 +2,7 @@
 name: Laqta
 description: The Saudi stock footage library — لقطة
 colors:
-  gold: "#83682A"
+  gold: "#7A6127"
   gold-on-film: "#C8A24A"
   ink: "#14141A"
   sand: "#E9DCC3"
@@ -15,8 +15,8 @@ colors:
   muted: "#EFEBE2"
   muted-foreground: "#666370"
   border: "#CFC8BB"
-  success: "#2A7E4F"
-  warning: "#AB6B04"
+  success: "#256F45"
+  warning: "#936104"
   destructive: "#C52020"
 typography:
   display:
@@ -503,3 +503,39 @@ the product, and it recurs on hero crops, empty states and posters.
 - **Don't** hard-code `text-ink` on a gold fill — use `text-gold-foreground`,
   which flips with the ground.
 - **Don't** ship a headline in Sans or a data table label in Serif Display.
+
+## Grounds and inks travel together
+
+A surface and the type on it are one decision. Every contrast failure this
+system has shipped came from separating them — repainting a ground at a call
+site and leaving the inherited foreground behind, or taking an alpha discount on
+a token that was solved at full strength.
+
+Four shapes of the same mistake, all now fixed:
+
+1. **A palette value used as a ground.** `bg-off-white` is a colour, not a role.
+   It stayed at 91% lightness in dark mode while `--foreground` flipped to 96%,
+   so four full-width sections rendered at **1.05:1** — invisible. Grounds that
+   must survive the theme are semantic: `--ground-quiet`.
+2. **A variant's background overridden without its foreground.**
+   `<Badge variant="destructive" className="bg-clay/90">` kept `text-destructive`
+   and landed at 1.05:1; `variant="neutral" className="bg-ink/80"` kept
+   `--muted-foreground`, fine in dark and 1.82:1 in light. A chip that lives on
+   film carries film ink: `variant="film"`.
+3. **A tint lifting the ground out from under same-hue text.** `bg-gold/12
+   text-gold`, and the same for success, warning and destructive. Each status
+   hue is now solved against **its own chip**, which is the lightest ground it
+   ever sits on — not against the white card.
+4. **An alpha discount on a solved token.** `text-foreground/70` on dusty,
+   `/80` on olive, `text-off-white/90` on a pack lid, `text-muted-foreground/70`
+   on the dashboard rail. Each token was solved at full strength for that exact
+   ground; the discount spent margin that was not there.
+
+**Rule:** if you paint a surface, name its ink in the same breath. If a token
+was solved for a ground, do not discount it.
+
+**Verified by** `npm run verify:contrast` — real Chrome, both themes, every
+public route plus all three dashboards, WCAG AA (4.5:1 body, 3:1 large). Text
+over imagery is counted and reported, never failed: a computed style cannot see
+a photo, and pretending otherwise produced 200+ confident wrong findings before
+the check learned to say "I cannot measure this."

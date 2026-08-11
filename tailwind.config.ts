@@ -40,6 +40,7 @@ const config: Config = {
         },
         ink: 'hsl(var(--ink))',
         'off-white': 'hsl(var(--off-white))',
+        'ground-quiet': 'hsl(var(--ground-quiet))',
         'dusty-olive': 'hsl(var(--dusty-olive))',
         olive: 'hsl(var(--olive))',
         'olive-deep': 'hsl(var(--olive-deep))',
@@ -47,6 +48,7 @@ const config: Config = {
         chrome: 'hsl(var(--chrome))',
         sand: 'hsl(var(--sand))',
         clay: 'hsl(var(--clay))',
+        'clay-fill': 'hsl(var(--clay-fill))',
         oasis: 'hsl(var(--oasis))',
         paper: 'hsl(var(--paper))',
 

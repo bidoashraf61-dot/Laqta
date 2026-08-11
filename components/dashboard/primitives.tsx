@@ -98,7 +98,7 @@ export function StatTile({
           <span
             className={cn(
               'grid size-8 place-items-center rounded-md',
-              accent ? 'bg-gold/12 text-gold' : 'bg-sand/50 text-foreground/70',
+              accent ? 'bg-gold/12 text-gold' : 'bg-secondary text-secondary-foreground',
             )}
           >
             <Icon className="size-4" />

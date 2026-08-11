@@ -145,7 +145,7 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
               <img src={clip.thumbnailKeys[0]} alt="" className="size-full object-cover" />
             ) : null}
             <PreviewWatermark />
-            <Badge variant="neutral" className="absolute end-3 top-3 z-[2] bg-ink/80 backdrop-blur">
+            <Badge variant="film" className="absolute end-3 top-3 z-[2]">
               {t('catalogue.previewWatermarked')}
             </Badge>
             <Badge

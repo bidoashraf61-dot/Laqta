@@ -1,19 +1,15 @@
 import type { Metadata } from 'next'
 import { HeroCinematic } from '@/components/landing/hero-cinematic'
+import { ProblemSolution } from '@/components/landing/problem-solution'
 import { FootageWall } from '@/components/landing/footage-wall'
 import { TheCollection } from '@/components/landing/collection'
 import { LicensingRights } from '@/components/landing/licensing'
+import { PricingValue } from '@/components/landing/pricing-value'
 import { LandingFaq } from '@/components/landing/faq'
-import {
-  AlbumShelf,
-  CreatorCta,
-  HowItWorks,
-  SpecialOffers,
-  Testimonial,
-} from '@/components/landing/sections'
-import { EmailCapture } from '@/components/landing/email-capture'
+import { FinalCta } from '@/components/landing/final-cta'
+import { CreatorCta, HowItWorks } from '@/components/landing/sections'
 import { RequestFootage } from '@/components/landing/request-footage'
-import { getFeaturedAlbums, getFootageWall, getOfferAlbums } from '@/lib/catalogue'
+import { getFeaturedAlbums, getFootageWall } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
@@ -85,34 +81,26 @@ export default async function HomePage() {
   // and the considered collection do the selling, and nothing on the page
   // counts albums, creators, or clips out loud. As the catalogue grows the
   // same two queries simply return more.
-  const [albums, footage, offers, shelf] = await Promise.all([
-    getFeaturedAlbums(6),
-    getFootageWall(12),
-    getOfferAlbums(4),
-    getFeaturedAlbums(8),
-  ])
+  const [albums, footage] = await Promise.all([getFeaturedAlbums(6), getFootageWall(12)])
 
   return (
     <>
       <StructuredData />
       <HeroCinematic />
-      {/* Impulse-first: the reel catches, the wall floods the eye with Saudi
-          frames (each a doorway into its album), then the collection makes the
-          considered album pitch. Licensing lifts the last hesitation, how-it-
-          works teaches the model, the FAQ clears the leftover objections. */}
+      {/* Name the pain, then the shortcut; catch the eye with the wall of
+          frames; make the considered album pitch; state the rights; teach the
+          model; make the value case; clear objections; take custom requests;
+          then the final buyer push, with the creator invite last. */}
+      <ProblemSolution />
       <FootageWall footage={footage} />
       <TheCollection albums={albums} />
-      <SpecialOffers albums={offers} />
-      <AlbumShelf albums={shelf} />
       <LicensingRights />
       <HowItWorks />
+      <PricingValue />
       <LandingFaq />
       <RequestFootage />
+      <FinalCta />
       <CreatorCta />
-      {/* Last content section, per the brief: the customer voice closes the
-          page, after the pitch rather than in the middle of it. */}
-      <Testimonial />
-      <EmailCapture />
     </>
   )
 }

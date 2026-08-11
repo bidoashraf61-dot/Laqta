@@ -27,7 +27,7 @@ is never purchasable on its own, so every clip surface carries its album ribbon.
 
 | Route | Purpose | Spec |
 | --- | --- | --- |
-| `/` | Scroll-scrubbed hero, footage wall and album shelf — the albums-only pitch | [index.md](index.md) |
+| `/` | Scroll-scrubbed hero, problem/solution, footage wall, album collection, licensing, how-it-works, pricing/value, FAQ — the albums-only pitch | [index.md](index.md) |
 | `/footage` | Clip search with URL-driven filters, sort and pagination | [footage.md](footage.md) |
 | `/footage/[slug]` | One clip, crawlable, funnelling to its album | [footage-slug.md](footage-slug.md) |
 | `/albums` | Every live album as a priced poster card | [albums.md](albums.md) |

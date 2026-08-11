@@ -96,8 +96,8 @@ async function main() {
     const text = document.body.innerText.replace(/\u0640+/g, '')
     return {
       wall: text.includes('تصفّح باللقطة') || text.includes('واشترِ بالألبوم'),
-      collection: text.includes('المجموعة الأولى') || text.includes('كل لقطة مقصودة'),
-      licensing: text.includes('شراء واحد') || text.includes('وترخيص لا ينتهي'),
+      collection: text.includes('مجموعات سعودية') || text.includes('لكل قصة ومناسبة'),
+      licensing: text.includes('ميزات تلبّي') || text.includes('بثقة واستدامة'),
     }
   })
   report('footage wall renders below the hero', sections.wall)

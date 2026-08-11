@@ -63,12 +63,15 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
           whole catalogue in one viewing before deciding whether to browse it
           tile by tile. It plays when the section arrives and stops when it
           leaves — see AutoplayVideo for why that is not plain `autoplay`. */}
-      <AutoplayVideo
-        src={SHOWREEL_SRC}
-        poster={SHOWREEL_POSTER}
-        label={t('media.showreelAlt')}
-        className="mb-10 aspect-video w-full"
-      />
+      {/* Anchor target for the hero's «شاهد التريلر» button. */}
+      <div id="showreel" className="scroll-mt-24">
+        <AutoplayVideo
+          src={SHOWREEL_SRC}
+          poster={SHOWREEL_POSTER}
+          label={t('media.showreelAlt')}
+          className="mb-10 aspect-video w-full"
+        />
+      </div>
 
       {/* CSS columns, not grid: mixed aspect ratios flow without being forced
           to a single crop — a 9:16 vertical stays vertical, honest about the

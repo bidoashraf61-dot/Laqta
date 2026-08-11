@@ -53,6 +53,15 @@ rewrite onto the same route tree. Any spec describing a public route describes
 **both** its languages. See [`localisation.md`](./localisation.md) for the URL
 contract, how a request resolves its language, and the SEO rules.
 
+## Contrast
+
+`npm run verify:contrast` drives real Chrome over every public route and all
+three dashboards, in **both themes**, and fails on any text under WCAG AA. It
+exists because dark mode shipped with four landing sections at 1.05:1 — a
+near-white ground kept from light mode under a foreground that had flipped —
+and no gate caught it. See the "Grounds and inks travel together" section of
+`DESIGN.md` for the rule and the four shapes of the mistake.
+
 ## Coverage
 
 58 page routes + 2 API handlers. Every route in `app/` has a spec.

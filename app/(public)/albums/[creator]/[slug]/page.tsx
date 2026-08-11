@@ -199,7 +199,7 @@ export default async function AlbumPage({
               </div>
             )}
             <PreviewWatermark />
-            <Badge variant="neutral" className="absolute end-3 top-3 z-[2] bg-ink/80 backdrop-blur">
+            <Badge variant="film" className="absolute end-3 top-3 z-[2]">
               {t('catalogue.previewWatermarked')}
             </Badge>
           </div>

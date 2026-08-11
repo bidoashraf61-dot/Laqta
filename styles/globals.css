@@ -177,7 +177,14 @@
      * paper on deep gold here, ink on bright gold in the dark. Without the
      * pair, a primary button is legible in one theme and not the other.
      */
-    --gold: 43 52% 34%;
+    /*
+     * 34% was solved against a WHITE card (4.60:1). Gold is most often worn as
+     * a chip — `bg-gold/12 text-gold` — and that tint lifts the ground to 91%
+     * lightness, where 34% falls to 4.17:1 on the 12px price. 31% clears the
+     * tinted ground (4.69:1) and improves every other gold-on-light run with
+     * it; the hue is unchanged.
+     */
+    --gold: 43 52% 31%;
     --gold-foreground: 40 39% 96%;
     --gold-50: 43 52% 96%;
     --gold-100: 43 52% 88%;
@@ -194,6 +201,23 @@
      */
     --off-white: 42 33% 91%;
     --dusty-olive: 59 17% 66%;
+
+    /*
+     * The quiet band — SEMANTIC, and the only ground token that flips.
+     *
+     * `--off-white` is a PALETTE value: it names a colour and it is also used
+     * as ink (a hairline, a label on olive). A band, by contrast, is a role,
+     * and the role has to survive the theme. Painting a band with the palette
+     * value is what broke dark mode — the band stayed at 91% lightness while
+     * `--foreground` flipped to 96%, so four full-width sections rendered
+     * near-white type on a near-white slab at 1.05:1. Nothing was wrong with
+     * either token; the mistake was using a fixed colour where a role belonged.
+     *
+     * The light-mode logic is: paper 96% → band 91% (recedes) → card 100%
+     * (advances). Dark mirrors that direction rather than the values — the
+     * band sits BEHIND the page ground and cards still come forward.
+     */
+    --ground-quiet: 42 33% 91%;
     --olive: 60 11% 33%;
     /* The text cut of olive. #5D5D4B is the GROUND; as type on a light or mid
        ground it only reaches 3.27:1 on dusty olive, so it fails body text
@@ -207,6 +231,17 @@
     /* Clay carries a negative delta as text, so it is set for legibility on a
        white card (4.61:1), not for how it looked on ink. */
     --clay: 21 51% 45%;
+    /*
+     * Clay as a FILL, and deliberately not themed.
+     *
+     * `--clay` is tuned as TYPE and brightens in dark so it stays readable on
+     * ink — which makes it the wrong value to fill a chip with: off-white on
+     * the dark-mode value is 3.3:1. This is the fill cut, pinned dark enough
+     * that off-white clears AA on it (5.4:1) and pinned in BOTH themes because
+     * it is worn by the pack, and the pack is a product object rather than
+     * chrome — it looks the same to every buyer, like the film does.
+     */
+    --clay-fill: 21 51% 38%;
     --oasis: 148 50% 37%;
     --paper: 40 39% 96%;
 
@@ -227,10 +262,13 @@
     --accent-foreground: 240 12% 9%;
     --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 100%;
-    --success: 148 50% 33%;
+    /* Status hues are worn as `bg-X/15 text-X` chips, so each is solved
+       against its OWN tint — the lightest ground it ever sits on — not against
+       the white card. 33% and 35% cleared the card and failed the chip. */
+    --success: 148 50% 29%;
     --success-foreground: 0 0% 100%;
     /* 42% amber scored 3.33:1 on a white card — a warning nobody can read. */
-    --warning: 34 92% 35%;
+    --warning: 34 92% 30%;
     --warning-foreground: 0 0% 100%;
     /* 85% was a 1.28:1 hairline on paper: technically drawn, visually absent. */
     --border: 40 16% 78%;
@@ -249,6 +287,9 @@
    * sitting on ink again, and its foreground flips with it.
    */
   .dark {
+    /* Recedes from the 9% page ground, so cards at 12% still advance — the
+       same front-to-back order as light, mirrored rather than copied. */
+    --ground-quiet: 240 12% 5%;
     --gold: 43 52% 54%;
     --gold-foreground: 240 12% 9%;
     --clay: 21 51% 51%;
@@ -269,10 +310,14 @@
     --accent: 240 8% 20%;
     --accent-foreground: 40 39% 96%;
     /* 52% red on the ink card was 3.55:1 — the one status that must never be
-       missed was the least legible of them. */
-    --destructive: 0 65% 61%;
+       missed was the least legible of them. 61% cleared the card and then fell
+       to 3.89:1 on its own `bg-destructive/15` chip, which is where a failed
+       payout or a rejected album actually appears. Solved against the chip. */
+    --destructive: 0 65% 70%;
     --destructive-foreground: 0 0% 100%;
-    --success: 148 50% 42%;
+    /* Solved against `bg-success/15`, not the ink card: 42% reached only
+       4.29:1 on its own chip, which is where «منشور» and «متاح للسحب» live. */
+    --success: 148 50% 47%;
     --success-foreground: 240 12% 9%;
     --warning: 34 92% 55%;
     --warning-foreground: 240 12% 9%;

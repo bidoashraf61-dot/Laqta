@@ -41,7 +41,7 @@ export function MobileSidebar({ nav }: { nav: DashboardNav }) {
         <nav className="scrollbar-thin h-[calc(100dvh-5rem)] overflow-y-auto px-3 pb-6">
           {sections.map((section) => (
             <div key={section.titleKey} className="mb-4">
-              <p className="mb-1.5 px-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground/70">
+              <p className="mb-1.5 px-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t(section.titleKey)}
               </p>
               <ul className="space-y-0.5">

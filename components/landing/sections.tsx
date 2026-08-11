@@ -242,7 +242,7 @@ export function SpecialOffers({ albums }: { albums: AlbumCardData[] }) {
     <Section tone="dusty">
       <div className="mb-8 max-w-2xl">
         <Headline lead={t('landing.offersLead')} bold={t('landing.offersBold')} size="lg" />
-        <p className="mt-3 text-sm text-foreground/70">{t('landing.offersHint')}</p>
+        <p className="mt-3 text-sm text-foreground">{t('landing.offersHint')}</p>
       </div>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {albums.map((album) => (
@@ -379,7 +379,9 @@ export function CreatorCta() {
     <Section tone="olive">
       <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl space-y-2">
-          <Badge variant="gold" className="gap-1">
+          {/* Not `gold`: on the olive ground gold reaches only 2.82:1, which
+              is why the ground's own rule hands the accent role to sand. */}
+          <Badge variant="sand" className="gap-1">
             <Laqta.Clip className="size-3" />
             {t('nav.sell')}
           </Badge>

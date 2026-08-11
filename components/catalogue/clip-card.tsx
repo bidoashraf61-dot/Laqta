@@ -38,7 +38,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
       )}
     >
       <Anchor href={`/footage/${clip.slug}`} className="block">
-        <div className="relative aspect-video overflow-hidden bg-muted">
+        <div className="relative aspect-video overflow-hidden bg-ink">
           {clip.thumbnail ? (
             <img
               src={clip.thumbnail}
@@ -55,10 +55,10 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
           <PreviewWatermark />
 
           <div className="absolute inset-x-2 bottom-2 z-[2] flex items-center justify-between gap-2">
-            <Badge variant="neutral" className="numeric bg-ink/80 backdrop-blur">
+            <Badge variant="film" className="numeric">
               {formatDuration(clip.durationS)}
             </Badge>
-            <Badge variant="neutral" className="ltr-island bg-ink/80 backdrop-blur">
+            <Badge variant="film" className="ltr-island">
               {resolution}
             </Badge>
           </div>

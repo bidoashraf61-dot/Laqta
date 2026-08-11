@@ -68,7 +68,7 @@ export function DashboardSidebar({ nav, brand }: { nav: DashboardNav; brand: str
             {collapsed ? (
               <div className="mx-2 mb-2 border-t border-border/40" />
             ) : (
-              <p className="mb-1.5 px-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground/70">
+              <p className="mb-1.5 px-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t(section.titleKey)}
               </p>
             )}

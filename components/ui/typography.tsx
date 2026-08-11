@@ -251,7 +251,7 @@ export type SectionTone =
  */
 const GROUNDS: Record<SectionTone, string> = {
   base: '',
-  offwhite: 'bg-off-white border-y border-olive/12',
+  offwhite: 'bg-ground-quiet border-y border-border',
   raised: 'bg-sand/25 border-y border-sand/50',
   warm: 'bg-sand/25 border-y border-sand/50',
   dusty: 'on-dusty bg-background text-foreground border-y border-olive/20',

@@ -18,7 +18,7 @@ export const accentChip: Record<Accent, string> = {
   gold: 'bg-gold/12 text-gold',
   oasis: 'bg-oasis/12 text-oasis',
   clay: 'bg-clay/15 text-clay',
-  sand: 'bg-sand/50 text-foreground/80',
+  sand: 'bg-secondary text-secondary-foreground',
   ink: 'bg-foreground/8 text-foreground/80',
 }
 

@@ -18,7 +18,7 @@ export function LandingFaq() {
       <FaqSchema
         pairs={FAQS.map((key) => ({ q: t(`landing.${key}Q`), a: t(`landing.${key}A`) }))}
       />
-      <div className="mb-10 max-w-2xl">
+      <div className="mx-auto mb-10 max-w-2xl text-center">
         <Headline lead={t('landing.faqLead')} bold={t('landing.faqBold')} size="lg" />
       </div>
 

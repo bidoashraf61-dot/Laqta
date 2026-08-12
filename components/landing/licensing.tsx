@@ -21,31 +21,31 @@ const RIGHTS = ['lic1', 'lic2', 'lic3', 'lic4'] as const
 export function LicensingRights() {
   return (
     <Section tone="offwhite">
-      <div className="grid gap-12 md:grid-cols-2 md:items-center">
-        <div className="max-w-xl">
-          <Headline lead={t('landing.licenseLead')} bold={t('landing.licenseBold')} size="lg" />
-          <Prose className="mt-5">{t('landing.licenseBody')}</Prose>
-          <Button asChild variant="outline" size="sm" className="mt-6">
+      <div className="mx-auto max-w-2xl text-center">
+        <Headline lead={t('landing.licenseLead')} bold={t('landing.licenseBold')} size="lg" />
+        <Prose className="mx-auto mt-5">{t('landing.licenseBody')}</Prose>
+        <div className="mt-6 flex justify-center">
+          <Button asChild variant="outline" size="sm">
             <Link href="/licences">{t('landing.licenseCta')}</Link>
           </Button>
         </div>
-
-        <ul className="space-y-5">
-          {RIGHTS.map((key) => (
-            <li key={key} className="flex items-start gap-3">
-              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-oasis/15 text-oasis">
-                <Check className="size-3.5" />
-              </span>
-              <div>
-                <p className="font-bold">{t(`landing.${key}Title`)}</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  {t(`landing.${key}Body`)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
       </div>
+
+      <ul className="mx-auto mt-12 grid max-w-4xl gap-x-10 gap-y-6 sm:grid-cols-2">
+        {RIGHTS.map((key) => (
+          <li key={key} className="flex items-start gap-3">
+            <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-oasis/15 text-oasis">
+              <Check className="size-3.5" />
+            </span>
+            <div>
+              <p className="font-bold">{t(`landing.${key}Title`)}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                {t(`landing.${key}Body`)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
     </Section>
   )
 }

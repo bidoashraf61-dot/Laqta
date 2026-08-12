@@ -8,10 +8,9 @@
  * Two copies of this list would drift the first time an account moved.
  */
 export const SOCIAL = [
-  { href: 'https://x.com/laqta_sa', label: 'X' },
   { href: 'https://instagram.com/laqta.sa', label: 'Instagram' },
+  { href: 'https://tiktok.com/@laqta.sa', label: 'TikTok' },
   { href: 'https://youtube.com/@laqta', label: 'YouTube' },
-  { href: 'https://linkedin.com/company/laqta', label: 'LinkedIn' },
 ] as const
 
 /**

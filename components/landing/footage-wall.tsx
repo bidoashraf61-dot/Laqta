@@ -7,7 +7,7 @@ import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { Bilingual } from '@/components/ui/bilingual'
 import { Headline, Section } from '@/components/ui/typography'
 import type { FootageTile } from '@/lib/catalogue'
-import { formatMoney, t } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { pickLocalised } from '@/lib/locale'
 
@@ -48,15 +48,8 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
 
   return (
     <Section tone="base">
-      <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-        <div className="max-w-2xl">
-          <Headline lead={t('landing.wallLead')} bold={t('landing.wallBold')} size="lg" />
-        </div>
-        {/* The way through to the full grid and every facet. Without it the
-            wall is a dead end — twelve tiles and no route to the other 170. */}
-        <Button asChild variant="outline" size="sm">
-          <Link href="/footage">{t('landing.viewAll')}</Link>
-        </Button>
+      <div className="mx-auto mb-10 max-w-2xl text-center">
+        <Headline lead={t('landing.wallLead')} bold={t('landing.wallBold')} size="lg" />
       </div>
 
       {/* The showreel: every shot cut together, so a buyer can judge the
@@ -103,18 +96,20 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
                 <span className="line-clamp-2 text-xs font-medium text-sand">
                   <Bilingual ar={tile.album.titleAr} en={tile.album.titleEn} />
                 </span>
-                <span className="flex shrink-0 items-center gap-2">
-                  <span className="numeric rounded-full bg-gold px-2.5 py-1 text-xs font-bold text-gold-foreground">
-                    {formatMoney(tile.album.priceStandard, tile.album.currency)}
-                  </span>
-                  <span className="rounded-full border border-sand/50 px-2.5 py-1 text-xs font-medium text-sand">
-                    {t('catalogue.openAlbum')}
-                  </span>
+                <span className="shrink-0 rounded-full bg-gold px-3.5 py-1.5 text-sm font-bold text-gold-foreground">
+                  {t('catalogue.openAlbum')}
                 </span>
               </div>
             </div>
           </Link>
         ))}
+      </div>
+
+      {/* The way through to the full grid and every facet. */}
+      <div className="mt-12 flex justify-center">
+        <Button asChild variant="gold" size="lg">
+          <Link href="/footage">{t('landing.viewAll')}</Link>
+        </Button>
       </div>
     </Section>
   )

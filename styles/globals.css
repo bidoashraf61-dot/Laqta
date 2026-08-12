@@ -821,3 +821,25 @@
     animation: shimmer 1.6s infinite;
   }
 }
+
+/* The hero scroll cue — a smooth downward drift, not a bounce. The design
+   system treats bounce/elastic easing as slop; real objects decelerate. */
+@keyframes scroll-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  55% {
+    transform: translateY(6px);
+    opacity: 0.35;
+  }
+}
+.animate-scroll-cue {
+  animation: scroll-cue 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll-cue {
+    animation: none;
+  }
+}

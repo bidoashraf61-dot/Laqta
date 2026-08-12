@@ -159,7 +159,7 @@ export function HeroCinematic() {
           <span className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex w-fit flex-col items-center gap-2 text-xs uppercase tracking-[0.16em] text-foreground/60">
             {t('landing.scrollHint')}
             <span className="grid h-8 w-5 place-items-start justify-center rounded-full border-2 border-foreground/30 pt-1.5">
-              <span className="h-1.5 w-1 animate-bounce rounded-full bg-gold" />
+              <span className="animate-scroll-cue h-1.5 w-1 rounded-full bg-gold" />
             </span>
           </span>
         </div>

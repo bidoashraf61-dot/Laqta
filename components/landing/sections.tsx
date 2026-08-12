@@ -338,7 +338,9 @@ export function HowItWorks() {
 
   return (
     <Section tone="base">
-      <SectionHead title={t('landing.howTitle')} />
+      <div className="mx-auto mb-10 max-w-2xl text-center">
+        <Headline bold={t('landing.howTitle')} size="lg" />
+      </div>
       <div className="grid gap-6 md:grid-cols-3">
         {steps.map((step, index) => (
           <Card key={step.title}>

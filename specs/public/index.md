@@ -15,7 +15,7 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 1. `HeroCinematic` — scroll-scrubbed film; two CTAs.
 2. `ProblemSolution` — editorial problem→shortcut beat (`components/landing/problem-solution.tsx`), centred, `offwhite` ground.
 3. `FootageWall` — showreel (id `#showreel`) + hover-preview tile masonry.
-4. `TheCollection` — album packs, centred head, seasonal tagline, "all albums" button, `olive` ground.
+4. `TheCollection` — album posters, centred head, seasonal tagline, "all albums" button, `olive` ground.
 5. `LicensingRights` — features/rights checklist (`components/landing/licensing.tsx`).
 6. `HowItWorks` — three steps (`components/landing/sections.tsx`).
 7. `PricingValue` — value case + three points + buy CTA (`components/landing/pricing-value.tsx`), `accent` (gold-tint) ground.
@@ -32,7 +32,8 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 | Hero secondary «شاهد التريلر» | Plain `<a href="#showreel">` | Scrolls to the showreel in the footage wall (same-page hash, never the client router) |
 | Footage-wall tile | Link | `/albums/{creatorHandle}/{albumSlug}` — never a clip page or clip checkout |
 | Footage-wall "view all" | Link | `/footage` |
-| Album pack in the collection | Link | `/albums/{creatorHandle}/{slug}` |
+| Album poster in the collection (stretched link) | Link | `/albums/{creatorHandle}/{slug}` |
+| Creator name on a poster (sibling link, lifted above the stretch) | Link | `/creators/{creatorHandle}` |
 | Collection «تصفّح جميع الألبومات» | Link | `/albums` |
 | Licensing CTA | Link | `/licences` |
 | Pricing CTA «اكتشف الألبومات وابدأ الآن» | Link | `/albums` |
@@ -52,8 +53,8 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 - **Licence claims must match `content/legal.ts`** — two tiers: standard up to 500k views per channel, extended uncapped. Landing copy must not contradict the licences page.
 - A clip is bait; the album is the product. Every wall tile links to an album; no surface offers a single clip for sale.
 - Every preview frame is watermarked via `PreviewWatermark`.
-- Album packs are 5:7 boxed products, not 16:9 cards (see `specs/public/albums.md`); wall tiles honour the clip's real aspect ratio — forcing 16:9 is banned.
-- One Voice Rule: gold is the price chip and the primary buttons only.
+- Album cards are flat, cover-led **5:7 posters** (not faux-3D boxes; see `specs/public/albums.md`) — a real cover image drops straight into the cover slot when uploaded. Wall tiles honour the clip's real aspect ratio — forcing 16:9 is banned. The card is a container `<div>`, not an anchor: a stretched anchor covers it for the album link, and the creator name is a **sibling** anchor lifted above the stretch — never a nested `<a>`.
+- One Voice Rule: gold is the price chip, the primary buttons, and the wall's «افتح الألبوم» button (shown only on the hovered tile). The footage wall shows **no price** — the tile is a doorway, not a shelf.
 - The showreel plays on intersection (threshold 0.5), always muted, with a visible pause control; under `prefers-reduced-motion` it never starts. `SHOWREEL_SRC` is a **deliberate placeholder** (the hero's own file) pending a catalogue cut at `public/hero/vid/showreel-web.mp4`.
 - Hover-preview `<video>` is created on FIRST hover (Safari caps simultaneous decoders); a tile with no `previewKey` stays a poster; hover is never the only route (whole tile is a link + an explicit «افتح الألبوم» control).
 - FAQ emits `FAQPage` JSON-LD from the SAME dictionary keys the component renders (`components/catalogue/faq-schema.tsx`); kashida is stripped from the marked-up strings.

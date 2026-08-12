@@ -62,3 +62,10 @@ the OTP rail on `/sign-in`.
 + phone: script errors, unlabelled controls, heading order, RTL). `verify:auth`
 covers sign-*in* with seeded users, not the create path — account creation is
 not directly gated.
+
+## Heading level
+
+`CardTitle` defaults to `<h2>` — correct for a card among cards, wrong here,
+where the card IS the page. This route passes `as="h1"`. Without it the page had
+no `<h1>` at all, and since every guarded route redirects here when signed out,
+that single omission reported as 46 findings across the portal in `npm run audit`.

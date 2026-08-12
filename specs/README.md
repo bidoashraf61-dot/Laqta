@@ -41,6 +41,7 @@ downloads restates them, and no surface may work around them:
 - [`auth/`](./auth) — sign-in, sign-up and the guard model
 - [`api/`](./api) — route handlers
 - [`localisation.md`](./localisation.md) — the Arabic/English contract, cross-cutting
+- [`glossary.md`](./glossary.md) — one word per concept, in both languages
 
 The two frozen invariants have no separate document: they are stated above, enforced
 in `lib/orders.ts` (entitlement snapshot, commission freeze) and `lib/admin.ts`

@@ -83,3 +83,10 @@ accept/reject, the full guard matrix), `verify:arabic` (`/sign-in` is in the
 route list, plus the `/en/sign-in → /sign-in` redirect case), `audit`
 (real Chrome pass at desktop + phone), `verify:flows` and `audit` both use
 `/sign-in` as their login step.
+
+## Heading level
+
+`CardTitle` defaults to `<h2>` — correct for a card among cards, wrong here,
+where the card IS the page. This route passes `as="h1"`. Without it the page had
+no `<h1>` at all, and since every guarded route redirects here when signed out,
+that single omission reported as 46 findings across the portal in `npm run audit`.

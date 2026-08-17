@@ -221,6 +221,14 @@ async function seedTaxonomy() {
 // Licences and pricing
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Frame size for a clip, from its album's orientation. */
+function clipFrame(orientation: 'landscape' | 'portrait' | 'mixed', index: number) {
+  const portrait = orientation === 'portrait' || (orientation === 'mixed' && index % 3 === 1)
+  return portrait
+    ? { width: 1080, height: 1920, aspectRatio: '9:16' }
+    : { width: 1920, height: 1080, aspectRatio: '16:9' }
+}
+
 async function seedLicences() {
   /*
    * One licence. Full commercial, and genuinely uncapped.
@@ -1387,6 +1395,20 @@ async function main() {
           orientation: a.orientation,
         },
       })
+      // Frame sizes follow the album's orientation, so they have to be
+      // refreshed with it — otherwise a portrait album keeps 16:9 clips and
+      // the contact sheet has nothing to show.
+      const existingClips = await db.clip.findMany({
+        where: { albumId: existing.id },
+        orderBy: { orderIndex: 'asc' },
+        select: { id: true, orderIndex: true },
+      })
+      for (const clip of existingClips) {
+        await db.clip.update({
+          where: { id: clip.id },
+          data: clipFrame(a.orientation, clip.orderIndex),
+        })
+      }
       continue
     }
     const album = await db.album.create({
@@ -1429,13 +1451,19 @@ async function main() {
           titleAr: `${a.titleAr} — لقطة ${i + 1}`,
           titleEn: `${a.titleEn} — Shot ${i + 1}`,
           durationS: 6 + (i % 6) * 2,
-          width: 1920,
-          height: 1080,
+          /*
+           * The clip's real frame size, following the album's orientation.
+           *
+           * Every clip used to be 1920×1080 regardless, so a "portrait" album
+           * was portrait in name only and the contact sheet had nothing to
+           * demonstrate. A `mixed` album genuinely mixes, alternating so both
+           * shapes appear in the same sheet.
+           */
+          ...clipFrame(a.orientation, i),
           fps: 24,
           codec: 'h264',
           bitrateKbps: 40_000,
           colourProfile: 'Rec.709',
-          aspectRatio: '16:9',
           hasPeople: a.cat === 'people-lifestyle',
           identifiableFaces: false,
           cameraMovement: (['static', 'pan', 'orbit', 'push in'] as const)[i % 4],

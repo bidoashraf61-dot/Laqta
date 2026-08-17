@@ -12,6 +12,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { AlbumCard } from '@/components/catalogue/album-card'
 import { LicencePicker } from '@/components/catalogue/licence-picker'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { ClipContactSheet } from '@/components/catalogue/clip-contact-sheet'
 import { PageTitle } from '@/components/ui/typography'
 import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
@@ -244,36 +245,9 @@ export default async function AlbumPage({
               {t('catalogue.clipsInAlbum')}{' '}
               <span className="numeric text-muted-foreground">({album.clips.length})</span>
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {album.clips.map((clip) => (
-                <Link
-                  key={clip.id}
-                  href={`/footage/${clip.slug}`}
-                  className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-foreground/25"
-                >
-                  <div className="relative aspect-video bg-muted">
-                    {clip.thumbnailKeys[0] ? (
-                      <img
-                        src={clip.thumbnailKeys[0]}
-                        alt=""
-                        loading="lazy"
-                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : null}
-                    <PreviewWatermark />
-                    <Badge
-                      variant="neutral"
-                      className="numeric absolute bottom-1.5 end-1.5 z-[2] bg-ink/80 backdrop-blur"
-                    >
-                      {formatDuration(Number(clip.durationS))}
-                    </Badge>
-                  </div>
-                  <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
-                    <Bilingual ar={clip.titleAr} en={clip.titleEn} />
-                  </p>
-                </Link>
-              ))}
-            </div>
+            {/* Every clip at its own aspect — see ClipContactSheet for why a
+                fixed-column grid could not do this without cropping. */}
+            <ClipContactSheet clips={album.clips} />
           </section>
 
           <Separator />

@@ -230,8 +230,8 @@
     "howStep3Title": "Download & own forever",
     "howStep3Body": "Get the files in original resolution instantly, with a permanent license for your projects.",
     "positioning": "No subscriptions. Buy once, own it forever.",
-    "sellTitle": "Working in Saudi Arabia?",
-    "sellBody": "Publish your albums and keep the larger share of every sale. Review within three business days, and monthly transfers by bank, Wise or Payoneer.",
+    "sellTitle": "Shoot it, or generate it?",
+    "sellBody": "Laqta is open to every kind of Saudi creator — filmmakers, drone operators and AI filmmakers alike. Publish an album once, keep the larger share of every sale, and let it earn while you work on the next thing.",
     "sellCta": "Start selling",
     "notifyTitle": "Tell me at launch",
     "notifyBody": "Leave your email and we'll write the moment the library opens.",
@@ -300,7 +300,8 @@
     "finalCtaBold": "own your complete visual story now.",
     "finalCtaButton": "Explore Shoots",
     "footerTagline": "Your first choice for authentic Saudi content.",
-    "problemStillAlt": "A frame from the Laqta catalogue: AlUla rock formations at golden hour"
+    "problemStillAlt": "A frame from the Laqta catalogue: AlUla rock formations at golden hour",
+    "sellNote": "Reviewed within three business days · Monthly transfers by bank, Wise or Payoneer"
   },
   "catalogue": {
     "footageTitle": "Footage",

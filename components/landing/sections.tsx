@@ -376,6 +376,25 @@ export function HowItWorks() {
   )
 }
 
+/**
+ * The invitation to sell — for every kind of creator.
+ *
+ * ── Why it is not on the landing page ───────────────────────────────────────
+ * The landing page sells footage to buyers. A recruitment pitch at the bottom
+ * of it addressed the wrong half of the market at the moment the other half
+ * had just been persuaded, and it competed with the final buyer CTA directly
+ * above it. It now closes `/creators` instead — the page where someone is
+ * already looking at other people's work and is most likely to think "I could
+ * put mine here".
+ *
+ * ── Why the headline changed ────────────────────────────────────────────────
+ * It read «تصوّر في السعودية؟» — literally "do you FILM in Saudi Arabia?" —
+ * which quietly excluded the creators this catalogue is about to depend on.
+ * Laqta already carries generated albums (`AlbumOrigin`), and someone who
+ * makes them is a supplier, not an edge case. The copy now names filmmakers,
+ * drone operators and AI filmmakers, and leads with what all three actually
+ * want: work that keeps earning after it is finished.
+ */
 export function CreatorCta() {
   return (
     <Section tone="olive">
@@ -389,6 +408,10 @@ export function CreatorCta() {
           </Badge>
           <Headline bold={t('landing.sellTitle')} size="lg" />
           <Prose>{t('landing.sellBody')}</Prose>
+          {/* The operational facts, demoted out of the pitch. They answer the
+              two questions every creator asks second — how long, and how do I
+              get paid — without slowing the sentence that has to land first. */}
+          <p className="pt-2 text-sm text-muted-foreground">{t('landing.sellNote')}</p>
         </div>
         <Button asChild variant="gold" size="lg">
           <Link href="/sell">{t('landing.sellCta')}</Link>

@@ -7,7 +7,7 @@ import { LicensingRights } from '@/components/landing/licensing'
 import { PricingValue } from '@/components/landing/pricing-value'
 import { LandingFaq } from '@/components/landing/faq'
 import { FinalCta } from '@/components/landing/final-cta'
-import { CreatorCta, HowItWorks } from '@/components/landing/sections'
+import { HowItWorks } from '@/components/landing/sections'
 import { RequestFootage } from '@/components/landing/request-footage'
 import { getFeaturedAlbums, getFootageWall } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
@@ -90,7 +90,12 @@ export default async function HomePage() {
       {/* Name the pain, then the shortcut; catch the eye with the wall of
           frames; make the considered album pitch; state the rights; teach the
           model; make the value case; clear objections; take custom requests;
-          then the final buyer push, with the creator invite last. */}
+          then the final buyer push.
+
+          The creator invitation used to close this page. It addressed the
+          wrong half of the market immediately after the other half had been
+          persuaded, and competed with the buyer CTA directly above it — it
+          lives at the foot of /creators now. */}
       <ProblemSolution />
       <FootageWall footage={footage} />
       <TheCollection albums={albums} />
@@ -100,7 +105,6 @@ export default async function HomePage() {
       <LandingFaq />
       <RequestFootage />
       <FinalCta />
-      <CreatorCta />
     </>
   )
 }

@@ -28,7 +28,7 @@ const STILL_SRC = '/hero/06-alula.jpg'
  */
 export function ProblemSolution() {
   return (
-    <Section tone="offwhite">
+    <Section tone="base">
       <div className="mx-auto max-w-3xl text-center">
         <Headline lead={t('landing.problemLead')} bold={t('landing.problemBold')} size="lg" />
         <Prose className="mx-auto mt-6">{t('landing.problemBody')}</Prose>

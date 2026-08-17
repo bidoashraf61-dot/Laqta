@@ -432,6 +432,17 @@ look merely snug, which is why it shipped.
 
 **Never `leading-tight` on Arabic.** It is 1.25 — the floor, not a value.
 
+**The Adjacent-Bands Rule.** No two full-width bands that touch may share a
+ground. Alternate the quiet rungs (base, offwhite) with the stated ones
+(raised, olive, accent).
+
+This is an adjacency fault, not a colour fault: each section names a tone that
+is individually right, and the problem exists only in the sequence. The landing
+page ended with the footage request, the final CTA and the footer all olive —
+three identical bands, so the last third of the page read as one undivided
+block. Reading the code cannot catch it; `npm run verify:bands` measures the
+rendered backgrounds in document order.
+
 **Verified by** `npm run verify:leading` — real Chrome, desktop and phone,
 measuring the client rect of every heading's text nodes and failing on any pair
 of lines less than 1px apart.

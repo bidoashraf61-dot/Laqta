@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { Pause, Play } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { useT } from '@/lib/i18n-client'
 
 /**
@@ -40,6 +41,8 @@ export function AutoplayVideo({
   className?: string
 }) {
   const t = useT()
+  // See watermark.tsx: a client component must supply this itself.
+  const watermarkLabel = `${t('brand.name')} · ${t('catalogue.preview')}`
 
   const ref = React.useRef<HTMLVideoElement | null>(null)
   const [playing, setPlaying] = React.useState(false)
@@ -102,6 +105,17 @@ export function AutoplayVideo({
         aria-label={label}
         className="size-full object-cover"
       />
+
+      {/*
+        The mark travels with the PLAYER, not with the card around it.
+        
+        It used to live on the poster container, so a still frame was marked
+        and the moment the footage actually moved — which is the only moment
+        worth screen-recording — it was clean. The trailer had no mark at all.
+        Every surface that can show moving footage owns its own watermark, so
+        there is no arrangement of components that produces an unmarked frame.
+      */}
+      <PreviewWatermark label={watermarkLabel} />
 
       <button
         type="button"

@@ -37,7 +37,7 @@
     "skipToContent": "Skip to content"
   },
   "search": {
-    "placeholder": "Search footage… Riyadh, AlUla, drone",
+    "placeholder": "Search by occasion… National Day, Foundation Day, Ramadan, Eid, Hajj",
     "submit": "Search",
     "noResults": "No results",
     "noResultsHint": "Try broader words, or clear a filter or two"
@@ -299,7 +299,8 @@
     "finalCtaLead": "Save production hours,",
     "finalCtaBold": "own your complete visual story now.",
     "finalCtaButton": "Explore Shoots",
-    "footerTagline": "Your first choice for authentic Saudi content."
+    "footerTagline": "Your first choice for authentic Saudi content.",
+    "problemStillAlt": "A frame from the Laqta catalogue: AlUla rock formations at golden hour"
   },
   "catalogue": {
     "footageTitle": "Footage",

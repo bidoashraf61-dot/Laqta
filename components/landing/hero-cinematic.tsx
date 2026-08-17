@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { Link } from '@/components/ui/link'
 import { Headline, Prose } from '@/components/ui/typography'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { useT } from '@/lib/i18n-client'
 
 /**
@@ -25,6 +26,8 @@ import { useT } from '@/lib/i18n-client'
  */
 export function HeroCinematic() {
   const t = useT()
+  // See watermark.tsx: a client component must supply this itself.
+  const watermarkLabel = `${t('brand.name')} · ${t('catalogue.preview')}`
 
   const wrapRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -119,6 +122,14 @@ export function HeroCinematic() {
             preload="auto"
             aria-hidden
           />
+          {/* The hero is footage too.
+              
+              It is the brand's own opening film, but every frame in it is a
+              shot from the catalogue, played at full width in the highest
+              quality on the site. Exempting it because it is "marketing" would
+              make the most screen-recordable surface the only unmarked one. */}
+          <PreviewWatermark className="-z-10" label={watermarkLabel} />
+
           {/* Legibility scrim: the copy sits at the inline-start (the right, in
               this RTL-only app), so the ground is darkened from the right and
               the bottom. `to-l` is a paint direction, not a layout property —

@@ -44,7 +44,8 @@ async function main() {
 
   const consoleErrors: string[] = []
   page.on('console', (m) => {
-    if (m.type() === 'error' && !/Failed to load resource/i.test(m.text())) consoleErrors.push(m.text())
+    if (m.type() === 'error' && !/Failed to load resource/i.test(m.text()))
+      consoleErrors.push(m.text())
   })
   const failedRequests: string[] = []
   page.on('response', (r) => {
@@ -96,7 +97,13 @@ async function main() {
     const text = document.body.innerText.replace(/\u0640+/g, '')
     return {
       wall: text.includes('تصفّح باللقطة') || text.includes('واشترِ بالألبوم'),
-      collection: text.includes('مجموعات سعودية') || text.includes('لكل قصة ومناسبة'),
+      /*
+       * The shelf's HEADING is seasonal now — «جاهز لموسم اليوم الوطني» in
+       * August, «أحدث العروض» when no occasion is live — so asserting on it
+       * would fail the suite on a calendar boundary rather than on a
+       * regression. Its call to action does not move.
+       */
+      collection: text.includes('تصفّح جميع الألبومات'),
       licensing: text.includes('ميزات تلبّي') || text.includes('بثقة واستدامة'),
     }
   })
@@ -122,22 +129,39 @@ async function main() {
   })
   report('no fixed element stranded at scroll end', strays.length === 0, strays.join(', '))
 
-  report('no failed requests on the landing page', failedRequests.length === 0, [...new Set(failedRequests)].slice(0, 5).join(', '))
-  report('no script errors on the landing page', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '))
+  report(
+    'no failed requests on the landing page',
+    failedRequests.length === 0,
+    [...new Set(failedRequests)].slice(0, 5).join(', '),
+  )
+  report(
+    'no script errors on the landing page',
+    consoleErrors.length === 0,
+    consoleErrors.slice(0, 3).join(' | '),
+  )
 
   // ── Reduced motion: headline stands, film never scrubs ──────────────────────
-  const reduced = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' })
+  const reduced = await browser.newPage({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: 'reduce',
+  })
   await reduced.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' })
   await reduced.waitForTimeout(1200)
   const rHeading = await reduced.locator('h1').first().isVisible()
-  await reduced.evaluate(() => window.scrollTo({ top: window.innerHeight * 1.5, behavior: 'instant' as ScrollBehavior }))
+  await reduced.evaluate(() =>
+    window.scrollTo({ top: window.innerHeight * 1.5, behavior: 'instant' as ScrollBehavior }),
+  )
   await reduced.waitForTimeout(600)
   const rTime = await reduced.evaluate(() => document.querySelector('video')?.currentTime ?? 0)
   report('reduced motion still renders the h1', rHeading)
   report('reduced motion does not scrub the film', rTime < 0.5, `currentTime ${rTime.toFixed(2)}`)
 
   await browser.close()
-  console.log(failures ? `\n${failures} check(s) failed.` : '\nThe film scrubs, bounded, and the sections follow.')
+  console.log(
+    failures
+      ? `\n${failures} check(s) failed.`
+      : '\nThe film scrubs, bounded, and the sections follow.',
+  )
   process.exit(failures ? 1 : 0)
 }
 

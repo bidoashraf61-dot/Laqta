@@ -1205,6 +1205,8 @@ async function main() {
     titleEn: string
     descAr: string
     posters: keyof typeof POSTERS
+    /** A `theme` slug — what occasion this album is merchandised for. */
+    theme?: string
     origin: 'captured' | 'generated'
     orientation: 'landscape' | 'portrait' | 'mixed'
     clips: number
@@ -1227,6 +1229,7 @@ async function main() {
       compareAt: 599,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'founding-day',
       origin: 'captured' as const,
       orientation: 'landscape' as const,
       loc: 'diriyah',
@@ -1244,6 +1247,7 @@ async function main() {
       compareAt: 299,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'riyadh-season',
       origin: 'captured' as const,
       orientation: 'landscape' as const,
       loc: 'riyadh',
@@ -1260,6 +1264,7 @@ async function main() {
       compareAt: 299,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'tourism',
       origin: 'captured' as const,
       orientation: 'landscape' as const,
       loc: 'jeddah',
@@ -1276,6 +1281,7 @@ async function main() {
       compareAt: 599,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'tourism',
       origin: 'captured' as const,
       orientation: 'landscape' as const,
       loc: 'red-sea',
@@ -1293,6 +1299,7 @@ async function main() {
       compareAt: 599,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'national-day',
       origin: 'captured' as const,
       orientation: 'landscape' as const,
       loc: 'edge-of-the-world',
@@ -1309,6 +1316,7 @@ async function main() {
       compareAt: 279,
       offerAr: 'عرض محدود',
       offerEn: 'Limited offer',
+      theme: 'national-day',
       origin: 'generated' as const,
       orientation: 'landscape' as const,
       loc: 'rub-al-khali',
@@ -1325,6 +1333,7 @@ async function main() {
       compareAt: 299,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'national-day',
       origin: 'generated' as const,
       orientation: 'landscape' as const,
       cat: 'aerials',
@@ -1340,6 +1349,7 @@ async function main() {
       compareAt: 119,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'tourism',
       origin: 'captured' as const,
       orientation: 'portrait' as const,
       cat: 'transport',
@@ -1355,6 +1365,7 @@ async function main() {
       compareAt: 299,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'winter-tantora',
       origin: 'captured' as const,
       orientation: 'landscape' as const,
       loc: 'alula',
@@ -1371,6 +1382,7 @@ async function main() {
       compareAt: 549,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      theme: 'riyadh-season',
       origin: 'captured' as const,
       orientation: 'mixed' as const,
       loc: 'riyadh',
@@ -1408,6 +1420,20 @@ async function main() {
           where: { id: clip.id },
           data: clipFrame(a.orientation, clip.orderIndex),
         })
+      }
+      // The occasion link is new, so albums seeded before it exists have none —
+      // and the seasonal shelf would be empty on every machine but a fresh one.
+      if (a.theme) {
+        const tx = await db.taxonomy.findUnique({
+          where: { kind_slug: { kind: 'theme', slug: a.theme } },
+        })
+        if (tx) {
+          await db.albumTaxonomy.upsert({
+            where: { albumId_taxonomyId: { albumId: existing.id, taxonomyId: tx.id } },
+            update: {},
+            create: { albumId: existing.id, taxonomyId: tx.id },
+          })
+        }
       }
       continue
     }
@@ -1494,6 +1520,9 @@ async function main() {
     for (const [kind, slug] of [
       ['location', a.loc],
       ['category', a.cat],
+      // The occasion, which is what the seasonal shelf on the landing page
+      // selects on. Without it that shelf has nothing to show all year.
+      ['theme', a.theme],
     ] as const) {
       if (!slug) continue
       const tx = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })

@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { currentSeason } from '@/lib/season'
 import type { AlbumCardData } from '@/components/catalogue/album-card'
 
 /**
@@ -290,4 +291,52 @@ export async function getCatalogueStats() {
     db.album.count({ where: { status: 'live', clearedForCommercial: true } }),
   ])
   return { clips, albums, creators, cleared }
+}
+
+/**
+ * The seasonal shelf's albums, plus what season they are for.
+ *
+ * Returns the occasion's albums when one is in season, and the newest albums
+ * on offer otherwise. `season` is null in that second case, and the shelf
+ * labels itself accordingly rather than inventing an occasion — a made-up
+ * "Summer collection" over a catalogue with no summer albums is worse than
+ * honestly leading with the offers.
+ *
+ * Falls back to offers as well when a season IS active but has no albums tagged
+ * for it, which is the normal state of a young catalogue. A shelf headed
+ * «مجموعات اليوم الوطني» over an empty grid is the worst of both.
+ */
+export async function getSeasonalShelf(take = 6) {
+  const season = currentSeason()
+
+  if (season) {
+    const rows = await db.album.findMany({
+      where: {
+        status: 'live',
+        taxonomy: { some: { taxonomy: { kind: 'theme', slug: season.slug } } },
+      },
+      orderBy: [{ isFeatured: 'desc' }, { salesCount: 'desc' }, { publishedAt: 'desc' }],
+      take,
+      select: ALBUM_CARD_SELECT,
+    })
+    if (rows.length > 0) {
+      const taxonomy = await db.taxonomy.findUnique({
+        where: { kind_slug: { kind: 'theme', slug: season.slug } },
+        select: { nameAr: true, nameEn: true },
+      })
+      return {
+        season: taxonomy ? { slug: season.slug, ...taxonomy } : null,
+        albums: await toCards(rows as AlbumRow[]),
+      }
+    }
+  }
+
+  // No season, or nothing tagged for it: lead with what is actually on offer.
+  const rows = await db.album.findMany({
+    where: { status: 'live', compareAtPrice: { not: null } },
+    orderBy: [{ publishedAt: 'desc' }],
+    take,
+    select: ALBUM_CARD_SELECT,
+  })
+  return { season: null, albums: await toCards(rows as AlbumRow[]) }
 }

@@ -275,8 +275,8 @@
     "faq4A": "Yes — the license lets you use the album across current and upcoming projects on the same topic, with no time limits.",
     "faq5Q": "How many shots are in each album?",
     "faq5A": "Album size varies by story (from 30 to 70 harmonious shots) so you can pick exactly what you need.",
-    "offersLead": "Offers on selected albums,",
-    "offersBold": "for a limited time.",
+    "offersLead": "The newest albums,",
+    "offersBold": "at launch prices.",
     "offersHint": "The struck-through figure is the usual price. You pay the smaller one, and own the album forever.",
     "shelfLead": "Every album available,",
     "shelfBold": "pick one and start.",
@@ -301,7 +301,12 @@
     "finalCtaButton": "Explore Shoots",
     "footerTagline": "Your first choice for authentic Saudi content.",
     "problemStillAlt": "A frame from the Laqta catalogue: AlUla rock formations at golden hour",
-    "sellNote": "Reviewed within three business days · Monthly transfers by bank, Wise or Payoneer"
+    "sellNote": "Reviewed within three business days · Monthly transfers by bank, Wise or Payoneer",
+    "seasonEyebrow": "In season now",
+    "seasonLead": "Ready for",
+    "seasonBody": "Albums picked for this occasion — download today and start cutting before the season does.",
+    "offersEyebrow": "Launch offers",
+    "offersBody": "Ready-to-use albums with a full commercial licence, at launch pricing for a limited time."
   },
   "catalogue": {
     "footageTitle": "Footage",

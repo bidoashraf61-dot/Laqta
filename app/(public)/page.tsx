@@ -9,7 +9,7 @@ import { LandingFaq } from '@/components/landing/faq'
 import { FinalCta } from '@/components/landing/final-cta'
 import { HowItWorks } from '@/components/landing/sections'
 import { RequestFootage } from '@/components/landing/request-footage'
-import { getFeaturedAlbums, getFootageWall } from '@/lib/catalogue'
+import { getFootageWall, getSeasonalShelf } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
@@ -81,14 +81,14 @@ export default async function HomePage() {
   // and the considered collection do the selling, and nothing on the page
   // counts albums, creators, or clips out loud. As the catalogue grows the
   // same two queries simply return more.
-  const [albums, footage] = await Promise.all([getFeaturedAlbums(6), getFootageWall(12)])
+  const [shelf, footage] = await Promise.all([getSeasonalShelf(6), getFootageWall(12)])
 
   return (
     <>
       <StructuredData />
       <HeroCinematic />
       {/* Name the pain, then the shortcut; catch the eye with the wall of
-          frames; make the considered album pitch; state the rights; teach the
+          frames; sell what the next occasion needs; state the rights; teach the
           model; make the value case; clear objections; take custom requests;
           then the final buyer push.
 
@@ -98,7 +98,7 @@ export default async function HomePage() {
           lives at the foot of /creators now. */}
       <ProblemSolution />
       <FootageWall footage={footage} />
-      <TheCollection albums={albums} />
+      <TheCollection albums={shelf.albums} season={shelf.season} />
       <LicensingRights />
       <HowItWorks />
       <PricingValue />

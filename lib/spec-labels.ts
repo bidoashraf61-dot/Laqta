@@ -39,13 +39,20 @@ const SHOT_SIZE: Record<string, string> = {
   Aerial: 'جوية',
 }
 
+/**
+ * Plainer words than the first pass used.
+ *
+ * «الظهيرة» and «غسق» are correct and are not what a Saudi editor says out
+ * loud — «نهار» and «غروب» are. The two golden/blue-hour terms stay, because
+ * those ARE the working names for them here.
+ */
 const TIME_OF_DAY: Record<string, string> = {
   dawn: 'فجر',
   'golden hour': 'الساعة الذهبية',
   sunrise: 'شروق',
   day: 'نهار',
-  midday: 'الظهيرة',
-  dusk: 'غسق',
+  midday: 'نهار',
+  dusk: 'غروب',
   sunset: 'غروب',
   night: 'ليل',
   'blue hour': 'الساعة الزرقاء',

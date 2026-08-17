@@ -6,7 +6,6 @@ import { SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/toggles'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/toggles'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/overlays'
 import { cn } from '@/lib/utils'
@@ -38,30 +37,28 @@ import { specLabel } from '@/lib/spec-labels'
  */
 type Option = { value: string; label?: string; kind?: string; labelKey?: string }
 
+/**
+ * How the footage was made. First in the rail, because it is now the facet
+ * buyers narrow on hardest — a brand may have to disclose synthetic media, and
+ * an agency briefing "real Saudi locations" is making a factual claim.
+ */
+const ORIGIN: Option[] = [
+  { value: 'captured', labelKey: 'catalogue.originCaptured' },
+  { value: 'generated', labelKey: 'catalogue.originGenerated' },
+]
+
+/** 720p added: a lot of social work is finished at 720 and never needs more. */
 const RESOLUTIONS: Option[] = [
+  { value: '1280', label: '720p' },
   { value: '1920', label: '1080p' },
   { value: '3840', label: '4K' },
 ]
 
+/** Orientation, in the three shapes anything is actually delivered in. */
 const ASPECTS: Option[] = [
   { value: '16:9', label: '16:9' },
   { value: '9:16', label: '9:16' },
   { value: '1:1', label: '1:1' },
-  { value: '2.39:1', label: '2.39:1' },
-]
-
-const FRAME_RATES: Option[] = [
-  { value: '24', label: '24' },
-  { value: '25', label: '25' },
-  { value: '30', label: '30' },
-  { value: '50', label: '50' },
-  { value: '60', label: '60' },
-]
-
-const COLOUR: Option[] = [
-  { value: 'D-Log', label: 'LOG' },
-  { value: 'S-Log3', label: 'S-Log3' },
-  { value: 'Rec.709', label: 'Rec.709' },
 ]
 
 const MOVEMENT: Option[] = [
@@ -83,8 +80,7 @@ const SHOT_SIZE: Option[] = [
 /**
  * Duration windows, not a slider.
  *
- * Every competitor exposes duration, and it was the largest gap in this rail:
- * an editor cutting a six-second social bumper and one looking for a thirty-
+ * An editor cutting a six-second social bumper and one looking for a thirty-
  * second establishing hold are doing different jobs. Buckets rather than a
  * two-handled range control because the buckets ARE the jobs, and a range
  * slider is the least usable control on a touch screen.
@@ -98,20 +94,24 @@ const DURATION: Option[] = [
   { value: '20-', labelKey: 'catalogue.dur20plus' },
 ]
 
-/** Matches the values written by prisma/seed.ts. */
+/**
+ * Time of day. Matches the values written by prisma/seed.ts.
+ *
+ * The Arabic labels are the plain words a Saudi editor would say out loud —
+ * «نهار», «ليل» — rather than transliterated cinematography terms. «الساعة
+ * الذهبية» stays because it is what the golden hour is actually called here.
+ */
+const PEOPLE: Option[] = [
+  { value: '1', labelKey: 'catalogue.peopleWith' },
+  { value: '0', labelKey: 'catalogue.peopleWithout' },
+]
+
 const TIME_OF_DAY: Option[] = [
   { value: 'golden hour', kind: 'timeOfDay' },
   { value: 'blue hour', kind: 'timeOfDay' },
+  { value: 'midday', kind: 'timeOfDay' },
   { value: 'dusk', kind: 'timeOfDay' },
   { value: 'night', kind: 'timeOfDay' },
-  { value: 'midday', kind: 'timeOfDay' },
-]
-
-const SEASON: Option[] = [
-  { value: 'winter', kind: 'season' },
-  { value: 'spring', kind: 'season' },
-  { value: 'summer', kind: 'season' },
-  { value: 'autumn', kind: 'season' },
 ]
 
 export function FilterRail({ className }: { className?: string }) {
@@ -212,22 +212,33 @@ function FilterBody() {
         </Button>
       ) : null}
 
-      {/* The filter agencies use to the exclusion of all others — first, and
-          not buried among the technical facets. */}
-      <div className="space-y-3 rounded-lg border border-success/30 bg-success/5 p-3">
-        <CheckRow
-          id="cleared"
-          label={t('catalogue.clearedOnly')}
-          checked={params.get('cleared') === '1'}
-          onChange={(on) => setParam('cleared', on ? '1' : null)}
+      {/*
+        Origin first.
+
+        The block that stood here filtered on clearance and licence — «مرخّصة
+        للاستخدام التجاري» and «تحريري فقط». Both are gone: there is one licence
+        now and every live album carries it, so those controls narrowed nothing
+        while occupying the top of the rail.
+
+        Frame rate, colour profile and season went with them. A rail is not
+        improved by completeness — every facet a buyer does not use is one more
+        thing to read past on the way to the four they do.
+      */}
+      <Group title={t('catalogue.origin')}>
+        <Chips
+          options={ORIGIN}
+          isActive={(v) => active('origin', v)}
+          onPick={(v) => toggle('origin', v)}
         />
-        <CheckRow
-          id="editorial"
-          label={t('catalogue.editorialOnly')}
-          checked={params.get('editorial') === '1'}
-          onChange={(on) => setParam('editorial', on ? '1' : null)}
+      </Group>
+
+      <Group title={t('catalogue.orientation')}>
+        <Chips
+          options={ASPECTS}
+          isActive={(v) => active('aspect', v)}
+          onPick={(v) => toggle('aspect', v)}
         />
-      </div>
+      </Group>
 
       <Group title={t('catalogue.resolution')}>
         <Chips
@@ -237,28 +248,11 @@ function FilterBody() {
         />
       </Group>
 
-      <Group title={t('catalogue.aspect')}>
+      <Group title={t('catalogue.shotSize')}>
         <Chips
-          options={ASPECTS}
-          isActive={(v) => active('aspect', v)}
-          onPick={(v) => toggle('aspect', v)}
-        />
-      </Group>
-
-      <Group title={t('catalogue.frameRate')}>
-        <Chips
-          options={FRAME_RATES}
-          isActive={(v) => active('fps', v)}
-          onPick={(v) => toggle('fps', v)}
-          numeric
-        />
-      </Group>
-
-      <Group title={t('catalogue.colourProfile')}>
-        <Chips
-          options={COLOUR}
-          isActive={(v) => active('colour', v)}
-          onPick={(v) => toggle('colour', v)}
+          options={SHOT_SIZE}
+          isActive={(v) => active('shot', v)}
+          onPick={(v) => toggle('shot', v)}
         />
       </Group>
 
@@ -267,14 +261,6 @@ function FilterBody() {
           options={MOVEMENT}
           isActive={(v) => active('movement', v)}
           onPick={(v) => toggle('movement', v)}
-        />
-      </Group>
-
-      <Group title={t('catalogue.shotSize')}>
-        <Chips
-          options={SHOT_SIZE}
-          isActive={(v) => active('shot', v)}
-          onPick={(v) => toggle('shot', v)}
         />
       </Group>
 
@@ -294,37 +280,20 @@ function FilterBody() {
         />
       </Group>
 
-      <Group title={t('catalogue.season')}>
-        <Chips
-          options={SEASON}
-          isActive={(v) => active('season', v)}
-          onPick={(v) => toggle('season', v)}
-        />
-      </Group>
+      {/*
+        People: two states, not three checkboxes.
 
-      <Separator />
-
+        It was «مع أشخاص» / «بدون أشخاص» / «وجوه مميّزة» as independent boxes,
+        which let a buyer tick two mutually exclusive things at once and get an
+        empty result with no explanation. Identifiable faces is a release
+        question the review queue already settles; it was never a browsing one.
+      */}
       <Group title={t('catalogue.people')}>
-        <div className="space-y-2">
-          <CheckRow
-            id="with-people"
-            label={t('catalogue.peopleWith')}
-            checked={params.get('people') === '1'}
-            onChange={(on) => setParam('people', on ? '1' : null)}
-          />
-          <CheckRow
-            id="without-people"
-            label={t('catalogue.peopleWithout')}
-            checked={params.get('people') === '0'}
-            onChange={(on) => setParam('people', on ? '0' : null)}
-          />
-          <CheckRow
-            id="faces"
-            label={t('catalogue.identifiableFaces')}
-            checked={params.get('faces') === '1'}
-            onChange={(on) => setParam('faces', on ? '1' : null)}
-          />
-        </div>
+        <Chips
+          options={PEOPLE}
+          isActive={(v) => params.get('people') === v}
+          onPick={(v) => setParam('people', params.get('people') === v ? null : v)}
+        />
       </Group>
     </div>
   )
@@ -390,27 +359,6 @@ function Chips({
           </button>
         )
       })}
-    </div>
-  )
-}
-
-function CheckRow({
-  id,
-  label,
-  checked,
-  onChange,
-}: {
-  id: string
-  label: string
-  checked: boolean
-  onChange: (checked: boolean) => void
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <Checkbox id={id} checked={checked} onCheckedChange={(value) => onChange(value === true)} />
-      <Label htmlFor={id} className="cursor-pointer text-sm font-normal">
-        {label}
-      </Label>
     </div>
   )
 }

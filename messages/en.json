@@ -402,7 +402,16 @@
     "openShot": "Open shot page",
     "shotsIncluded": "shots in this album",
     "creatorRating": "Buyer rating",
-    "creatorNoRating": "No ratings yet"
+    "creatorNoRating": "No ratings yet",
+    "origin": "How it was made",
+    "orientation": "Orientation",
+    "timeGoldenHour": "Golden hour",
+    "timeBlueHour": "Blue hour",
+    "timeMidday": "Daytime",
+    "timeDusk": "Dusk",
+    "timeNight": "Night",
+    "loadMore": "Show more",
+    "endOfResults": "You’ve reached the end of the results"
   },
   "sell": {
     "title": "Sell your footage on Laqta",

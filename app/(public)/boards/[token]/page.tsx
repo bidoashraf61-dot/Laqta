@@ -50,6 +50,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
               aspectRatio: true,
               thumbnailKeys: true,
               previewHlsKey: true,
+              proxyKey: true,
               album: {
                 select: {
                   slug: true,
@@ -59,7 +60,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
                   priceStandard: true,
                   currency: true,
                   clipCount: true,
-                  clearedForCommercial: true,
+                  origin: true,
                   creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
                 },
               },
@@ -86,6 +87,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
       aspectRatio: clip.aspectRatio,
       thumbnail: clip.thumbnailKeys[0] ?? null,
       previewHlsKey: clip.previewHlsKey,
+      previewKey: clip.proxyKey?.startsWith('/') ? clip.proxyKey : null,
       album: {
         slug: clip.album.slug,
         titleAr: clip.album.titleAr,
@@ -93,7 +95,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
         priceStandard: Number(clip.album.priceStandard),
         currency: clip.album.currency,
         clipCount: clip.album.clipCount,
-        clearedForCommercial: clip.album.clearedForCommercial,
+        origin: clip.album.origin,
         creatorHandle: clip.album.creator.handle,
         creatorNameAr: clip.album.creator.displayNameAr,
       },

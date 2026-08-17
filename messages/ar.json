@@ -168,7 +168,7 @@
     "shotSize": "حجم اللقطة",
     "timeOfDay": "وقت اليوم",
     "people": "الأشخاص",
-    "peopleWith": "مع أشخاص",
+    "peopleWith": "فيها أشخاص",
     "peopleWithout": "بدون أشخاص",
     "identifiableFaces": "وجوه واضحة",
     "clearedOnly": "المرخّصة تجارياً فقط",
@@ -239,7 +239,16 @@
     "openShot": "افتح صفحة اللقطة",
     "shotsIncluded": "لقطة في هذا الألبوم",
     "creatorRating": "تقييم المشترين",
-    "creatorNoRating": "لا تقييمات بعد"
+    "creatorNoRating": "لا تقييمات بعد",
+    "origin": "طريقة الإنتاج",
+    "orientation": "الاتجاه",
+    "timeGoldenHour": "الساعة الذهبية",
+    "timeBlueHour": "الساعة الزرقاء",
+    "timeMidday": "نهار",
+    "timeDusk": "غروب",
+    "timeNight": "ليل",
+    "loadMore": "عرض المزيد",
+    "endOfResults": "وصلت إلى نهاية النتائج"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",

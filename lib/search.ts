@@ -52,10 +52,12 @@ export type ClipFilters = {
   maxDurationS?: number
   fps?: number
   hasPeople?: boolean
-  identifiableFaces?: boolean
-  /** The filter agencies use to the exclusion of all others. */
-  clearedForCommercial?: boolean
-  editorialOnly?: boolean
+  /**
+   * How the footage was made. The one facet buyers now filter on hardest,
+   * because a brand may have to disclose synthetic media and an agency
+   * briefing "real Saudi locations" is making a factual claim.
+   */
+  origin?: 'captured' | 'generated'
   minPrice?: number
   maxPrice?: number
   creator?: string
@@ -76,6 +78,12 @@ export type ClipHit = {
   aspectRatio: string | null
   thumbnail: string | null
   previewHlsKey: string | null
+  /**
+   * A directly playable preview, for hover-to-play. Distinct from
+   * `previewHlsKey`: that is an HLS manifest for the full player, this is the
+   * short MP4 loop a grid tile can drop into a <video> with no player at all.
+   */
+  previewKey: string | null
   /** The album ribbon. Never render a clip without it. */
   album: {
     slug: string
@@ -84,7 +92,7 @@ export type ClipHit = {
     priceStandard: number
     currency: string
     clipCount: number
-    clearedForCommercial: boolean
+    origin: 'captured' | 'generated'
     creatorHandle: string
     creatorNameAr: string
   }
@@ -153,8 +161,7 @@ const postgresDriver: SearchDriver = {
     const where: Prisma.ClipWhereInput = {
       album: {
         status: 'live',
-        ...(filters.clearedForCommercial ? { clearedForCommercial: true } : {}),
-        ...(filters.editorialOnly ? { clearanceStatus: 'editorial_only' } : {}),
+        ...(filters.origin ? { origin: filters.origin } : {}),
         ...(filters.creator ? { creator: { handle: filters.creator } } : {}),
         ...(filters.minPrice != null || filters.maxPrice != null
           ? {
@@ -183,9 +190,6 @@ const postgresDriver: SearchDriver = {
         : {}),
       ...(filters.fps ? { fps: filters.fps } : {}),
       ...(filters.hasPeople != null ? { hasPeople: filters.hasPeople } : {}),
-      ...(filters.identifiableFaces != null
-        ? { identifiableFaces: filters.identifiableFaces }
-        : {}),
     }
 
     const andClauses: Prisma.ClipWhereInput[] = []
@@ -279,6 +283,7 @@ const postgresDriver: SearchDriver = {
           aspectRatio: true,
           thumbnailKeys: true,
           previewHlsKey: true,
+          proxyKey: true,
           // NOTE: masterKey is deliberately absent. The catalogue must never
           // be able to leak a path to an original.
           album: {
@@ -289,7 +294,7 @@ const postgresDriver: SearchDriver = {
               priceStandard: true,
               currency: true,
               clipCount: true,
-              clearedForCommercial: true,
+              origin: true,
               creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
             },
           },
@@ -311,6 +316,9 @@ const postgresDriver: SearchDriver = {
         aspectRatio: row.aspectRatio,
         thumbnail: row.thumbnailKeys[0] ?? null,
         previewHlsKey: row.previewHlsKey,
+        // Object-storage keys are not URLs. Anything not rooted at "/" has no
+        // playable form yet and the tile correctly stays a still.
+        previewKey: row.proxyKey?.startsWith('/') ? row.proxyKey : null,
         album: {
           slug: row.album.slug,
           titleAr: row.album.titleAr,
@@ -318,7 +326,7 @@ const postgresDriver: SearchDriver = {
           priceStandard: Number(row.album.priceStandard),
           currency: row.album.currency,
           clipCount: row.album.clipCount,
-          clearedForCommercial: row.album.clearedForCommercial,
+          origin: row.album.origin,
           creatorHandle: row.album.creator.handle,
           creatorNameAr: row.album.creator.displayNameAr,
         },

@@ -1,14 +1,18 @@
-import { Cleared } from '@/components/ui/icons'
+'use client'
+
+import { Sparkles, Video } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
-import { formatMoney, t } from '@/lib/i18n'
+
 import { formatDuration, cn } from '@/lib/utils'
 import type { ClipHit } from '@/lib/search'
 import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
-import { pickLocalised } from '@/lib/locale'
+import { HoverPreview } from '@/components/catalogue/hover-preview'
+
 import { Anchor } from '@/components/ui/link'
 import { revealDelay } from '@/lib/motion'
+import { useMoney, usePick, useT } from '@/lib/i18n-client'
 
 /**
  * The clip card — and the album ribbon underneath it.
@@ -38,6 +42,19 @@ export function ClipCard({
   // 4K is the ceiling. There is no generation model that outputs 6K, so a 6K
   // chip was a spec claim a buyer could check and find false; most of the
   // catalogue ships 1080p today.
+  /*
+   * Client component, and it has to be.
+   *
+   * The results grid appends pages fetched as JSON, so these cards are built in
+   * the browser — where the server `t()` and `formatMoney()` read an RSC store
+   * that does not exist and silently fall back to Arabic. That is exactly what
+   * happened: /en/footage failed `verify:arabic` the moment the grid became
+   * infinite.
+   */
+  const t = useT()
+  const money = useMoney()
+  const pick = usePick()
+
   const resolution = clip.width >= 3840 ? '4K' : clip.width >= 1920 ? '1080p' : 'HD'
 
   return (
@@ -51,20 +68,17 @@ export function ClipCard({
     >
       <Anchor href={`/footage/${clip.slug}`} className="block">
         <div className="relative aspect-video overflow-hidden bg-ink">
-          {clip.thumbnail ? (
-            <img
-              src={clip.thumbnail}
-              alt={t('catalogue.altClipThumb', { clip: pickLocalised(clip.titleAr, clip.titleEn) })}
-              loading="lazy"
-              className="size-full object-cover transition-transform duration-frame ease-lens group-hover:scale-105"
-            />
-          ) : (
-            <div className="dark grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
-              <span className="text-2xl font-bold text-gold/30">{t('brand.name')}</span>
-            </div>
-          )}
+          {/* Hover — or focus — plays the shot. A still tells you what is in
+              frame; only motion tells you whether the move is usable, which is
+              the thing an editor is actually judging. */}
+          <HoverPreview
+            src={clip.previewKey}
+            poster={clip.thumbnail}
+            alt={t('catalogue.altClipThumb', { clip: pick(clip.titleAr, clip.titleEn) })}
+            className="size-full"
+          />
 
-          <PreviewWatermark />
+          <PreviewWatermark label={`${t('brand.name')} · ${t('catalogue.preview')}`} />
 
           <div className="absolute inset-x-2 bottom-2 z-[2] flex items-center justify-between gap-2">
             <Badge variant="film" className="numeric">
@@ -95,17 +109,31 @@ export function ClipCard({
         </p>
         <p className="mt-1 flex items-center gap-2 text-xs">
           <span className="numeric rounded-full bg-gold/12 px-2 py-0.5 font-bold text-gold">
-            {formatMoney(clip.album.priceStandard, clip.album.currency)}
+            {money(clip.album.priceStandard, clip.album.currency)}
           </span>
           <span className="text-muted-foreground">
             · <span className="numeric">{clip.album.clipCount}</span> {t('commerce.clip')}
           </span>
-          {clip.album.clearedForCommercial ? (
-            <Cleared
-              className="size-3.5 shrink-0 text-success"
-              aria-label={t('commerce.clearedForCommercial')}
-            />
-          ) : null}
+          {/* How it was made, not whether it is cleared. Every album is
+              licensed for commercial use — that badge distinguished nothing
+              once the tiers collapsed. */}
+          <span
+            className={cn(
+              'ms-auto inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-2xs',
+              clip.album.origin === 'generated'
+                ? 'bg-clay-fill/15 text-clay'
+                : 'bg-secondary text-secondary-foreground',
+            )}
+          >
+            {clip.album.origin === 'generated' ? (
+              <Sparkles className="size-3" aria-hidden />
+            ) : (
+              <Video className="size-3" aria-hidden />
+            )}
+            {clip.album.origin === 'generated'
+              ? t('catalogue.originGenerated')
+              : t('catalogue.originCaptured')}
+          </span>
         </p>
       </Anchor>
     </article>

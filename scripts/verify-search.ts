@@ -56,16 +56,20 @@ async function main() {
   )
 
   // Filters
-  const cleared = await search({ clearedForCommercial: true })
+  const captured = await search({ origin: 'captured' })
   const all = await search({})
   report(
-    'cleared-for-commercial filter narrows the set',
-    cleared.total > 0 && cleared.total <= all.total,
-    `${cleared.total} of ${all.total}`,
+    'origin filter narrows the set',
+    captured.total > 0 && captured.total <= all.total,
+    `${captured.total} of ${all.total}`,
   )
 
   const fourK = await search({ minWidth: 3840 })
-  report('resolution filter applies', fourK.total > 0 && fourK.total <= all.total, `${fourK.total} clips`)
+  report(
+    'resolution filter applies',
+    fourK.total > 0 && fourK.total <= all.total,
+    `${fourK.total} clips`,
+  )
 
   const vertical = await search({ aspectRatio: '9:16' })
   report('vertical filter runs (0 hits is valid on this seed)', vertical.total >= 0)

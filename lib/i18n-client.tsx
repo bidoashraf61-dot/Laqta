@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import { formatMoneyIn } from '@/lib/i18n'
 import { translate } from '@/lib/i18n'
-import { DEFAULT_LOCALE, type Locale } from '@/lib/locale'
+import { BCP47, DEFAULT_LOCALE, type Locale } from '@/lib/locale'
 
 /**
  * The locale, for client components.
@@ -54,4 +55,28 @@ export function useT(): (key: string, vars?: Record<string, string | number>) =>
 /** For formatting inside client components — `Intl` needs the same locale. */
 export function useLocale(): Locale {
   return React.useContext(LocaleContext)
+}
+
+/**
+ * Money, formatted for the locale in context.
+ *
+ * Client components must not call `formatMoney` — see the note beside
+ * `formatMoneyIn` in lib/i18n.ts. This is the hook that makes doing the right
+ * thing as short as doing the wrong one.
+ */
+export function useMoney() {
+  const locale = useLocale()
+  return (amount: number | string, currency = 'USD') =>
+    formatMoneyIn(BCP47[locale], amount, currency)
+}
+
+/** `pickLocalised`, against the locale in context rather than the RSC store. */
+export function usePick() {
+  const locale = useLocale()
+  return <T,>(ar: T, en: T | undefined | null): T => {
+    if (locale !== 'en') return ar
+    if (en == null) return ar
+    if (typeof en === 'string' && en.length === 0) return ar
+    return en
+  }
 }

@@ -100,10 +100,28 @@ export function formatMoney(
   currency = 'USD',
   options: { arabicDigits?: boolean } = {},
 ) {
+  return formatMoneyIn(activeBcp47(), amount, currency, options)
+}
+
+/**
+ * The same, with the locale passed in rather than read from the store.
+ *
+ * A CLIENT component must use this. `activeBcp47()` reads the RSC-scoped
+ * store, which does not exist in the browser render — a client component
+ * calling `formatMoney` silently formats every price as Arabic, on every
+ * page, in both languages. The infinite results grid renders its cards on the
+ * client, so this is not hypothetical.
+ */
+export function formatMoneyIn(
+  bcp47: string,
+  amount: number | string,
+  currency = 'USD',
+  options: { arabicDigits?: boolean } = {},
+) {
   const value = typeof amount === 'string' ? Number(amount) : amount
   const numbering = options.arabicDigits ? '-u-nu-arab' : '-u-nu-latn'
   return (
-    new Intl.NumberFormat(`${activeBcp47()}${numbering}`, {
+    new Intl.NumberFormat(`${bcp47}${numbering}`, {
       style: 'currency',
       currency,
       minimumFractionDigits: 0,

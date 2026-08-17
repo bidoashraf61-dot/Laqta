@@ -29,11 +29,13 @@ export function HeroCinematic() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const copyRef = useRef<HTMLDivElement>(null)
+  const railRef = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
     const wrap = wrapRef.current
     const video = videoRef.current
     const copy = copyRef.current
+    const rail = railRef.current
     if (!wrap || !video) return
 
     // Reduced motion: the poster still stands, the copy stands, nothing scrubs.
@@ -84,6 +86,33 @@ export function HeroCinematic() {
       // The copy holds over the film's opening, then clears so the footage
       // plays unobstructed; it is back the moment you scroll up.
       if (copy) copy.style.opacity = String(clamp(1 - progress / 0.32))
+
+      /*
+       * The USP rail takes over where the headline leaves off.
+       *
+       * It starts fading in at 0.30 — just before the headline is fully gone,
+       * so the two cross rather than leaving a beat of bare film — and then
+       * steps through its points across the rest of the scrub. The film is
+       * doing the arguing by that stage; these are the four facts a viewer
+       * needs alongside it, one at a time rather than as a list nobody reads.
+       *
+       * Driven by the SAME progress value as the video, which is what makes it
+       * a ruler rather than a carousel: the marks are positions in the film,
+       * so scrolling back up walks them backwards.
+       */
+      if (rail) {
+        const RAIL_START = 0.3
+        rail.style.opacity = String(clamp((progress - RAIL_START) / 0.08))
+        const items = rail.children
+        const span = (1 - RAIL_START) / items.length
+        const index = clamp(Math.floor((progress - RAIL_START) / span), 0, items.length - 1)
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i] as HTMLElement
+          // `data-state` rather than a class: three states, and the CSS reads
+          // more like the thing it describes.
+          item.dataset.state = i === index ? 'on' : i < index ? 'past' : 'ahead'
+        }
+      }
     }
 
     const tick = () => {
@@ -213,6 +242,31 @@ export function HeroCinematic() {
               </a>
             </div>
           </div>
+
+          {/*
+            The USP rail.
+
+            Absolutely positioned against the stage rather than placed in flow,
+            so it cannot push the headline around while it fades in. It sits at
+            the inline-END edge — the headline owns the start edge — and the
+            marks stack down the side like a ruler with the film as its scale.
+
+            Hidden from assistive tech: every one of these facts is stated in
+            full, as ordinary prose, in the sections below. A screen reader
+            walking the hero should hear the headline and the two buttons, not
+            four scroll positions.
+          */}
+          <ul ref={railRef} aria-hidden className="hero-usp-rail" style={{ opacity: 0 }}>
+            {[1, 2, 3, 4].map((n) => (
+              <li key={n} data-state="ahead">
+                <span className="hero-usp-tick" />
+                <span className="hero-usp-text">
+                  <strong>{t(`landing.usp${n}`)}</strong>
+                  <em>{t(`landing.usp${n}Note`)}</em>
+                </span>
+              </li>
+            ))}
+          </ul>
 
           {/* Scroll cue — the one authored motion moment on the hero. */}
           <span className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex w-fit flex-col items-center gap-2 text-xs uppercase tracking-[0.16em] text-foreground/60">

@@ -1150,3 +1150,102 @@
     display: none;
   }
 }
+
+/* ── The hero USP rail ──────────────────────────────────────────────────────
+ *
+ * A ruler down the inline-end edge of the film, one mark per point, driven by
+ * the same scroll progress as the video (see hero-cinematic.tsx). Scrolling
+ * back up walks it backwards, which is what makes it a scale rather than a
+ * carousel.
+ *
+ * Hidden below `lg`: on a phone the film is already the whole screen and there
+ * is no column free beside it. The same four facts are prose in the sections
+ * underneath, so nothing is lost — this is emphasis, never the only statement.
+ */
+.hero-usp-rail {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-usp-rail {
+    position: absolute;
+    inset-inline-end: 3.5rem;
+    top: 50%;
+    translate: 0 -50%;
+    display: grid;
+    gap: 1.5rem;
+    max-inline-size: 20rem;
+    /* The rail is a readout, not a control. */
+    pointer-events: none;
+    transition: opacity var(--dur-panel) var(--ease-cut);
+  }
+
+  .hero-usp-rail li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.875rem;
+    transition:
+      opacity var(--dur-move) var(--ease-cut),
+      translate var(--dur-move) var(--ease-cut);
+  }
+
+  /* Three states, and the difference between "not yet" and "already passed"
+     matters: a point you have scrolled past should read as behind you, not as
+     equally pending. */
+  .hero-usp-rail li[data-state='ahead'] {
+    opacity: 0.3;
+    translate: 0 0.25rem;
+  }
+  .hero-usp-rail li[data-state='past'] {
+    opacity: 0.45;
+  }
+  .hero-usp-rail li[data-state='on'] {
+    opacity: 1;
+  }
+
+  .hero-usp-tick {
+    /* The mark itself. Grows and turns gold on the active point — the one
+       moment on this hero where gold is spent on something that is not money
+       or the primary action, and it is spent to say "you are here". */
+    inline-size: 2px;
+    block-size: 1.5rem;
+    margin-block-start: 0.4rem;
+    border-radius: 999px;
+    background: hsl(var(--foreground) / 0.4);
+    transition:
+      background-color var(--dur-move) var(--ease-cut),
+      block-size var(--dur-move) var(--ease-cut);
+  }
+  .hero-usp-rail li[data-state='on'] .hero-usp-tick {
+    block-size: 2.75rem;
+    background: hsl(var(--gold));
+  }
+
+  .hero-usp-text {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .hero-usp-text strong {
+    font-family: var(--font-subhead), Georgia, serif;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .hero-usp-text em {
+    font-style: normal;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: hsl(var(--foreground) / 0.7);
+  }
+}
+
+/* An element that changes as you scroll IS motion. Under reduced motion the
+   rail states all resolve, so the four points simply stand there together. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-usp-rail li[data-state='ahead'],
+  .hero-usp-rail li[data-state='past'] {
+    opacity: 1;
+    translate: none;
+  }
+}

@@ -58,7 +58,7 @@ const CardTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement> & { as?: 'h1' | 'h2' | 'h3' }
 >(({ className, as: Tag = 'h2', ...props }, ref) => (
-  <Tag ref={ref} className={cn('text-lg font-bold leading-tight', className)} {...props} />
+  <Tag ref={ref} className={cn('text-lg font-bold leading-[1.4]', className)} {...props} />
 ))
 CardTitle.displayName = 'CardTitle'
 

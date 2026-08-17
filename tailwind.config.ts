@@ -130,10 +130,19 @@ const config: Config = {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
         // Display type is now Sans and set OPEN, per the reference. Tracking is
         // slightly positive rather than the tight negative fit a serif needed.
-        display: ['clamp(2.5rem, 5.4vw, 4.5rem)', { lineHeight: '1.06', letterSpacing: '0.005em' }],
+        /*
+         * Line-heights are set for ARABIC, which is what this portal is.
+         *
+         * Thmanyah Serif Display draws its Arabic in an ink box ~1.25em tall.
+         * Anything below that overlaps — 1.06 and 1.18 here put the hero's
+         * lines 9.4px INTO each other at desktop size. 1.25 is the floor for
+         * this face; these sit above it, stepping down as the type grows,
+         * which is the normal relationship between size and leading.
+         */
+        display: ['clamp(2.5rem, 5.4vw, 4.5rem)', { lineHeight: '1.28', letterSpacing: '0.005em' }],
         headline: [
           'clamp(1.6rem, 2.8vw, 2.375rem)',
-          { lineHeight: '1.18', letterSpacing: '0.01em' },
+          { lineHeight: '1.32', letterSpacing: '0.01em' },
         ],
         // The sub-headline step. Named rather than written as a literal at the
         // call site so it is one documented rung on the ramp, not a magic number

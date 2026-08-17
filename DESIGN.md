@@ -411,6 +411,31 @@ to the wrong end. "Rec.709" un-isolated renders "709.Rec". Dates and money go in
 an inner `.numeric` span, never on a flex container, because flex breaks the
 isolation.
 
+### Leading — the Arabic floor
+
+Thmanyah Serif Display draws Arabic in an ink box **~1.25em tall**. Alif, lam
+and kaf climb well above the x-height; jim, ha, ain, mim, ya and nun hang well
+below it. Any `line-height` under 1.25 therefore does not merely look tight —
+the lines physically overlap.
+
+They did. `leading-[1.12]` on the headline scale put the hero's lines **9.4px
+inside each other** at desktop, and `leading-tight` (1.25, exactly the floor)
+left card titles touching. Latin hides this: the same values on a Latin face
+look merely snug, which is why it shipped.
+
+| Step | Leading | Note |
+|---|---|---|
+| display (72px) | 1.28 | big type, least relative leading |
+| headline (38px) | 1.32 | |
+| card / dialog title (18px) | 1.40 | small type takes more, not less |
+| body | 1.5+ | |
+
+**Never `leading-tight` on Arabic.** It is 1.25 — the floor, not a value.
+
+**Verified by** `npm run verify:leading` — real Chrome, desktop and phone,
+measuring the client rect of every heading's text nodes and failing on any pair
+of lines less than 1px apart.
+
 ## Layout
 
 Container holds to a tight measure (`.container-tight`, max 1140px) with

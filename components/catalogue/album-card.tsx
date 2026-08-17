@@ -140,7 +140,7 @@ export function AlbumCard({
             className="block h-[3px] w-9 rounded-full"
             style={{ background: `hsl(${hue})` }}
           />
-          <h2 className="pointer-events-none line-clamp-3 font-display text-lg font-bold leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
+          <h2 className="pointer-events-none line-clamp-3 font-display text-lg font-bold leading-[1.4] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
             <Bilingual ar={album.titleAr} en={album.titleEn} />
           </h2>
 

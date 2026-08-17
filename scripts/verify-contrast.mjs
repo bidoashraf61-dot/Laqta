@@ -5,16 +5,15 @@ const PUBLIC_ROUTES = ['/', '/albums', '/footage', '/sell', '/licences', '/about
                        '/creators', '/collections', '/contact', '/cart', '/sign-in',
                        '/en', '/en/albums', '/en/sell', '/en/licences']
 
-/** The three dashboards. Arabic-only, but both themes still reach them. */
+/** The three dashboards. Arabic-only. */
 const AUTHED = [
   { email: 'admin@laqta.sa', routes: ['/admin', '/admin/analytics', '/admin/review', '/admin/catalogue', '/admin/orders', '/admin/payouts', '/admin/settings'] },
   { email: 'creator@laqta.sa', routes: ['/studio', '/studio/analytics', '/studio/albums', '/studio/earnings', '/studio/settings'] },
   { email: 'buyer@agency.sa', routes: ['/account', '/account/library', '/account/purchases', '/account/downloads', '/account/security'] },
 ]
 
-async function signIn(browser, email, theme) {
+async function signIn(browser, email) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } })
-  await ctx.addInitScript(t => { try { if (t === 'dark') localStorage.setItem('laqta-theme', 'dark'); else localStorage.removeItem('laqta-theme') } catch {} }, theme)
   const page = await ctx.newPage()
   await page.goto(BASE + '/sign-in', { waitUntil: 'domcontentloaded' })
   await page.fill('input[name="email"]', email)
@@ -99,10 +98,13 @@ const PROBE = () => {
 const browser = await chromium.launch({ channel: 'chrome' })
 let failures = 0
 let skipped = 0
-for (const theme of ['light', 'dark']) {
-  console.log(`\n── ${theme} ──`)
+/*
+ * One theme. `.dark` survives as a SCOPE — the header, the dashboard shells,
+ * the hero, a footage placeholder — so dark type is still measured on every
+ * route; it is just no longer a second whole-document pass.
+ */
+{
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
-  await ctx.addInitScript(t => { try { if (t === 'dark') localStorage.setItem('laqta-theme', 'dark'); else localStorage.removeItem('laqta-theme') } catch {} }, theme)
   const page = await ctx.newPage()
   for (const route of PUBLIC_ROUTES) {
     await page.goto(BASE + route, { waitUntil: 'domcontentloaded' })
@@ -117,7 +119,7 @@ for (const theme of ['light', 'dark']) {
   await ctx.close()
 
   for (const { email, routes } of AUTHED) {
-    const authed = await signIn(browser, email, theme)
+    const authed = await signIn(browser, email)
     const p = await authed.newPage()
     for (const route of routes) {
       await p.goto(BASE + route, { waitUntil: 'domcontentloaded' })
@@ -134,7 +136,7 @@ for (const theme of ['light', 'dark']) {
 await browser.close()
 console.log(
   failures === 0
-    ? `\nEvery measurable text run clears WCAG AA in both themes. ${skipped} run(s) over imagery were not measured.`
+    ? `\nEvery measurable text run clears WCAG AA. ${skipped} run(s) over imagery were not measured.`
     : `\n${failures} contrast failure(s). ${skipped} run(s) over imagery were not measured.`,
 )
 process.exitCode = failures === 0 ? 0 : 1

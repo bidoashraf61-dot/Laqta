@@ -98,10 +98,6 @@
     "rights": "Copyright reserved",
     "tagline": "Your first choice for authentic Saudi content."
   },
-  "theme": {
-    "toDark": "Dark mode",
-    "toLight": "Light mode"
-  },
   "legal": {
     "effectiveFrom": "In effect from",
     "questions": "Question you didn't find answered here?",
@@ -291,7 +287,6 @@
     "problemBold": "“Laqta” is your shortcut.",
     "problemBody": "Instead of wasting weeks on planning, production, and steep costs, we hand you ready-made cinematic scenes — culturally accurate and built to tell your story instantly.",
     "collectionViewAll": "Browse all albums",
-    "collectionOccasion": "Download the Ramadan album now and start creating.",
     "priceLead": "Best market price,",
     "priceBold": "16× cheaper than any competitor.",
     "priceSub": "Own the album at a single price with full rights, at a cost that fits every freelancer’s budget.",
@@ -547,8 +542,5 @@
     "searchCreators": "Search by creator name or handle",
     "colCreator": "Creator",
     "approveCreator": "Approve creator"
-  },
-  "admin": {
-    "creators": "Creators"
   }
 }

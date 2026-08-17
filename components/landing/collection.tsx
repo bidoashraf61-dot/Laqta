@@ -34,11 +34,19 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
         </div>
       )}
 
-      {/* Occasion hook, then the way through to the full catalogue. */}
-      <p className="mt-12 text-center font-serif text-lg text-foreground/80">
-        {t('landing.collectionOccasion')}
-      </p>
-      <div className="mt-6 flex justify-center">
+      {/*
+        The occasion hook is gone.
+
+        It named a single season — «حمّل ألبوم رمضان الآن» — on a shelf that is
+        not seasonal, so it dated the whole section and argued for one album
+        over the rest of the collection it was introducing. It was also the
+        portal's last remaining contrast failure: `text-foreground/80` on the
+        olive band measured 4.29:1, an alpha discount on a token that had been
+        solved at full strength.
+
+        The button below is the only thing this section needed at its foot.
+      */}
+      <div className="mt-12 flex justify-center">
         <Button asChild variant="gold" size="lg">
           <Link href="/albums">{t('landing.collectionViewAll')}</Link>
         </Button>

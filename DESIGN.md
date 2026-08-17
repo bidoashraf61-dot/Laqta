@@ -356,13 +356,20 @@ theme `.dark` still describes footage, never chrome: it is scoped to the
 cinematic, to cover placeholders, and to overlays sitting on imagery. A light-
 theme surface that reaches for `.dark` to look premium has misread the system.
 
-**Dark mode is a separate axis and a user preference.** `html.dark` is set by
-the visitor's own choice (or their OS), persists in `localStorage`, and is
-applied by an inline script before first paint so the page never flashes the
-wrong theme. It is not a styling device a component may reach for — components
-still never opt themselves into dark; they read semantic tokens and let the
-root decide. The olive and dusty band scopes are deliberately theme-stable:
-an identity ground is the same colour in both worlds.
+**There is no dark mode.** The portal has one ground — paper — and no toggle,
+no `prefers-color-scheme` read, no stored preference. `.dark` survives as a
+SCOPE and nothing else: the site header, the three dashboard shells, the hero
+cinematic, a footage placeholder. Those are dark because film is dark.
+
+This is not a feature that was dropped so much as a contradiction that was
+resolved. The system's whole premise is "the page is paper; the film is not" —
+a second, all-dark version of the page argues against that on every screen it
+appears, and doubled the surface every colour decision had to be solved
+against. One ground, solved once.
+
+The rule for components is unchanged and now unambiguous: never opt yourself
+into `.dark` to look premium. Read the semantic tokens and let the scope
+decide.
 
 **The Status-Only Colour Rule.** Oasis, clay and destructive appear only as
 state — a badge, an alert, a ledger sign. They are never a brand accent and
@@ -586,7 +593,7 @@ system has shipped came from separating them — repainting a ground at a call
 site and leaving the inherited foreground behind, or taking an alpha discount on
 a token that was solved at full strength.
 
-Four shapes of the same mistake, all now fixed:
+Five shapes of the same mistake, all now fixed:
 
 1. **A palette value used as a ground.** `bg-off-white` is a colour, not a role.
    It stayed at 91% lightness in dark mode while `--foreground` flipped to 96%,
@@ -606,8 +613,19 @@ Four shapes of the same mistake, all now fixed:
    on the dashboard rail. Each token was solved at full strength for that exact
    ground; the discount spent margin that was not there.
 
-**Rule:** if you paint a surface, name its ink in the same breath. If a token
-was solved for a ground, do not discount it.
+5. **A scope re-pitching a fill but not that fill's interactive states.**
+   `.on-olive` re-pitches `--gold` to 82% — light gold on a dark band, with
+   dark olive ink — but left `--gold-400`, which the button's hover uses,
+   inherited from `:root`, where it is 28% *because gold there is dark ink on
+   paper*. The gold CTA sat at 6.91:1 and dropped to **1.37:1 the instant the
+   pointer touched it**. Hover is a state, not a decoration: it inherits from
+   whichever scope forgot to define it, silently, and only shows up under a
+   cursor. The same band's `--secondary` / `--accent` fills carried 4.18:1 ink,
+   and `--muted` at 40% had no dim ink that could clear AA at all.
+
+**Rule:** if you paint a surface, name its ink in the same breath — and if you
+re-pitch a fill in a scope, re-pitch its hover, active and disabled steps too.
+If a token was solved for a ground, do not discount it.
 
 **Verified by** `npm run verify:contrast` — real Chrome, both themes, every
 public route plus all three dashboards, WCAG AA (4.5:1 body, 3:1 large). Text

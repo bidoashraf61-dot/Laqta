@@ -1,27 +1,26 @@
 /**
- * Theme constants, deliberately outside the client component.
+ * The pre-paint inline script.
  *
- * `THEME_SCRIPT` is inlined into <head> by the root layout, which is a SERVER
- * component. Importing it from a `'use client'` module would pull a client
- * boundary into the server tree for the sake of one string.
+ * Inlined into <head> by the root layout, which is a SERVER component —
+ * importing this from a `'use client'` module would pull a client boundary into
+ * the server tree for the sake of one string.
  *
  * It has to be a string rather than a module: anything React loads runs after
- * first paint, so the page would render paper and then repaint ink. Wrapped in
- * try/catch because `localStorage` throws in private mode on some browsers,
- * and a theme preference is never worth a blank page.
- */
-export const THEME_KEY = 'laqta-theme'
-
-/**
- * It also marks the document `js`, which is what lets entrance motion exist at
- * all.
+ * first paint, and the whole point is to run before it.
  *
- * A reveal has to start invisible, and "invisible" is a promise that something
- * will later make it visible. If scripting is off, or the bundle fails, or a
- * crawler never executes it, that promise is broken and the page is blank —
- * so the hidden state is scoped to `html.js` and the default is fully visible.
- * Setting the class here rather than from React is the whole point: React runs
- * after first paint, so the content would flash in and then be yanked back out
- * to animate.
+ * ── Why there is no theme in here any more ──────────────────────────────────
+ * The portal is light. It has one ground — paper — and `.dark` is no longer a
+ * document mode a visitor chooses; it is a SCOPE, applied to the things that
+ * are a frame rather than chrome: the site header, the dashboard shells, the
+ * hero, a footage placeholder. Those are dark because film is dark, not
+ * because of an OS preference, so nothing here reads `prefers-color-scheme`
+ * and nothing is stored.
+ *
+ * What remains is the `js` marker, and it is load-bearing. Entrance motion
+ * hides content by default, and hidden-by-default is a promise that something
+ * will reveal it. Scoping that promise to `html.js` means no JavaScript gives
+ * a fully visible page rather than a blank one — and setting the class here,
+ * before the first paint, is what stops content flashing in and being pulled
+ * back out to animate. See components/ui/reveal.tsx.
  */
-export const THEME_SCRIPT = `(function(){var e=document.documentElement;e.classList.add('js');try{var t=localStorage.getItem('${THEME_KEY}');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);e.classList.toggle('dark',d);}catch(e2){}})()`
+export const THEME_SCRIPT = `document.documentElement.classList.add('js')`

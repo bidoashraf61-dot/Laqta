@@ -26,13 +26,28 @@ const buttonVariants = cva(
   ),
   {
     variants: {
+      /*
+       * Every filled variant hovers to a NAMED token, never to an alpha.
+       *
+       * `hover:bg-primary/90` looks like "10% darker" and is not: it is a hole
+       * punched in the fill, so the result depends on whatever sits behind the
+       * button — paper, an olive band, a photograph — while the label's colour
+       * does not move at all. Three of these six variants did that, and the
+       * one that already used a token (`gold`) used one its band had never
+       * re-pitched, which is how the gold CTA reached 1.37:1 on hover.
+       *
+       * Each `-hover` step is solved against its own ink in every scope and
+       * checked by `npm run verify:pairs`.
+       */
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-soft hover:bg-primary/90',
+        default: 'bg-primary text-primary-foreground shadow-soft hover:bg-primary-hover',
         gold: 'bg-gold text-gold-foreground shadow-glow hover:bg-gold-400',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary-hover',
+        // The two unfilled variants share one hover fill, so a ghost and an
+        // outline button sitting beside each other light up identically.
         outline: 'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive-hover',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {

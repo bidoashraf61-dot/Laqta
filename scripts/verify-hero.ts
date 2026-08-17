@@ -96,15 +96,30 @@ async function main() {
     // render without typographic elongation".
     const text = document.body.innerText.replace(/\u0640+/g, '')
     return {
-      wall: text.includes('تصفّح باللقطة') || text.includes('واشترِ بالألبوم'),
+      /*
+       * Anchored on section STRUCTURE, not on headline copy.
+       *
+       * This suite has now failed twice on a copy edit rather than on a
+       * regression — once when the collection band became the seasonal shelf,
+       * once when the licensing headline was rewritten. What it is actually
+       * asserting is "the sections below the hero rendered", and a marketing
+       * headline is the least stable string on the page to ask that with. Each
+       * check keys off a link or a control that has a job to do.
+       */
+      // #showreel, because the hero's "watch the trailer" button links to it —
+      // if this id ever disappears that button breaks, so the id is load-bearing
+      // and therefore a safe thing to assert on. The wall's tiles deliberately
+      // link to the ALBUM rather than the clip, so a /footage/ link is exactly
+      // what it does NOT contain.
+      wall: !!document.querySelector('#showreel'),
       /*
        * The shelf's HEADING is seasonal now — «جاهز لموسم اليوم الوطني» in
        * August, «أحدث العروض» when no occasion is live — so asserting on it
        * would fail the suite on a calendar boundary rather than on a
        * regression. Its call to action does not move.
        */
-      collection: text.includes('تصفّح جميع الألبومات'),
-      licensing: text.includes('ميزات تلبّي') || text.includes('بثقة واستدامة'),
+      collection: !!document.querySelector('a[href$="/albums"]'),
+      licensing: !!document.querySelector('a[href$="/licences"]'),
     }
   })
   report('footage wall renders below the hero', sections.wall)

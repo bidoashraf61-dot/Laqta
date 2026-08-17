@@ -303,31 +303,18 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
   )
 }
 
-/**
- * One customer voice, set as an editorial pull-quote rather than a card.
+/*
+ * The Testimonial pull-quote lived here and has been removed.
  *
- * NOTE FOR THE OWNER: the quote and attribution below are placeholders. Swap
- * `landing.testimonialQuote` / `testimonialName` / `testimonialRole` in
- * messages/ar.json for a real, attributable customer quote before launch — a
- * fabricated testimonial is both a trust and a legal risk. Until then this
- * renders as an obvious placeholder, not a fake claim.
+ * It rendered a quote with «— اسم العميل» and «المسمّى الوظيفي، الجهة» as its
+ * attribution: a customer quote with placeholder credit, which is a fabricated
+ * review the moment anyone renders it. It was not on the landing page, so this
+ * was a loaded gun rather than a fired one — but the next person to compose the
+ * page would have found a ready-made section and used it.
+ *
+ * When there is a real, attributable quote, write it fresh with the customer's
+ * actual name and organisation.
  */
-export function Testimonial() {
-  return (
-    <Section tone="offwhite">
-      <figure className="mx-auto max-w-3xl text-center">
-        <blockquote className="font-display text-2xl font-light leading-[1.5] text-foreground/90">
-          {t('landing.testimonialQuote')}
-        </blockquote>
-        <figcaption className="mt-6 text-sm text-muted-foreground">
-          <span className="font-bold text-foreground">{t('landing.testimonialName')}</span>
-          {' · '}
-          {t('landing.testimonialRole')}
-        </figcaption>
-      </figure>
-    </Section>
-  )
-}
 
 export function HowItWorks() {
   const steps = [

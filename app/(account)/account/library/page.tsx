@@ -70,11 +70,9 @@ export default async function LibraryPage() {
                     <Bilingual ar={entry.album.titleAr} en={entry.album.titleEn} />
                   </CardTitle>
                   <div className="flex items-center gap-2">
-                    <Badge variant={entry.licenceTier === 'extended' ? 'gold' : 'neutral'}>
-                      {entry.licenceTier === 'extended'
-                        ? t('commerce.licenceExtended')
-                        : t('commerce.licenceStandard')}
-                    </Badge>
+                    {/* One licence, so the badge no longer distinguishes a
+                        tier — it confirms what was bought. */}
+                    <Badge variant="neutral">{t('commerce.licenceCommercial')}</Badge>
                     {entry.paid ? null : (
                       <Badge variant="warning">{t('library.awaitingPayment')}</Badge>
                     )}

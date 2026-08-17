@@ -1,4 +1,4 @@
-import type { LicenceTier, Prisma } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { resolveCommission, vatOn } from '@/lib/commission'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
@@ -29,7 +29,7 @@ import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-export type CheckoutLine = { albumId: string; licenceTier: LicenceTier }
+export type CheckoutLine = { albumId: string }
 
 export type BillingEntity = {
   billingEntityType: 'individual' | 'business'
@@ -120,9 +120,7 @@ export async function checkout({
       const album = albums.find((candidate) => candidate.id === line.albumId)
       if (!album) throw new Error('ALBUM_UNAVAILABLE')
 
-      const gross = Number(
-        line.licenceTier === 'extended' ? album.priceExtended : album.priceStandard,
-      )
+      const gross = Number(album.priceStandard)
       const lineVat = vatOn(gross, VAT_RATE)
 
       const commission = resolveCommission({
@@ -139,7 +137,6 @@ export async function checkout({
           orderId: created.id,
           albumId: album.id,
           creatorId: album.creator.id,
-          licenceTier: line.licenceTier,
           licenceVersionId: album.licenceVersionId,
           grossAmount: gross,
           vatAmount: lineVat,
@@ -153,19 +150,12 @@ export async function checkout({
       })
 
       await tx.entitlement.upsert({
-        where: {
-          userId_albumId_licenceTier: {
-            userId,
-            albumId: album.id,
-            licenceTier: line.licenceTier,
-          },
-        },
+        where: { userId_albumId: { userId, albumId: album.id } },
         update: { orderItemId: item.id, revokedAt: null },
         create: {
           userId,
           albumId: album.id,
           orderItemId: item.id,
-          licenceTier: line.licenceTier,
           clipIdsSnapshot: album.clips.map((clip) => clip.id),
         },
       })
@@ -310,7 +300,6 @@ export async function getLibrary(userId: string) {
       orderItem: {
         select: {
           clipManifestSnapshot: true,
-          licenceTier: true,
           createdAt: true,
           order: { select: { orderNumber: true, status: true } },
         },
@@ -320,7 +309,6 @@ export async function getLibrary(userId: string) {
 
   return entitlements.map((entitlement) => ({
     id: entitlement.id,
-    licenceTier: entitlement.licenceTier,
     grantedAt: entitlement.grantedAt,
     album: entitlement.album,
     orderNumber: entitlement.orderItem.order.orderNumber,

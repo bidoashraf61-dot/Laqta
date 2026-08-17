@@ -3,21 +3,20 @@
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trash2 } from 'lucide-react'
-import type { LicenceTier } from '@prisma/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney } from '@/lib/i18n'
-import { cn } from '@/lib/utils'
-import { removeFromCart, setTier } from '@/app/(public)/cart/actions'
+import { removeFromCart } from '@/app/(public)/cart/actions'
 import { useT } from '@/lib/i18n-client'
 
 /**
- * A cart line with the licence tier editable in place.
+ * A cart line.
  *
- * Editable here rather than only on the PDP because tier is the one thing
- * buyers change their mind about at the last second — sending them back to the
- * product page to do it loses carts.
+ * It used to carry a tier switcher, because the licence was the one thing
+ * buyers changed their mind about at the last second. There is one licence
+ * now — full commercial — so the line states what it costs and offers the only
+ * decision left, which is whether to keep it.
  */
 export function CartLine({
   albumId,
@@ -25,31 +24,21 @@ export function CartLine({
   titleEn,
   creatorNameAr,
   clipCount,
-  tier,
   unitPrice,
   currency,
-  editorialOnly,
 }: {
   albumId: string
   titleAr: string
   titleEn: string
   creatorNameAr: string
   clipCount: number
-  tier: LicenceTier
   unitPrice: number
   currency: string
-  editorialOnly: boolean
 }) {
   const t = useT()
 
   const router = useRouter()
   const [pending, startTransition] = useTransition()
-
-  const change = (next: LicenceTier) =>
-    startTransition(async () => {
-      await setTier(albumId, next)
-      router.refresh()
-    })
 
   return (
     <Card>
@@ -62,25 +51,9 @@ export function CartLine({
             {t('commerce.byCreator', { creator: creatorNameAr })} ·{' '}
             <span className="numeric">{clipCount}</span> {t('commerce.clip')}
           </p>
-
-          <div className="mt-2 flex gap-2">
-            <TierChip
-              active={tier === 'standard'}
-              onClick={() => change('standard')}
-              label={t('commerce.licenceStandard')}
-              disabled={pending}
-            />
-            {/* Editorial-only albums cannot carry an Extended licence at all,
-                so the option is absent rather than rejected at checkout. */}
-            {editorialOnly ? null : (
-              <TierChip
-                active={tier === 'extended'}
-                onClick={() => change('extended')}
-                label={t('commerce.licenceExtended')}
-                disabled={pending}
-              />
-            )}
-          </div>
+          {/* Stated, not chosen. The licence is the same on every line, and a
+              buyer should not have to infer that from its absence. */}
+          <p className="mt-1 text-xs text-muted-foreground">{t('commerce.licenceCommercial')}</p>
         </div>
 
         <span className="numeric text-lg font-bold text-gold">
@@ -103,32 +76,5 @@ export function CartLine({
         </Button>
       </CardContent>
     </Card>
-  )
-}
-
-function TierChip({
-  active,
-  onClick,
-  label,
-  disabled,
-}: {
-  active: boolean
-  onClick: () => void
-  label: string
-  disabled: boolean
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-pressed={active}
-      className={cn(
-        'rounded-full border px-3 py-1 text-xs transition-colors disabled:opacity-50',
-        active ? 'border-gold bg-gold/15 text-gold' : 'border-input text-muted-foreground',
-      )}
-    >
-      {label}
-    </button>
   )
 }

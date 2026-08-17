@@ -157,7 +157,6 @@ export default async function AlbumPage({
   const coverById = new Map(covers.map((clip) => [clip.id, clip.thumbnailKeys[0] ?? null]))
 
   const priceStandard = Number(album.priceStandard)
-  const priceExtended = Number(album.priceExtended)
   const hero = album.clips[0]?.thumbnailKeys[0] ?? null
 
   return (
@@ -371,9 +370,8 @@ export default async function AlbumPage({
             albumSlug={album.slug}
             creatorHandle={album.creator.handle}
             priceStandard={priceStandard}
-            priceExtended={priceExtended}
+            compareAtPrice={album.compareAtPrice ? Number(album.compareAtPrice) : null}
             currency={album.currency}
-            editorialOnly={album.clearanceStatus === 'editorial_only'}
           />
 
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">

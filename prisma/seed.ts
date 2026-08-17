@@ -222,40 +222,35 @@ async function seedTaxonomy() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function seedLicences() {
-  const standard = await db.licenceVersion.upsert({
-    where: { version: 'standard-v1' },
+  /*
+   * One licence. Full commercial, and genuinely uncapped.
+   *
+   * There were two — Standard at 500,000 views per outlet, Extended at 3× the
+   * price for unlimited — and the tier was the single most common thing a
+   * buyer got wrong. Guess low and they are out of licence, which is a legal
+   * problem; guess high and they overpay, which is a refund. Collapsing them
+   * removes the question rather than explaining it better.
+   *
+   * The exclusion that remains is the one every stock library keeps: you may
+   * use the footage in anything you make, but you may not resell the footage
+   * itself. Without it, one purchase makes a competitor.
+   */
+  const commercial = await db.licenceVersion.upsert({
+    where: { version: 'commercial-v1' },
     update: {},
     create: {
-      version: 'standard-v1',
-      tier: 'standard',
+      version: 'commercial-v1',
       isCurrent: true,
-      titleAr: 'الترخيص القياسي',
-      titleEn: 'Standard Licence',
+      titleAr: 'الترخيص التجاري الكامل',
+      titleEn: 'Full Commercial Licence',
       bodyAr:
-        'ترخيص غير حصري، عالمي، دائم، للاستخدام التجاري بحد أقصى ٥٠٠٬٠٠٠ مشاهدة لكل منفذ عرض. لا يشمل إعادة البيع أو التوزيع كمادة أرشيفية أو الاستخدام في منتجات معدّة لإعادة البيع.',
+        'ترخيص تجاري كامل: غير حصري، عالمي، دائم، بلا حد لعدد المشاهدات. يشمل الحملات المدفوعة والعرض خارج المنزل والمنتجات المعدّة لإعادة البيع. لا يشمل إعادة بيع اللقطة نفسها أو توزيعها كمادة أرشيفية.',
       bodyEn:
-        'Non-exclusive, worldwide, perpetual commercial use up to 500,000 views per outlet. Excludes resale, redistribution as stock, and use in products made for resale.',
+        'Full commercial licence: non-exclusive, worldwide, perpetual, with no view cap. Covers paid campaigns, out-of-home, and products made for resale. Excludes reselling the footage itself or redistributing it as stock.',
     },
   })
 
-  const extended = await db.licenceVersion.upsert({
-    where: { version: 'extended-v1' },
-    update: {},
-    create: {
-      version: 'extended-v1',
-      tier: 'extended',
-      isCurrent: true,
-      titleAr: 'الترخيص الموسّع',
-      titleEn: 'Extended Licence',
-      bodyAr:
-        'استخدام تجاري غير محدود المشاهدات، يشمل الحملات المدفوعة واسعة النطاق والعرض خارج المنزل والاستخدام في منتجات معدّة لإعادة البيع. لا يُمنح للألبومات المخصصة للاستخدام التحريري فقط.',
-      bodyEn:
-        'Unlimited-view commercial use including large paid campaigns, out-of-home, and products made for resale. Never granted for editorial-only albums.',
-    },
-  })
-
-  console.log('  licences — standard-v1, extended-v1')
-  return { standard, extended }
+  return { commercial }
 }
 
 /** Price bands. Extended is 3× standard by policy — locked in 00-README. */
@@ -271,7 +266,7 @@ async function seedPriceBands() {
     await db.priceBand.upsert({
       where: { tier },
       update: { priceStandard },
-      create: { tier, labelAr, labelEn, minClips, maxClips, priceStandard, extendedMultiplier: 3 },
+      create: { tier, labelAr, labelEn, minClips, maxClips, priceStandard },
     })
   }
   console.log('  price bands — mini, standard, pro, signature')
@@ -281,7 +276,12 @@ async function seedPriceBands() {
 
 const ALULA_SHOTS: Array<[string, string, string, string]> = [
   ['الحِجر عند الشروق — دوران بطيء', 'Hegra at sunrise — slow orbit', 'Drone', 'Wide'],
-  ['قصر الفريد — كشف من خلف الصخرة', 'Qasr al-Farid — reveal from behind the rock', 'Drone', 'Wide'],
+  [
+    'قصر الفريد — كشف من خلف الصخرة',
+    'Qasr al-Farid — reveal from behind the rock',
+    'Drone',
+    'Wide',
+  ],
   ['جبل عكمة — تمرير جانبي', 'Jabal Ikmah — lateral pass', 'Drone', 'Wide'],
   ['وادي العلا — ارتفاع عمودي', 'AlUla valley — vertical climb', 'Drone', 'Aerial'],
   ['المدينة القديمة — من الأعلى', 'Old Town — top-down', 'Drone', 'Aerial'],
@@ -363,7 +363,8 @@ async function main() {
       vatNumber: '300012345600003',
       billingAddress: {
         line1: 'طريق الملك فهد',
-        cityAr: 'الرياض', cityEn: 'Riyadh',
+        cityAr: 'الرياض',
+        cityEn: 'Riyadh',
         region: 'منطقة الرياض',
         postalCode: '12211',
         country: 'SA',
@@ -399,7 +400,8 @@ async function main() {
       bioEn:
         'Cairo-based aerial cinematographer specialising in desert landscapes and heritage sites across the Arabian Peninsula. Shoots 24p cinema LOG.',
       country: 'EG',
-      cityAr: 'القاهرة', cityEn: 'Cairo',
+      cityAr: 'القاهرة',
+      cityEn: 'Cairo',
       status: 'approved',
       tier: 'silver',
       isExclusive: true,
@@ -440,7 +442,8 @@ async function main() {
       bioAr: 'مخرجة ومصوّرة من الرياض. أعمل على قصص المدينة والحياة اليومية.',
       bioEn: 'Director and DP from Riyadh working on city stories and everyday life.',
       country: 'SA',
-      cityAr: 'الرياض', cityEn: 'Riyadh',
+      cityAr: 'الرياض',
+      cityEn: 'Riyadh',
       status: 'approved',
       tier: 'standard',
       payoutMethod: 'iban',
@@ -548,13 +551,12 @@ async function main() {
       status: 'live',
       tier: 'pro',
       priceStandard: 399,
-      priceExtended: 4497,
       clearanceStatus: 'full',
       clearedForCommercial: true,
       isExclusive: true,
       isFeatured: true,
       featureRank: 1,
-      licenceVersionId: licences.standard.id,
+      licenceVersionId: licences.commercial.id,
       publishedAt: daysAgo(150),
       ratingAvg: 4.8,
       viewCount: 3120,
@@ -574,7 +576,6 @@ async function main() {
       status: 'draft',
       tier: 'mini',
       priceStandard: 79,
-      priceExtended: 897,
       clearanceStatus: 'pending',
     },
   })
@@ -592,7 +593,6 @@ async function main() {
       status: 'in_review',
       tier: 'standard',
       priceStandard: 199,
-      priceExtended: 2397,
       clearanceStatus: 'editorial_only',
     },
   })
@@ -777,19 +777,40 @@ async function main() {
       select: { id: true, titleAr: true, titleEn: true, masterKey: true },
     })
 
-    const sales: Array<[number, 'standard' | 'extended']> = [
-      [96, 'standard'],
-      [61, 'extended'],
-      [34, 'standard'],
-      [11, 'standard'],
-      [3, 'extended'],
-    ]
+    // Five past sales at five ages, so the ledger, the hold window and the
+    // payout all have something real to describe.
+    const sales = [96, 61, 34, 11, 3]
+
+    /*
+     * Clear the demo order graph first, so this file can be run twice.
+     *
+     * Everything above uses `upsert` and is re-runnable; the sales below use
+     * `create` with fixed order numbers, so a second run died on a unique
+     * constraint and the only way forward was resetting the whole database.
+     * That is a trap: a schema change means reseeding, and reseeding meant
+     * losing every account someone had set up by hand.
+     *
+     * Scoped to the numbers this block owns. `Order` cascades to its items,
+     * invoice and certificate; the ledger and entitlements hold plain
+     * references and are cleared first, in dependency order.
+     */
+    const demoOrders = await db.order.findMany({
+      where: { orderNumber: { startsWith: 'LQ-2026-' } },
+      select: { id: true, items: { select: { id: true } } },
+    })
+    if (demoOrders.length) {
+      const itemIds = demoOrders.flatMap((order) => order.items.map((item) => item.id))
+      await db.download.deleteMany({
+        where: { entitlement: { orderItemId: { in: itemIds } } },
+      })
+      await db.creatorLedger.deleteMany({ where: { orderItemId: { in: itemIds } } })
+      await db.entitlement.deleteMany({ where: { orderItemId: { in: itemIds } } })
+      await db.order.deleteMany({ where: { id: { in: demoOrders.map((o) => o.id) } } })
+    }
 
     let balance = 0
-    for (const [index, [age, licenceTier]] of sales.entries()) {
-      const gross = Number(
-        licenceTier === 'extended' ? liveAlbum.priceExtended : liveAlbum.priceStandard,
-      )
+    for (const [index, age] of sales.entries()) {
+      const gross = Number(liveAlbum.priceStandard)
       const vatAmount = round2(gross * VAT_RATE)
       const createdAt = daysAgo(age)
 
@@ -827,9 +848,7 @@ async function main() {
           orderId: order.id,
           albumId: liveAlbum.id,
           creatorId: creator.id,
-          licenceTier,
-          licenceVersionId:
-            licenceTier === 'extended' ? licences.extended.id : licences.standard.id,
+          licenceVersionId: licences.commercial.id,
           grossAmount: gross,
           vatAmount,
           commissionRate: commission.rate,
@@ -844,19 +863,12 @@ async function main() {
       })
 
       await db.entitlement.upsert({
-        where: {
-          userId_albumId_licenceTier: {
-            userId: buyer.id,
-            albumId: liveAlbum.id,
-            licenceTier,
-          },
-        },
+        where: { userId_albumId: { userId: buyer.id, albumId: liveAlbum.id } },
         update: {},
         create: {
           userId: buyer.id,
           albumId: liveAlbum.id,
           orderItemId: item.id,
-          licenceTier,
           clipIdsSnapshot: clips.map((clip) => clip.id),
           grantedAt: createdAt,
         },
@@ -888,7 +900,7 @@ async function main() {
           amount: commission.creatorNetAmount,
           balanceAfter: balance,
           orderItemId: item.id,
-          memo: `${liveAlbum.titleAr} — ${licenceTier}`,
+          memo: liveAlbum.titleAr,
           availableAt: new Date(createdAt.getTime() + HOLD_DAYS * DAY),
           createdAt,
         },
@@ -1079,9 +1091,7 @@ async function main() {
           data: {
             albumId: album.id,
             creatorId: album.creatorId,
-            day: new Date(
-              Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-            ),
+            day: new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())),
             views,
             boardAdds,
             cartAdds,
@@ -1121,36 +1131,128 @@ async function main() {
     cat?: string
     featured?: boolean
   }> = [
-    { slug: 'diriyah-najdi-architecture', titleAr: 'الدرعية — عمارة نجدية', titleEn: 'Diriyah — Najdi Architecture',
-      descAr: 'أربع وعشرون لقطة للطين النجدي عند الغروب وبعد المغرب، بتدرّج واحد.', posters: 'diriyah',
-      clips: 24, price: 399, compareAt: 599, offerAr: 'عرض الإطلاق', offerEn: 'Launch offer', loc: 'diriyah', cat: 'heritage', featured: true },
-    { slug: 'riyadh-skyline-night', titleAr: 'الرياض — أفق الليل', titleEn: 'Riyadh — Night Skyline',
-      descAr: 'ستّ عشرة لقطة لأبراج الرياض من الغروب حتى منتصف الليل.', posters: 'riyadh',
-      clips: 16, price: 199, loc: 'riyadh', cat: 'cityscapes' },
-    { slug: 'jeddah-waterfront', titleAr: 'جدة — الواجهة البحرية', titleEn: 'Jeddah — Waterfront',
-      descAr: 'أربع عشرة لقطة للكورنيش والبحر الأحمر في الساعة الزرقاء.', posters: 'jeddah',
-      clips: 14, price: 199, compareAt: 299, offerAr: 'عرض الإطلاق', offerEn: 'Launch offer', loc: 'jeddah', cat: 'cityscapes' },
-    { slug: 'red-sea-reefs', titleAr: 'البحر الأحمر — شعاب وسواحل', titleEn: 'Red Sea — Reefs & Coast',
-      descAr: 'عشرون لقطة جوية للشعاب والمياه الضحلة عند الظهيرة.', posters: 'redsea',
-      clips: 20, price: 399, loc: 'red-sea', cat: 'coast-marine', featured: true },
-    { slug: 'edge-of-the-world-cliffs', titleAr: 'حافة العالم — منحدرات طويق', titleEn: 'Edge of the World — Tuwaiq Cliffs',
-      descAr: 'ثماني عشرة لقطة للجرف عند الفجر وفي الغبار الخفيف.', posters: 'desert',
-      clips: 18, price: 399, loc: 'edge-of-the-world', cat: 'desert-nature' },
-    { slug: 'empty-quarter-dawn', titleAr: 'الربع الخالي — فجر الكثبان', titleEn: 'Empty Quarter — Dune Dawn',
-      descAr: 'اثنتا عشرة لقطة للكثبان قبل الشروق مباشرة.', posters: 'desert',
-      clips: 12, price: 199, compareAt: 279, offerAr: 'عرض محدود', offerEn: 'Limited offer', loc: 'rub-al-khali', cat: 'desert-nature' },
-    { slug: 'aerial-clouds-above', titleAr: 'فوق الغيوم — لقطات ارتفاع', titleEn: 'Above the Clouds — Altitude',
-      descAr: 'خمس عشرة لقطة فوق طبقة الغيوم عند الفجر وبعد الغروب.', posters: 'clouds',
-      clips: 15, price: 199, cat: 'aerials' },
-    { slug: 'cabin-window-series', titleAr: 'من النافذة — سلسلة الطيران', titleEn: 'From the Window — Flight Series',
-      descAr: 'عشر لقطات من نافذة الطائرة، صباحاً وليلاً.', posters: 'window',
-      clips: 10, price: 79, cat: 'transport' },
-    { slug: 'alula-hegra-detail', titleAr: 'العلا — تفاصيل الحِجر', titleEn: 'AlUla — Hegra Details',
-      descAr: 'اثنتا عشرة لقطة قريبة للواجهات المنحوتة.', posters: 'alula',
-      clips: 12, price: 199, loc: 'alula', cat: 'heritage' },
-    { slug: 'riyadh-streets-day', titleAr: 'الرياض — شوارع النهار', titleEn: 'Riyadh — Daytime Streets',
-      descAr: 'إحدى وعشرون لقطة للحركة والمشاة في وسط المدينة.', posters: 'riyadh',
-      clips: 21, price: 399, compareAt: 549, offerAr: 'عرض الإطلاق', offerEn: 'Launch offer', loc: 'riyadh', cat: 'people-lifestyle' },
+    {
+      slug: 'diriyah-najdi-architecture',
+      titleAr: 'الدرعية — عمارة نجدية',
+      titleEn: 'Diriyah — Najdi Architecture',
+      descAr: 'أربع وعشرون لقطة للطين النجدي عند الغروب وبعد المغرب، بتدرّج واحد.',
+      posters: 'diriyah',
+      clips: 24,
+      price: 399,
+      compareAt: 599,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      loc: 'diriyah',
+      cat: 'heritage',
+      featured: true,
+    },
+    {
+      slug: 'riyadh-skyline-night',
+      titleAr: 'الرياض — أفق الليل',
+      titleEn: 'Riyadh — Night Skyline',
+      descAr: 'ستّ عشرة لقطة لأبراج الرياض من الغروب حتى منتصف الليل.',
+      posters: 'riyadh',
+      clips: 16,
+      price: 199,
+      loc: 'riyadh',
+      cat: 'cityscapes',
+    },
+    {
+      slug: 'jeddah-waterfront',
+      titleAr: 'جدة — الواجهة البحرية',
+      titleEn: 'Jeddah — Waterfront',
+      descAr: 'أربع عشرة لقطة للكورنيش والبحر الأحمر في الساعة الزرقاء.',
+      posters: 'jeddah',
+      clips: 14,
+      price: 199,
+      compareAt: 299,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      loc: 'jeddah',
+      cat: 'cityscapes',
+    },
+    {
+      slug: 'red-sea-reefs',
+      titleAr: 'البحر الأحمر — شعاب وسواحل',
+      titleEn: 'Red Sea — Reefs & Coast',
+      descAr: 'عشرون لقطة جوية للشعاب والمياه الضحلة عند الظهيرة.',
+      posters: 'redsea',
+      clips: 20,
+      price: 399,
+      loc: 'red-sea',
+      cat: 'coast-marine',
+      featured: true,
+    },
+    {
+      slug: 'edge-of-the-world-cliffs',
+      titleAr: 'حافة العالم — منحدرات طويق',
+      titleEn: 'Edge of the World — Tuwaiq Cliffs',
+      descAr: 'ثماني عشرة لقطة للجرف عند الفجر وفي الغبار الخفيف.',
+      posters: 'desert',
+      clips: 18,
+      price: 399,
+      loc: 'edge-of-the-world',
+      cat: 'desert-nature',
+    },
+    {
+      slug: 'empty-quarter-dawn',
+      titleAr: 'الربع الخالي — فجر الكثبان',
+      titleEn: 'Empty Quarter — Dune Dawn',
+      descAr: 'اثنتا عشرة لقطة للكثبان قبل الشروق مباشرة.',
+      posters: 'desert',
+      clips: 12,
+      price: 199,
+      compareAt: 279,
+      offerAr: 'عرض محدود',
+      offerEn: 'Limited offer',
+      loc: 'rub-al-khali',
+      cat: 'desert-nature',
+    },
+    {
+      slug: 'aerial-clouds-above',
+      titleAr: 'فوق الغيوم — لقطات ارتفاع',
+      titleEn: 'Above the Clouds — Altitude',
+      descAr: 'خمس عشرة لقطة فوق طبقة الغيوم عند الفجر وبعد الغروب.',
+      posters: 'clouds',
+      clips: 15,
+      price: 199,
+      cat: 'aerials',
+    },
+    {
+      slug: 'cabin-window-series',
+      titleAr: 'من النافذة — سلسلة الطيران',
+      titleEn: 'From the Window — Flight Series',
+      descAr: 'عشر لقطات من نافذة الطائرة، صباحاً وليلاً.',
+      posters: 'window',
+      clips: 10,
+      price: 79,
+      cat: 'transport',
+    },
+    {
+      slug: 'alula-hegra-detail',
+      titleAr: 'العلا — تفاصيل الحِجر',
+      titleEn: 'AlUla — Hegra Details',
+      descAr: 'اثنتا عشرة لقطة قريبة للواجهات المنحوتة.',
+      posters: 'alula',
+      clips: 12,
+      price: 199,
+      loc: 'alula',
+      cat: 'heritage',
+    },
+    {
+      slug: 'riyadh-streets-day',
+      titleAr: 'الرياض — شوارع النهار',
+      titleEn: 'Riyadh — Daytime Streets',
+      descAr: 'إحدى وعشرون لقطة للحركة والمشاة في وسط المدينة.',
+      posters: 'riyadh',
+      clips: 21,
+      price: 399,
+      compareAt: 549,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      loc: 'riyadh',
+      cat: 'people-lifestyle',
+    },
   ]
 
   let made = 0
@@ -1168,7 +1270,6 @@ async function main() {
         status: 'live',
         tier: 'pro',
         priceStandard: a.price,
-        priceExtended: a.price * 3,
         compareAtPrice: a.compareAt ?? null,
         // Dev only, same standing as the clip proxies: a real trailer is cut
         // per album once the pipeline exists. Gitignored, so a fresh checkout
@@ -1180,7 +1281,7 @@ async function main() {
         clearedForCommercial: true,
         isFeatured: a.featured ?? false,
         featureRank: a.featured ? n + 2 : null,
-        licenceVersionId: licences.standard.id,
+        licenceVersionId: licences.commercial.id,
         publishedAt: daysAgo(120 - n * 7),
         ratingAvg: 4.3 + (n % 6) * 0.1,
         viewCount: 400 + n * 137,
@@ -1221,20 +1322,28 @@ async function main() {
       })
     }
 
-    const cover = await db.clip.findFirst({ where: { albumId: album.id }, orderBy: { orderIndex: 'asc' } })
+    const cover = await db.clip.findFirst({
+      where: { albumId: album.id },
+      orderBy: { orderIndex: 'asc' },
+    })
     await db.album.update({
       where: { id: album.id },
       data: { clipCount: a.clips, coverClipId: cover?.id ?? null, totalRuntimeS: a.clips * 10 },
     })
 
-    for (const [kind, slug] of [['location', a.loc], ['category', a.cat]] as const) {
+    for (const [kind, slug] of [
+      ['location', a.loc],
+      ['category', a.cat],
+    ] as const) {
       if (!slug) continue
       const tx = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
       if (tx) await db.albumTaxonomy.create({ data: { albumId: album.id, taxonomyId: tx.id } })
     }
     made += 1
   }
-  console.log(`  catalogue — ${made} extra live albums (${EXTRA_ALBUMS.filter((a) => a.compareAt).length} on offer)`)
+  console.log(
+    `  catalogue — ${made} extra live albums (${EXTRA_ALBUMS.filter((a) => a.compareAt).length} on offer)`,
+  )
 
   console.log('Seed complete.')
 }

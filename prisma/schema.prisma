@@ -74,11 +74,6 @@ enum ClearanceStatus {
   pending
 }
 
-enum LicenceTier {
-  standard
-  extended // 3× standard price
-}
-
 enum ReleaseType {
   model
   property
@@ -374,7 +369,6 @@ model Album {
   tier   AlbumTier   @default(standard)
 
   priceStandard Decimal @db.Decimal(10, 2)
-  priceExtended Decimal @db.Decimal(10, 2)
   /// The price this album is normally sold at, when it is currently on offer.
   /// NULL means "no offer" — it is deliberately not a discount percentage,
   /// because a percentage has to be recomputed to display and can drift from
@@ -706,10 +700,9 @@ model Cart {
 model CartItem {
   id          String      @id @default(cuid())
   cartId      String
-  albumId     String
-  licenceTier LicenceTier @default(standard)
-  unitPrice   Decimal     @db.Decimal(10, 2)
-  vatAmount   Decimal     @db.Decimal(10, 2)
+  albumId   String
+  unitPrice Decimal @db.Decimal(10, 2)
+  vatAmount Decimal @db.Decimal(10, 2)
 
   addedAt DateTime @default(now())
 
@@ -761,8 +754,6 @@ model OrderItem {
   albumId   String
   creatorId String
 
-  licenceTier LicenceTier
-
   /// ── FROZEN AT PURCHASE ──────────────────────────────────────────────────
   /// Licence text version in force at purchase. Never repoint this.
   licenceVersionId String?
@@ -807,8 +798,7 @@ model Entitlement {
   id          String      @id @default(cuid())
   userId      String
   albumId     String
-  orderItemId String      @unique
-  licenceTier LicenceTier
+  orderItemId String @unique
 
   /// Mirror of OrderItem.clipManifestSnapshot — the clips actually owned.
   clipIdsSnapshot String[] @default([])
@@ -822,7 +812,7 @@ model Entitlement {
   orderItem OrderItem  @relation(fields: [orderItemId], references: [id])
   downloads Download[]
 
-  @@unique([userId, albumId, licenceTier])
+  @@unique([userId, albumId])
   @@index([userId])
 }
 
@@ -848,10 +838,13 @@ model Download {
 
 /// Versioned licence text. OrderItem points at the version in force at
 /// purchase; revising the text creates a new row, never an update.
+///
+/// There is ONE licence — full commercial — so there is no tier here. The
+/// version is still frozen onto every order, because the text can change and a
+/// buyer owns the wording that was in force when they paid.
 model LicenceVersion {
   id        String      @id @default(cuid())
-  version   String      @unique // e.g. "standard-v1", "extended-v2"
-  tier      LicenceTier
+  version   String      @unique // e.g. "commercial-v1"
   titleAr   String
   titleEn   String
   bodyAr    String
@@ -1098,7 +1091,6 @@ model PriceBand {
   maxClips           Int?
   priceStandard      Decimal   @db.Decimal(10, 2)
   /// Extended is 3× standard by policy; kept explicit so it can be tuned.
-  extendedMultiplier Decimal   @default(3) @db.Decimal(5, 2)
   currency           String    @default("USD")
 
   createdAt DateTime @default(now())

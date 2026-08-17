@@ -18,8 +18,7 @@ const schema = z.object({
 })
 
 export type PlaceOrderResult =
-  | { ok: true; orderNumber: string; settled: boolean }
-  | { ok: false; messageKey: string }
+  { ok: true; orderNumber: string; settled: boolean } | { ok: false; messageKey: string }
 
 export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> {
   const user = await requireUser()
@@ -56,7 +55,7 @@ export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> 
 
   const result = await checkout({
     userId: user.id,
-    lines: cart.items.map((item) => ({ albumId: item.albumId, licenceTier: item.licenceTier })),
+    lines: cart.items.map((item) => ({ albumId: item.albumId })),
     billing: {
       billingEntityType: parsed.data.billingEntityType,
       legalName: parsed.data.legalName,

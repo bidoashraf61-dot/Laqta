@@ -31,7 +31,7 @@ async function main() {
   const cents = (col: string) => `ROUND(${col} / ${F}, 2)`
 
   const statements = [
-    `UPDATE "Album" SET currency='USD', "priceStandard"=${whole('"priceStandard"')}, "priceExtended"=${whole('"priceExtended"')}`,
+    `UPDATE "Album" SET currency='USD', "priceStandard"=${whole('"priceStandard"')}`,
     `UPDATE "PriceBand" SET currency='USD', "priceStandard"=${whole('"priceStandard"')}`,
     `UPDATE "PromoCode" SET currency='USD', value=CASE WHEN kind='fixed' THEN ${cents('value')} ELSE value END, "minOrderTotal"=${cents('"minOrderTotal"')}`,
     `UPDATE "CartItem" SET "unitPrice"=${cents('"unitPrice"')}, "vatAmount"=${cents('"vatAmount"')}`,

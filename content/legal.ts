@@ -66,11 +66,11 @@ export const TERMS: DocumentSection[] = [
     headingEn: 'What the licence does not cover',
     bodyEn: [
       'The licence gives you no right to resell the clip as it is, to make it available in another footage library, or to use it in a way that reflects badly on a person appearing in it, or on a place or a religious or national symbol.',
-      'See the licences page for a breakdown of what the standard licence covers and what requires an extended one.',
+      'See the licences page for a breakdown of what the licence covers and the few things it does not.',
     ],
     body: [
       'لا يمنحك الترخيص حقاً في إعادة بيع اللقطة كما هي، أو إتاحتها في مكتبة لقطات أخرى، أو استخدامها بما يسيء إلى شخص ظاهر فيها أو إلى مكان أو رمز ديني أو وطني.',
-      'راجع صفحة التراخيص لتفصيل ما يشمله الترخيص القياسي وما يتطلب ترخيصاً موسّعاً.',
+      'راجع صفحة التراخيص لتفصيل ما يشمله الترخيص وما لا يشمله.',
     ],
   },
   {
@@ -190,40 +190,28 @@ export const LICENCES: DocumentSection[] = [
     ],
   },
   {
-    heading: 'الترخيص القياسي',
-    headingEn: 'The standard licence',
-    bodyEn: ['Covers ordinary commercial use:'],
+    heading: 'ما يغطّيه الترخيص',
+    headingEn: 'What the licence covers',
+    bodyEn: ['One licence, and it covers commercial use in full:'],
     listEn: [
       'Digital advertising, social platforms, websites and internal presentations.',
-      'Television, cinema and paid content, up to five hundred thousand views per channel.',
-      'Use within a single client project; the licence is attributed to the party that paid for it.',
-    ],
-    body: ['يغطي الاستخدام التجاري المعتاد:'],
-    list: [
-      'الإعلانات الرقمية، ومنصّات التواصل، ومواقع الويب، والعروض الداخلية.',
-      'الأعمال التلفزيونية والسينمائية والمحتوى المدفوع، بحد أقصى خمسمئة ألف مشاهدة لكل منفذ عرض.',
-      'الاستخدام داخل مشروع عميل واحد، ويُنسب الترخيص للجهة التي دفعت قيمته.',
-    ],
-  },
-  {
-    heading: 'الترخيص الموسّع',
-    headingEn: 'The extended licence',
-    bodyEn: ['Costs three times the standard price, and lifts the limits:'],
-    listEn: [
-      'Unlimited views across every channel.',
-      'Products made for resale: templates, digital product backgrounds and commercial displays.',
+      'Television, cinema and paid content, with no cap on views.',
+      'Out-of-home and commercial displays.',
+      'Products made for resale: templates, digital product backgrounds and packaging.',
       'Use across more than one client project.',
     ],
-    body: ['يُشترى بثلاثة أضعاف السعر القياسي، ويرفع القيود:'],
+    body: ['ترخيص واحد، ويغطي الاستخدام التجاري كاملاً:'],
     list: [
-      'مشاهدات غير محدودة على كل المنافذ.',
-      'المنتجات المعدّة لإعادة البيع: القوالب، وخلفيات المنتجات الرقمية، والشاشات التجارية.',
+      'الإعلانات الرقمية، ومنصّات التواصل، ومواقع الويب، والعروض الداخلية.',
+      'الأعمال التلفزيونية والسينمائية والمحتوى المدفوع، بلا حد لعدد المشاهدات.',
+      'العرض خارج المنزل والشاشات التجارية.',
+      'المنتجات المعدّة لإعادة البيع: القوالب، وخلفيات المنتجات الرقمية، والتغليف.',
       'الاستخدام في أكثر من مشروع عميل.',
     ],
   },
   {
-    heading: 'ما يمنعه الترخيصان معاً',
-    headingEn: 'What both licences prohibit',
+    heading: 'ما يمنعه الترخيص',
+    headingEn: 'What the licence prohibits',
     bodyEn: [],
     listEn: [
       'Reselling the clip as it is, or listing it in another footage library.',
@@ -493,10 +481,10 @@ export const CONTACT: DocumentSection[] = [
     heading: 'الشركات والجهات الحكومية',
     headingEn: 'Companies and government bodies',
     bodyEn: [
-      'For organisational accounts, invoicing against a purchase order, and organisation-wide extended licences, get in touch and we will put together a proposal.',
+      'For organisational accounts, invoicing against a purchase order, and organisation-wide agreements, get in touch and we will put together a proposal.',
     ],
     body: [
-      'للحسابات المؤسسية، والفوترة بأمر شراء، والتراخيص الموسّعة على مستوى المنظمة، تواصل معنا وسنجهّز لك عرضاً.',
+      'للحسابات المؤسسية، والفوترة بأمر شراء، والاتفاقيات على مستوى المنظمة، تواصل معنا وسنجهّز لك عرضاً.',
     ],
   },
 ]

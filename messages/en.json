@@ -127,8 +127,6 @@
     "subtotal": "Subtotal",
     "vat": "VAT",
     "licence": "Licence",
-    "licenceStandard": "Standard licence",
-    "licenceExtended": "Extended licence",
     "oneTimePurchase": "One-time purchase",
     "ownForever": "Permanent lifetime ownership",
     "instantDownload": "Instant download",
@@ -137,7 +135,8 @@
     "fromAlbum": "From the album: {album}",
     "clearedForCommercial": "Cleared for commercial use",
     "editorialOnly": "Editorial use only",
-    "byCreator": "by {creator}"
+    "byCreator": "by {creator}",
+    "licenceCommercial": "Full commercial licence"
   },
   "request": {
     "lead": "Didn't find the shot you're after?",
@@ -349,9 +348,6 @@
     "totalSize": "Total size",
     "clipCountLabel": "Number of clips",
     "licence": "Licence",
-    "licenceWhich": "Which licence do I need?",
-    "licenceStandardHint": "Up to 500,000 views per channel",
-    "licenceExtendedHint": "Unlimited views, and products made for resale",
     "reassurance": "Instant download · permanent lifetime ownership · tax invoice",
     "clearance": "Clearance and licensing",
     "clearanceFull": "Complete — cleared for commercial use",
@@ -382,7 +378,11 @@
     "durUnder5": "Under 5 seconds",
     "dur5to10": "5 – 10 seconds",
     "dur10to20": "10 – 20 seconds",
-    "dur20plus": "Over 20 seconds"
+    "dur20plus": "Over 20 seconds",
+    "licenceGrantCommercial": "Full commercial use, with no view cap",
+    "licenceGrantForever": "Permanent ownership — yours for life",
+    "licenceGrantOnce": "Pay once, no subscriptions",
+    "licenceDetails": "License details"
   },
   "sell": {
     "title": "Sell your footage on Laqta",

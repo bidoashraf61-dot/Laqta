@@ -103,8 +103,6 @@
     "subtotal": "المجموع الفرعي",
     "vat": "ضريبة القيمة المضافة",
     "licence": "الترخيص",
-    "licenceStandard": "ترخيص قياسي",
-    "licenceExtended": "ترخيص موسّع",
     "oneTimePurchase": "شراء لمرة واحدة",
     "ownForever": "امتلاك دائم للأبد",
     "instantDownload": "تحميل فوري",
@@ -113,7 +111,8 @@
     "fromAlbum": "من ألبوم: {album}",
     "clearedForCommercial": "مرخّصة للاستخدام التجاري",
     "editorialOnly": "للاستخدام التحريري فقط",
-    "byCreator": "بواسطة {creator}"
+    "byCreator": "بواسطة {creator}",
+    "licenceCommercial": "ترخيص تجاري كامل"
   },
   "state": {
     "loading": "جارٍ التحميل…",
@@ -195,9 +194,6 @@
     "totalSize": "الحجم الإجمالي",
     "clipCountLabel": "عدد اللقطات",
     "licence": "الترخيص",
-    "licenceWhich": "أي ترخيص أحتاج؟",
-    "licenceStandardHint": "حتى ٥٠٠ ألف مشاهدة لكل منفذ عرض",
-    "licenceExtendedHint": "مشاهدات غير محدودة، ومنتجات معدّة لإعادة البيع",
     "reassurance": "تحميل فوري · امتلاك دائم للأبد · فاتورة ضريبية",
     "clearance": "التصاريح والتراخيص",
     "clearanceFull": "مكتملة — مرخّصة للاستخدام التجاري",
@@ -228,7 +224,11 @@
     "durUnder5": "أقل من ٥ ثوانٍ",
     "dur5to10": "٥ – ١٠ ثوانٍ",
     "dur10to20": "١٠ – ٢٠ ثانية",
-    "dur20plus": "أكثر من ٢٠ ثانية"
+    "dur20plus": "أكثر من ٢٠ ثانية",
+    "licenceGrantCommercial": "استخدام تجاري كامل، بلا حد لعدد المشاهدات",
+    "licenceGrantForever": "ملكية دائمة — يبقى لك للأبد",
+    "licenceGrantOnce": "دفعة واحدة، بلا اشتراكات",
+    "licenceDetails": "تفاصيل الترخيص"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",
@@ -751,7 +751,6 @@
     "priceBandsHint": "السعر يُشتق من عدد اللقطات. تعديل الشريحة يسري على الألبومات الجديدة فقط.",
     "bandRange": "عدد اللقطات",
     "bandPrice": "سعر الترخيص القياسي",
-    "bandMultiplier": "معامل الترخيص الموسّع",
     "taxonomyTitle": "التصنيفات والمواقع",
     "taxonomyHint": "التصنيفات والمواقع والوسوم ومرادفاتها. المرادفات هي ما يجعل البحث العربي يجد المحتوى الموسوم بالإنجليزية.",
     "kindCategory": "تصنيف",

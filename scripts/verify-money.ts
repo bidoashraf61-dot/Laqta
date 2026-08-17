@@ -44,7 +44,7 @@ async function main() {
   // ── Sell at the creator's current tier ────────────────────────────────────
   const result = await checkout({
     userId: buyer.id,
-    lines: [{ albumId: album.id, licenceTier: 'standard' }],
+    lines: [{ albumId: album.id }],
     billing: { billingEntityType: 'individual' },
     method: 'bank_transfer',
   })

@@ -35,13 +35,13 @@ finds nothing.
 
 ## Deliberately NOT adopted from the source document
 
-Three of its claims contradict what the product does, so the wording is used
-but the claim is not:
+Two of its claims still contradict what the product does, so the wording is
+used but the claim is not. A third was resolved by changing the product:
 
-1. **«ترخيص تجاري كامل» as a single uncapped grant.** There are two tiers
-   (`LicenceTier`); the standard one caps at 500k views per channel. The phrase
-   is used for the commercial grant in general; the tier names stand, and no
-   surface may imply the standard tier is uncapped. See `specs/public/licences.md`.
+1. ~~**«ترخيص تجاري كامل» as a single uncapped grant.**~~ **Now adopted — the
+   product changed.** The two tiers were collapsed into one full commercial
+   licence with no view cap, so the phrase is literally true and the tier names
+   no longer exist. See `specs/public/licences.md`.
 2. **«30، 50، أو 70 لقطة» as album sizes.** The catalogue runs 12–24 clips per
    album. Sizes are read from `Album.clipCount`, never asserted in copy.
 3. **«أرخص بـ 16 مرة من أي منافس».** Unverifiable, and the house rule is that no

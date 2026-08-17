@@ -141,7 +141,8 @@ export default async function AlbumPage({
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
-      clearedForCommercial: true,
+      origin: true,
+      orientation: true,
       coverClipId: true,
       creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
     },
@@ -352,7 +353,8 @@ export default async function AlbumPage({
                       currency: other.currency,
                       clipCount: other.clipCount,
                       totalRuntimeS: other.totalRuntimeS,
-                      clearedForCommercial: other.clearedForCommercial,
+                      origin: other.origin,
+                      orientation: other.orientation,
                       coverKey: other.coverClipId
                         ? (coverById.get(other.coverClipId) ?? null)
                         : null,

@@ -1,3 +1,4 @@
+import { Sparkles, Video } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney, t } from '@/lib/i18n'
@@ -40,10 +41,28 @@ export type AlbumCardData = {
   currency: string
   clipCount: number
   totalRuntimeS: number
-  clearedForCommercial: boolean
+  origin: 'captured' | 'generated'
+  orientation: 'landscape' | 'portrait' | 'mixed'
   coverKey: string | null
   creatorNameAr: string
   creatorNameEn: string
+}
+
+function orientationLabel(orientation: AlbumCardData['orientation']) {
+  if (orientation === 'portrait') return t('catalogue.orientationPortrait')
+  if (orientation === 'mixed') return t('catalogue.orientationMixed')
+  return t('catalogue.orientationLandscape')
+}
+
+/**
+ * Rounded DOWN, always.
+ *
+ * A 33.4% saving advertised as 34% is a claim the arithmetic does not support,
+ * and it is the kind of small overstatement that a consumer-protection
+ * regulator reads as a pattern. Rounding down can only ever understate.
+ */
+function percentOff(price: number, compareAt: number) {
+  return Math.floor(((compareAt - price) / compareAt) * 100)
 }
 
 export function albumHref(album: { creatorHandle: string; slug: string }) {
@@ -119,18 +138,37 @@ export function AlbumCard({
           className="absolute inset-0 z-[1]"
         />
 
-        {/* Top: brand mark + the one status/offer badge. */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] flex items-start justify-between p-3">
+        {/*
+          Top: brand mark + how the footage was made.
+
+          This slot used to carry «مرخصة للاستخدام التجاري». Every album is
+          licensed for commercial use — it is the only licence there is — so
+          the badge distinguished nothing and spent the card's one loud
+          position saying what the price already implies.
+
+          Provenance genuinely varies, and buyers have to declare it: a brand
+          running a paid campaign may need to disclose synthetic media, and an
+          agency briefing a client on "real Saudi locations" is making a
+          factual claim. It is never inferred from the look of a frame.
+        */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] flex items-start justify-between gap-2 p-3">
           <span className="font-display text-base font-bold text-gold-200">{t('brand.name')}</span>
-          {album.offerLabelAr ? (
-            <Badge variant="neutral" className="bg-ink/70 text-off-white/90 backdrop-blur">
-              <Bilingual ar={album.offerLabelAr} en={album.offerLabelEn} />
-            </Badge>
-          ) : album.clearedForCommercial ? (
-            <Badge variant="success" className="bg-ink/70 backdrop-blur">
-              {t('commerce.clearedForCommercial')}
-            </Badge>
-          ) : null}
+          <Badge
+            variant="film"
+            className={cn(
+              'gap-1',
+              album.origin === 'generated' && 'bg-clay-fill/85 text-off-white',
+            )}
+          >
+            {album.origin === 'generated' ? (
+              <Sparkles className="size-3" aria-hidden />
+            ) : (
+              <Video className="size-3" aria-hidden />
+            )}
+            {album.origin === 'generated'
+              ? t('catalogue.originGenerated')
+              : t('catalogue.originCaptured')}
+          </Badge>
         </div>
 
         {/* Bottom: title, price, what's in the box, and the creator link. */}
@@ -140,24 +178,37 @@ export function AlbumCard({
             className="block h-[3px] w-9 rounded-full"
             style={{ background: `hsl(${hue})` }}
           />
-          <h2 className="pointer-events-none line-clamp-3 font-display text-lg font-bold leading-[1.4] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
+          <h2 className="pointer-events-none line-clamp-2 font-display text-lg font-bold leading-[1.4] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
             <Bilingual ar={album.titleAr} en={album.titleEn} />
           </h2>
 
-          <div className="pointer-events-none flex items-baseline justify-between gap-2 pt-0.5">
-            <span className="flex items-baseline gap-2">
-              <span className="numeric text-base font-bold text-gold-200">
-                {formatMoney(album.priceStandard, album.currency)}
-              </span>
-              {album.compareAtPrice ? (
-                <s className="numeric text-xs text-off-white/55 decoration-clay">
+          {/* What is in the box: how many shots, what shape, how long. The
+              orientation is here because it decides whether an album is usable
+              at all for a vertical edit, and finding that out on the album page
+              is one click too late. */}
+          <p className="numeric pointer-events-none text-xs text-off-white/75">
+            {album.clipCount} {t('commerce.clip')} · {orientationLabel(album.orientation)} ·{' '}
+            {formatDuration(album.totalRuntimeS)}
+          </p>
+
+          {/* The price is the loudest thing on the card after the title. It was
+              the same size as the shot count, which read as a spec rather than
+              as what the object costs. */}
+          <div className="pointer-events-none flex flex-wrap items-baseline gap-x-2.5 gap-y-1 pt-0.5">
+            <span className="numeric text-2xl font-bold text-gold-200">
+              {formatMoney(album.priceStandard, album.currency)}
+            </span>
+            {album.compareAtPrice ? (
+              <>
+                <s className="numeric text-sm text-off-white/55 decoration-clay decoration-2">
                   {formatMoney(album.compareAtPrice, album.currency)}
                 </s>
-              ) : null}
-            </span>
-            <span className="numeric text-xs text-off-white/70">
-              {album.clipCount} {t('commerce.clip')} · {formatDuration(album.totalRuntimeS)}
-            </span>
+                <span className="numeric rounded-sm bg-clay-fill px-1.5 py-0.5 text-2xs font-bold text-off-white">
+                  {percentOff(album.priceStandard, album.compareAtPrice)}%{' '}
+                  {t('catalogue.offSuffix')}
+                </span>
+              </>
+            ) : null}
           </div>
 
           {/* The creator's own link, lifted above the stretched album anchor. */}

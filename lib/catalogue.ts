@@ -21,7 +21,8 @@ const ALBUM_CARD_SELECT = {
   currency: true,
   clipCount: true,
   totalRuntimeS: true,
-  clearedForCommercial: true,
+  origin: true,
+  orientation: true,
   coverClipId: true,
   creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
 } as const
@@ -37,7 +38,8 @@ type AlbumRow = {
   currency: string
   clipCount: number
   totalRuntimeS: number
-  clearedForCommercial: boolean
+  origin: 'captured' | 'generated'
+  orientation: 'landscape' | 'portrait' | 'mixed'
   coverClipId: string | null
   creator: { handle: string; displayNameAr: string; displayNameEn: string }
 }
@@ -70,7 +72,8 @@ async function toCards(rows: AlbumRow[]): Promise<AlbumCardData[]> {
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,
-    clearedForCommercial: row.clearedForCommercial,
+    origin: row.origin,
+    orientation: row.orientation,
     coverKey: row.coverClipId ? (byId.get(row.coverClipId) ?? null) : null,
   }))
 }

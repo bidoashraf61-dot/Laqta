@@ -74,6 +74,26 @@ enum ClearanceStatus {
   pending
 }
 
+/// How the footage in an album was made.
+///
+/// Buyers care, and increasingly have to declare it: a brand running a paid
+/// campaign in Saudi may need to disclose synthetic media, and an agency
+/// briefing a client on "real Saudi locations" is making a factual claim. It
+/// is therefore a property of the album, stated on the card, and never
+/// inferred from the look of a frame.
+enum AlbumOrigin {
+  captured // filmed on location with a camera
+  generated // made with generative tools
+}
+
+/// The shape the album was cut for. Denormalised onto the album like
+/// `clipCount`, because a grid needs it before it has loaded a single clip.
+enum AlbumOrientation {
+  landscape // 16:9 and wider
+  portrait // 9:16
+  mixed // both, deliberately
+}
+
 enum ReleaseType {
   model
   property
@@ -393,6 +413,11 @@ model Album {
   clipCount      Int     @default(0)
   totalRuntimeS  Int     @default(0)
   totalSizeBytes BigInt  @default(0)
+
+  /// Stated on every card. Defaults to `captured` because that is what the
+  /// launch catalogue is; a generated album has to say so explicitly.
+  origin      AlbumOrigin      @default(captured)
+  orientation AlbumOrientation @default(landscape)
 
   clearanceStatus ClearanceStatus @default(pending)
   isExclusive     Boolean         @default(false)

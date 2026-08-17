@@ -538,7 +538,24 @@ async function main() {
 
   const liveAlbum = await db.album.upsert({
     where: { slug: 'alula-golden-hour-aerials' },
-    update: {},
+    /*
+     * `update` is not empty, deliberately.
+     *
+     * An `upsert` with `update: {}` never touches an album that already
+     * exists, so editing a price or a badge here changed nothing on any
+     * machine that had seeded once — the only way to see the change was to
+     * drop the database. The commercial fields are the ones that actually get
+     * edited, so they refresh; the content fields do not, because a developer
+     * may have deliberately renamed an album while testing.
+     */
+    update: {
+      priceStandard: 399,
+      compareAtPrice: 599,
+      offerLabelAr: 'عرض الإطلاق',
+      offerLabelEn: 'Launch offer',
+      origin: 'captured',
+      orientation: 'landscape',
+    },
     create: {
       creatorId: creator.id,
       slug: 'alula-golden-hour-aerials',
@@ -551,6 +568,11 @@ async function main() {
       status: 'live',
       tier: 'pro',
       priceStandard: 399,
+      compareAtPrice: 599,
+      offerLabelAr: 'عرض الإطلاق',
+      offerLabelEn: 'Launch offer',
+      origin: 'captured',
+      orientation: 'landscape',
       clearanceStatus: 'full',
       clearedForCommercial: true,
       isExclusive: true,
@@ -565,7 +587,24 @@ async function main() {
 
   const draftAlbum = await db.album.upsert({
     where: { slug: 'empty-quarter-dune-fields' },
-    update: {},
+    /*
+     * `update` is not empty, deliberately.
+     *
+     * An `upsert` with `update: {}` never touches an album that already
+     * exists, so editing a price or a badge here changed nothing on any
+     * machine that had seeded once — the only way to see the change was to
+     * drop the database. The commercial fields are the ones that actually get
+     * edited, so they refresh; the content fields do not, because a developer
+     * may have deliberately renamed an album while testing.
+     */
+    update: {
+      priceStandard: 79,
+      compareAtPrice: 119,
+      offerLabelAr: 'عرض الإطلاق',
+      offerLabelEn: 'Launch offer',
+      origin: 'captured',
+      orientation: 'landscape',
+    },
     create: {
       creatorId: creator.id,
       slug: 'empty-quarter-dune-fields',
@@ -576,13 +615,35 @@ async function main() {
       status: 'draft',
       tier: 'mini',
       priceStandard: 79,
+      compareAtPrice: 119,
+      offerLabelAr: 'عرض الإطلاق',
+      offerLabelEn: 'Launch offer',
+      origin: 'captured',
+      orientation: 'landscape',
       clearanceStatus: 'pending',
     },
   })
 
   const reviewAlbum = await db.album.upsert({
     where: { slug: 'riyadh-night-drive' },
-    update: {},
+    /*
+     * `update` is not empty, deliberately.
+     *
+     * An `upsert` with `update: {}` never touches an album that already
+     * exists, so editing a price or a badge here changed nothing on any
+     * machine that had seeded once — the only way to see the change was to
+     * drop the database. The commercial fields are the ones that actually get
+     * edited, so they refresh; the content fields do not, because a developer
+     * may have deliberately renamed an album while testing.
+     */
+    update: {
+      priceStandard: 199,
+      compareAtPrice: 299,
+      offerLabelAr: 'عرض الإطلاق',
+      offerLabelEn: 'Launch offer',
+      origin: 'captured',
+      orientation: 'mixed',
+    },
     create: {
       creatorId: creator2.id,
       slug: 'riyadh-night-drive',
@@ -593,6 +654,11 @@ async function main() {
       status: 'in_review',
       tier: 'standard',
       priceStandard: 199,
+      compareAtPrice: 299,
+      offerLabelAr: 'عرض الإطلاق',
+      offerLabelEn: 'Launch offer',
+      origin: 'captured',
+      orientation: 'mixed',
       clearanceStatus: 'editorial_only',
     },
   })
@@ -1113,15 +1179,26 @@ async function main() {
   // are placeholders with real posters, real clip rows and real taxonomy
   // links, so the grids, filters and offer pricing can all be exercised.
   //
-  // `compareAtPrice` is set on a few of them and left NULL on the rest: an
-  // offer rail that is 100% offers teaches the eye that the strike-through
-  // means nothing.
+  // Every album carries a launch offer, and every `compareAtPrice` below is a
+  // real regular price rather than a number invented to make a strike-through
+  // appear. That is the whole reason it is stored per album instead of derived
+  // from a percentage: the struck number a buyer sees is the number the album
+  // actually reverts to.
+  //
+  // The earlier catalogue deliberately left most albums off-offer, on the
+  // grounds that a rail which is 100% offers teaches the eye that the
+  // strike-through means nothing. That reasoning still holds for a permanent
+  // sale — it does not hold for a launch, where the whole catalogue genuinely
+  // is introductory. When the launch ends, these come off, and the argument
+  // applies again.
   const EXTRA_ALBUMS: Array<{
     slug: string
     titleAr: string
     titleEn: string
     descAr: string
     posters: keyof typeof POSTERS
+    origin: 'captured' | 'generated'
+    orientation: 'landscape' | 'portrait' | 'mixed'
     clips: number
     price: number
     compareAt?: number
@@ -1142,6 +1219,8 @@ async function main() {
       compareAt: 599,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'landscape' as const,
       loc: 'diriyah',
       cat: 'heritage',
       featured: true,
@@ -1154,6 +1233,11 @@ async function main() {
       posters: 'riyadh',
       clips: 16,
       price: 199,
+      compareAt: 299,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'landscape' as const,
       loc: 'riyadh',
       cat: 'cityscapes',
     },
@@ -1168,6 +1252,8 @@ async function main() {
       compareAt: 299,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'landscape' as const,
       loc: 'jeddah',
       cat: 'cityscapes',
     },
@@ -1179,6 +1265,11 @@ async function main() {
       posters: 'redsea',
       clips: 20,
       price: 399,
+      compareAt: 599,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'landscape' as const,
       loc: 'red-sea',
       cat: 'coast-marine',
       featured: true,
@@ -1191,6 +1282,11 @@ async function main() {
       posters: 'desert',
       clips: 18,
       price: 399,
+      compareAt: 599,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'landscape' as const,
       loc: 'edge-of-the-world',
       cat: 'desert-nature',
     },
@@ -1205,6 +1301,8 @@ async function main() {
       compareAt: 279,
       offerAr: 'عرض محدود',
       offerEn: 'Limited offer',
+      origin: 'generated' as const,
+      orientation: 'landscape' as const,
       loc: 'rub-al-khali',
       cat: 'desert-nature',
     },
@@ -1216,6 +1314,11 @@ async function main() {
       posters: 'clouds',
       clips: 15,
       price: 199,
+      compareAt: 299,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      origin: 'generated' as const,
+      orientation: 'landscape' as const,
       cat: 'aerials',
     },
     {
@@ -1226,6 +1329,11 @@ async function main() {
       posters: 'window',
       clips: 10,
       price: 79,
+      compareAt: 119,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'portrait' as const,
       cat: 'transport',
     },
     {
@@ -1236,6 +1344,11 @@ async function main() {
       posters: 'alula',
       clips: 12,
       price: 199,
+      compareAt: 299,
+      offerAr: 'عرض الإطلاق',
+      offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'landscape' as const,
       loc: 'alula',
       cat: 'heritage',
     },
@@ -1250,6 +1363,8 @@ async function main() {
       compareAt: 549,
       offerAr: 'عرض الإطلاق',
       offerEn: 'Launch offer',
+      origin: 'captured' as const,
+      orientation: 'mixed' as const,
       loc: 'riyadh',
       cat: 'people-lifestyle',
     },
@@ -1258,7 +1373,22 @@ async function main() {
   let made = 0
   for (const [n, a] of EXTRA_ALBUMS.entries()) {
     const existing = await db.album.findUnique({ where: { slug: a.slug } })
-    if (existing) continue
+    if (existing) {
+      // Same reasoning as the three albums above: refresh what gets edited,
+      // leave the content alone.
+      await db.album.update({
+        where: { id: existing.id },
+        data: {
+          priceStandard: a.price,
+          compareAtPrice: a.compareAt ?? null,
+          offerLabelAr: a.offerAr ?? null,
+          offerLabelEn: a.offerEn ?? null,
+          origin: a.origin,
+          orientation: a.orientation,
+        },
+      })
+      continue
+    }
     const album = await db.album.create({
       data: {
         creatorId: n % 3 === 0 ? creator2.id : creator.id,
@@ -1270,6 +1400,8 @@ async function main() {
         status: 'live',
         tier: 'pro',
         priceStandard: a.price,
+        origin: a.origin,
+        orientation: a.orientation,
         compareAtPrice: a.compareAt ?? null,
         // Dev only, same standing as the clip proxies: a real trailer is cut
         // per album once the pipeline exists. Gitignored, so a fresh checkout

@@ -30,6 +30,9 @@ finds nothing.
 | What lands in your library | الجودة الأصلية | original quality |
 | Common questions | الأسئلة الشائعة | Frequently asked questions |
 | The aircraft | **درون** | drone |
+| Footage made with a camera | تصوير واقعي | Real footage |
+| Footage made with generative tools | ذكاء اصطناعي | AI generated |
+| The album's shape | أفقي / عمودي / أفقي وعمودي | Landscape / Portrait / Landscape & portrait |
 | Footer rights line | حقوق النشر محفوظة | Copyright reserved |
 | Brand line | خيارك الأول للمحتوى السعودي الأصيل | Your first choice for authentic Saudi content |
 

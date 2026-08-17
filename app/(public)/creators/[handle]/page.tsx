@@ -39,7 +39,8 @@ async function getCreator(handle: string) {
           currency: true,
           clipCount: true,
           totalRuntimeS: true,
-          clearedForCommercial: true,
+          origin: true,
+          orientation: true,
           coverClipId: true,
           isFeatured: true,
           viewCount: true,
@@ -102,7 +103,8 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
     currency: album.currency,
     clipCount: album.clipCount,
     totalRuntimeS: album.totalRuntimeS,
-    clearedForCommercial: album.clearedForCommercial,
+    origin: album.origin,
+    orientation: album.orientation,
     coverKey: album.coverClipId ? (coverById.get(album.coverClipId) ?? null) : null,
   }))
 

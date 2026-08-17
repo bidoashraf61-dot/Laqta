@@ -55,7 +55,8 @@ export default async function AlbumsPage({
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
-      clearedForCommercial: true,
+      origin: true,
+      orientation: true,
       coverClipId: true,
       creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
     },
@@ -84,7 +85,8 @@ export default async function AlbumsPage({
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,
-    clearedForCommercial: row.clearedForCommercial,
+    origin: row.origin,
+    orientation: row.orientation,
     coverKey: row.coverClipId ? (coverById.get(row.coverClipId) ?? null) : null,
   }))
 

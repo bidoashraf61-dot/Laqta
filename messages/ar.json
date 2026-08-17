@@ -228,7 +228,13 @@
     "licenceGrantCommercial": "استخدام تجاري كامل، بلا حد لعدد المشاهدات",
     "licenceGrantForever": "ملكية دائمة — يبقى لك للأبد",
     "licenceGrantOnce": "دفعة واحدة، بلا اشتراكات",
-    "licenceDetails": "تفاصيل الترخيص"
+    "licenceDetails": "تفاصيل الترخيص",
+    "originGenerated": "ذكاء اصطناعي",
+    "originCaptured": "تصوير واقعي",
+    "orientationLandscape": "أفقي",
+    "orientationPortrait": "عمودي",
+    "orientationMixed": "أفقي وعمودي",
+    "offSuffix": "خصم"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",

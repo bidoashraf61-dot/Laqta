@@ -33,6 +33,14 @@ function Spinner({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   )
 }
 
+/**
+ * The in-page loading state.
+ *
+ * Keeps the spinner rather than the brand mark: this appears INSIDE a page that
+ * has already rendered — a table refreshing, a panel streaming in — where the
+ * question is "is this part working?", not "whose site is this?". The mark is
+ * for a whole-page wait, where it is the only thing on screen.
+ */
 function LoadingState({ label, className }: { label?: string; className?: string }) {
   return (
     <div

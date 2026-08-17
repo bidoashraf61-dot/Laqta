@@ -210,6 +210,12 @@ const config: Config = {
           from: { opacity: '1', transform: 'scale(1)' },
           to: { opacity: '0', transform: 'scale(0.985)' },
         },
+        /* The loading mark. Opacity and a hair of scale — no rotation, because
+           the artwork is calligraphy and a spinning wordmark is unreadable. */
+        'mark-breathe': {
+          '0%, 100%': { opacity: '0.45', transform: 'scale(0.97)' },
+          '50%': { opacity: '1', transform: 'scale(1)' },
+        },
         /* Route-change feedback. Indeterminate on purpose: the App Router
            cannot report real progress, and a fake percentage is a lie. */
         'route-sweep': {
@@ -224,6 +230,7 @@ const config: Config = {
         'panel-in': 'panel-in var(--dur-panel) var(--ease-cut) both',
         'panel-out': 'panel-out var(--dur-exit) var(--ease-exit) both',
         'route-sweep': 'route-sweep 1.1s var(--ease-lens) infinite',
+        'mark-breathe': 'mark-breathe 1.8s var(--ease-lens) infinite',
       },
     },
   },

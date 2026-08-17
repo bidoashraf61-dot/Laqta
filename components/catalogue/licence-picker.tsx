@@ -27,6 +27,7 @@ export function LicencePicker({
   priceStandard,
   compareAtPrice,
   currency,
+  clipCount,
 }: {
   albumSlug: string
   creatorHandle: string
@@ -34,6 +35,8 @@ export function LicencePicker({
   /** The album's normal price, when it is currently on offer. */
   compareAtPrice?: number | null
   currency: string
+  /** What the price buys. Stated in the panel, not left to the page. */
+  clipCount: number
 }) {
   const onOffer = compareAtPrice != null && compareAtPrice > priceStandard
 
@@ -50,6 +53,19 @@ export function LicencePicker({
             </s>
           ) : null}
         </div>
+
+        {/*
+          What the number above actually buys.
+          
+          A price on its own is not comparable — 399 for what? The count was
+          elsewhere on the page, so a buyer reading the panel had to go and
+          find it and come back. It belongs in the same box as the number it
+          qualifies.
+        */}
+        <p className="flex items-baseline gap-1.5 border-b pb-4 text-sm text-muted-foreground">
+          <span className="numeric text-xl font-bold text-foreground">{clipCount}</span>
+          {t('catalogue.shotsIncluded')}
+        </p>
 
         {/* What the one licence actually grants. Stated as facts rather than
             offered as a choice — this is the only licence there is. */}

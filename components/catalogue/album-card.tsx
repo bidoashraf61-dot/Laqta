@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney, t } from '@/lib/i18n'
 import { pickLocalised } from '@/lib/locale'
-import { formatDuration } from '@/lib/utils'
+
 import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { Anchor } from '@/components/ui/link'
@@ -151,8 +151,20 @@ export function AlbumCard({
           agency briefing a client on "real Saudi locations" is making a
           factual claim. It is never inferred from the look of a frame.
         */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] flex items-start justify-between gap-2 p-3">
-          <span className="font-display text-base font-bold text-gold-200">{t('brand.name')}</span>
+        {/*
+          No brand mark on the cover.
+
+          It carried the wordmark set as live text, which was a third statement
+          of the brand on one card: the tiled watermark already says
+          «لقطة · معاينة» across the whole frame, and the header says it above.
+          The real artwork would have been worse here, not better — the lockup
+          puts the Latin LAQTA under the calligraphy, and at the ~24px this slot
+          allows that line renders as three pixels of mush.
+
+          What the cover keeps is the one fact that varies: how the footage was
+          made. The mark itself now sits in the header as real artwork.
+        */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] flex items-start justify-end gap-2 p-3">
           <Badge
             variant="film"
             className={cn(
@@ -182,13 +194,21 @@ export function AlbumCard({
             <Bilingual ar={album.titleAr} en={album.titleEn} />
           </h2>
 
-          {/* What is in the box: how many shots, what shape, how long. The
-              orientation is here because it decides whether an album is usable
-              at all for a vertical edit, and finding that out on the album page
-              is one click too late. */}
-          <p className="numeric pointer-events-none text-xs text-off-white/75">
-            {album.clipCount} {t('commerce.clip')} · {orientationLabel(album.orientation)} ·{' '}
-            {formatDuration(album.totalRuntimeS)}
+          {/*
+            How many shots, and what shape they are.
+
+            The runtime used to sit here too, and «٢٢ لقطة · أفقي · ٥:٣٤» read
+            as a code rather than as facts — three numbers separated by dots,
+            two of which a buyer has to decode. Total runtime is a spec, and it
+            belongs on the album page with the other specs; the shot count is
+            what the price is FOR, so it leads.
+          */}
+          <p className="pointer-events-none flex items-baseline gap-2 text-off-white/80">
+            <span className="numeric text-sm font-bold text-off-white">
+              {album.clipCount} {t('commerce.clip')}
+            </span>
+            <span className="text-xs">·</span>
+            <span className="text-xs">{orientationLabel(album.orientation)}</span>
           </p>
 
           {/* The price is the loudest thing on the card after the title. It was
@@ -212,9 +232,13 @@ export function AlbumCard({
           </div>
 
           {/* The creator's own link, lifted above the stretched album anchor. */}
+          {/* Up from `text-xs` and always underlined. It was styled as a
+              caption and only revealed itself as a link on hover, which is no
+              affordance at all on a touch screen — and this is the one route
+              off the card that is not the album. */}
           <Anchor
             href={`/creators/${album.creatorHandle}`}
-            className="pointer-events-auto relative z-[3] inline-block max-w-full truncate text-xs text-off-white/70 underline-offset-2 hover:text-off-white hover:underline"
+            className="pointer-events-auto relative z-[3] inline-block max-w-full truncate text-sm text-off-white/85 underline decoration-off-white/30 underline-offset-4 transition-colors duration-hover ease-lens hover:text-off-white hover:decoration-off-white"
           >
             {t('commerce.byCreator', {
               creator: pickLocalised(album.creatorNameAr, album.creatorNameEn),

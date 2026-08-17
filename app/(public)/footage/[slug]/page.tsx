@@ -13,6 +13,8 @@ import { Separator } from '@/components/ui/toggles'
 import { Bilingual } from '@/components/ui/bilingual'
 import { ScrollArea } from '@/components/ui/overlays'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { AlbumShots } from '@/components/catalogue/album-shots'
+import { Sparkles, Video } from 'lucide-react'
 import { PageTitle } from '@/components/ui/typography'
 import { pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
@@ -71,12 +73,12 @@ async function getClip(slug: string) {
           priceStandard: true,
           currency: true,
           clipCount: true,
+          origin: true,
           clearedForCommercial: true,
           clearanceStatus: true,
           creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
           clips: {
             orderBy: { orderIndex: 'asc' },
-            take: 12,
             select: {
               id: true,
               slug: true,
@@ -84,6 +86,7 @@ async function getClip(slug: string) {
               titleEn: true,
               thumbnailKeys: true,
               durationS: true,
+              proxyKey: true,
             },
           },
         },
@@ -145,6 +148,32 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
               <img src={clip.thumbnailKeys[0]} alt="" className="size-full object-cover" />
             ) : null}
             <PreviewWatermark />
+            {/*
+              How this footage was made, stated on the frame.
+
+              It is the first thing a buyer has to know and the one thing they
+              cannot determine by looking — a brand running a paid campaign may
+              have to disclose synthetic media, and an agency briefing a client
+              on "real Saudi locations" is making a factual claim. It sits at
+              the start edge, ahead of the watermark note, because it outranks
+              it.
+            */}
+            <Badge
+              variant="film"
+              className={cn(
+                'absolute start-3 top-3 z-[2] gap-1 text-sm',
+                clip.album.origin === 'generated' && 'bg-clay-fill/90 text-off-white',
+              )}
+            >
+              {clip.album.origin === 'generated' ? (
+                <Sparkles className="size-3.5" aria-hidden />
+              ) : (
+                <Video className="size-3.5" aria-hidden />
+              )}
+              {clip.album.origin === 'generated'
+                ? t('catalogue.originGenerated')
+                : t('catalogue.originCaptured')}
+            </Badge>
             <Badge variant="film" className="absolute end-3 top-3 z-[2]">
               {t('catalogue.previewWatermarked')}
             </Badge>
@@ -208,8 +237,19 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
               <Spec label={t('catalogue.aspect')} value={clip.aspectRatio ?? '—'} numeric />
               <Spec label={t('catalogue.codec')} value={clip.codec ?? '—'} />
               <Spec label={t('catalogue.colourProfile')} value={clip.colourProfile ?? '—'} />
-              <Spec label={t('catalogue.camera')} value={clip.camera ?? '—'} />
-              <Spec label={t('catalogue.lens')} value={clip.lens ?? '—'} />
+              {/*
+                Omitted entirely for generated footage, not printed as «—».
+                
+                There is no camera and no lens; a dash implies the value exists
+                and is merely missing, which invites someone to ask the creator
+                to fill it in. An absent row is the honest statement.
+              */}
+              {clip.album.origin === 'captured' ? (
+                <>
+                  <Spec label={t('catalogue.camera')} value={clip.camera ?? '—'} />
+                  <Spec label={t('catalogue.lens')} value={clip.lens ?? '—'} />
+                </>
+              ) : null}
               <Spec
                 label={t('catalogue.cameraMovement')}
                 value={specLabel('movement', clip.cameraMovement) ?? '—'}
@@ -223,35 +263,31 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
 
           {/* "Look how much else you get" — the strip that turns a single-clip
               intent into an album purchase. */}
-          {siblings.length > 0 ? (
+          {clip.album.clips.length > 1 ? (
             <section>
               <h2 className="mb-3 font-subhead text-xl font-bold">{t('catalogue.clipsInAlbum')}</h2>
-              <ScrollArea className="w-full">
-                <div className="flex gap-3 pb-3">
-                  {siblings.map((sibling) => (
-                    <Link
-                      key={sibling.id}
-                      href={`/footage/${sibling.slug}`}
-                      className="group w-44 shrink-0 overflow-hidden rounded-md border bg-card transition-colors hover:border-foreground/25"
-                    >
-                      <div className="relative aspect-video bg-muted">
-                        {sibling.thumbnailKeys[0] ? (
-                          <img
-                            src={sibling.thumbnailKeys[0]}
-                            alt=""
-                            loading="lazy"
-                            className="size-full object-cover"
-                          />
-                        ) : null}
-                        <PreviewWatermark />
-                      </div>
-                      <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
-                        {pickLocalised(sibling.titleAr, sibling.titleEn)}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              </ScrollArea>
+              {/*
+                The same grid the album page uses.
+
+                This was a horizontal scroller of 176px tiles cropped with
+                `object-cover`, which squashed every portrait shot into a
+                landscape box and hid the album's shape at exactly the moment a
+                buyer is deciding whether it suits their edit. It is now the
+                album's own grid, with the shot being viewed marked in it, so
+                moving between shots is one consistent surface.
+              */}
+              <AlbumShots
+                currentSlug={slug}
+                shots={clip.album.clips.map((sibling) => ({
+                  id: sibling.id,
+                  slug: sibling.slug,
+                  titleAr: sibling.titleAr,
+                  titleEn: sibling.titleEn,
+                  durationS: sibling.durationS,
+                  thumbnailKeys: sibling.thumbnailKeys,
+                  previewKey: sibling.proxyKey?.startsWith('/') ? sibling.proxyKey : null,
+                }))}
+              />
             </section>
           ) : null}
         </div>

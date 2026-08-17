@@ -37,7 +37,7 @@
     "skipToContent": "تخطَّ إلى المحتوى"
   },
   "search": {
-    "placeholder": "ابحث بالمناسبة… اليوم الوطني، يوم التأسيس، رمضان، العيد، الحج",
+    "placeholder": "ابحث عن أي لقطة… اليوم الوطني، العلا، رجل أعمال سعودي",
     "submit": "بحث",
     "noResults": "لا توجد نتائج",
     "noResultsHint": "جرّب كلمات أعم أو أزل بعض عوامل التصفية"
@@ -225,7 +225,7 @@
     "dur5to10": "٥ – ١٠ ثوانٍ",
     "dur10to20": "١٠ – ٢٠ ثانية",
     "dur20plus": "أكثر من ٢٠ ثانية",
-    "licenceGrantCommercial": "استخدام تجاري كامل، بلا حد لعدد المشاهدات",
+    "licenceGrantCommercial": "استخدام تجاري كامل، بلا أي حدود على الاستخدام",
     "licenceGrantForever": "ملكية دائمة — يبقى لك للأبد",
     "licenceGrantOnce": "دفعة واحدة، بلا اشتراكات",
     "licenceDetails": "تفاصيل الترخيص",
@@ -234,7 +234,10 @@
     "orientationLandscape": "أفقي",
     "orientationPortrait": "عمودي",
     "orientationMixed": "أفقي وعمودي",
-    "offSuffix": "خصم"
+    "offSuffix": "خصم",
+    "runtimeTotal": "بمدة إجمالية {duration}",
+    "openShot": "افتح صفحة اللقطة",
+    "shotsIncluded": "لقطة في هذا الألبوم"
   },
   "landing": {
     "heroLabel": "المشهد الافتتاحي",

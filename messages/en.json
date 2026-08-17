@@ -37,7 +37,7 @@
     "skipToContent": "Skip to content"
   },
   "search": {
-    "placeholder": "Search by occasion… National Day, Foundation Day, Ramadan, Eid, Hajj",
+    "placeholder": "Search anything… National Day, AlUla, Saudi businessman",
     "submit": "Search",
     "noResults": "No results",
     "noResultsHint": "Try broader words, or clear a filter or two"
@@ -387,7 +387,7 @@
     "dur5to10": "5 – 10 seconds",
     "dur10to20": "10 – 20 seconds",
     "dur20plus": "Over 20 seconds",
-    "licenceGrantCommercial": "Full commercial use, with no view cap",
+    "licenceGrantCommercial": "Full commercial use, with no limits on usage",
     "licenceGrantForever": "Permanent ownership — yours for life",
     "licenceGrantOnce": "Pay once, no subscriptions",
     "licenceDetails": "License details",
@@ -396,7 +396,10 @@
     "orientationLandscape": "Landscape",
     "orientationPortrait": "Portrait",
     "orientationMixed": "Landscape & portrait",
-    "offSuffix": "off"
+    "offSuffix": "off",
+    "runtimeTotal": "{duration} in total",
+    "openShot": "Open shot page",
+    "shotsIncluded": "shots in this album"
   },
   "sell": {
     "title": "Sell your footage on Laqta",

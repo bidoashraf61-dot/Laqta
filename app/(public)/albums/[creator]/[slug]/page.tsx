@@ -12,12 +12,12 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { AlbumCard } from '@/components/catalogue/album-card'
 import { LicencePicker } from '@/components/catalogue/licence-picker'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
-import { ClipContactSheet } from '@/components/catalogue/clip-contact-sheet'
+import { AlbumShots } from '@/components/catalogue/album-shots'
+import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { PageTitle } from '@/components/ui/typography'
 import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
-import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { requestLocale } from '@/lib/locale-request'
 import { pickLocalised } from '@/lib/locale'
 
@@ -67,6 +67,7 @@ async function getAlbum(creatorHandle: string, slug: string) {
           colourProfile: true,
           aspectRatio: true,
           thumbnailKeys: true,
+          proxyKey: true,
           // masterKey is never selected here — the catalogue must not be able
           // to reference an original.
         },
@@ -210,11 +211,32 @@ export default async function AlbumPage({
               <Bilingual ar={album.titleAr} en={album.titleEn} />
             </PageTitle>
             <p className="text-muted-foreground">
-              <Link href={`/creators/${album.creator.handle}`} className="hover:text-foreground">
+              <Link
+                href={`/creators/${album.creator.handle}`}
+                className="underline underline-offset-4 transition-colors duration-hover ease-lens hover:text-foreground"
+              >
                 {t('commerce.byCreator', {
                   creator: pickLocalised(album.creator.displayNameAr, album.creator.displayNameEn),
                 })}
               </Link>
+            </p>
+
+            {/*
+              What the price is FOR, said once and said large.
+              
+              The count was a parenthesis on a section heading further down the
+              page — «اللقطات في الألبوم (٢٢)» — which is a caption, not an
+              answer. A buyer reading a price needs the quantity in the same
+              glance, and it is the single fact that varies most between two
+              albums at the same price.
+            */}
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1">
+              <span className="numeric font-display text-3xl font-bold text-foreground">
+                {album.clipCount} {t('commerce.clip')}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {t('catalogue.runtimeTotal', { duration: formatDuration(album.totalRuntimeS) })}
+              </span>
             </p>
             {pickLocalised(album.descriptionAr, album.descriptionEn) ? (
               <p className="max-w-prose font-serif text-[1.2rem] leading-[1.85] text-foreground/75">
@@ -241,13 +263,21 @@ export default async function AlbumPage({
           <Separator />
 
           <section>
-            <h2 className="mb-4 font-subhead text-xl font-bold">
-              {t('catalogue.clipsInAlbum')}{' '}
-              <span className="numeric text-muted-foreground">({album.clips.length})</span>
-            </h2>
-            {/* Every clip at its own aspect — see ClipContactSheet for why a
-                fixed-column grid could not do this without cropping. */}
-            <ClipContactSheet clips={album.clips} />
+            <h2 className="mb-4 font-subhead text-xl font-bold">{t('catalogue.clipsInAlbum')}</h2>
+            {/* Uniform 16:9 boxes, portrait clips letterboxed rather than
+                cropped — see AlbumShots. A tile goes to the shot's own page,
+                which carries the rest of the album underneath it. */}
+            <AlbumShots
+              shots={album.clips.map((clip) => ({
+                id: clip.id,
+                slug: clip.slug,
+                titleAr: clip.titleAr,
+                titleEn: clip.titleEn,
+                durationS: clip.durationS,
+                thumbnailKeys: clip.thumbnailKeys,
+                previewKey: clip.proxyKey?.startsWith('/') ? clip.proxyKey : null,
+              }))}
+            />
           </section>
 
           <Separator />
@@ -307,7 +337,14 @@ export default async function AlbumPage({
               <h2 className="mb-4 font-subhead text-xl font-bold">
                 {t('catalogue.byCreatorOther')}
               </h2>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {/* Two columns, not four.
+                  
+                  This page keeps a sticky price panel, so the content column is
+                  ~620px — at four columns each poster was ~140px wide and the
+                  title, price, discount chip and creator line ran into each
+                  other. Two gives roughly the width these cards get on the
+                  landing page, which is what they were designed against. */}
+              <div className="grid gap-4 sm:grid-cols-2">
                 {others.map((other, i) => (
                   <AlbumCard
                     key={other.slug}
@@ -348,6 +385,7 @@ export default async function AlbumPage({
             priceStandard={priceStandard}
             compareAtPrice={album.compareAtPrice ? Number(album.compareAtPrice) : null}
             currency={album.currency}
+            clipCount={album.clipCount}
           />
 
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">

@@ -41,6 +41,16 @@ const TIER_LABEL = {
  * `/studio` redirects here when a signed-in user has no creator profile, so
  * this page is also the entry point of the creator funnel, not just marketing.
  */
+/** The six checks a creator can run against their own album before submitting. */
+const ALBUM_RULES = [
+  'albumRule1',
+  'albumRule2',
+  'albumRule3',
+  'albumRule4',
+  'albumRule5',
+  'albumRule6',
+] as const
+
 export default async function SellPage() {
   // Resolve the locale before rendering anything.
   //
@@ -153,6 +163,38 @@ export default async function SellPage() {
             </Card>
           ))}
         </div>
+      </Section>
+
+      {/*
+        How to build an album that sells.
+
+        This is the section a creator most needs and the one that was missing.
+        Everything else on this page answers "what do I get?"; nothing answered
+        "what am I supposed to make?", so the obvious guess is a folder of
+        unrelated clips — which is the single most common reason an album is
+        rejected at review, and the most expensive one, because it is only
+        discovered after the work of uploading.
+
+        Stated as rules with a reason attached to each, not as encouragement.
+        A creator can check their own album against these before submitting it.
+      */}
+      <Section tone="offwhite">
+        <div className="mx-auto max-w-2xl text-center">
+          <Headline lead={t('sell.albumRulesTitle')} bold={t('sell.albumRulesBold')} size="lg" />
+          <Prose className="mx-auto mt-5">{t('sell.albumRulesLead')}</Prose>
+        </div>
+
+        <ol className="mx-auto mt-10 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {ALBUM_RULES.map((key, index) => (
+            <li key={key} className="rounded-lg border bg-card p-5" data-reveal>
+              <span className="numeric font-display text-2xl font-bold text-gold">{index + 1}</span>
+              <h3 className="mt-1 font-subhead text-base font-bold">{t(`sell.${key}Title`)}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {t(`sell.${key}Body`)}
+              </p>
+            </li>
+          ))}
+        </ol>
       </Section>
 
       {/* The two objections that actually stop a creator signing up. */}

@@ -563,6 +563,8 @@ async function main() {
       offerLabelEn: 'Launch offer',
       origin: 'captured',
       orientation: 'landscape',
+      ratingAvg: 4.8,
+      ratingCount: 34,
     },
     create: {
       creatorId: creator.id,
@@ -589,6 +591,7 @@ async function main() {
       licenceVersionId: licences.commercial.id,
       publishedAt: daysAgo(150),
       ratingAvg: 4.8,
+      ratingCount: 34,
       viewCount: 3120,
     },
   })
@@ -1405,6 +1408,8 @@ async function main() {
           offerLabelEn: a.offerEn ?? null,
           origin: a.origin,
           orientation: a.orientation,
+          ratingAvg: 4.3 + (n % 6) * 0.1,
+          ratingCount: 6 + ((n * 5) % 23),
         },
       })
       // Frame sizes follow the album's orientation, so they have to be
@@ -1464,6 +1469,10 @@ async function main() {
         licenceVersionId: licences.commercial.id,
         publishedAt: daysAgo(120 - n * 7),
         ratingAvg: 4.3 + (n % 6) * 0.1,
+        // Denormalised alongside the average, and the two must agree: an
+        // average with a zero count renders as "no ratings", which is how the
+        // whole catalogue showed as unrated while carrying scores.
+        ratingCount: 6 + ((n * 5) % 23),
         viewCount: 400 + n * 137,
       },
     })

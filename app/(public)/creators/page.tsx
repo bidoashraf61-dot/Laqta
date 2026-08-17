@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import { CreatorCta } from '@/components/landing/sections'
+import { Stars } from '@/components/ui/stars'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
 import { pickLocalised } from '@/lib/locale'
@@ -19,6 +20,28 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('catalogue.creatorsTitle'),
     alternates: localeAlternates('/creators'),
   }
+}
+
+/**
+ * A creator's rating: the weighted mean across their live albums.
+ *
+ * Weighted by review count, not a mean of the averages. An album with one
+ * five-star review would otherwise pull a creator's score as hard as one with
+ * ninety reviews averaging 4.6, which is how a new seller with a single
+ * friendly buyer ends up outranking the catalogue's best.
+ *
+ * Returns null with no reviews at all. "0.0" and "no ratings yet" are
+ * different facts, and drawing five empty stars for the second says the first.
+ */
+function creatorRating(albums: Array<{ ratingAvg: unknown; ratingCount: number }>) {
+  let weighted = 0
+  let total = 0
+  for (const album of albums) {
+    if (!album.ratingCount || album.ratingAvg == null) continue
+    weighted += Number(album.ratingAvg) * album.ratingCount
+    total += album.ratingCount
+  }
+  return total > 0 ? { value: weighted / total, count: total } : null
 }
 
 export default async function CreatorsPage() {
@@ -44,6 +67,13 @@ export default async function CreatorsPage() {
       cityAr: true,
       cityEn: true,
       _count: { select: { albums: true } },
+      // Ratings live on the album, so a creator's rating is an aggregate of
+      // theirs. Pulled per creator rather than computed in SQL because the
+      // weighting below is not an AVG (see `creatorRating`).
+      albums: {
+        where: { status: 'live' },
+        select: { ratingAvg: true, ratingCount: true },
+      },
     },
   })
 

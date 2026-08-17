@@ -170,7 +170,8 @@
     "invalid": "Choose a rating from 1 to 5.",
     "outOf": "out of 5",
     "count": "reviews",
-    "verified": "Verified buyer"
+    "verified": "Verified buyer",
+    "ratingSummary": "{value} out of 5, from {count} ratings"
   },
   "security": {
     "title": "Security",
@@ -230,8 +231,8 @@
     "howStep3Title": "Download & own forever",
     "howStep3Body": "Get the files in original resolution instantly, with a permanent license for your projects.",
     "positioning": "No subscriptions. Buy once, own it forever.",
-    "sellTitle": "Shoot it, or generate it?",
-    "sellBody": "Laqta is open to every kind of Saudi creator — filmmakers, drone operators and AI filmmakers alike. Publish an album once, keep the larger share of every sale, and let it earn while you work on the next thing.",
+    "sellTitle": "Sitting on an archive? Turn it into income.",
+    "sellBody": "Every shot you filmed and never used, and every scene you generated with AI, can sell more than once. Publish an album on Laqta once, keep the larger share of every sale, and let it earn while you work on the next thing.",
     "sellCta": "Start selling",
     "notifyTitle": "Tell me at launch",
     "notifyBody": "Leave your email and we'll write the moment the library opens.",
@@ -301,7 +302,7 @@
     "finalCtaButton": "Explore Shoots",
     "footerTagline": "Your first choice for authentic Saudi content.",
     "problemStillAlt": "A frame from the Laqta catalogue: AlUla rock formations at golden hour",
-    "sellNote": "Reviewed within three business days · Monthly transfers by bank, Wise or Payoneer",
+    "sellNote": "Open to every kind of Saudi creator — filmmakers, drone operators and AI filmmakers alike.",
     "seasonEyebrow": "In season now",
     "seasonLead": "Ready for",
     "seasonBody": "Albums picked for this occasion — download today and start cutting before the season does.",
@@ -376,9 +377,9 @@
     "altClipThumb": "The clip {clip}",
     "openAlbum": "Open the album",
     "creatorAlbums": "albums published",
-    "creatorClips": "clips",
-    "creatorViews": "views",
-    "creatorSince": "Member since",
+    "creatorClips": "shots in the library",
+    "creatorViews": "visits to their album pages",
+    "creatorSince": "Publishing on Laqta since",
     "creatorFeatured": "Featured albums",
     "creatorAll": "All albums",
     "altCreatorAvatar": "Photo of {name}",
@@ -399,7 +400,9 @@
     "offSuffix": "off",
     "runtimeTotal": "{duration} in total",
     "openShot": "Open shot page",
-    "shotsIncluded": "shots in this album"
+    "shotsIncluded": "shots in this album",
+    "creatorRating": "Buyer rating",
+    "creatorNoRating": "No ratings yet"
   },
   "sell": {
     "title": "Sell your footage on Laqta",
@@ -437,7 +440,22 @@
     "faq3Q": "Who sets the price?",
     "faq3A": "The tier sets it, by clip count, so the catalogue keeps one price per album size and nobody has to compete on price.",
     "faq4Q": "What if my album is rejected?",
-    "faq4A": "You get a specific note on what needs changing, and the album returns to you editable and resubmittable. Final rejection is rare and reserved for rights violations."
+    "faq4A": "You get a specific note on what needs changing, and the album returns to you editable and resubmittable. Final rejection is rare and reserved for rights violations.",
+    "albumRulesTitle": "What makes an album",
+    "albumRulesBold": "worth buying?",
+    "albumRulesLead": "An album is not a folder of clips. It is a short story an editor buys ready-made and cuts on a single timeline without hunting for the shots you left out.",
+    "albumRule1Title": "One idea, not an assortment",
+    "albumRule1Body": "“Riyadh at night, from inside the car” is an album. “Assorted shots 2026” is not. If you cannot name it in one sentence, it is more than one album.",
+    "albumRule2Title": "Shots that cut together",
+    "albumRule2Body": "Same location, same event, or same time of day. An editor buys in order to cut; if the shots do not meet, they will use one and leave the rest.",
+    "albumRule3Title": "A sequence a story can be built on",
+    "albumRule3Body": "A wide to open, mediums, close details, then something to close on. Order them as if you were cutting them yourself — because that is what the buyer is about to do.",
+    "albumRule4Title": "One grade, one frame rate",
+    "albumRule4Body": "Keep the colour profile and frame rate consistent across the album. A single shot lit differently forces the buyer to regrade, and it is the first one they delete.",
+    "albumRule5Title": "Ten shots that belong together beat thirty that do not",
+    "albumRule5Body": "Nothing here rewards padding. A tight small album outsells a loose large one, and it clears review faster.",
+    "albumRule6Title": "Write the story in the description",
+    "albumRule6Body": "Say what the album covers, where it was shot, and the kind of project it suits. The description is what sells it to someone who has not watched the trailer."
   },
   "cart": {
     "title": "Cart",

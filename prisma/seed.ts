@@ -1543,6 +1543,90 @@ async function main() {
     `  catalogue — ${made} extra live albums (${EXTRA_ALBUMS.filter((a) => a.compareAt).length} on offer)`,
   )
 
+  // ── Collections, populated ────────────────────────────────────────────────
+  //
+  // These are seeded LAST, after the catalogue exists.
+  //
+  // The merchandising block further up runs before the extra albums are
+  // created, so the only album it could ever link was the one live album — and
+  // a collections page whose every shelf holds a single album demonstrates
+  // nothing about collections. A shelf is only a shelf once there is more than
+  // one thing on it.
+  const SHELVES: Array<{
+    slug: string
+    titleAr: string
+    titleEn: string
+    descAr: string
+    descEn: string
+    albums: string[]
+  }> = [
+    {
+      slug: 'saudi-heritage',
+      titleAr: 'التراث السعودي',
+      titleEn: 'Saudi Heritage',
+      descAr: 'مواقع تراثية ومعالم تاريخية عبر المملكة.',
+      descEn: 'Heritage sites and historic landmarks across the Kingdom.',
+      albums: ['alula-golden-hour-aerials', 'diriyah-najdi-architecture', 'alula-hegra-detail'],
+    },
+    {
+      slug: 'aerials',
+      titleAr: 'لقطات جوية',
+      titleEn: 'From the Air',
+      descAr: 'الصحراء والساحل والمدينة من الأعلى، بالدرون وبالطائرة.',
+      descEn: 'Desert, coast and city from above, by drone and from the air.',
+      albums: [
+        'red-sea-reefs',
+        'edge-of-the-world-cliffs',
+        'empty-quarter-dawn',
+        'aerial-clouds-above',
+        'cabin-window-series',
+      ],
+    },
+    {
+      slug: 'cities',
+      titleAr: 'المدن السعودية',
+      titleEn: 'Saudi Cities',
+      descAr: 'الرياض وجدة، نهاراً وليلاً، من الشارع ومن الأفق.',
+      descEn: 'Riyadh and Jeddah, day and night, from street level and from the skyline.',
+      albums: ['riyadh-skyline-night', 'riyadh-streets-day', 'jeddah-waterfront'],
+    },
+  ]
+
+  for (const [order, shelf] of SHELVES.entries()) {
+    const collection = await db.collection.upsert({
+      where: { slug: shelf.slug },
+      update: {
+        titleAr: shelf.titleAr,
+        titleEn: shelf.titleEn,
+        descriptionAr: shelf.descAr,
+        descriptionEn: shelf.descEn,
+        isFeatured: order === 0,
+        isPublished: true,
+      },
+      create: {
+        slug: shelf.slug,
+        titleAr: shelf.titleAr,
+        titleEn: shelf.titleEn,
+        descriptionAr: shelf.descAr,
+        descriptionEn: shelf.descEn,
+        isFeatured: order === 0,
+        isPublished: true,
+        sortOrder: order,
+      },
+    })
+
+    for (const [position, slug] of shelf.albums.entries()) {
+      const album = await db.album.findUnique({ where: { slug }, select: { id: true } })
+      if (!album) continue
+      await db.collectionAlbum.upsert({
+        where: { collectionId_albumId: { collectionId: collection.id, albumId: album.id } },
+        update: { sortOrder: position },
+        create: { collectionId: collection.id, albumId: album.id, sortOrder: position },
+      })
+    }
+  }
+  console.log(`  collections — ${SHELVES.length} shelves populated`)
+
   console.log('Seed complete.')
 }
 

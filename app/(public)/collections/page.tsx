@@ -4,6 +4,7 @@ import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
+import { CollectionCovers } from '@/components/catalogue/collection-covers'
 import { t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
@@ -42,8 +43,28 @@ export default async function CollectionsPage() {
       descriptionEn: true,
       heroMedia: true,
       _count: { select: { albums: true } },
+      // The covers of what is actually in the collection. Five is enough to
+      // read as "a shelf" and few enough that the card is not fetching a
+      // gallery it will only ever show one frame of at a time.
+      albums: {
+        orderBy: { sortOrder: 'asc' },
+        take: 5,
+        select: { album: { select: { coverClipId: true } } },
+      },
     },
   })
+
+  // One query for every cover, rather than one per collection.
+  const coverIds = collections
+    .flatMap((collection) => collection.albums.map((row) => row.album.coverClipId))
+    .filter(Boolean) as string[]
+  const coverClips = coverIds.length
+    ? await db.clip.findMany({
+        where: { id: { in: coverIds } },
+        select: { id: true, thumbnailKeys: true },
+      })
+    : []
+  const thumbById = new Map(coverClips.map((clip) => [clip.id, clip.thumbnailKeys[0] ?? null]))
 
   return (
     <div className="container-tight py-16">
@@ -56,31 +77,45 @@ export default async function CollectionsPage() {
             <Link
               key={collection.slug}
               href={`/collections/${collection.slug}`}
-              className="group relative isolate overflow-hidden rounded-lg border bg-card p-6 transition-colors hover:border-foreground/25"
+              data-reveal
+              className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-[border-color,box-shadow] duration-hover ease-lens hover:border-foreground/25 hover:shadow-lift"
             >
-              {collection.heroMedia ? (
-                <img
-                  src={collection.heroMedia}
-                  alt=""
-                  loading="lazy"
-                  className="absolute inset-0 -z-10 size-full object-cover opacity-25"
-                />
-              ) : null}
-              {/* h2, not h3: this grid sits directly under the page h1 with no
-                  section heading in between, so h3 would skip a level. The same
-                  card on the landing page is an h3 because a section h2 heads it
-                  there — the level belongs to the position, not the component. */}
-              <SubHeadline as="h2" size="card" className="group-hover:text-foreground">
-                <Bilingual ar={collection.titleAr} en={collection.titleEn} />
-              </SubHeadline>
-              {pickLocalised(collection.descriptionAr, collection.descriptionEn) ? (
-                <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                  {pickLocalised(collection.descriptionAr, collection.descriptionEn)}
+              {/* What is actually on the shelf. The card used to show the
+                  collection's hero image at 25% opacity behind the text, which
+                  announced that a picture existed without letting anyone see
+                  one. */}
+              <CollectionCovers
+                className="aspect-video w-full"
+                covers={
+                  collection.albums
+                    .map((row) =>
+                      row.album.coverClipId ? thumbById.get(row.album.coverClipId) : null,
+                    )
+                    .filter(Boolean) as string[]
+                }
+              />
+
+              <div className="flex flex-1 flex-col p-5">
+                {/* h2, not h3: this grid sits directly under the page h1 with
+                    no section heading in between, so h3 would skip a level. */}
+                <SubHeadline as="h2" size="card" className="group-hover:text-foreground">
+                  <Bilingual ar={collection.titleAr} en={collection.titleEn} />
+                </SubHeadline>
+                {pickLocalised(collection.descriptionAr, collection.descriptionEn) ? (
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                    {pickLocalised(collection.descriptionAr, collection.descriptionEn)}
+                  </p>
+                ) : null}
+
+                {/* The count, at the size of a fact rather than a footnote. It
+                    is what tells a buyer whether this shelf is worth opening. */}
+                <p className="mt-auto flex items-baseline gap-2 pt-4">
+                  <span className="numeric font-display text-3xl font-bold leading-none text-foreground">
+                    {collection._count.albums}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{t('commerce.album')}</span>
                 </p>
-              ) : null}
-              <p className="numeric mt-3 text-xs text-muted-foreground">
-                {collection._count.albums} {t('commerce.album')}
-              </p>
+              </div>
             </Link>
           ))}
         </div>

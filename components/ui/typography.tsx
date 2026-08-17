@@ -264,11 +264,32 @@ export function Section({
   tone = 'base',
   children,
   className,
+  reveal = true,
   ...props
-}: React.HTMLAttributes<HTMLElement> & { tone?: SectionTone }) {
+}: React.HTMLAttributes<HTMLElement> & {
+  tone?: SectionTone
+  /**
+   * Opt out for a section already on screen when the page loads — the first
+   * one below a hero, say. Content that was visible before the reader did
+   * anything should not animate in; there is nothing for the motion to
+   * announce, and it reads as the page still loading.
+   */
+  reveal?: boolean
+}) {
   return (
     <section className={cn(GROUNDS[tone], className)} {...props}>
-      <div className="container-tight py-20">{children}</div>
+      {/*
+        The content rises, not the band.
+
+        Revealing the <section> itself would fade its ground and its border in
+        too, so a full-bleed tone would arrive as a coloured rectangle sliding
+        up the page. Keeping the band painted and lifting only what sits inside
+        it reads the way a cut does: the frame is already there, the subject
+        arrives in it.
+      */}
+      <div className="container-tight py-20" data-reveal={reveal ? '' : undefined}>
+        {children}
+      </div>
     </section>
   )
 }

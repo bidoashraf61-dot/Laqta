@@ -8,6 +8,7 @@ import { albumHref } from '@/components/catalogue/album-card'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { pickLocalised } from '@/lib/locale'
 import { Anchor } from '@/components/ui/link'
+import { revealDelay } from '@/lib/motion'
 
 /**
  * The clip card — and the album ribbon underneath it.
@@ -24,7 +25,16 @@ import { Anchor } from '@/components/ui/link'
  * That is the single most expensive mistake available on this screen.
  * ────────────────────────────────────────────────────────────────────────────
  */
-export function ClipCard({ clip, className }: { clip: ClipHit; className?: string }) {
+export function ClipCard({
+  clip,
+  className,
+  index,
+}: {
+  clip: ClipHit
+  className?: string
+  /** Position in the grid, for the staggered entrance. See AlbumCard. */
+  index?: number
+}) {
   // 4K is the ceiling. There is no generation model that outputs 6K, so a 6K
   // chip was a spec claim a buyer could check and find false; most of the
   // catalogue ships 1080p today.
@@ -32,8 +42,10 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
 
   return (
     <article
+      data-reveal
+      style={index === undefined ? undefined : revealDelay(index)}
       className={cn(
-        'group overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground/25',
+        'group overflow-hidden rounded-lg border bg-card transition-[border-color,box-shadow] duration-hover ease-lens hover:border-foreground/25 hover:shadow-lift',
         className,
       )}
     >
@@ -44,7 +56,7 @@ export function ClipCard({ clip, className }: { clip: ClipHit; className?: strin
               src={clip.thumbnail}
               alt={t('catalogue.altClipThumb', { clip: pickLocalised(clip.titleAr, clip.titleEn) })}
               loading="lazy"
-              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="size-full object-cover transition-transform duration-frame ease-lens group-hover:scale-105"
             />
           ) : (
             <div className="dark grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">

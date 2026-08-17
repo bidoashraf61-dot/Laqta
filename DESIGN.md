@@ -439,6 +439,81 @@ second recurring shape is the **letterbox** — a 2.39:1 crop that stands in for
 the reference's pointed arch. It is Laqta's own geometry, the literal aspect of
 the product, and it recurs on hero crops, empty states and posters.
 
+## Motion
+
+Laqta sells footage, so motion is not decoration here — it is the medium. It is
+also therefore the easiest thing to overdo. The rule is **cinematic restraint**:
+one gesture, one curve family, nothing that overshoots.
+
+Tokens live in `styles/globals.css` (`:root`, never repeated in `.dark` — a
+curve is not a colour) and are exposed to Tailwind as named `duration-*` and
+`ease-*` utilities.
+
+### Curves
+- **`--ease-cut`** `cubic-bezier(.22,1,.36,1)` — **arrival**. Anything entering
+  the frame. Decelerates hard and stops.
+- **`--ease-lens`** `cubic-bezier(.4,0,.2,1)` — **travel**. A surface moving
+  under its own power: a drawer, a hover, the album pack turning.
+- **`--ease-exit`** `cubic-bezier(.4,0,1,1)` — **departure**. Accelerates away.
+
+There is no fourth curve, and there is no bounce or elastic anywhere. Overshoot
+reads as slop; a real object settles.
+
+### Durations
+Scaled to how far a thing travels and how much of the frame it occupies. One
+duration reused everywhere makes a checkbox sluggish and a sheet abrupt.
+
+| Token | Value | For |
+|---|---|---|
+| `--dur-tap` | 120ms | pressed, checked, a table row highlight |
+| `--dur-hover` | 200ms | colour, border, opacity feedback |
+| `--dur-move` | 320ms | a short travel: a reveal, a chip, a menu |
+| `--dur-panel` | 420ms | a surface arriving: dialog, sheet, drawer |
+| `--dur-frame` | 560ms | the whole frame changing: an image scaling |
+| `--dur-exit` | 180ms | every dismissal, whatever arrived |
+
+**Exits are always shorter than entrances.** Dismissing must never feel slower
+than summoning.
+
+### The one entrance
+`--rise` 12px + fade, on `--ease-cut`. Everything that arrives uses it — a card,
+a section, a panel — so a page has one accent rather than a flourish per
+component. Past ~16px it stops reading as a fade and becomes a slide, which is a
+noisier gesture.
+
+Staggered groups step by `--stagger-step` (45ms), capped at 8 steps. Order
+follows the DOM, so the wave starts at the inline-start edge in both directions
+with nothing to mirror.
+
+### Named Rules
+
+**The One-Gesture Rule.** A surface gets one entrance, not one per element
+inside it. A section reveals its content as a block; a grid staggers its cards
+and stops there. Nested reveals compound into a page that assembles itself.
+
+**The Frame-Stays Rule.** Reveal the content, not the ground. A full-bleed
+section keeps its band and border painted and lifts only what sits inside — the
+frame is already there, the subject arrives in it.
+
+**The Compositor Rule.** Only `opacity` and `transform` are ever animated, and
+`transition-property` is always named. Never `transition-all`: it includes
+width, padding and font-weight, each of which relayouts the page every frame.
+
+**The Blank-Page Rule.** Hidden-by-default is a promise that something will make
+it visible, so it is scoped to `html.js` (set before first paint), backed by a
+dead-man's switch if the observer never fires, and lifted entirely for print.
+Failing to animate is a blemish; failing to appear is an outage.
+
+**The Essential-Motion Rule.** `prefers-reduced-motion` collapses everything in
+the document, blanket, no per-component opt-in to forget. Motion that carries
+information rather than decoration — a spinner, a progress sweep — marks itself
+`data-motion="essential"` and keeps moving. A frozen spinner reads as a hung
+page.
+
+**The No-Bare-Timing Rule.** Never author `duration-300` or `ease-in-out`. If a
+transition needs a timing it takes one of the names above; if none fits, the
+scale is missing a rung and this file gains one.
+
 ## Components
 
 ### Buttons

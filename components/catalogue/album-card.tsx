@@ -6,6 +6,7 @@ import { formatDuration } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { Anchor } from '@/components/ui/link'
+import { revealDelay } from '@/lib/motion'
 
 /**
  * The album poster.
@@ -72,12 +73,29 @@ function albumHue(slug: string) {
   return ALBUM_HUES[h % ALBUM_HUES.length]
 }
 
-export function AlbumCard({ album, className }: { album: AlbumCardData; className?: string }) {
+export function AlbumCard({
+  album,
+  className,
+  index,
+}: {
+  album: AlbumCardData
+  className?: string
+  /**
+   * Position in the grid, for the staggered entrance. Optional: a card shown
+   * on its own — the "more from this creator" slot on an album page — should
+   * arrive with everything else rather than waiting its turn in a queue of one.
+   */
+  index?: number
+}) {
   const hue = albumHue(album.slug)
 
   return (
-    <div className={cn('group relative', className)}>
-      <div className="relative aspect-[5/7] overflow-hidden rounded-lg border shadow-soft">
+    <div
+      className={cn('group relative', className)}
+      data-reveal
+      style={index === undefined ? undefined : revealDelay(index)}
+    >
+      <div className="relative aspect-[5/7] overflow-hidden rounded-lg border shadow-soft transition-[border-color,box-shadow] duration-hover ease-lens group-hover:border-foreground/25 group-hover:shadow-lift">
         <div className="absolute inset-0">
           <CoverImage src={album.coverKey} alt={coverAlt(album)} />
           <span
@@ -194,7 +212,7 @@ function CoverImage({ src, alt }: { src: string | null; alt: string }) {
       src={src}
       alt={alt}
       loading="lazy"
-      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+      className="size-full object-cover transition-transform duration-frame ease-lens group-hover:scale-105"
     />
   )
 }

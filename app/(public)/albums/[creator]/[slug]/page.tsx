@@ -334,9 +334,10 @@ export default async function AlbumPage({
                 {t('catalogue.byCreatorOther')}
               </h2>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {others.map((other) => (
+                {others.map((other, i) => (
                   <AlbumCard
                     key={other.slug}
+                    index={i}
                     album={{
                       slug: other.slug,
                       creatorHandle: other.creator.handle,

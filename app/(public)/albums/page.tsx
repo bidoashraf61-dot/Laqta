@@ -102,8 +102,8 @@ export default async function AlbumsPage({
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {albums.map((album) => (
-            <AlbumCard key={`${album.creatorHandle}/${album.slug}`} album={album} />
+          {albums.map((album, i) => (
+            <AlbumCard key={`${album.creatorHandle}/${album.slug}`} album={album} index={i} />
           ))}
         </div>
       )}

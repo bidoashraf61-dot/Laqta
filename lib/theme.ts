@@ -12,4 +12,16 @@
  */
 export const THEME_KEY = 'laqta-theme'
 
-export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('${THEME_KEY}');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})()`
+/**
+ * It also marks the document `js`, which is what lets entrance motion exist at
+ * all.
+ *
+ * A reveal has to start invisible, and "invisible" is a promise that something
+ * will later make it visible. If scripting is off, or the bundle fails, or a
+ * crawler never executes it, that promise is broken and the page is blank —
+ * so the hidden state is scoped to `html.js` and the default is fully visible.
+ * Setting the class here rather than from React is the whole point: React runs
+ * after first paint, so the content would flash in and then be yanked back out
+ * to animate.
+ */
+export const THEME_SCRIPT = `(function(){var e=document.documentElement;e.classList.add('js');try{var t=localStorage.getItem('${THEME_KEY}');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);e.classList.toggle('dark',d);}catch(e2){}})()`

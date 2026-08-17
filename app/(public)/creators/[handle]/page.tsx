@@ -213,8 +213,8 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
                 {t('catalogue.creatorFeatured')}
               </SubHeadline>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {featured.map((album) => (
-                  <AlbumCard key={album.slug} album={album} />
+                {featured.map((album, i) => (
+                  <AlbumCard key={album.slug} album={album} index={i} />
                 ))}
               </div>
             </section>
@@ -225,8 +225,8 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
               {t('catalogue.creatorAll')}
             </SubHeadline>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {albums.map((album) => (
-                <AlbumCard key={album.slug} album={album} />
+              {albums.map((album, i) => (
+                <AlbumCard key={album.slug} album={album} index={i} />
               ))}
             </div>
           </section>

@@ -28,8 +28,8 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {albums.map((album) => (
-            <AlbumCard key={album.slug} album={album} />
+          {albums.map((album, i) => (
+            <AlbumCard key={album.slug} album={album} index={i} />
           ))}
         </div>
       )}

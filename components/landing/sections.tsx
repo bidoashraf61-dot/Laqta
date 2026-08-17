@@ -89,8 +89,8 @@ function AlbumRail({
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {albums.map((album) => (
-            <AlbumCard key={album.slug} album={album} />
+          {albums.map((album, i) => (
+            <AlbumCard key={album.slug} album={album} index={i} />
           ))}
         </div>
       )}
@@ -245,8 +245,8 @@ export function SpecialOffers({ albums }: { albums: AlbumCardData[] }) {
         <p className="mt-3 text-sm text-foreground">{t('landing.offersHint')}</p>
       </div>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {albums.map((album) => (
-          <AlbumCard key={album.slug} album={album} />
+        {albums.map((album, i) => (
+          <AlbumCard key={album.slug} album={album} index={i} />
         ))}
       </div>
     </Section>
@@ -264,8 +264,8 @@ export function AlbumShelf({ albums }: { albums: AlbumCardData[] }) {
         href="/albums"
       />
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {albums.map((album) => (
-          <AlbumCard key={album.slug} album={album} />
+        {albums.map((album, i) => (
+          <AlbumCard key={album.slug} album={album} index={i} />
         ))}
       </div>
     </Section>
@@ -294,8 +294,8 @@ export function TheCollection({ albums }: { albums: AlbumCardData[] }) {
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {albums.map((album) => (
-            <AlbumCard key={album.slug} album={album} />
+          {albums.map((album, i) => (
+            <AlbumCard key={album.slug} album={album} index={i} />
           ))}
         </div>
       )}

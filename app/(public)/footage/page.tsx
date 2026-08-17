@@ -110,8 +110,8 @@ export default async function FootagePage({
           ) : (
             <>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {result.hits.map((clip) => (
-                  <ClipCard key={clip.id} clip={clip} />
+                {result.hits.map((clip, i) => (
+                  <ClipCard key={clip.id} clip={clip} index={i} />
                 ))}
               </div>
 

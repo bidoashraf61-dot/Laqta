@@ -4,7 +4,26 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+  cn(
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+    /*
+     * Hover is colour only, per DESIGN.md — a button does not travel.
+     *
+     * The pressed state is the one addition, and it is deliberate. DESIGN.md
+     * specifies hover and focus; it says nothing about `:active`, and on a
+     * touch screen there IS no hover — a tap on a phone produced no feedback
+     * at all between the press and the server answering. One percent over
+     * 120ms sits under the threshold where it reads as movement and above the
+     * one where the button feels dead.
+     *
+     * One `transition-property` for the whole button: naming transform in a
+     * second utility would silently replace this list rather than extend it.
+     */
+    'transition-[color,background-color,border-color,box-shadow,transform] duration-tap ease-lens',
+    'active:scale-[0.99]',
+  ),
   {
     variants: {
       variant: {

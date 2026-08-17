@@ -276,6 +276,54 @@
     --ring: 43 52% 44%;
 
     --radius: 0.625rem;
+
+    /*
+     * ── Motion ──────────────────────────────────────────────────────────────
+     *
+     * Declared here and never repeated in `.dark`: a curve is not a colour.
+     * Motion is identical in paper and in film.
+     *
+     * These tokens exist because the portal had three easing curves in play —
+     * 0.4/0/0.2/1 on the album pack, 0.22/1/0.36/1 on the scroll cue, and
+     * Tailwind's default on every `transition-colors` — with nothing naming
+     * any of them. Three curves is not a system; it is three guesses.
+     *
+     * The vocabulary is the edit suite's, because that is what this is.
+     */
+
+    /* Arrival. Decelerates hard and stops — the house curve for anything
+       entering the frame. No overshoot: DESIGN.md treats bounce and elastic
+       as slop, and a real object settles rather than springs. */
+    --ease-cut: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Travel. Eases at both ends, for a surface moving under its own power —
+       a drawer, a dialog, the album pack turning. */
+    --ease-lens: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Departure. Accelerates away, and is always given a shorter duration
+       than the matching arrival, so dismissing never feels slower than
+       summoning. */
+    --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+    /*
+     * Durations scale with how far a thing travels and how much of the frame
+     * it occupies. One duration reused everywhere is the anti-pattern: it
+     * makes a checkbox feel sluggish and a full-screen sheet feel abrupt.
+     */
+    --dur-tap: 120ms; /* pressed / checked — must read as instant */
+    --dur-hover: 200ms; /* colour, border, opacity feedback */
+    --dur-move: 320ms; /* a short travel: a reveal, a chip, a row */
+    --dur-panel: 420ms; /* a surface arriving: dialog, sheet, drawer */
+    --dur-frame: 560ms; /* the whole frame changing: an image scaling */
+    --dur-exit: 180ms; /* every dismissal, regardless of what arrived */
+
+    /* Reveal displacement. 12px reads as a fade with direction; past ~16px it
+       starts reading as a slide, which is a noisier gesture. */
+    --rise: 12px;
+
+    /* Per-item delay in a staggered group. Small on purpose — at 45ms a row
+       of six lands in 225ms, which is choreography; at 100ms it is a queue. */
+    --stagger-step: 45ms;
   }
 
   /*
@@ -820,6 +868,12 @@
     );
     animation: shimmer 1.6s infinite;
   }
+
+  /* A transform ignores `dir`, so the sweep would run right-to-left on an
+     Arabic page — against the direction the eye is already travelling. */
+  [dir='rtl'] .skeleton::after {
+    animation-direction: reverse;
+  }
 }
 
 /* The hero scroll cue — a smooth downward drift, not a bounce. The design
@@ -836,10 +890,84 @@
   }
 }
 .animate-scroll-cue {
-  animation: scroll-cue 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation: scroll-cue 1.8s var(--ease-cut) infinite;
 }
+
+/* ── Entrance ───────────────────────────────────────────────────────────────
+ *
+ * One gesture, used everywhere: rise 12px and fade in, on the arrival curve.
+ *
+ * The state lives in an attribute rather than a class because the observer
+ * that flips it is generic — it never needs to know what it is revealing, and
+ * a section, a grid item and a table row all read identically in the DOM.
+ *
+ * `html.js` gates the hidden state. See lib/theme.ts for why: without JS the
+ * content must simply be there, and the class is set before first paint so
+ * there is no flash of visible content being pulled back to animate.
+ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, var(--rise), 0);
+  /* Only these two properties ever animate. Anything that touches layout —
+     width, height, top — would recalculate the page on every frame. */
+  transition:
+    opacity var(--dur-move) var(--ease-cut),
+    transform var(--dur-move) var(--ease-cut);
+  transition-delay: var(--reveal-delay, 0ms);
+  /* Contain the paint work to the element itself while it is moving. */
+  will-change: opacity, transform;
+}
+
+.js [data-reveal='shown'] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* A staggered group sets `--reveal-delay` per item (see revealDelay() in
+   components/ui/reveal.tsx). The wave follows DOM order, which means it starts
+   at the inline-start edge in both directions with nothing to flip for RTL. */
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────
+ *
+ * Systemic rather than per-component. Every previous attempt at this was one
+ * `@media` block bolted onto whichever component someone happened to remember,
+ * which is how the portal ended up with reduced-motion handling on exactly two
+ * of its animations.
+ *
+ * Transitions and animations collapse to effectively zero rather than to
+ * `none`, so anything that listens for `transitionend` or `animationend` still
+ * fires and no state machine hangs waiting for an event that never comes.
+ *
+ * `[data-motion='essential']` opts back in. It is for motion that carries
+ * information rather than decoration — a spinner is the only honest signal
+ * that work is still happening, and freezing it reads as a hung page.
+ */
 @media (prefers-reduced-motion: reduce) {
-  .animate-scroll-cue {
-    animation: none;
+  *:not([data-motion='essential']),
+  *:not([data-motion='essential'])::before,
+  *:not([data-motion='essential'])::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Revealed content must be visible, not merely un-animated — the observer
+     may never fire for something already on screen at load. */
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Print gets everything, revealed or not. A reader printing a licence or an
+   invoice is by definition not scrolling, so the observer never runs for
+   anything below the first screen and the sheets come out blank. */
+@media print {
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

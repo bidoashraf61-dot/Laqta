@@ -13,9 +13,19 @@ import { Skeleton } from '@/components/ui/skeleton'
  * a local variant so the copy and the spacing stay consistent site-wide.
  */
 
+/**
+ * `data-motion="essential"` exempts this from the global reduced-motion reset
+ * in globals.css.
+ *
+ * The reset is deliberately blunt — it flattens every animation in the document
+ * — and a spinner caught by it becomes a static icon that says "loading"
+ * forever. Rotation is the only evidence a reader has that work is still
+ * happening, so it is information, not decoration, and it keeps turning.
+ */
 function Spinner({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <Loader2
+      data-motion="essential"
       className={cn('size-5 animate-spin text-muted-foreground', className)}
       aria-hidden
       {...props}

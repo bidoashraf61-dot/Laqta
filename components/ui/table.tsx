@@ -36,7 +36,10 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
+        // The row highlight tracks the pointer down a long table, so it takes
+        // the shortest step on the scale — anything slower smears behind the
+        // cursor and reads as lag rather than as feedback.
+        'border-b transition-colors duration-tap ease-lens hover:bg-muted/50 data-[state=selected]:bg-muted',
         className,
       )}
       {...props}

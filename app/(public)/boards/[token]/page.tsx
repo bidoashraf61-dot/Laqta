@@ -112,8 +112,8 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {hits.map((clip) => (
-            <ClipCard key={clip.id} clip={clip} />
+          {hits.map((clip, i) => (
+            <ClipCard key={clip.id} clip={clip} index={i} />
           ))}
         </div>
       )}

@@ -274,7 +274,7 @@
     "faq4Q": "Is the content valid for future projects?",
     "faq4A": "Yes — the license lets you use the album across current and upcoming projects on the same topic, with no time limits.",
     "faq5Q": "How many shots are in each album?",
-    "faq5A": "Album size varies by story (from 30 to 70 harmonious shots) so you can pick exactly what you need.",
+    "faq5A": "Album size varies by story. Every album states its shot count and runtime on its card and on its page.",
     "offersLead": "The newest albums,",
     "offersBold": "at launch prices.",
     "offersHint": "The struck-through figure is the usual price. You pay the smaller one, and own the album forever.",
@@ -286,11 +286,11 @@
     "problemBold": "“Laqta” is your shortcut.",
     "problemBody": "Instead of wasting weeks on planning, production, and steep costs, we hand you ready-made cinematic scenes — culturally accurate and built to tell your story instantly.",
     "collectionViewAll": "Browse all albums",
-    "priceLead": "Best market price,",
-    "priceBold": "16× cheaper than any competitor.",
+    "priceLead": "No subscription, no monthly credits that expire —",
+    "priceBold": "pay once and own it for life.",
     "priceSub": "Own the album at a single price with full rights, at a cost that fits every freelancer’s budget.",
     "price1Title": "Albums in different sizes",
-    "price1Body": "(30, 50, or 70 shots) sized to fit your story and your budget.",
+    "price1Body": "Every album states its shot count, its runtime and its price, so you can pick the size that fits your story and your budget.",
     "price2Title": "One-time purchase, no limits",
     "price2Body": "Pay once and use the content across all your future projects, with no time limits.",
     "price3Title": "Available for everyone",
@@ -306,7 +306,8 @@
     "seasonLead": "Ready for",
     "seasonBody": "Albums picked for this occasion — download today and start cutting before the season does.",
     "offersEyebrow": "Launch offers",
-    "offersBody": "Ready-to-use albums with a full commercial licence, at launch pricing for a limited time."
+    "offersBody": "Ready-to-use albums with a full commercial licence, at launch pricing for a limited time.",
+    "deckLabel": "How Laqta works, pricing, and frequently asked questions"
   },
   "catalogue": {
     "footageTitle": "Footage",

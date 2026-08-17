@@ -1041,3 +1041,112 @@
     transform: none !important;
   }
 }
+
+/* ── The scroll deck ────────────────────────────────────────────────────────
+ *
+ * See components/landing/scroll-deck.tsx for why a pinned horizontal section
+ * is allowed here at all. The short version: it is only ever pinned when the
+ * reader has JavaScript, has not asked for reduced motion, and is on a screen
+ * big enough that a full-viewport panel fits. Otherwise the panels are three
+ * ordinary sections stacked in document order, which is also exactly what a
+ * crawler sees.
+ *
+ * The default below is therefore the STACK. Pinning is the enhancement, and it
+ * is applied only inside the media query that grants it.
+ */
+.deck-stage {
+  position: relative;
+}
+
+.deck-track {
+  display: grid;
+}
+
+@media (min-width: 1024px) and (min-height: 640px) {
+  .js .deck {
+    /* One viewport of scroll per panel: the pin is exactly as long as the
+       track is wide, so the section always releases. */
+    height: calc(var(--deck-panels, 3) * 100vh);
+  }
+
+  .js .deck-stage {
+    position: sticky;
+    top: 0;
+    block-size: 100dvh;
+    overflow: hidden;
+  }
+
+  .js .deck-track {
+    display: flex;
+    block-size: 100%;
+    /* Only transform is animated, and the browser is told so. */
+    will-change: transform;
+  }
+
+  .js .deck-panel {
+    flex: 0 0 100vw;
+    block-size: 100%;
+    display: grid;
+    /*
+     * STRETCH, not centre.
+     *
+     * `align-content: center` sizes the grid row to its content, so the
+     * section's `block-size: 100%` resolved against that row instead of the
+     * panel — the gold and olive bands rendered as stripes floating in a paper
+     * panel, three grounds visible at once. The panel stretches its section and
+     * the SECTION centres its own content (below), which is one job each.
+     */
+    /* A panel whose content outgrows the viewport scrolls itself rather than
+       being clipped — the FAQ is the one that gets close. */
+    overflow-y: auto;
+  }
+
+  /* The panel's SECTION fills it, so the band's ground reaches the top and
+     bottom of the viewport. Left to size itself, a gold or olive section
+     floated as a stripe in the middle of a paper panel — three different
+     grounds visible at once, which is the opposite of what a full-screen
+     panel is for. */
+  .js .deck-panel > section {
+    block-size: 100%;
+    display: grid;
+    align-content: center;
+  }
+
+  /* Sections carry their own vertical rhythm; a full `py-20` on top of a
+     centred 100dvh panel just pushes content off it. */
+  .js .deck-panel .container-tight {
+    padding-block: 3rem;
+  }
+
+  .js .deck-dots {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 1.75rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .js .deck-dots span {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 999px;
+    background: hsl(var(--foreground) / 0.25);
+    transition:
+      background-color var(--dur-move) var(--ease-cut),
+      inline-size var(--dur-move) var(--ease-cut);
+  }
+
+  .js .deck-dots span[data-on] {
+    inline-size: 1.5rem;
+    background: hsl(var(--gold));
+  }
+}
+
+/* Below the pinning breakpoint the dots describe nothing, so they are not
+   drawn — three stacked sections need no position indicator. */
+@media not all and (min-width: 1024px) and (min-height: 640px) {
+  .deck-dots {
+    display: none;
+  }
+}

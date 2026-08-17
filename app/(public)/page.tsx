@@ -8,6 +8,7 @@ import { PricingValue } from '@/components/landing/pricing-value'
 import { LandingFaq } from '@/components/landing/faq'
 import { FinalCta } from '@/components/landing/final-cta'
 import { HowItWorks } from '@/components/landing/sections'
+import { ScrollDeck } from '@/components/landing/scroll-deck'
 import { RequestFootage } from '@/components/landing/request-footage'
 import { getFootageWall, getSeasonalShelf } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
@@ -100,9 +101,14 @@ export default async function HomePage() {
       <FootageWall footage={footage} />
       <TheCollection albums={shelf.albums} season={shelf.season} />
       <LicensingRights />
-      <HowItWorks />
-      <PricingValue />
-      <LandingFaq />
+      {/* One section, three panels, advanced by scrolling — see ScrollDeck
+          for the four conditions under which it declines to pin and renders as
+          three ordinary stacked sections instead. */}
+      <ScrollDeck label={t('landing.deckLabel')}>
+        <HowItWorks />
+        <PricingValue />
+        <LandingFaq />
+      </ScrollDeck>
       <RequestFootage />
       <FinalCta />
     </>

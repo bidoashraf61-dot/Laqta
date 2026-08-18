@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { Link } from '@/components/ui/link'
 import { auth } from '@/lib/auth'
 import { search, logSearch, type ClipFilters } from '@/lib/search'
-import { ClipCard } from '@/components/catalogue/clip-card'
+import { InfiniteClips } from '@/components/catalogue/infinite-clips'
 import { FilterRail } from '@/components/catalogue/filter-rail'
 import { EmptyState } from '@/components/ui/state'
 import { Button } from '@/components/ui/button'
-import { formatNumber, t } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
@@ -44,14 +44,16 @@ function toFilters(params: SearchParams): ClipFilters {
     cameraMovement: one('movement'),
     shotSize: one('shot'),
     timeOfDay: one('time'),
-    season: one('season'),
+
     minDurationS: one('dmin') ? Number(one('dmin')) : undefined,
     maxDurationS: one('dmax') ? Number(one('dmax')) : undefined,
-    fps: one('fps') ? Number(one('fps')) : undefined,
     hasPeople: people === '1' ? true : people === '0' ? false : undefined,
-    identifiableFaces: one('faces') === '1' ? true : undefined,
-    clearedForCommercial: one('cleared') === '1',
-    editorialOnly: one('editorial') === '1',
+    origin:
+      one('origin') === 'generated'
+        ? 'generated'
+        : one('origin') === 'captured'
+          ? 'captured'
+          : undefined,
     creator: one('creator'),
     sort: (one('sort') as ClipFilters['sort']) ?? 'relevance',
     page: one('page') ? Number(one('page')) : 1,
@@ -75,14 +77,23 @@ export default async function FootagePage({
 
   const params = await searchParams
   const filters = toFilters(params)
+
+  // Exactly what the reader is looking at, minus the page cursor, so the
+  // client can ask for page 2 of the same query without rebuilding it.
+  const queryString = (() => {
+    const next = new URLSearchParams()
+    for (const [key, value] of Object.entries(params)) {
+      if (value == null || key === 'page') continue
+      next.set(key, Array.isArray(value) ? value[0] : value)
+    }
+    return next.toString()
+  })()
   const [result, session] = await Promise.all([search(filters), auth()])
 
   // Logged after the fact, and never awaited into the critical path in a way
   // that could fail the page — the zero-result report this feeds is the
   // content-acquisition roadmap.
   await logSearch(filters, result.total, { userId: session?.user?.id ?? null })
-
-  const totalPages = Math.max(1, Math.ceil(result.total / result.perPage))
 
   return (
     <div className="container py-10">
@@ -95,10 +106,16 @@ export default async function FootagePage({
         <FilterRail />
 
         <div className="min-w-0 flex-1">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              {t('catalogue.resultsCount', { count: formatNumber(result.total) })}
-            </p>
+          {/*
+            No result count.
+
+            «١٬٤٠٤ لقطة» answered a question nobody browsing a stock library
+            asks, and answered it badly: the number changes with every filter,
+            so it read as a score for the search rather than as a fact about the
+            catalogue — and a small number after a narrow filter reads as a thin
+            library rather than as a precise result.
+          */}
+          <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
             <SortLinks params={params} />
           </div>
 
@@ -108,17 +125,20 @@ export default async function FootagePage({
               description={t('catalogue.noResultsBody')}
             />
           ) : (
-            <>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {result.hits.map((clip) => (
-                  <ClipCard key={clip.id} clip={clip} />
-                ))}
-              </div>
+            /*
+              Server-rendered first page, appended to by scrolling.
 
-              {totalPages > 1 ? (
-                <Pagination page={result.page} totalPages={totalPages} params={params} />
-              ) : null}
-            </>
+              The grid is complete in the HTML for a crawler and for anyone
+              without JavaScript; InfiniteClips only ever adds to it. Paging
+              made browsing a click every twenty-four shots, and each click
+              threw away scroll position and re-rendered the whole rail.
+            */
+            <InfiniteClips
+              initial={result.hits}
+              total={result.total}
+              perPage={result.perPage}
+              query={queryString}
+            />
           )}
         </div>
       </div>
@@ -157,34 +177,6 @@ function SortLinks({ params }: { params: SearchParams }) {
           <Link href={buildHref(params, { sort: value, page: null })}>{label}</Link>
         </Button>
       ))}
-    </nav>
-  )
-}
-
-function Pagination({
-  page,
-  totalPages,
-  params,
-}: {
-  page: number
-  totalPages: number
-  params: SearchParams
-}) {
-  return (
-    <nav className="mt-8 flex items-center justify-center gap-3" aria-label={t('catalogue.page')}>
-      <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-        <Link href={buildHref(params, { page: String(Math.max(1, page - 1)) })}>
-          {t('catalogue.previous')}
-        </Link>
-      </Button>
-      <span className="numeric text-sm text-muted-foreground">
-        {page} / {totalPages}
-      </span>
-      <Button asChild variant="outline" size="sm" disabled={page >= totalPages}>
-        <Link href={buildHref(params, { page: String(Math.min(totalPages, page + 1)) })}>
-          {t('catalogue.next')}
-        </Link>
-      </Button>
     </nav>
   )
 }

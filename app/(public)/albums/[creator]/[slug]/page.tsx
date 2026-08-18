@@ -12,11 +12,12 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { AlbumCard } from '@/components/catalogue/album-card'
 import { LicencePicker } from '@/components/catalogue/licence-picker'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
+import { AlbumShots } from '@/components/catalogue/album-shots'
+import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { PageTitle } from '@/components/ui/typography'
 import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
-import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { requestLocale } from '@/lib/locale-request'
 import { pickLocalised } from '@/lib/locale'
 
@@ -66,6 +67,7 @@ async function getAlbum(creatorHandle: string, slug: string) {
           colourProfile: true,
           aspectRatio: true,
           thumbnailKeys: true,
+          proxyKey: true,
           // masterKey is never selected here — the catalogue must not be able
           // to reference an original.
         },
@@ -141,7 +143,8 @@ export default async function AlbumPage({
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
-      clearedForCommercial: true,
+      origin: true,
+      orientation: true,
       coverClipId: true,
       creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
     },
@@ -157,7 +160,6 @@ export default async function AlbumPage({
   const coverById = new Map(covers.map((clip) => [clip.id, clip.thumbnailKeys[0] ?? null]))
 
   const priceStandard = Number(album.priceStandard)
-  const priceExtended = Number(album.priceExtended)
   const hero = album.clips[0]?.thumbnailKeys[0] ?? null
 
   return (
@@ -209,11 +211,32 @@ export default async function AlbumPage({
               <Bilingual ar={album.titleAr} en={album.titleEn} />
             </PageTitle>
             <p className="text-muted-foreground">
-              <Link href={`/creators/${album.creator.handle}`} className="hover:text-foreground">
+              <Link
+                href={`/creators/${album.creator.handle}`}
+                className="underline underline-offset-4 transition-colors duration-hover ease-lens hover:text-foreground"
+              >
                 {t('commerce.byCreator', {
                   creator: pickLocalised(album.creator.displayNameAr, album.creator.displayNameEn),
                 })}
               </Link>
+            </p>
+
+            {/*
+              What the price is FOR, said once and said large.
+              
+              The count was a parenthesis on a section heading further down the
+              page — «اللقطات في الألبوم (٢٢)» — which is a caption, not an
+              answer. A buyer reading a price needs the quantity in the same
+              glance, and it is the single fact that varies most between two
+              albums at the same price.
+            */}
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1">
+              <span className="numeric font-display text-3xl font-bold text-foreground">
+                {album.clipCount} {t('commerce.clip')}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {t('catalogue.runtimeTotal', { duration: formatDuration(album.totalRuntimeS) })}
+              </span>
             </p>
             {pickLocalised(album.descriptionAr, album.descriptionEn) ? (
               <p className="max-w-prose font-serif text-[1.2rem] leading-[1.85] text-foreground/75">
@@ -240,40 +263,21 @@ export default async function AlbumPage({
           <Separator />
 
           <section>
-            <h2 className="mb-4 font-subhead text-xl font-bold">
-              {t('catalogue.clipsInAlbum')}{' '}
-              <span className="numeric text-muted-foreground">({album.clips.length})</span>
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {album.clips.map((clip) => (
-                <Link
-                  key={clip.id}
-                  href={`/footage/${clip.slug}`}
-                  className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-foreground/25"
-                >
-                  <div className="relative aspect-video bg-muted">
-                    {clip.thumbnailKeys[0] ? (
-                      <img
-                        src={clip.thumbnailKeys[0]}
-                        alt=""
-                        loading="lazy"
-                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : null}
-                    <PreviewWatermark />
-                    <Badge
-                      variant="neutral"
-                      className="numeric absolute bottom-1.5 end-1.5 z-[2] bg-ink/80 backdrop-blur"
-                    >
-                      {formatDuration(Number(clip.durationS))}
-                    </Badge>
-                  </div>
-                  <p className="line-clamp-1 p-2 text-xs group-hover:text-foreground">
-                    <Bilingual ar={clip.titleAr} en={clip.titleEn} />
-                  </p>
-                </Link>
-              ))}
-            </div>
+            <h2 className="mb-4 font-subhead text-xl font-bold">{t('catalogue.clipsInAlbum')}</h2>
+            {/* Uniform 16:9 boxes, portrait clips letterboxed rather than
+                cropped — see AlbumShots. A tile goes to the shot's own page,
+                which carries the rest of the album underneath it. */}
+            <AlbumShots
+              shots={album.clips.map((clip) => ({
+                id: clip.id,
+                slug: clip.slug,
+                titleAr: clip.titleAr,
+                titleEn: clip.titleEn,
+                durationS: clip.durationS,
+                thumbnailKeys: clip.thumbnailKeys,
+                previewKey: clip.proxyKey?.startsWith('/') ? clip.proxyKey : null,
+              }))}
+            />
           </section>
 
           <Separator />
@@ -333,10 +337,18 @@ export default async function AlbumPage({
               <h2 className="mb-4 font-subhead text-xl font-bold">
                 {t('catalogue.byCreatorOther')}
               </h2>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {others.map((other) => (
+              {/* Two columns, not four.
+                  
+                  This page keeps a sticky price panel, so the content column is
+                  ~620px — at four columns each poster was ~140px wide and the
+                  title, price, discount chip and creator line ran into each
+                  other. Two gives roughly the width these cards get on the
+                  landing page, which is what they were designed against. */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                {others.map((other, i) => (
                   <AlbumCard
                     key={other.slug}
+                    index={i}
                     album={{
                       slug: other.slug,
                       creatorHandle: other.creator.handle,
@@ -352,7 +364,8 @@ export default async function AlbumPage({
                       currency: other.currency,
                       clipCount: other.clipCount,
                       totalRuntimeS: other.totalRuntimeS,
-                      clearedForCommercial: other.clearedForCommercial,
+                      origin: other.origin,
+                      orientation: other.orientation,
                       coverKey: other.coverClipId
                         ? (coverById.get(other.coverClipId) ?? null)
                         : null,
@@ -370,9 +383,9 @@ export default async function AlbumPage({
             albumSlug={album.slug}
             creatorHandle={album.creator.handle}
             priceStandard={priceStandard}
-            priceExtended={priceExtended}
+            compareAtPrice={album.compareAtPrice ? Number(album.compareAtPrice) : null}
             currency={album.currency}
-            editorialOnly={album.clearanceStatus === 'editorial_only'}
+            clipCount={album.clipCount}
           />
 
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">

@@ -79,10 +79,26 @@ export function Headline({
   // lives in the dashboards instead (see DashboardHeader), where a page title
   // is chrome rather than an argument. Three weights of Display: 300, 500, 700.
   return (
+    /*
+     * Leading comes from the size token, not from a literal here.
+     *
+     * This carried `leading-[1.12]`, and Thmanyah Serif Display draws Arabic in
+     * an ink box about 1.25em tall — the alif and lam reach well above the
+     * x-height, and jim, ain, mim, ya and nun hang well below it. At 72px that
+     * is a 90px glyph box advanced only 80.6px, so **every pair of lines in the
+     * hero overlapped by 9.4px**: the ya of «سعودي» sat inside the kaf of the
+     * line beneath it.
+     *
+     * 1.25 is therefore not a preference, it is the floor for this face. The
+     * tokens sit above it with room to breathe, and step down as the type gets
+     * bigger, which is the normal relationship.
+     */
     <Tag
       className={cn(
-        'text-balance font-display leading-[1.12]',
+        'text-balance font-display',
         size === 'display' ? 'headline-airy-wide' : 'headline-airy',
+        // `text-2xl` is Tailwind's own and already leads at 1.33.
+        size === 'lg' && 'leading-[1.34]',
         scale,
         className,
       )}
@@ -264,11 +280,32 @@ export function Section({
   tone = 'base',
   children,
   className,
+  reveal = true,
   ...props
-}: React.HTMLAttributes<HTMLElement> & { tone?: SectionTone }) {
+}: React.HTMLAttributes<HTMLElement> & {
+  tone?: SectionTone
+  /**
+   * Opt out for a section already on screen when the page loads — the first
+   * one below a hero, say. Content that was visible before the reader did
+   * anything should not animate in; there is nothing for the motion to
+   * announce, and it reads as the page still loading.
+   */
+  reveal?: boolean
+}) {
   return (
     <section className={cn(GROUNDS[tone], className)} {...props}>
-      <div className="container-tight py-20">{children}</div>
+      {/*
+        The content rises, not the band.
+
+        Revealing the <section> itself would fade its ground and its border in
+        too, so a full-bleed tone would arrive as a coloured rectangle sliding
+        up the page. Keeping the band painted and lifting only what sits inside
+        it reads the way a cut does: the frame is already there, the subject
+        arrives in it.
+      */}
+      <div className="container-tight py-20" data-reveal={reveal ? '' : undefined}>
+        {children}
+      </div>
     </section>
   )
 }

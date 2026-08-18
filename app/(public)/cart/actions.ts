@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { vatOn } from '@/lib/commission'
-import type { LicenceTier } from '@prisma/client'
 
 /**
  * Cart operations.
@@ -14,14 +13,14 @@ import type { LicenceTier } from '@prisma/client'
  * workflow, not an edge case.
  */
 
-export async function addToCart(albumSlugPath: string, tier: LicenceTier) {
+export async function addToCart(albumSlugPath: string) {
   const session = await auth()
   if (!session?.user) return { ok: false, messageKey: 'auth.signIn' }
 
   const [handle, slug] = albumSlugPath.split('/')
   const album = await db.album.findFirst({
     where: { slug, status: 'live', creator: { handle } },
-    select: { id: true, priceStandard: true, priceExtended: true },
+    select: { id: true, priceStandard: true },
   })
   if (!album) return { ok: false, messageKey: 'cart.unavailable' }
 
@@ -31,15 +30,14 @@ export async function addToCart(albumSlugPath: string, tier: LicenceTier) {
     create: { userId: session.user.id },
   })
 
-  const unitPrice = Number(tier === 'extended' ? album.priceExtended : album.priceStandard)
+  const unitPrice = Number(album.priceStandard)
 
   await db.cartItem.upsert({
     where: { cartId_albumId: { cartId: cart.id, albumId: album.id } },
-    update: { licenceTier: tier, unitPrice, vatAmount: vatOn(unitPrice) },
+    update: { unitPrice, vatAmount: vatOn(unitPrice) },
     create: {
       cartId: cart.id,
       albumId: album.id,
-      licenceTier: tier,
       unitPrice,
       vatAmount: vatOn(unitPrice),
     },
@@ -59,29 +57,6 @@ export async function removeFromCart(albumId: string) {
   }
   revalidatePath('/cart')
   return { ok: true, messageKey: 'actions.delete' }
-}
-
-export async function setTier(albumId: string, tier: LicenceTier) {
-  const session = await auth()
-  if (!session?.user) return { ok: false, messageKey: 'auth.signIn' }
-
-  const cart = await db.cart.findUnique({ where: { userId: session.user.id } })
-  if (!cart) return { ok: false, messageKey: 'cart.empty' }
-
-  const album = await db.album.findUnique({
-    where: { id: albumId },
-    select: { priceStandard: true, priceExtended: true },
-  })
-  if (!album) return { ok: false, messageKey: 'cart.unavailable' }
-
-  const unitPrice = Number(tier === 'extended' ? album.priceExtended : album.priceStandard)
-  await db.cartItem.update({
-    where: { cartId_albumId: { cartId: cart.id, albumId } },
-    data: { licenceTier: tier, unitPrice, vatAmount: vatOn(unitPrice) },
-  })
-
-  revalidatePath('/cart')
-  return { ok: true, messageKey: 'actions.save' }
 }
 
 export async function getCart(userId: string) {

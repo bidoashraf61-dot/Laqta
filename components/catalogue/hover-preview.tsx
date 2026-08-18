@@ -2,6 +2,8 @@
 
 import * as React from 'react'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n-client'
+import { PreviewWatermark } from '@/components/catalogue/watermark'
 
 /**
  * Poster that becomes a muted loop while the pointer is on it.
@@ -35,6 +37,9 @@ export function HoverPreview({
   alt: string
   className?: string
 }) {
+  const t = useT()
+  // See watermark.tsx: a client component must supply this itself.
+  const watermarkLabel = `${t('brand.name')} · ${t('catalogue.preview')}`
   const [armed, setArmed] = React.useState(false)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
 
@@ -99,6 +104,10 @@ export function HoverPreview({
           className="absolute inset-0 size-full object-cover"
         />
       ) : null}
+
+      {/* Above the video, not merely beside it — see the note in
+          autoplay-video.tsx. A preview that plays clean is a free master. */}
+      <PreviewWatermark className="z-[2]" label={watermarkLabel} />
     </span>
   )
 }

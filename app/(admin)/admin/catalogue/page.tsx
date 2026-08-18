@@ -225,7 +225,6 @@ export default async function AdminCataloguePage({
                 <TableHead>{t('dash.albumTier')}</TableHead>
                 <TableHead className="text-end">{t('dash.bandRange')}</TableHead>
                 <TableHead className="text-end">{t('dash.bandPrice')}</TableHead>
-                <TableHead className="text-end">{t('dash.bandMultiplier')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -240,9 +239,6 @@ export default async function AdminCataloguePage({
                   </TableCell>
                   <TableCell className="numeric text-end text-gold">
                     {formatMoney(Number(band.priceStandard), band.currency)}
-                  </TableCell>
-                  <TableCell className="numeric text-end text-muted-foreground">
-                    ×{formatNumber(Number(band.extendedMultiplier))}
                   </TableCell>
                 </TableRow>
               ))}

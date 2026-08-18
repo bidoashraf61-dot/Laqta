@@ -275,7 +275,73 @@
     --input: 40 16% 78%;
     --ring: 43 52% 44%;
 
+    /*
+     * Hover fills.
+     *
+     * Named tokens rather than `bg-primary/90`, because an alpha discount is
+     * not a colour — it is a hole. It composites with whatever happens to be
+     * behind the button, so the same class produces a different fill on paper,
+     * on an olive band and over a photograph, while the ink stays put. That is
+     * shape 4 of "Grounds and inks travel together" in DESIGN.md, and buttons
+     * were the last place still doing it.
+     *
+     * Every step below moves AWAY from its own page ground, so a hovered
+     * control advances rather than recedes, and every one is solved against
+     * its own ink. `--gold-400` is gold's equivalent and predates these.
+     */
+    --primary-hover: 43 52% 52%;
+    --secondary-hover: 42 30% 84%;
+    --destructive-hover: 0 72% 37%;
+
     --radius: 0.625rem;
+
+    /*
+     * ── Motion ──────────────────────────────────────────────────────────────
+     *
+     * Declared here and never repeated in `.dark`: a curve is not a colour.
+     * Motion is identical in paper and in film.
+     *
+     * These tokens exist because the portal had three easing curves in play —
+     * 0.4/0/0.2/1 on the album pack, 0.22/1/0.36/1 on the scroll cue, and
+     * Tailwind's default on every `transition-colors` — with nothing naming
+     * any of them. Three curves is not a system; it is three guesses.
+     *
+     * The vocabulary is the edit suite's, because that is what this is.
+     */
+
+    /* Arrival. Decelerates hard and stops — the house curve for anything
+       entering the frame. No overshoot: DESIGN.md treats bounce and elastic
+       as slop, and a real object settles rather than springs. */
+    --ease-cut: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Travel. Eases at both ends, for a surface moving under its own power —
+       a drawer, a dialog, the album pack turning. */
+    --ease-lens: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Departure. Accelerates away, and is always given a shorter duration
+       than the matching arrival, so dismissing never feels slower than
+       summoning. */
+    --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+    /*
+     * Durations scale with how far a thing travels and how much of the frame
+     * it occupies. One duration reused everywhere is the anti-pattern: it
+     * makes a checkbox feel sluggish and a full-screen sheet feel abrupt.
+     */
+    --dur-tap: 120ms; /* pressed / checked — must read as instant */
+    --dur-hover: 200ms; /* colour, border, opacity feedback */
+    --dur-move: 320ms; /* a short travel: a reveal, a chip, a row */
+    --dur-panel: 420ms; /* a surface arriving: dialog, sheet, drawer */
+    --dur-frame: 560ms; /* the whole frame changing: an image scaling */
+    --dur-exit: 180ms; /* every dismissal, regardless of what arrived */
+
+    /* Reveal displacement. 12px reads as a fade with direction; past ~16px it
+       starts reading as a slide, which is a noisier gesture. */
+    --rise: 12px;
+
+    /* Per-item delay in a staggered group. Small on purpose — at 45ms a row
+       of six lands in 225ms, which is choreography; at 100ms it is a queue. */
+    --stagger-step: 45ms;
   }
 
   /*
@@ -314,7 +380,19 @@
        to 3.89:1 on its own `bg-destructive/15` chip, which is where a failed
        payout or a rejected album actually appears. Solved against the chip. */
     --destructive: 0 65% 70%;
-    --destructive-foreground: 0 0% 100%;
+    /*
+     * Ink, not white.
+     *
+     * The fill above was solved as a light red for the `bg-destructive/15`
+     * chip, which is correct — but it is also what `bg-destructive` paints on
+     * a destructive BUTTON, and white on a 70% red is 2.71:1. The one control
+     * a reader must never mis-click was the least readable label in the band.
+     * A light fill takes dark ink; the pair travels together or neither works.
+     */
+    --destructive-foreground: 240 12% 9%;
+    --primary-hover: 43 52% 62%;
+    --secondary-hover: 240 8% 26%;
+    --destructive-hover: 0 65% 78%;
     /* Solved against `bg-success/15`, not the ink card: 42% reached only
        4.29:1 on its own chip, which is where «منشور» and «متاح للسحب» live. */
     --success: 148 50% 47%;
@@ -375,17 +453,51 @@
     --popover-foreground: 42 33% 91%;
     --primary: 42 47% 84%;
     --primary-foreground: 60 11% 25%;
+    /*
+     * The raised fills sit at 40% and carry near-white ink. At the previous
+     * 91% that was 4.18:1 — under AA, and these are `hover:bg-accent`, the
+     * fill behind every ghost button and menu row in the band.
+     */
     --secondary: 60 11% 40%;
-    --secondary-foreground: 42 33% 91%;
-    --muted: 60 11% 40%;
-    --muted-foreground: 42 20% 83%;
+    --secondary-foreground: 40 39% 96%;
+    /*
+     * Muted RECESSES to the card's level rather than rising with secondary and
+     * accent, which is the same logic the card follows a few lines up.
+     *
+     * At 40% it could not work: muted text is deliberately dimmer than body
+     * text, and no dim ink clears 4.5:1 on a 40% olive — the only passing inks
+     * were 96% and lighter, which is not a muted tone at all, it is the body
+     * colour with a different name. Dropping the fill to 26% gives the dim ink
+     * room to stay dim.
+     */
+    --muted: 60 11% 26%;
+    --muted-foreground: 42 20% 88%;
     --accent: 60 11% 40%;
-    --accent-foreground: 42 33% 91%;
+    --accent-foreground: 40 39% 96%;
     --border: 60 11% 45%;
     --input: 60 11% 45%;
     --ring: 42 47% 84%;
     --gold: 43 52% 82%;
     --gold-foreground: 60 11% 25%;
+    /*
+     * The hover step travels with the rest.
+     *
+     * This band re-pitches gold to 82% — light gold on a dark olive ground,
+     * with dark olive ink — but left `--gold-400` inherited from `:root`,
+     * where it is 28% because gold there is dark ink on paper. So the gold
+     * button sat at 6.91:1 and dropped to **1.37:1 the moment you hovered it**:
+     * a dark fill under dark ink, the text simply gone.
+     *
+     * Gold behaves like a dark theme here, so the hover lightens rather than
+     * darkens. The general rule this is an instance of: any scope that
+     * re-pitches a fill must re-pitch that fill's interactive states too, or
+     * the hover silently leaves the scope. See "Grounds and inks travel
+     * together" in DESIGN.md.
+     */
+    --gold-400: 43 52% 90%;
+    --primary-hover: 42 47% 92%;
+    --secondary-hover: 60 11% 32%;
+    --destructive-hover: 0 72% 52%;
   }
 
   .on-dusty {
@@ -408,6 +520,12 @@
     --ring: 60 11% 25%;
     --gold: 43 52% 22%;
     --gold-foreground: 42 33% 91%;
+    /* Dark gold on a pale band, so the hover darkens. Stated rather than
+       inherited, for the same reason as `.on-olive` above. */
+    --gold-400: 43 52% 16%;
+    --primary-hover: 43 52% 14%;
+    --secondary-hover: 42 33% 97%;
+    --destructive-hover: 0 72% 37%;
   }
 }
 
@@ -820,6 +938,12 @@
     );
     animation: shimmer 1.6s infinite;
   }
+
+  /* A transform ignores `dir`, so the sweep would run right-to-left on an
+     Arabic page — against the direction the eye is already travelling. */
+  [dir='rtl'] .skeleton::after {
+    animation-direction: reverse;
+  }
 }
 
 /* The hero scroll cue — a smooth downward drift, not a bounce. The design
@@ -836,10 +960,292 @@
   }
 }
 .animate-scroll-cue {
-  animation: scroll-cue 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation: scroll-cue 1.8s var(--ease-cut) infinite;
 }
+
+/* ── Entrance ───────────────────────────────────────────────────────────────
+ *
+ * One gesture, used everywhere: rise 12px and fade in, on the arrival curve.
+ *
+ * The state lives in an attribute rather than a class because the observer
+ * that flips it is generic — it never needs to know what it is revealing, and
+ * a section, a grid item and a table row all read identically in the DOM.
+ *
+ * `html.js` gates the hidden state. See lib/theme.ts for why: without JS the
+ * content must simply be there, and the class is set before first paint so
+ * there is no flash of visible content being pulled back to animate.
+ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, var(--rise), 0);
+  /* Only these two properties ever animate. Anything that touches layout —
+     width, height, top — would recalculate the page on every frame. */
+  transition:
+    opacity var(--dur-move) var(--ease-cut),
+    transform var(--dur-move) var(--ease-cut);
+  transition-delay: var(--reveal-delay, 0ms);
+  /* Contain the paint work to the element itself while it is moving. */
+  will-change: opacity, transform;
+}
+
+.js [data-reveal='shown'] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* A staggered group sets `--reveal-delay` per item (see revealDelay() in
+   components/ui/reveal.tsx). The wave follows DOM order, which means it starts
+   at the inline-start edge in both directions with nothing to flip for RTL. */
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────
+ *
+ * Systemic rather than per-component. Every previous attempt at this was one
+ * `@media` block bolted onto whichever component someone happened to remember,
+ * which is how the portal ended up with reduced-motion handling on exactly two
+ * of its animations.
+ *
+ * Transitions and animations collapse to effectively zero rather than to
+ * `none`, so anything that listens for `transitionend` or `animationend` still
+ * fires and no state machine hangs waiting for an event that never comes.
+ *
+ * `[data-motion='essential']` opts back in. It is for motion that carries
+ * information rather than decoration — a spinner is the only honest signal
+ * that work is still happening, and freezing it reads as a hung page.
+ */
 @media (prefers-reduced-motion: reduce) {
-  .animate-scroll-cue {
-    animation: none;
+  *:not([data-motion='essential']),
+  *:not([data-motion='essential'])::before,
+  *:not([data-motion='essential'])::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Revealed content must be visible, not merely un-animated — the observer
+     may never fire for something already on screen at load. */
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Print gets everything, revealed or not. A reader printing a licence or an
+   invoice is by definition not scrolling, so the observer never runs for
+   anything below the first screen and the sheets come out blank. */
+@media print {
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ── The scroll deck ────────────────────────────────────────────────────────
+ *
+ * See components/landing/scroll-deck.tsx for why a pinned horizontal section
+ * is allowed here at all. The short version: it is only ever pinned when the
+ * reader has JavaScript, has not asked for reduced motion, and is on a screen
+ * big enough that a full-viewport panel fits. Otherwise the panels are three
+ * ordinary sections stacked in document order, which is also exactly what a
+ * crawler sees.
+ *
+ * The default below is therefore the STACK. Pinning is the enhancement, and it
+ * is applied only inside the media query that grants it.
+ */
+.deck-stage {
+  position: relative;
+}
+
+.deck-track {
+  display: grid;
+}
+
+@media (min-width: 1024px) and (min-height: 640px) {
+  .js .deck {
+    /* One viewport of scroll per panel: the pin is exactly as long as the
+       track is wide, so the section always releases. */
+    height: calc(var(--deck-panels, 3) * 100vh);
+  }
+
+  .js .deck-stage {
+    position: sticky;
+    top: 0;
+    block-size: 100dvh;
+    overflow: hidden;
+  }
+
+  .js .deck-track {
+    display: flex;
+    block-size: 100%;
+    /* Only transform is animated, and the browser is told so. */
+    will-change: transform;
+  }
+
+  .js .deck-panel {
+    flex: 0 0 100vw;
+    block-size: 100%;
+    display: grid;
+    /*
+     * STRETCH, not centre.
+     *
+     * `align-content: center` sizes the grid row to its content, so the
+     * section's `block-size: 100%` resolved against that row instead of the
+     * panel — the gold and olive bands rendered as stripes floating in a paper
+     * panel, three grounds visible at once. The panel stretches its section and
+     * the SECTION centres its own content (below), which is one job each.
+     */
+    /* A panel whose content outgrows the viewport scrolls itself rather than
+       being clipped — the FAQ is the one that gets close. */
+    overflow-y: auto;
+  }
+
+  /* The panel's SECTION fills it, so the band's ground reaches the top and
+     bottom of the viewport. Left to size itself, a gold or olive section
+     floated as a stripe in the middle of a paper panel — three different
+     grounds visible at once, which is the opposite of what a full-screen
+     panel is for. */
+  .js .deck-panel > section {
+    block-size: 100%;
+    display: grid;
+    align-content: center;
+  }
+
+  /* Sections carry their own vertical rhythm; a full `py-20` on top of a
+     centred 100dvh panel just pushes content off it. */
+  .js .deck-panel .container-tight {
+    padding-block: 3rem;
+  }
+
+  .js .deck-dots {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 1.75rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .js .deck-dots span {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 999px;
+    background: hsl(var(--foreground) / 0.25);
+    transition:
+      background-color var(--dur-move) var(--ease-cut),
+      inline-size var(--dur-move) var(--ease-cut);
+  }
+
+  .js .deck-dots span[data-on] {
+    inline-size: 1.5rem;
+    background: hsl(var(--gold));
+  }
+}
+
+/* Below the pinning breakpoint the dots describe nothing, so they are not
+   drawn — three stacked sections need no position indicator. */
+@media not all and (min-width: 1024px) and (min-height: 640px) {
+  .deck-dots {
+    display: none;
+  }
+}
+
+/* ── The hero USP rail ──────────────────────────────────────────────────────
+ *
+ * A ruler down the inline-end edge of the film, one mark per point, driven by
+ * the same scroll progress as the video (see hero-cinematic.tsx). Scrolling
+ * back up walks it backwards, which is what makes it a scale rather than a
+ * carousel.
+ *
+ * Hidden below `lg`: on a phone the film is already the whole screen and there
+ * is no column free beside it. The same four facts are prose in the sections
+ * underneath, so nothing is lost — this is emphasis, never the only statement.
+ */
+.hero-usp-rail {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-usp-rail {
+    position: absolute;
+    inset-inline-end: 3.5rem;
+    top: 50%;
+    translate: 0 -50%;
+    display: grid;
+    gap: 1.5rem;
+    max-inline-size: 20rem;
+    /* The rail is a readout, not a control. */
+    pointer-events: none;
+    transition: opacity var(--dur-panel) var(--ease-cut);
+  }
+
+  .hero-usp-rail li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.875rem;
+    transition:
+      opacity var(--dur-move) var(--ease-cut),
+      translate var(--dur-move) var(--ease-cut);
+  }
+
+  /* Three states, and the difference between "not yet" and "already passed"
+     matters: a point you have scrolled past should read as behind you, not as
+     equally pending. */
+  .hero-usp-rail li[data-state='ahead'] {
+    opacity: 0.3;
+    translate: 0 0.25rem;
+  }
+  .hero-usp-rail li[data-state='past'] {
+    opacity: 0.45;
+  }
+  .hero-usp-rail li[data-state='on'] {
+    opacity: 1;
+  }
+
+  .hero-usp-tick {
+    /* The mark itself. Grows and turns gold on the active point — the one
+       moment on this hero where gold is spent on something that is not money
+       or the primary action, and it is spent to say "you are here". */
+    inline-size: 2px;
+    block-size: 1.5rem;
+    margin-block-start: 0.4rem;
+    border-radius: 999px;
+    background: hsl(var(--foreground) / 0.4);
+    transition:
+      background-color var(--dur-move) var(--ease-cut),
+      block-size var(--dur-move) var(--ease-cut);
+  }
+  .hero-usp-rail li[data-state='on'] .hero-usp-tick {
+    block-size: 2.75rem;
+    background: hsl(var(--gold));
+  }
+
+  .hero-usp-text {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .hero-usp-text strong {
+    font-family: var(--font-subhead), Georgia, serif;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .hero-usp-text em {
+    font-style: normal;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: hsl(var(--foreground) / 0.7);
+  }
+}
+
+/* An element that changes as you scroll IS motion. Under reduced motion the
+   rail states all resolve, so the four points simply stand there together. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-usp-rail li[data-state='ahead'],
+  .hero-usp-rail li[data-state='past'] {
+    opacity: 1;
+    translate: none;
   }
 }

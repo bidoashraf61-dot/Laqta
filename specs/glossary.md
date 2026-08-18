@@ -30,23 +30,49 @@ finds nothing.
 | What lands in your library | الجودة الأصلية | original quality |
 | Common questions | الأسئلة الشائعة | Frequently asked questions |
 | The aircraft | **درون** | drone |
+| Footage made with a camera | تصوير واقعي | Real footage |
+| Footage made with generative tools | ذكاء اصطناعي | AI generated |
+| The album's shape | أفقي / عمودي / أفقي وعمودي | Landscape / Portrait / Landscape & portrait |
 | Footer rights line | حقوق النشر محفوظة | Copyright reserved |
 | Brand line | خيارك الأول للمحتوى السعودي الأصيل | Your first choice for authentic Saudi content |
 
 ## Deliberately NOT adopted from the source document
 
-Three of its claims contradict what the product does, so the wording is used
-but the claim is not:
+Two of its claims still contradict what the product does, so the wording is
+used but the claim is not. A third was resolved by changing the product:
 
-1. **«ترخيص تجاري كامل» as a single uncapped grant.** There are two tiers
-   (`LicenceTier`); the standard one caps at 500k views per channel. The phrase
-   is used for the commercial grant in general; the tier names stand, and no
-   surface may imply the standard tier is uncapped. See `specs/public/licences.md`.
-2. **«30، 50، أو 70 لقطة» as album sizes.** The catalogue runs 12–24 clips per
+1. ~~**«ترخيص تجاري كامل» as a single uncapped grant.**~~ **Now adopted — the
+   product changed.** The two tiers were collapsed into one full commercial
+   licence with no view cap, so the phrase is literally true and the tier names
+   no longer exist. See `specs/public/licences.md`.
+2. **«30، 50، أو 70 لقطة» as album sizes.** The catalogue runs 10–24 clips per
    album. Sizes are read from `Album.clipCount`, never asserted in copy.
 3. **«أرخص بـ 16 مرة من أي منافس».** Unverifiable, and the house rule is that no
    competitor figure ships. Real competitor figures live in
    `docs/website-content.md` §B19 and stay there.
+
+### Both of these had shipped anyway
+
+Recording it, because "deliberately not adopted" turned out to mean "not
+adopted in the note". Three live strings carried them in both languages:
+
+| Key | Claim |
+|---|---|
+| `landing.priceBold` | «أرخص بـ١٦ مرة من أي منافس.» |
+| `landing.price1Body` | «(٣٠، ٥٠، أو ٧٠ لقطة)» |
+| `landing.faq5A` | «بين ٣٠ و٧٠ لقطة متناغمة» |
+
+The last one is the worst of the three: it sits inside `FAQPage` structured
+data, so the invented range was being handed to Google as a factual answer
+about the product.
+
+`landing.priceBold` now leads on the real differentiator against a
+subscription library — pay once, own it — which is verifiable and names
+nobody. The two size claims defer to `Album.clipCount`, which is on the card
+and on the page, and cannot drift from the catalogue.
+
+**A note in a spec is not an enforcement mechanism.** These survived a copy
+sweep that explicitly listed them.
 
 ## Invariants
 

@@ -1,15 +1,26 @@
 /**
- * Theme constants, deliberately outside the client component.
+ * The pre-paint inline script.
  *
- * `THEME_SCRIPT` is inlined into <head> by the root layout, which is a SERVER
- * component. Importing it from a `'use client'` module would pull a client
- * boundary into the server tree for the sake of one string.
+ * Inlined into <head> by the root layout, which is a SERVER component —
+ * importing this from a `'use client'` module would pull a client boundary into
+ * the server tree for the sake of one string.
  *
  * It has to be a string rather than a module: anything React loads runs after
- * first paint, so the page would render paper and then repaint ink. Wrapped in
- * try/catch because `localStorage` throws in private mode on some browsers,
- * and a theme preference is never worth a blank page.
+ * first paint, and the whole point is to run before it.
+ *
+ * ── Why there is no theme in here any more ──────────────────────────────────
+ * The portal is light. It has one ground — paper — and `.dark` is no longer a
+ * document mode a visitor chooses; it is a SCOPE, applied to the things that
+ * are a frame rather than chrome: the site header, the dashboard shells, the
+ * hero, a footage placeholder. Those are dark because film is dark, not
+ * because of an OS preference, so nothing here reads `prefers-color-scheme`
+ * and nothing is stored.
+ *
+ * What remains is the `js` marker, and it is load-bearing. Entrance motion
+ * hides content by default, and hidden-by-default is a promise that something
+ * will reveal it. Scoping that promise to `html.js` means no JavaScript gives
+ * a fully visible page rather than a blank one — and setting the class here,
+ * before the first paint, is what stops content flashing in and being pulled
+ * back out to animate. See components/ui/reveal.tsx.
  */
-export const THEME_KEY = 'laqta-theme'
-
-export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('${THEME_KEY}');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})()`
+export const THEME_SCRIPT = `document.documentElement.classList.add('js')`

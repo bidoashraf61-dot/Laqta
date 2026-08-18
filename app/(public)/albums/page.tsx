@@ -55,7 +55,8 @@ export default async function AlbumsPage({
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
-      clearedForCommercial: true,
+      origin: true,
+      orientation: true,
       coverClipId: true,
       creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
     },
@@ -84,7 +85,8 @@ export default async function AlbumsPage({
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,
-    clearedForCommercial: row.clearedForCommercial,
+    origin: row.origin,
+    orientation: row.orientation,
     coverKey: row.coverClipId ? (coverById.get(row.coverClipId) ?? null) : null,
   }))
 
@@ -102,8 +104,8 @@ export default async function AlbumsPage({
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {albums.map((album) => (
-            <AlbumCard key={`${album.creatorHandle}/${album.slug}`} album={album} />
+          {albums.map((album, i) => (
+            <AlbumCard key={`${album.creatorHandle}/${album.slug}`} album={album} index={i} />
           ))}
         </div>
       )}

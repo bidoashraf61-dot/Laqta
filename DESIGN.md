@@ -356,13 +356,20 @@ theme `.dark` still describes footage, never chrome: it is scoped to the
 cinematic, to cover placeholders, and to overlays sitting on imagery. A light-
 theme surface that reaches for `.dark` to look premium has misread the system.
 
-**Dark mode is a separate axis and a user preference.** `html.dark` is set by
-the visitor's own choice (or their OS), persists in `localStorage`, and is
-applied by an inline script before first paint so the page never flashes the
-wrong theme. It is not a styling device a component may reach for — components
-still never opt themselves into dark; they read semantic tokens and let the
-root decide. The olive and dusty band scopes are deliberately theme-stable:
-an identity ground is the same colour in both worlds.
+**There is no dark mode.** The portal has one ground — paper — and no toggle,
+no `prefers-color-scheme` read, no stored preference. `.dark` survives as a
+SCOPE and nothing else: the site header, the three dashboard shells, the hero
+cinematic, a footage placeholder. Those are dark because film is dark.
+
+This is not a feature that was dropped so much as a contradiction that was
+resolved. The system's whole premise is "the page is paper; the film is not" —
+a second, all-dark version of the page argues against that on every screen it
+appears, and doubled the surface every colour decision had to be solved
+against. One ground, solved once.
+
+The rule for components is unchanged and now unambiguous: never opt yourself
+into `.dark` to look premium. Read the semantic tokens and let the scope
+decide.
 
 **The Status-Only Colour Rule.** Oasis, clay and destructive appear only as
 state — a badge, an alert, a ledger sign. They are never a brand accent and
@@ -404,6 +411,42 @@ to the wrong end. "Rec.709" un-isolated renders "709.Rec". Dates and money go in
 an inner `.numeric` span, never on a flex container, because flex breaks the
 isolation.
 
+### Leading — the Arabic floor
+
+Thmanyah Serif Display draws Arabic in an ink box **~1.25em tall**. Alif, lam
+and kaf climb well above the x-height; jim, ha, ain, mim, ya and nun hang well
+below it. Any `line-height` under 1.25 therefore does not merely look tight —
+the lines physically overlap.
+
+They did. `leading-[1.12]` on the headline scale put the hero's lines **9.4px
+inside each other** at desktop, and `leading-tight` (1.25, exactly the floor)
+left card titles touching. Latin hides this: the same values on a Latin face
+look merely snug, which is why it shipped.
+
+| Step | Leading | Note |
+|---|---|---|
+| display (72px) | 1.28 | big type, least relative leading |
+| headline (38px) | 1.32 | |
+| card / dialog title (18px) | 1.40 | small type takes more, not less |
+| body | 1.5+ | |
+
+**Never `leading-tight` on Arabic.** It is 1.25 — the floor, not a value.
+
+**The Adjacent-Bands Rule.** No two full-width bands that touch may share a
+ground. Alternate the quiet rungs (base, offwhite) with the stated ones
+(raised, olive, accent).
+
+This is an adjacency fault, not a colour fault: each section names a tone that
+is individually right, and the problem exists only in the sequence. The landing
+page ended with the footage request, the final CTA and the footer all olive —
+three identical bands, so the last third of the page read as one undivided
+block. Reading the code cannot catch it; `npm run verify:bands` measures the
+rendered backgrounds in document order.
+
+**Verified by** `npm run verify:leading` — real Chrome, desktop and phone,
+measuring the client rect of every heading's text nodes and failing on any pair
+of lines less than 1px apart.
+
 ## Layout
 
 Container holds to a tight measure (`.container-tight`, max 1140px) with
@@ -438,6 +481,81 @@ fully-rounded (pill) element on a card, so the eye lands on the number. The
 second recurring shape is the **letterbox** — a 2.39:1 crop that stands in for
 the reference's pointed arch. It is Laqta's own geometry, the literal aspect of
 the product, and it recurs on hero crops, empty states and posters.
+
+## Motion
+
+Laqta sells footage, so motion is not decoration here — it is the medium. It is
+also therefore the easiest thing to overdo. The rule is **cinematic restraint**:
+one gesture, one curve family, nothing that overshoots.
+
+Tokens live in `styles/globals.css` (`:root`, never repeated in `.dark` — a
+curve is not a colour) and are exposed to Tailwind as named `duration-*` and
+`ease-*` utilities.
+
+### Curves
+- **`--ease-cut`** `cubic-bezier(.22,1,.36,1)` — **arrival**. Anything entering
+  the frame. Decelerates hard and stops.
+- **`--ease-lens`** `cubic-bezier(.4,0,.2,1)` — **travel**. A surface moving
+  under its own power: a drawer, a hover, the album pack turning.
+- **`--ease-exit`** `cubic-bezier(.4,0,1,1)` — **departure**. Accelerates away.
+
+There is no fourth curve, and there is no bounce or elastic anywhere. Overshoot
+reads as slop; a real object settles.
+
+### Durations
+Scaled to how far a thing travels and how much of the frame it occupies. One
+duration reused everywhere makes a checkbox sluggish and a sheet abrupt.
+
+| Token | Value | For |
+|---|---|---|
+| `--dur-tap` | 120ms | pressed, checked, a table row highlight |
+| `--dur-hover` | 200ms | colour, border, opacity feedback |
+| `--dur-move` | 320ms | a short travel: a reveal, a chip, a menu |
+| `--dur-panel` | 420ms | a surface arriving: dialog, sheet, drawer |
+| `--dur-frame` | 560ms | the whole frame changing: an image scaling |
+| `--dur-exit` | 180ms | every dismissal, whatever arrived |
+
+**Exits are always shorter than entrances.** Dismissing must never feel slower
+than summoning.
+
+### The one entrance
+`--rise` 12px + fade, on `--ease-cut`. Everything that arrives uses it — a card,
+a section, a panel — so a page has one accent rather than a flourish per
+component. Past ~16px it stops reading as a fade and becomes a slide, which is a
+noisier gesture.
+
+Staggered groups step by `--stagger-step` (45ms), capped at 8 steps. Order
+follows the DOM, so the wave starts at the inline-start edge in both directions
+with nothing to mirror.
+
+### Named Rules
+
+**The One-Gesture Rule.** A surface gets one entrance, not one per element
+inside it. A section reveals its content as a block; a grid staggers its cards
+and stops there. Nested reveals compound into a page that assembles itself.
+
+**The Frame-Stays Rule.** Reveal the content, not the ground. A full-bleed
+section keeps its band and border painted and lifts only what sits inside — the
+frame is already there, the subject arrives in it.
+
+**The Compositor Rule.** Only `opacity` and `transform` are ever animated, and
+`transition-property` is always named. Never `transition-all`: it includes
+width, padding and font-weight, each of which relayouts the page every frame.
+
+**The Blank-Page Rule.** Hidden-by-default is a promise that something will make
+it visible, so it is scoped to `html.js` (set before first paint), backed by a
+dead-man's switch if the observer never fires, and lifted entirely for print.
+Failing to animate is a blemish; failing to appear is an outage.
+
+**The Essential-Motion Rule.** `prefers-reduced-motion` collapses everything in
+the document, blanket, no per-component opt-in to forget. Motion that carries
+information rather than decoration — a spinner, a progress sweep — marks itself
+`data-motion="essential"` and keeps moving. A frozen spinner reads as a hung
+page.
+
+**The No-Bare-Timing Rule.** Never author `duration-300` or `ease-in-out`. If a
+transition needs a timing it takes one of the names above; if none fits, the
+scale is missing a rung and this file gains one.
 
 ## Components
 
@@ -511,7 +629,7 @@ system has shipped came from separating them — repainting a ground at a call
 site and leaving the inherited foreground behind, or taking an alpha discount on
 a token that was solved at full strength.
 
-Four shapes of the same mistake, all now fixed:
+Five shapes of the same mistake, all now fixed:
 
 1. **A palette value used as a ground.** `bg-off-white` is a colour, not a role.
    It stayed at 91% lightness in dark mode while `--foreground` flipped to 96%,
@@ -531,8 +649,19 @@ Four shapes of the same mistake, all now fixed:
    on the dashboard rail. Each token was solved at full strength for that exact
    ground; the discount spent margin that was not there.
 
-**Rule:** if you paint a surface, name its ink in the same breath. If a token
-was solved for a ground, do not discount it.
+5. **A scope re-pitching a fill but not that fill's interactive states.**
+   `.on-olive` re-pitches `--gold` to 82% — light gold on a dark band, with
+   dark olive ink — but left `--gold-400`, which the button's hover uses,
+   inherited from `:root`, where it is 28% *because gold there is dark ink on
+   paper*. The gold CTA sat at 6.91:1 and dropped to **1.37:1 the instant the
+   pointer touched it**. Hover is a state, not a decoration: it inherits from
+   whichever scope forgot to define it, silently, and only shows up under a
+   cursor. The same band's `--secondary` / `--accent` fills carried 4.18:1 ink,
+   and `--muted` at 40% had no dim ink that could clear AA at all.
+
+**Rule:** if you paint a surface, name its ink in the same breath — and if you
+re-pitch a fill in a scope, re-pitch its hover, active and disabled steps too.
+If a token was solved for a ground, do not discount it.
 
 **Verified by** `npm run verify:contrast` — real Chrome, both themes, every
 public route plus all three dashboards, WCAG AA (4.5:1 body, 3:1 large). Text

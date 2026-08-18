@@ -47,7 +47,7 @@ export function FootageWall({ footage }: { footage: FootageTile[] }) {
   if (footage.length === 0) return null
 
   return (
-    <Section tone="base">
+    <Section tone="offwhite">
       <div className="mx-auto mb-10 max-w-2xl text-center">
         <Headline lead={t('landing.wallLead')} bold={t('landing.wallBold')} size="lg" />
       </div>

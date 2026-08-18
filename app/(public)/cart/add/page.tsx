@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import type { LicenceTier } from '@prisma/client'
 import { auth } from '@/lib/auth'
 import { addToCart } from '../actions'
 import { requestLocale } from '@/lib/locale-request'
@@ -14,7 +13,7 @@ import { requestLocale } from '@/lib/locale-request'
 export default async function AddToCartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ album?: string; tier?: string }>
+  searchParams: Promise<{ album?: string }>
 }) {
   // Resolve the locale before rendering anything.
   //
@@ -26,15 +25,15 @@ export default async function AddToCartPage({
   // call is a cached header read plus an idempotent write.
   await requestLocale()
 
-  const { album, tier } = await searchParams
+  const { album } = await searchParams
   if (!album) redirect('/albums')
 
   const session = await auth()
   if (!session?.user) {
-    const back = `/cart/add?album=${encodeURIComponent(album)}&tier=${tier ?? 'standard'}`
+    const back = `/cart/add?album=${encodeURIComponent(album)}`
     redirect(`/sign-in?callbackUrl=${encodeURIComponent(back)}`)
   }
 
-  const result = await addToCart(album, (tier as LicenceTier) ?? 'standard')
+  const result = await addToCart(album)
   redirect(result.ok ? '/cart' : '/albums')
 }

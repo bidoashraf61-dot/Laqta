@@ -7,9 +7,10 @@ import { LicensingRights } from '@/components/landing/licensing'
 import { PricingValue } from '@/components/landing/pricing-value'
 import { LandingFaq } from '@/components/landing/faq'
 import { FinalCta } from '@/components/landing/final-cta'
-import { CreatorCta, HowItWorks } from '@/components/landing/sections'
+import { HowItWorks } from '@/components/landing/sections'
+import { ScrollDeck } from '@/components/landing/scroll-deck'
 import { RequestFootage } from '@/components/landing/request-footage'
-import { getFeaturedAlbums, getFootageWall } from '@/lib/catalogue'
+import { getFootageWall, getSeasonalShelf } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
@@ -81,26 +82,35 @@ export default async function HomePage() {
   // and the considered collection do the selling, and nothing on the page
   // counts albums, creators, or clips out loud. As the catalogue grows the
   // same two queries simply return more.
-  const [albums, footage] = await Promise.all([getFeaturedAlbums(6), getFootageWall(12)])
+  const [shelf, footage] = await Promise.all([getSeasonalShelf(6), getFootageWall(12)])
 
   return (
     <>
       <StructuredData />
       <HeroCinematic />
       {/* Name the pain, then the shortcut; catch the eye with the wall of
-          frames; make the considered album pitch; state the rights; teach the
+          frames; sell what the next occasion needs; state the rights; teach the
           model; make the value case; clear objections; take custom requests;
-          then the final buyer push, with the creator invite last. */}
+          then the final buyer push.
+
+          The creator invitation used to close this page. It addressed the
+          wrong half of the market immediately after the other half had been
+          persuaded, and competed with the buyer CTA directly above it — it
+          lives at the foot of /creators now. */}
       <ProblemSolution />
       <FootageWall footage={footage} />
-      <TheCollection albums={albums} />
+      <TheCollection albums={shelf.albums} season={shelf.season} />
       <LicensingRights />
-      <HowItWorks />
-      <PricingValue />
-      <LandingFaq />
+      {/* One section, three panels, advanced by scrolling — see ScrollDeck
+          for the four conditions under which it declines to pin and renders as
+          three ordinary stacked sections instead. */}
+      <ScrollDeck label={t('landing.deckLabel')}>
+        <HowItWorks />
+        <PricingValue />
+        <LandingFaq />
+      </ScrollDeck>
       <RequestFootage />
       <FinalCta />
-      <CreatorCta />
     </>
   )
 }

@@ -157,10 +157,7 @@ export default async function AdminOrdersPage({
                       </div>
 
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {t('commerce.licence')}:{' '}
-                        {item.licenceTier === 'extended'
-                          ? t('commerce.licenceExtended')
-                          : t('commerce.licenceStandard')}
+                        {t('commerce.licence')}: {t('commerce.licenceCommercial')}
                         {' · '}
                         {t('dash.commissionShare')}{' '}
                         <span className="numeric">

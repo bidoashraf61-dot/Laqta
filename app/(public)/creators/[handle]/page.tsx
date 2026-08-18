@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
+import { Eye, Film, Layers, Star } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
+import { Stars } from '@/components/ui/stars'
 import { t, formatNumber, formatDate } from '@/lib/i18n'
 import { PageTitle, SubHeadline } from '@/components/ui/typography'
 import { pickLocalised } from '@/lib/locale'
@@ -39,10 +41,13 @@ async function getCreator(handle: string) {
           currency: true,
           clipCount: true,
           totalRuntimeS: true,
-          clearedForCommercial: true,
+          origin: true,
+          orientation: true,
           coverClipId: true,
           isFeatured: true,
           viewCount: true,
+          ratingAvg: true,
+          ratingCount: true,
         },
       },
     },
@@ -102,7 +107,8 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
     currency: album.currency,
     clipCount: album.clipCount,
     totalRuntimeS: album.totalRuntimeS,
-    clearedForCommercial: album.clearedForCommercial,
+    origin: album.origin,
+    orientation: album.orientation,
     coverKey: album.coverClipId ? (coverById.get(album.coverClipId) ?? null) : null,
   }))
 
@@ -110,6 +116,64 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
   const totalViews = creator.albums.reduce((sum, a) => sum + a.viewCount, 0)
   const joined = creator.approvedAt ? formatDate(creator.approvedAt) : '—'
   const featuredSlugs = new Set(creator.albums.filter((a) => a.isFeatured).map((a) => a.slug))
+
+  /*
+   * The creator's rating: the weighted mean across their live albums.
+   *
+   * Weighted by review count, not a mean of the averages — an album with one
+   * five-star review would otherwise pull as hard as one with ninety averaging
+   * 4.6, which is how a new seller with one friendly buyer outranks the best
+   * work in the catalogue.
+   */
+  let weighted = 0
+  let ratingTotal = 0
+  for (const album of creator.albums) {
+    if (!album.ratingCount || album.ratingAvg == null) continue
+    weighted += Number(album.ratingAvg) * album.ratingCount
+    ratingTotal += album.ratingCount
+  }
+  const rating = ratingTotal > 0 ? weighted / ratingTotal : null
+
+  const bigNumber = 'numeric font-display text-3xl font-bold leading-none'
+  const stats = [
+    {
+      icon: Layers,
+      label: t('catalogue.creatorAlbums'),
+      value: <span className={bigNumber}>{formatNumber(albums.length)}</span>,
+    },
+    {
+      icon: Film,
+      label: t('catalogue.creatorClips'),
+      value: <span className={bigNumber}>{formatNumber(totalClips)}</span>,
+    },
+    {
+      icon: Eye,
+      label: t('catalogue.creatorViews'),
+      value: <span className={bigNumber}>{formatNumber(totalViews)}</span>,
+    },
+    {
+      icon: Star,
+      label: t('catalogue.creatorRating'),
+      // "No ratings yet" and "0.0" are different facts, and five empty stars
+      // says the second when the first is true.
+      value:
+        rating == null ? (
+          <span className="text-sm text-muted-foreground">{t('catalogue.creatorNoRating')}</span>
+        ) : (
+          <span className="flex items-baseline gap-2">
+            <span className={bigNumber}>{rating.toFixed(1)}</span>
+            <Stars
+              value={rating}
+              count={ratingTotal}
+              label={t('review.ratingSummary', {
+                value: rating.toFixed(1),
+                count: String(ratingTotal),
+              })}
+            />
+          </span>
+        ),
+    },
+  ]
   const featured = albums.filter((a) => featuredSlugs.has(a.slug))
 
   // On a marketplace the creators ARE the expertise signal — E-E-A-T's first
@@ -184,21 +248,33 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
 
       {/*
         Public analytics only.
+
         Views and catalogue size are the creator's shopfront and help a buyer
         judge them. Sales counts and revenue are NOT here: they are the
         creator's commercial position, and publishing them on a profile they
         cannot opt out of would expose it to their competitors and clients.
+
+        ── Why the labels are long ─────────────────────────────────────────────
+        They used to be «ألبوم منشور · لقطة · مشاهدة · عضو منذ», and the third
+        one made the whole row unreadable: 9,219 views of WHAT? Of the footage?
+        Of a page? Counted how? A number whose unit is ambiguous is worse than
+        no number, because a reader will assume the most flattering reading and
+        then feel misled. Each label now names its unit in full, even where that
+        costs a line.
       */}
-      <dl className="mb-10 grid grid-cols-2 gap-4 rounded-lg border bg-card p-5 sm:grid-cols-4">
-        {[
-          { v: formatNumber(albums.length), k: t('catalogue.creatorAlbums') },
-          { v: formatNumber(totalClips), k: t('catalogue.creatorClips') },
-          { v: formatNumber(totalViews), k: t('catalogue.creatorViews') },
-          { v: joined, k: t('catalogue.creatorSince') },
-        ].map((s) => (
-          <div key={s.k}>
-            <dt className="text-xs text-muted-foreground">{s.k}</dt>
-            <dd className="numeric mt-1 text-xl font-bold">{s.v}</dd>
+      <dl className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-lg border bg-card p-5" data-reveal>
+            <div className="flex items-center justify-between gap-2">
+              <dt className="text-xs leading-snug text-muted-foreground">{stat.label}</dt>
+              <span
+                aria-hidden
+                className="grid size-9 shrink-0 place-items-center rounded-md bg-secondary text-secondary-foreground"
+              >
+                <stat.icon className="size-4" />
+              </span>
+            </div>
+            <dd className="mt-2">{stat.value}</dd>
           </div>
         ))}
       </dl>
@@ -213,8 +289,8 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
                 {t('catalogue.creatorFeatured')}
               </SubHeadline>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {featured.map((album) => (
-                  <AlbumCard key={album.slug} album={album} />
+                {featured.map((album, i) => (
+                  <AlbumCard key={album.slug} album={album} index={i} />
                 ))}
               </div>
             </section>
@@ -225,8 +301,8 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
               {t('catalogue.creatorAll')}
             </SubHeadline>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {albums.map((album) => (
-                <AlbumCard key={album.slug} album={album} />
+              {albums.map((album, i) => (
+                <AlbumCard key={album.slug} album={album} index={i} />
               ))}
             </div>
           </section>

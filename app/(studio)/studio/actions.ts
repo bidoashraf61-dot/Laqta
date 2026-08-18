@@ -54,7 +54,10 @@ export async function submitAlbum(albumId: string) {
  * and `paused`; anything re-entering the catalogue from another state has to
  * go through review again.
  */
-export async function setAlbumVisibility(albumId: string, next: 'live' | 'paused'): Promise<Result> {
+export async function setAlbumVisibility(
+  albumId: string,
+  next: 'live' | 'paused',
+): Promise<Result> {
   const { user, album } = await ownedAlbum(albumId)
   if (!album) return { ok: false, message: t('studio.albumMissing') }
   if (album.status !== 'live' && album.status !== 'paused') {
@@ -173,7 +176,11 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
 
   const base = slugify(titleEn) || 'album'
   let slug = base
-  for (let attempt = 2; await db.album.findUnique({ where: { slug }, select: { id: true } }); attempt++) {
+  for (
+    let attempt = 2;
+    await db.album.findUnique({ where: { slug }, select: { id: true } });
+    attempt++
+  ) {
     slug = `${base}-${attempt}`
   }
 
@@ -188,7 +195,6 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
       descriptionEn: String(formData.get('descriptionEn') ?? '').trim() || null,
       tier: tier as 'mini' | 'standard' | 'pro' | 'signature',
       priceStandard,
-      priceExtended: priceStandard * Number(band.extendedMultiplier),
       currency: band.currency,
       status: 'draft',
     },
@@ -374,7 +380,8 @@ export async function updatePayoutDetails(
   // The chosen rail must actually be reachable, or the first payout run fails
   // inside an export file rather than here, where it can still be fixed.
   if (method === 'iban' && !iban) return { ok: false, message: t('dash.iban') }
-  if (method === 'payoneer' && !payoneerEmail) return { ok: false, message: t('dash.payoneerEmail') }
+  if (method === 'payoneer' && !payoneerEmail)
+    return { ok: false, message: t('dash.payoneerEmail') }
   if (method === 'wise' && !wiseEmail) return { ok: false, message: t('dash.wiseEmail') }
 
   await db.creator.update({

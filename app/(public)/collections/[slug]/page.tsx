@@ -29,7 +29,8 @@ async function getCollection(slug: string) {
               currency: true,
               clipCount: true,
               totalRuntimeS: true,
-              clearedForCommercial: true,
+              origin: true,
+              orientation: true,
               coverClipId: true,
               creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
             },
@@ -104,7 +105,8 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
     currency: album.currency,
     clipCount: album.clipCount,
     totalRuntimeS: album.totalRuntimeS,
-    clearedForCommercial: album.clearedForCommercial,
+    origin: album.origin,
+    orientation: album.orientation,
     coverKey: album.coverClipId ? (coverById.get(album.coverClipId) ?? null) : null,
   }))
 
@@ -125,8 +127,8 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         <EmptyState title={t('state.empty')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {albums.map((album) => (
-            <AlbumCard key={album.slug} album={album} />
+          {albums.map((album, i) => (
+            <AlbumCard key={album.slug} album={album} index={i} />
           ))}
         </div>
       )}

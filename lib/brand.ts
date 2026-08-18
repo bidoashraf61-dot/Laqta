@@ -14,13 +14,24 @@ export const SOCIAL = [
 ] as const
 
 /**
- * The logo, for schema.org and share cards.
+ * The logo. Approved artwork, no longer a placeholder.
  *
- * INTERIM. `docs/design-language.md` records the real logo as an open item —
- * the wordmark is still live text, which is why the favicon, the OG image and
- * the invoice header have all been blocked on it. This is a render of that
- * wordmark at 512², enough to satisfy `Organization.logo` (which wants ≥112²)
- * and stop the entity block failing validation. Replace it, do not build on it.
+ * Two colourways of one mark, and which one is correct is a property of the
+ * GROUND, not of a theme: `laqta-light` on ink, film and the olive band,
+ * `laqta-dark` on paper and white cards. That is the same rule the rest of the
+ * system follows — see "Grounds and inks travel together" in DESIGN.md — and
+ * it is why `<Logo>` takes a tone rather than reading a theme.
+ *
+ * `LOGO_PATH` is what schema.org's `Organization.logo` and the share cards
+ * point at. It has to be the version that survives being shown on an unknown
+ * background in someone else's UI, which is the dark-on-light one: a chat
+ * client or a search result is far more likely to be light.
  */
-export const LOGO_PATH = '/brand/laqta-logo.png'
+export const LOGO_PATH = '/brand/laqta-dark.png'
 export const LOGO_SIZE = 512
+
+/** The two colourways, by the ground they belong on. */
+export const LOGO = {
+  onLight: '/brand/laqta-dark.png',
+  onDark: '/brand/laqta-light.png',
+} as const

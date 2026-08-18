@@ -6,6 +6,8 @@ import { requestLocale } from '@/lib/locale-request'
 import { DIRECTION, HTML_LANG, localePath } from '@/lib/locale'
 import { LocaleProvider } from '@/components/layout/locale-provider'
 import { Providers } from '@/components/layout/providers'
+import { RouteProgress } from '@/components/layout/route-progress'
+import { RevealScope } from '@/components/ui/reveal'
 import { Toaster } from '@/components/ui/toast'
 import '@/styles/globals.css'
 import { THEME_SCRIPT } from '@/lib/theme'
@@ -120,6 +122,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               above that stacked two brands and two account menus on every
               studio and admin screen. */}
             {children}
+            {/* Both are engines, not chrome: they render nothing until there
+                is something to reveal or a navigation to report. They live at
+                the document root because both watch the whole document — the
+                dashboards bring their own shell, but they still stream content
+                in and still navigate. */}
+            <RevealScope />
+            <RouteProgress />
             <Toaster />
           </Providers>
         </LocaleProvider>

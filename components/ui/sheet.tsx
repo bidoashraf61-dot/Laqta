@@ -17,7 +17,9 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      'fixed inset-0 z-50 bg-ink/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      'fixed inset-0 z-50 bg-ink/70 backdrop-blur-sm',
+      'data-[state=open]:duration-panel data-[state=open]:ease-cut data-[state=open]:animate-in data-[state=open]:fade-in-0',
+      'data-[state=closed]:duration-exit data-[state=closed]:ease-exit data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
       className,
     )}
     {...props}
@@ -33,7 +35,14 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
  * direction so the panel never flies in from the wrong side.
  */
 const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-card shadow-lift transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  cn(
+    'fixed z-50 gap-4 bg-card shadow-lift',
+    // The drawer travels further than any other surface in the app, so it gets
+    // the panel duration rather than the shorter move step — and it leaves on
+    // the exit curve, which accelerates away instead of easing out.
+    'data-[state=open]:animate-in data-[state=open]:duration-panel data-[state=open]:ease-cut',
+    'data-[state=closed]:animate-out data-[state=closed]:duration-exit data-[state=closed]:ease-exit',
+  ),
   {
     variants: {
       side: {

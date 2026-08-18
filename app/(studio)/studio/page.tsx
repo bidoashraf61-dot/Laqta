@@ -118,7 +118,10 @@ export default async function StudioPage() {
               ) : null}
               {pendingReleases > 0 ? (
                 <li className="flex items-center gap-3 py-2.5 text-sm">
-                  <Link href="/studio/releases" className="min-w-0 flex-1 hover:underline">
+                  <Link
+                    href="/studio/releases"
+                    className="-my-2.5 min-w-0 flex-1 py-2.5 hover:underline"
+                  >
                     {t('dash.releasePending')}
                   </Link>
                   <span className="numeric text-muted-foreground">
@@ -174,7 +177,7 @@ export default async function StudioPage() {
             action={
               <Link
                 href="/studio/albums"
-                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                className="-my-1.5 inline-block py-1.5 text-xs text-muted-foreground transition-colors duration-hover ease-lens hover:text-foreground"
               >
                 {t('actions.more')}
               </Link>

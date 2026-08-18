@@ -29,11 +29,13 @@ export function HeroCinematic() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const copyRef = useRef<HTMLDivElement>(null)
+  const railRef = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
     const wrap = wrapRef.current
     const video = videoRef.current
     const copy = copyRef.current
+    const rail = railRef.current
     if (!wrap || !video) return
 
     // Reduced motion: the poster still stands, the copy stands, nothing scrubs.
@@ -45,15 +47,35 @@ export function HeroCinematic() {
     video.src = mobile ? '/hero/vid/hero-web-m.mp4' : '/hero/vid/hero-web.mp4'
 
     let raf = 0
-    let seeking = false
     let target = 0
     let disposed = false
+    let seekIssuedAt = 0
+    let recovered = false
+
+    /*
+     * How long a seek may be outstanding before we issue another.
+     *
+     * ── The bug this replaces ───────────────────────────────────────────────
+     * The scrub used to keep its own `seeking` boolean: set true before
+     * assigning `currentTime`, set false in the `seeked` handler. If that event
+     * never arrived the flag stayed true FOREVER and the film froze for the
+     * rest of the session — which is exactly the "stops responding after the
+     * first pass" behaviour.
+     *
+     * And it does not always arrive. A browser can coalesce two seeks issued in
+     * consecutive frames into one event, drop the event entirely when the
+     * requested time resolves to the frame already displayed, or abandon the
+     * seek when the target falls outside the buffered range and the network is
+     * slow. Fast scrolling produces all three.
+     *
+     * So the element's own `video.seeking` is the source of truth — it cannot
+     * be stranded, because the browser owns it — and this deadline covers the
+     * case where the browser itself gets stuck: after 400ms mid-seek we simply
+     * ask again, which is harmless if the first one lands.
+     */
+    const SEEK_DEADLINE_MS = 400
 
     const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x))
-    const onSeeked = () => {
-      seeking = false
-    }
-    video.addEventListener('seeked', onSeeked)
 
     const measure = () => {
       const scrollable = wrap.offsetHeight - window.innerHeight
@@ -64,31 +86,88 @@ export function HeroCinematic() {
       // The copy holds over the film's opening, then clears so the footage
       // plays unobstructed; it is back the moment you scroll up.
       if (copy) copy.style.opacity = String(clamp(1 - progress / 0.32))
+
+      /*
+       * The USP rail takes over where the headline leaves off.
+       *
+       * It starts fading in at 0.30 — just before the headline is fully gone,
+       * so the two cross rather than leaving a beat of bare film — and then
+       * steps through its points across the rest of the scrub. The film is
+       * doing the arguing by that stage; these are the four facts a viewer
+       * needs alongside it, one at a time rather than as a list nobody reads.
+       *
+       * Driven by the SAME progress value as the video, which is what makes it
+       * a ruler rather than a carousel: the marks are positions in the film,
+       * so scrolling back up walks them backwards.
+       */
+      if (rail) {
+        const RAIL_START = 0.3
+        rail.style.opacity = String(clamp((progress - RAIL_START) / 0.08))
+        const items = rail.children
+        const span = (1 - RAIL_START) / items.length
+        const index = clamp(Math.floor((progress - RAIL_START) / span), 0, items.length - 1)
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i] as HTMLElement
+          // `data-state` rather than a class: three states, and the CSS reads
+          // more like the thing it describes.
+          item.dataset.state = i === index ? 'on' : i < index ? 'past' : 'ahead'
+        }
+      }
     }
 
     const tick = () => {
       if (disposed) return
-      if (!seeking && video.readyState >= 2) {
-        const t2 = clamp(target, 0, video.duration || 1)
-        if (Math.abs(video.currentTime - t2) > 0.03) {
-          seeking = true
+
+      const duration = video.duration
+      if (video.readyState >= 2 && Number.isFinite(duration) && duration > 0) {
+        const want = clamp(target, 0, duration)
+        const now = performance.now()
+        // Busy only while the ELEMENT says so, and only until the deadline.
+        const busy = video.seeking && now - seekIssuedAt < SEEK_DEADLINE_MS
+
+        if (!busy && Math.abs(video.currentTime - want) > 0.03) {
+          seekIssuedAt = now
           try {
-            video.currentTime = t2
+            video.currentTime = want
           } catch {
-            seeking = false
+            // A seek can throw while the element is re-initialising. Nothing to
+            // clean up — the next frame simply tries again.
           }
         }
       }
+
       raf = requestAnimationFrame(tick)
     }
+
+    /*
+     * Decoder recovery.
+     *
+     * A media error leaves the element permanently unable to paint, and there
+     * is no state the scrub loop can reach that fixes it — every subsequent
+     * frame would seek a dead decoder. Reloading the source rebuilds it. Once
+     * only: if the file itself is missing, retrying forever is a request loop
+     * rather than a recovery.
+     */
+    const onError = () => {
+      if (recovered || disposed) return
+      recovered = true
+      const src = video.currentSrc || video.src
+      video.load()
+      if (src) video.src = src
+    }
+    video.addEventListener('error', onError)
 
     const onScroll = () => measure()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', measure)
+
     // Prime the decoder so the first seek paints instead of showing black.
+    // iOS will not render a muted video that has been seeked but never played.
     const prime = () => {
-      const p = video.play()
-      if (p && typeof p.then === 'function') p.then(() => video.pause()).catch(() => {})
+      const played = video.play()
+      if (played && typeof played.then === 'function') {
+        played.then(() => video.pause()).catch(() => {})
+      }
     }
     video.addEventListener('loadeddata', prime, { once: true })
 
@@ -100,7 +179,7 @@ export function HeroCinematic() {
       cancelAnimationFrame(raf)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', measure)
-      video.removeEventListener('seeked', onSeeked)
+      video.removeEventListener('error', onError)
     }
   }, [])
 
@@ -119,6 +198,15 @@ export function HeroCinematic() {
             preload="auto"
             aria-hidden
           />
+          {/* No watermark on the hero, deliberately — the one exception to the
+              rule that every moving frame carries one.
+
+              This film is the brand's own opening title, not a preview being
+              offered for sale: it is a cut, not a shot anyone can buy, and the
+              marks were tiling across the first thing a visitor ever sees.
+              Every frame that IS purchasable — the wall, the grids, the
+              trailers, the clip players — is still marked. */}
+
           {/* Legibility scrim: the copy sits at the inline-start (the right, in
               this RTL-only app), so the ground is darkened from the right and
               the bottom. `to-l` is a paint direction, not a layout property —
@@ -154,6 +242,31 @@ export function HeroCinematic() {
               </a>
             </div>
           </div>
+
+          {/*
+            The USP rail.
+
+            Absolutely positioned against the stage rather than placed in flow,
+            so it cannot push the headline around while it fades in. It sits at
+            the inline-END edge — the headline owns the start edge — and the
+            marks stack down the side like a ruler with the film as its scale.
+
+            Hidden from assistive tech: every one of these facts is stated in
+            full, as ordinary prose, in the sections below. A screen reader
+            walking the hero should hear the headline and the two buttons, not
+            four scroll positions.
+          */}
+          <ul ref={railRef} aria-hidden className="hero-usp-rail" style={{ opacity: 0 }}>
+            {[1, 2, 3, 4].map((n) => (
+              <li key={n} data-state="ahead">
+                <span className="hero-usp-tick" />
+                <span className="hero-usp-text">
+                  <strong>{t(`landing.usp${n}`)}</strong>
+                  <em>{t(`landing.usp${n}Note`)}</em>
+                </span>
+              </li>
+            ))}
+          </ul>
 
           {/* Scroll cue — the one authored motion moment on the hero. */}
           <span className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex w-fit flex-col items-center gap-2 text-xs uppercase tracking-[0.16em] text-foreground/60">

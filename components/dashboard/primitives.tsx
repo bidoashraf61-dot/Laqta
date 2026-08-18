@@ -152,6 +152,7 @@ export function Panel({
 }) {
   return (
     <section
+      data-reveal
       className={cn(
         'rounded-lg border bg-card',
         accent === 'warning' && 'border-warning/40',
@@ -178,7 +179,23 @@ export function Panel({
   )
 }
 
-/** A row of stat tiles with a responsive grid. */
+/**
+ * A row of stat tiles with a responsive grid.
+ *
+ * The row reveals as one unit rather than tile by tile. A KPI row is read as a
+ * single fact about the business — four numbers that only mean something
+ * beside each other — and dealing them out in sequence invites the reader to
+ * compare the first with the second before the third has arrived.
+ *
+ * It is also the honest engineering answer: the tiles are written out by hand
+ * at 26 call sites rather than mapped, so a per-tile delay would mean either
+ * numbering all of them or cloning children to inject a prop the child may not
+ * accept.
+ */
 export function StatGrid({ children }: { children: ReactNode }) {
-  return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+      {children}
+    </div>
+  )
 }

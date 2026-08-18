@@ -61,14 +61,19 @@ const config: Config = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
+          // The hover fill, as a token rather than an alpha discount. See the
+          // note beside `--primary-hover` in globals.css.
+          hover: 'hsl(var(--primary-hover))',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
+          hover: 'hsl(var(--secondary-hover))',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
+          hover: 'hsl(var(--destructive-hover))',
         },
         success: {
           DEFAULT: 'hsl(var(--success))',
@@ -125,8 +130,20 @@ const config: Config = {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
         // Display type is now Sans and set OPEN, per the reference. Tracking is
         // slightly positive rather than the tight negative fit a serif needed.
-        display: ['clamp(2.5rem, 5.4vw, 4.5rem)', { lineHeight: '1.06', letterSpacing: '0.005em' }],
-        headline: ['clamp(1.6rem, 2.8vw, 2.375rem)', { lineHeight: '1.18', letterSpacing: '0.01em' }],
+        /*
+         * Line-heights are set for ARABIC, which is what this portal is.
+         *
+         * Thmanyah Serif Display draws its Arabic in an ink box ~1.25em tall.
+         * Anything below that overlaps — 1.06 and 1.18 here put the hero's
+         * lines 9.4px INTO each other at desktop size. 1.25 is the floor for
+         * this face; these sit above it, stepping down as the type grows,
+         * which is the normal relationship between size and leading.
+         */
+        display: ['clamp(2.5rem, 5.4vw, 4.5rem)', { lineHeight: '1.28', letterSpacing: '0.005em' }],
+        headline: [
+          'clamp(1.6rem, 2.8vw, 2.375rem)',
+          { lineHeight: '1.32', letterSpacing: '0.01em' },
+        ],
         // The sub-headline step. Named rather than written as a literal at the
         // call site so it is one documented rung on the ramp, not a magic number
         // that drifts the next time someone nudges a section.
@@ -142,6 +159,28 @@ const config: Config = {
         lift: '0 2px 4px hsl(var(--ink) / 0.08), 0 20px 40px -16px hsl(var(--ink) / 0.4)',
         glow: '0 0 0 1px hsl(var(--gold) / 0.35), 0 12px 32px -12px hsl(var(--gold) / 0.45)',
       },
+      /*
+       * Motion. The curves and durations are CSS variables (styles/globals.css)
+       * so the same vocabulary is available to hand-written CSS, to Radix data
+       * attributes, and to a Tailwind class — one source, three consumers.
+       *
+       * Authoring rule: never write a bare `duration-300` or `ease-in-out`.
+       * If a transition needs a timing, it needs one of these names; if none
+       * fits, the system is missing a rung and DESIGN.md gets a new one.
+       */
+      transitionTimingFunction: {
+        cut: 'var(--ease-cut)',
+        lens: 'var(--ease-lens)',
+        exit: 'var(--ease-exit)',
+      },
+      transitionDuration: {
+        tap: 'var(--dur-tap)',
+        hover: 'var(--dur-hover)',
+        move: 'var(--dur-move)',
+        panel: 'var(--dur-panel)',
+        frame: 'var(--dur-frame)',
+        exit: 'var(--dur-exit)',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -154,10 +193,44 @@ const config: Config = {
         shimmer: {
           '100%': { transform: 'translateX(100%)' },
         },
+        /* The single entrance gesture. Everything that arrives uses this —
+           a card, a section, a table row — so the page has one accent rather
+           than a different flourish per component. */
+        rise: {
+          from: { opacity: '0', transform: 'translate3d(0, var(--rise), 0)' },
+          to: { opacity: '1', transform: 'translate3d(0, 0, 0)' },
+        },
+        /* Dialogs and sheets scale a hair as well as fade, because they are
+           surfaces arriving in depth rather than content arriving in place. */
+        'panel-in': {
+          from: { opacity: '0', transform: 'translate3d(0, 8px, 0) scale(0.985)' },
+          to: { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+        },
+        'panel-out': {
+          from: { opacity: '1', transform: 'scale(1)' },
+          to: { opacity: '0', transform: 'scale(0.985)' },
+        },
+        /* The loading mark. Opacity and a hair of scale — no rotation, because
+           the artwork is calligraphy and a spinning wordmark is unreadable. */
+        'mark-breathe': {
+          '0%, 100%': { opacity: '0.45', transform: 'scale(0.97)' },
+          '50%': { opacity: '1', transform: 'scale(1)' },
+        },
+        /* Route-change feedback. Indeterminate on purpose: the App Router
+           cannot report real progress, and a fake percentage is a lie. */
+        'route-sweep': {
+          '0%': { transform: 'translate3d(-100%, 0, 0)' },
+          '100%': { transform: 'translate3d(400%, 0, 0)' },
+        },
       },
       animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
+        'accordion-down': 'accordion-down var(--dur-move) var(--ease-cut)',
+        'accordion-up': 'accordion-up var(--dur-exit) var(--ease-exit)',
+        rise: 'rise var(--dur-move) var(--ease-cut) both',
+        'panel-in': 'panel-in var(--dur-panel) var(--ease-cut) both',
+        'panel-out': 'panel-out var(--dur-exit) var(--ease-exit) both',
+        'route-sweep': 'route-sweep 1.1s var(--ease-lens) infinite',
+        'mark-breathe': 'mark-breathe 1.8s var(--ease-lens) infinite',
       },
     },
   },

@@ -67,10 +67,8 @@ export default async function CartPage() {
               titleEn={item.album.titleEn}
               creatorNameAr={item.album.creator.displayNameAr}
               clipCount={item.album.clipCount}
-              tier={item.licenceTier}
               unitPrice={Number(item.unitPrice)}
               currency={item.album.currency}
-              editorialOnly={item.album.clearanceStatus === 'editorial_only'}
             />
           ))}
 

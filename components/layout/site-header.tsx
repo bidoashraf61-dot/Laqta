@@ -2,8 +2,8 @@ import { Link } from '@/components/ui/link'
 import type { Session } from 'next-auth'
 import { ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/ui/logo'
 import { LocaleToggle } from '@/components/layout/locale-toggle'
-import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { SearchEntry } from '@/components/layout/search-entry'
 import { UserMenu } from '@/components/layout/user-menu'
 import { MobileNav } from '@/components/layout/mobile-nav'
@@ -29,12 +29,11 @@ export function SiteHeader({ session }: { session: Session | null }) {
       <div className="container flex h-16 items-center gap-3">
         <MobileNav extra={extra} />
 
-        <Link
-          href="/"
-          className="shrink-0 font-display text-2xl font-bold tracking-tight text-gold"
-          aria-label={t('brand.name')}
-        >
-          {t('brand.name')}
+        {/* The approved artwork, replacing the wordmark that was set as live
+            display type while the logo was an open item. The header sits on
+            dark chrome, so it takes the light colourway — see <Logo>. */}
+        <Link href="/" className="shrink-0" aria-label={t('brand.name')}>
+          <Logo tone="dark" className="h-9" />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label={t('nav.menu')}>
@@ -69,7 +68,6 @@ export function SiteHeader({ session }: { session: Session | null }) {
           </Button>
 
           <LocaleToggle />
-          <ThemeToggle />
           <UserMenu session={session} />
         </div>
       </div>

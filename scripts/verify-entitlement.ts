@@ -36,7 +36,7 @@ async function main() {
   // ── Buy ───────────────────────────────────────────────────────────────────
   const result = await checkout({
     userId: buyer.id,
-    lines: [{ albumId: album.id, licenceTier: 'extended' }],
+    lines: [{ albumId: album.id }],
     billing: { billingEntityType: 'business', legalName: 'اختبار', vatNumber: '300000000000003' },
     method: 'bank_transfer',
   })
@@ -48,7 +48,11 @@ async function main() {
   const before = await getLibrary(buyer.id)
   const entry = before.find((row) => row.orderNumber === result.orderNumber)
   report('purchase appears in the library', Boolean(entry))
-  report('manifest froze every clip', entry?.clips.length === originalCount, `${entry?.clips.length}`)
+  report(
+    'manifest froze every clip',
+    entry?.clips.length === originalCount,
+    `${entry?.clips.length}`,
+  )
 
   const frozenIds = new Set(entry?.clips.map((clip) => clip.id))
 

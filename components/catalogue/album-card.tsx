@@ -238,7 +238,10 @@ export function AlbumCard({
               off the card that is not the album. */}
           <Anchor
             href={`/creators/${album.creatorHandle}`}
-            className="pointer-events-auto relative z-[3] inline-block max-w-full truncate text-sm text-off-white/85 underline decoration-off-white/30 underline-offset-4 transition-colors duration-hover ease-lens hover:text-off-white hover:decoration-off-white"
+            // `-my-1 py-1` keeps the visual position and lifts the hit area over the
+            // 24px minimum — this link sits on top of a stretched anchor, so a
+            // near-miss does not fail, it opens the wrong page.
+            className="pointer-events-auto relative z-[3] -my-1 inline-block max-w-full truncate py-1 text-sm text-off-white/85 underline decoration-off-white/30 underline-offset-4 transition-colors duration-hover ease-lens hover:text-off-white hover:decoration-off-white"
           >
             {t('commerce.byCreator', {
               creator: pickLocalised(album.creatorNameAr, album.creatorNameEn),

@@ -67,7 +67,27 @@ const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <td ref={ref} className={cn('px-4 py-3 text-start align-middle', className)} {...props} />
+  <td
+    ref={ref}
+    className={cn(
+      'px-4 py-3 text-start align-middle',
+      /*
+       * A link in a cell gets the cell's full height as its hit area.
+       *
+       * These were the last targets under 24px anywhere in the portal: an album
+       * title in a dashboard table is a 21px line of text, and it is the primary
+       * way an operator opens the thing they are working on. The negative margin
+       * cancels the padding visually, so rows keep their height and only the
+       * target grows.
+       *
+       * WCAG 2.2 SC 2.5.8's exemption is for links inside a sentence. A table
+       * cell is not a sentence.
+       */
+      '[&>a]:-my-3 [&>a]:block [&>a]:py-3',
+      className,
+    )}
+    {...props}
+  />
 ))
 TableCell.displayName = 'TableCell'
 

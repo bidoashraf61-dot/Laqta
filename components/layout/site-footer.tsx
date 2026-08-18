@@ -17,12 +17,21 @@ export function SiteFooter() {
             <p className="text-sm text-muted-foreground">{t('brand.promise')}</p>
           </div>
 
-          <nav className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm" aria-label={t('footer.about')}>
+          {/*
+            The `-my-1` cancels the padding visually, so the rows keep their
+            rhythm while each link's HIT AREA grows.
+
+            These were 105×21 — under the 24×24 that WCAG 2.2 SC 2.5.8 asks for,
+            and they are the smallest targets on the site, repeated on every
+            single page. The inline-prose exemption does not apply: a link in a
+            footer list is a target, not a word in a sentence.
+          */}
+          <nav className="grid grid-cols-2 gap-x-10 gap-y-1 text-sm" aria-label={t('footer.about')}>
             {FOOTER_LEGAL.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="-my-1 py-1.5 text-muted-foreground transition-colors duration-hover ease-lens hover:text-foreground"
               >
                 {t(item.labelKey)}
               </Link>
@@ -31,7 +40,7 @@ export function SiteFooter() {
 
           <div className="space-y-3">
             <p className="text-sm font-medium">{t('footer.follow')}</p>
-            <ul className="flex gap-4 text-sm">
+            <ul className="-my-1 flex gap-3 text-sm">
               {SOCIAL.map((item) => (
                 <li key={item.label}>
                   {/* Platform names are proper nouns — Latin, but isolated. */}
@@ -39,7 +48,7 @@ export function SiteFooter() {
                     href={item.href}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="ltr-island text-muted-foreground transition-colors hover:text-foreground"
+                    className="ltr-island inline-block px-1 py-1.5 text-muted-foreground transition-colors duration-hover ease-lens hover:text-foreground"
                   >
                     {item.label}
                   </a>

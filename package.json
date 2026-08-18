@@ -34,7 +34,8 @@
     "test": "npm run test:unit && npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:auth && npm run verify:arabic && npm run verify:hero && npm run verify:journeys && npm run verify:flows && npm run audit",
     "verify:pairs": "node scripts/verify-token-pairs.mjs",
     "verify:leading": "node scripts/verify-leading.mjs",
-    "verify:bands": "node scripts/verify-bands.mjs"
+    "verify:bands": "node scripts/verify-bands.mjs",
+    "sweep": "node scripts/sweep.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -151,7 +151,9 @@ export default async function AdminPage() {
           action={
             <Link
               href="/admin/review"
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              // `-my-1.5 py-1.5` lifts a 29×16 label over the 24px minimum without
+              // moving it: it is a control, not a caption.
+              className="-my-1.5 inline-block py-1.5 text-xs text-muted-foreground transition-colors duration-hover ease-lens hover:text-foreground"
             >
               {t('actions.more')}
             </Link>

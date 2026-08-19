@@ -6,7 +6,7 @@ import { decideReview, refundOrderItem } from '@/lib/admin'
 import { settleOrder } from '@/lib/orders'
 import { recordAudit } from '@/lib/audit'
 import { db } from '@/lib/db'
-import { t } from '@/lib/i18n'
+import { actionT } from '@/lib/locale-request'
 import type { Checklist } from '@/lib/review-checklist'
 
 export async function submitReview(input: {
@@ -129,6 +129,7 @@ export async function setCreatorStatus(
   creatorId: string,
   status: 'approved' | 'suspended' | 'rejected',
 ): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   await db.creator.update({
@@ -155,7 +156,7 @@ export async function setCreatorStatus(
   })
 
   revalidatePath('/admin/creators')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 /**
@@ -169,6 +170,7 @@ export async function setCreatorCommission(
   _state: Result | null,
   formData: FormData,
 ): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const creatorId = String(formData.get('creatorId') ?? '')
@@ -176,7 +178,7 @@ export async function setCreatorCommission(
   const rawOverride = String(formData.get('commissionRateOverride') ?? '').trim()
 
   if (!['standard', 'silver', 'gold'].includes(tier)) {
-    return { ok: false, message: t('state.error') }
+    return { ok: false, message: tr('state.error') }
   }
 
   let override: number | null = null
@@ -184,7 +186,7 @@ export async function setCreatorCommission(
     const parsed = Number(rawOverride)
     // Entered as a percentage the admin can read, stored as a fraction.
     if (!Number.isFinite(parsed) || parsed < 0 || parsed > 50) {
-      return { ok: false, message: t('dash.commissionOverrideHint') }
+      return { ok: false, message: tr('dash.commissionOverrideHint') }
     }
     override = parsed / 100
   }
@@ -203,7 +205,7 @@ export async function setCreatorCommission(
   })
 
   revalidatePath('/admin/creators')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 /** Pause, resume or delist a published album from the catalogue. */
@@ -211,6 +213,7 @@ export async function setAlbumStatus(
   albumId: string,
   status: 'live' | 'paused' | 'delisted',
 ): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   await db.album.update({
@@ -226,11 +229,12 @@ export async function setAlbumStatus(
   })
 
   revalidatePath('/admin/catalogue')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 /** Feature or unfeature an album on the storefront. */
 export async function toggleAlbumFeatured(albumId: string, featured: boolean): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   await db.album.update({
@@ -246,7 +250,7 @@ export async function toggleAlbumFeatured(albumId: string, featured: boolean): P
 
   revalidatePath('/admin/merchandising')
   revalidatePath('/')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 // ── Taxonomy ────────────────────────────────────────────────────────────────
@@ -259,6 +263,7 @@ export async function toggleAlbumFeatured(albumId: string, featured: boolean): P
  * a hamza or alef variant match. Comma-separated in, array out.
  */
 export async function saveTaxonomy(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const id = String(formData.get('id') ?? '').trim()
@@ -270,10 +275,10 @@ export async function saveTaxonomy(_state: Result | null, formData: FormData): P
   const nameEn = String(formData.get('nameEn') ?? '').trim()
 
   if (!['category', 'location', 'tag', 'theme'].includes(kind)) {
-    return { ok: false, message: t('state.error') }
+    return { ok: false, message: tr('state.error') }
   }
-  if (!nameAr || !nameEn) return { ok: false, message: t('dash.termAr') }
-  if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) return { ok: false, message: t('dash.termSlug') }
+  if (!nameAr || !nameEn) return { ok: false, message: tr('dash.termAr') }
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) return { ok: false, message: tr('dash.termSlug') }
 
   // Splits on the Arabic comma as well as the Latin one — an Arabic keyboard
   // produces `،`, and silently keeping "الرياض، رياض" as a single synonym
@@ -301,7 +306,7 @@ export async function saveTaxonomy(_state: Result | null, formData: FormData): P
     where: { kind: data.kind, slug, ...(id ? { NOT: { id } } : {}) },
     select: { id: true },
   })
-  if (clash) return { ok: false, message: t('dash.termSlug') }
+  if (clash) return { ok: false, message: tr('dash.termSlug') }
 
   const term = id
     ? await db.taxonomy.update({ where: { id }, data })
@@ -316,7 +321,7 @@ export async function saveTaxonomy(_state: Result | null, formData: FormData): P
   })
 
   revalidatePath('/admin/taxonomy')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 /**
@@ -327,6 +332,7 @@ export async function saveTaxonomy(_state: Result | null, formData: FormData): P
  * bookmarked URL pointing at it.
  */
 export async function toggleTaxonomyActive(id: string, isActive: boolean): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
   await db.taxonomy.update({ where: { id }, data: { isActive } })
   await recordAudit({
@@ -336,18 +342,19 @@ export async function toggleTaxonomyActive(id: string, isActive: boolean): Promi
     entityId: id,
   })
   revalidatePath('/admin/taxonomy')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 // ── Merchandising ───────────────────────────────────────────────────────────
 
 /** Edit a homepage slot's copy, media and scheduling window. */
 export async function saveSlot(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const id = String(formData.get('id') ?? '').trim()
   const key = String(formData.get('key') ?? '').trim()
-  if (!id && !key) return { ok: false, message: t('state.error') }
+  if (!id && !key) return { ok: false, message: tr('state.error') }
 
   const startsAt = String(formData.get('startsAt') ?? '')
   const endsAt = String(formData.get('endsAt') ?? '')
@@ -379,10 +386,11 @@ export async function saveSlot(_state: Result | null, formData: FormData): Promi
 
   revalidatePath('/admin/merchandising')
   revalidatePath('/')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 export async function toggleSlotActive(id: string, isActive: boolean): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
   await db.merchandisingSlot.update({ where: { id }, data: { isActive } })
   await recordAudit({
@@ -393,7 +401,7 @@ export async function toggleSlotActive(id: string, isActive: boolean): Promise<R
   })
   revalidatePath('/admin/merchandising')
   revalidatePath('/')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 export async function toggleCollection(
@@ -401,6 +409,7 @@ export async function toggleCollection(
   field: 'isPublished' | 'isFeatured',
   value: boolean,
 ): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
   await db.collection.update({ where: { id }, data: { [field]: value } })
   await recordAudit({
@@ -411,13 +420,14 @@ export async function toggleCollection(
   })
   revalidatePath('/admin/merchandising')
   revalidatePath('/collections')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 // ── Promo codes ─────────────────────────────────────────────────────────────
 
 /** Create or update a promo code. */
 export async function savePromo(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const id = String(formData.get('id') ?? '').trim()
@@ -427,18 +437,18 @@ export async function savePromo(_state: Result | null, formData: FormData): Prom
   const kind = String(formData.get('kind') ?? 'percent')
   const value = Number(formData.get('value') ?? 0)
 
-  if (!/^[A-Z0-9][A-Z0-9_-]{2,31}$/.test(code)) return { ok: false, message: t('dash.promoCode') }
-  if (!['percent', 'fixed'].includes(kind)) return { ok: false, message: t('state.error') }
+  if (!/^[A-Z0-9][A-Z0-9_-]{2,31}$/.test(code)) return { ok: false, message: tr('dash.promoCode') }
+  if (!['percent', 'fixed'].includes(kind)) return { ok: false, message: tr('state.error') }
   // A 100%-off percent code is a free catalogue; a negative one is a credit.
   if (!Number.isFinite(value) || value <= 0 || (kind === 'percent' && value > 90)) {
-    return { ok: false, message: t('dash.promoValue') }
+    return { ok: false, message: tr('dash.promoValue') }
   }
 
   const clash = await db.promoCode.findFirst({
     where: { code, ...(id ? { NOT: { id } } : {}) },
     select: { id: true },
   })
-  if (clash) return { ok: false, message: t('dash.promoCode') }
+  if (clash) return { ok: false, message: tr('dash.promoCode') }
 
   const startsAt = String(formData.get('startsAt') ?? '')
   const endsAt = String(formData.get('endsAt') ?? '')
@@ -469,10 +479,11 @@ export async function savePromo(_state: Result | null, formData: FormData): Prom
   })
 
   revalidatePath('/admin/promos')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 export async function togglePromoActive(id: string, isActive: boolean): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
   await db.promoCode.update({ where: { id }, data: { isActive } })
   await recordAudit({
@@ -482,7 +493,7 @@ export async function togglePromoActive(id: string, isActive: boolean): Promise<
     entityId: id,
   })
   revalidatePath('/admin/promos')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 // ── Payouts ─────────────────────────────────────────────────────────────────
@@ -496,14 +507,15 @@ export async function togglePromoActive(id: string, isActive: boolean): Promise<
  * whatever the creator's profile happens to say at export time.
  */
 export async function approvePayout(payoutId: string): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const payout = await db.payout.findUnique({
     where: { id: payoutId },
     select: { id: true, status: true, creator: true },
   })
-  if (!payout) return { ok: false, message: t('state.notFound') }
-  if (payout.status !== 'requested') return { ok: false, message: t('state.error') }
+  if (!payout) return { ok: false, message: tr('state.notFound') }
+  if (payout.status !== 'requested') return { ok: false, message: tr('state.error') }
 
   const creator = payout.creator
   const destination =
@@ -532,7 +544,7 @@ export async function approvePayout(payoutId: string): Promise<Result> {
   })
 
   revalidatePath('/admin/payouts')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 /**
@@ -543,11 +555,12 @@ export async function approvePayout(payoutId: string): Promise<Result> {
  * the money left.
  */
 export async function markPayoutPaid(payoutId: string, reference: string): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const payout = await db.payout.findUnique({ where: { id: payoutId } })
-  if (!payout) return { ok: false, message: t('state.notFound') }
-  if (payout.status === 'paid') return { ok: false, message: t('state.error') }
+  if (!payout) return { ok: false, message: tr('state.notFound') }
+  if (payout.status === 'paid') return { ok: false, message: tr('state.error') }
 
   await db.$transaction(async (tx) => {
     await tx.payout.update({
@@ -582,7 +595,7 @@ export async function markPayoutPaid(payoutId: string, reference: string): Promi
   })
 
   revalidatePath('/admin/payouts')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 // ── Disputes ────────────────────────────────────────────────────────────────
@@ -599,13 +612,14 @@ export async function setDisputeStatus(
   status: 'open' | 'investigating' | 'content_disabled' | 'resolved' | 'rejected',
   resolution?: string,
 ): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
 
   const dispute = await db.dispute.findUnique({
     where: { id: disputeId },
     select: { id: true, albumId: true },
   })
-  if (!dispute) return { ok: false, message: t('state.notFound') }
+  if (!dispute) return { ok: false, message: tr('state.notFound') }
 
   await db.dispute.update({
     where: { id: disputeId },
@@ -642,5 +656,5 @@ export async function setDisputeStatus(
   })
 
   revalidatePath('/admin/disputes')
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }

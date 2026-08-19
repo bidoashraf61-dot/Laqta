@@ -10,7 +10,9 @@ import { Alert, AlertDescription } from '@/components/ui/state'
 import { PageTitle } from '@/components/ui/typography'
 import { BackLink } from '@/components/dashboard/primitives'
 import { requestLocale } from '@/lib/locale-request'
-import { updateProfile } from '../actions'
+import { updateProfile, sendEmailVerification, sendPhoneCode, confirmPhoneCode } from '../actions'
+import { VerifyEmail, VerifyPhone } from '@/components/account/verify-channel'
+import { Badge } from '@/components/ui/badge'
 import { COUNTRIES, countryName } from '@/lib/countries'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -50,7 +52,14 @@ export default async function ProfilePage() {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, phone: true, country: true },
+    select: {
+      name: true,
+      email: true,
+      phone: true,
+      country: true,
+      emailVerified: true,
+      phoneVerified: true,
+    },
   })
   if (!user) redirect('/account')
 
@@ -133,6 +142,75 @@ export default async function ProfilePage() {
           </Field>
         </div>
       </SettingsForm>
+
+      {/*
+        Verification.
+
+        Below the form rather than inside it, because these are not fields —
+        they act on the address that is SAVED, not on whatever is currently
+        typed in the box above. Putting a "verify" button next to an input the
+        reader is mid-way through editing invites them to verify a value the
+        server has never seen.
+      */}
+      <section className="space-y-4 rounded-lg border p-5">
+        <h2 className="font-display text-lg font-bold">{t('account.verifyTitle')}</h2>
+
+        <div className="space-y-4">
+          <ChannelRow
+            label={t('account.profileEmail')}
+            value={user.email}
+            verified={Boolean(user.emailVerified)}
+          >
+            <VerifyEmail send={sendEmailVerification} />
+          </ChannelRow>
+
+          <ChannelRow
+            label={t('account.profilePhone')}
+            value={user.phone}
+            verified={Boolean(user.phoneVerified)}
+          >
+            <VerifyPhone send={sendPhoneCode} confirm={confirmPhoneCode} />
+          </ChannelRow>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+/**
+ * One channel and its state.
+ *
+ * A channel with nothing in it renders nothing at all — an empty row offering
+ * to verify a blank mobile is an invitation to a dead end, and the form above
+ * is where you add one.
+ */
+function ChannelRow({
+  label,
+  value,
+  verified,
+  children,
+}: {
+  label: string
+  value: string | null
+  verified: boolean
+  children: React.ReactNode
+}) {
+  if (!value) return null
+
+  return (
+    <div className="flex flex-wrap items-start justify-between gap-3 border-b pb-4 last:border-b-0 last:pb-0">
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="ltr-island text-sm font-medium">{value}</p>
+      </div>
+      {verified ? (
+        <Badge variant="success">{t('account.profileVerified')}</Badge>
+      ) : (
+        <div className="space-y-2">
+          <Badge variant="warning">{t('account.profileUnverified')}</Badge>
+          {children}
+        </div>
+      )}
     </div>
   )
 }

@@ -5,9 +5,11 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { t } from '@/lib/i18n'
-import { requestLocale } from '@/lib/locale-request'
+import { actionT } from '@/lib/locale-request'
 import type { ActionResult } from '@/components/dashboard/form'
+import { headers } from 'next/headers'
+import { issueEmailVerification } from '@/lib/mail'
+import { issueOtp, consumeOtp } from '@/lib/otp'
 
 /**
  * Edit the account's own details.
@@ -69,11 +71,11 @@ export async function updateProfile(
   _previous: ActionResult | null,
   formData: FormData,
 ): Promise<ActionResult> {
-  await requestLocale()
+  const tr = await actionT()
 
   const session = await auth()
   const userId = session?.user?.id
-  if (!userId) return { ok: false, message: t('auth.signIn') }
+  if (!userId) return { ok: false, message: tr('auth.signIn') }
 
   const parsed = Profile.safeParse({
     name: formData.get('name') ?? '',
@@ -81,13 +83,13 @@ export async function updateProfile(
     email: formData.get('email') ?? '',
     country: formData.get('country') ?? '',
   })
-  if (!parsed.success) return { ok: false, message: t('account.profileInvalid') }
+  if (!parsed.success) return { ok: false, message: tr('account.profileInvalid') }
 
   const current = await db.user.findUnique({
     where: { id: userId },
     select: { email: true, phone: true },
   })
-  if (!current) return { ok: false, message: t('state.error') }
+  if (!current) return { ok: false, message: tr('state.error') }
 
   const email = parsed.data.email.toLowerCase()
   const phone = parsed.data.phone ? parsed.data.phone.replace(/[\s-]/g, '') : null
@@ -95,11 +97,11 @@ export async function updateProfile(
   // Uniqueness checked here so the reader gets a sentence rather than a 500.
   if (email !== current.email) {
     const taken = await db.user.findFirst({ where: { email, NOT: { id: userId } }, select: { id: true } })
-    if (taken) return { ok: false, message: t('account.profileEmailTaken') }
+    if (taken) return { ok: false, message: tr('account.profileEmailTaken') }
   }
   if (phone && phone !== current.phone) {
     const taken = await db.user.findFirst({ where: { phone, NOT: { id: userId } }, select: { id: true } })
-    if (taken) return { ok: false, message: t('account.profilePhoneTaken') }
+    if (taken) return { ok: false, message: tr('account.profilePhoneTaken') }
   }
 
   await db.user.update({
@@ -128,6 +130,102 @@ export async function updateProfile(
    * is stronger evidence than a sentence claiming it was saved. Failures still
    * return a message and keep the form and its values.
    */
+  revalidatePath('/account')
+  redirect('/account')
+}
+
+/* ── Verifying a channel ──────────────────────────────────────────────────
+ *
+ * Both of these exist because the profile form tells people that changing an
+ * email or a mobile clears its verification. That sentence was true and the
+ * way to undo it did not exist, which made it a dead end rather than a
+ * warning.
+ */
+
+/**
+ * Send a fresh verification link to the address currently on the account.
+ *
+ * `devLink` comes back only while no mail provider is configured — see
+ * lib/mail.ts. The page surfaces it so the flow can be completed locally
+ * rather than pretending an email was sent.
+ */
+export async function sendEmailVerification(): Promise<ActionResult & { devLink?: string }> {
+  const tr = await actionT()
+
+  const session = await auth()
+  if (!session?.user?.id) return { ok: false, message: tr('auth.signIn') }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { email: true, emailVerified: true },
+  })
+  if (!user?.email) return { ok: false, message: tr('account.verifyNoEmail') }
+  if (user.emailVerified) return { ok: true, message: tr('account.verifyAlready') }
+
+  const headerList = await headers()
+  // The link has to be absolute, and it has to point at the host the reader is
+  // actually on — not a build-time constant that is wrong on every other one.
+  const host = headerList.get('x-forwarded-host') ?? headerList.get('host') ?? 'localhost:3000'
+  const protocol = headerList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https')
+
+  const { delivered, devLink } = await issueEmailVerification(
+    session.user.id,
+    user.email,
+    `${protocol}://${host}`,
+  )
+
+  return delivered
+    ? { ok: true, message: tr('account.verifyEmailSent') }
+    : { ok: true, message: tr('account.verifyEmailNotConfigured'), devLink: devLink ?? undefined }
+}
+
+/** Send a one-time code to the mobile on the account. */
+export async function sendPhoneCode(): Promise<ActionResult & { devCode?: string }> {
+  const tr = await actionT()
+
+  const session = await auth()
+  if (!session?.user?.id) return { ok: false, message: tr('auth.signIn') }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { phone: true, phoneVerified: true },
+  })
+  if (!user?.phone) return { ok: false, message: tr('account.verifyNoPhone') }
+  if (user.phoneVerified) return { ok: true, message: tr('account.verifyAlready') }
+
+  const { delivered, devCode } = await issueOtp(user.phone)
+  return delivered
+    ? { ok: true, message: tr('account.verifyCodeSent') }
+    : { ok: true, message: tr('account.verifyCodeNotConfigured'), devCode: devCode ?? undefined }
+}
+
+/** Redeem the code and stamp the mobile as verified. */
+export async function confirmPhoneCode(
+  _previous: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const tr = await actionT()
+
+  const session = await auth()
+  if (!session?.user?.id) return { ok: false, message: tr('auth.signIn') }
+
+  const code = String(formData.get('code') ?? '').trim()
+  if (!/^\d{4,8}$/.test(code)) return { ok: false, message: tr('account.verifyCodeInvalid') }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { phone: true },
+  })
+  if (!user?.phone) return { ok: false, message: tr('account.verifyNoPhone') }
+
+  const ok = await consumeOtp(user.phone, code)
+  if (!ok) return { ok: false, message: tr('account.verifyCodeWrong') }
+
+  await db.user.update({
+    where: { id: session.user.id },
+    data: { phoneVerified: new Date() },
+  })
+
   revalidatePath('/account')
   redirect('/account')
 }

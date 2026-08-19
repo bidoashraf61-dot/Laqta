@@ -27,6 +27,7 @@ Two invariants govern this area and are restated in the specs that touch them:
 | Route | Purpose | Spec |
 | --- | --- | --- |
 | `/account` | Account hub: role badge and cards naming the other surfaces (cards are inert; only the security link works). | [account.md](./account.md) |
+| `/account/profile` | Edit name, email, mobile and country; verify either login channel. | [account-profile.md](./account-profile.md) |
 | `/account/library` | Everything the user owns, one card per entitlement, from the frozen manifest. | [account-library.md](./account-library.md) |
 | `/account/library/[id]` | Download surface for one purchased album: ZIP plus per-clip master and proxy links. | [account-library-id.md](./account-library-id.md) |
 | `/account/purchases` | Order history table — number, date, total, invoice, status. Read-only. | [account-purchases.md](./account-purchases.md) |
@@ -36,10 +37,11 @@ Two invariants govern this area and are restated in the specs that touch them:
 
 ## Known gaps
 
-- `ACCOUNT_NAV` (`components/layout/nav.ts`) links `/account/orders`, which has
-  no page file. The header user menu renders it and it 404s; the real route is
-  `/account/purchases`. `/account/downloads` and `/account/security` are missing
-  from that nav entirely.
+- ~~`ACCOUNT_NAV` links `/account/orders`, which 404s.~~ **Closed.** The entry
+  now points at `/account/purchases` under the `nav.orders` label, and
+  `/account/downloads` and `/account/security` were added to the nav.
+- ~~The hub renders its cards as inert text.~~ **Closed.** Every card is a link,
+  and the hub carries a profile summary with a link to `/account/profile`.
 - The footage detail page links «أضف إلى لوح» to `/account/boards?add=<clipId>`;
   the boards page ignores `searchParams`, so nothing is added.
 - `/account/library/[id]` is in neither the `audit` nor the `verify:arabic`

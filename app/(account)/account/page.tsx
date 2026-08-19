@@ -11,6 +11,7 @@ import { PageTitle } from '@/components/ui/typography'
 import { UserText } from '@/components/ui/bilingual'
 import { requestLocale } from '@/lib/locale-request'
 import { countryName } from '@/lib/countries'
+import { Alert, AlertDescription } from '@/components/ui/state'
 
 export async function generateMetadata(): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
@@ -36,7 +37,14 @@ export async function generateMetadata(): Promise<Metadata> {
  * profile form here would be a second place to change an email, and two ways to
  * change a login is how accounts get lost.
  */
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  // Set by the verify-email route handler after it redeems a token. A flag
+  // rather than a message, so the sentence is rendered in the reader's own
+  // language — a redirect cannot carry translated copy.
+  searchParams: Promise<{ verified?: string }>
+}) {
   // Resolve the locale before rendering anything.
   //
   // Not inherited from the root layout: a route segment sits inside a Suspense
@@ -47,6 +55,7 @@ export default async function AccountPage() {
   // call is a cached header read plus an idempotent write.
   await requestLocale()
 
+  const { verified } = await searchParams
   const session = await auth()
   const userId = session?.user?.id
 
@@ -106,6 +115,16 @@ export default async function AccountPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-center gap-3">
         <PageTitle>{t('nav.account')}</PageTitle>
+
+        {verified === 'email' ? (
+          <Alert variant="success">
+            <AlertDescription>{t('account.verifiedEmail')}</AlertDescription>
+          </Alert>
+        ) : verified === 'failed' ? (
+          <Alert variant="destructive">
+            <AlertDescription>{t('account.verifiedFailed')}</AlertDescription>
+          </Alert>
+        ) : null}
         <Badge variant="neutral">{t(`role.${user?.role ?? 'buyer'}`)}</Badge>
       </div>
 

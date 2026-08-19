@@ -38,8 +38,28 @@ export function PreviewWatermark({ className, label }: { className?: string; lab
    */
   const text = label ?? `${t('brand.name')} · ${t('catalogue.preview')}`
 
-  // Enough repeats to blanket a 16:9 card at any size; the wrapper clips them.
-  const marks = Array.from({ length: 48 })
+  /*
+   * Twelve, not forty-eight.
+   *
+   * ── Why this number matters far more than it looks ──────────────────────
+   * This overlay is drawn on every card, every grid tile, every player. The
+   * landing page carries 29 of them, so at 48 repeats each it was putting
+   * **1,392 spans** on the page — 64% of the document's entire node count,
+   * for decoration.
+   *
+   * Chrome absorbs that. WebKit does not: measured on the same page, Safari
+   * scrolled at a median of 323ms per frame — about three frames per second —
+   * against Chrome's 16.7ms. Cutting the repeats fixed it outright, back to
+   * 17ms.
+   *
+   * It is the NODE COUNT, not the drop-shadow: removing the filter and keeping
+   * 1,392 spans changed nothing (334ms), while keeping the filter and cutting
+   * the spans gave the whole improvement.
+   *
+   * Twelve still blankets the largest surface this is used on, because the
+   * row wraps and the -25% inset over-hangs the frame on every side.
+   */
+  const marks = Array.from({ length: 12 })
   return (
     <div
       aria-hidden

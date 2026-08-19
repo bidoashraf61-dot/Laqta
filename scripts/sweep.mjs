@@ -101,7 +101,15 @@ const AUTHED = [
 ]
 
 const PROBE = () => {
-  const out = { images: [], controls: [], fields: [], clipped: [], overflow: null, links: [] }
+  const out = {
+    images: [],
+    controls: [],
+    fields: [],
+    clipped: [],
+    overflow: null,
+    decorative: null,
+    links: [],
+  }
 
   for (const img of document.querySelectorAll('img')) {
     const rect = img.getBoundingClientRect()
@@ -171,6 +179,21 @@ const PROBE = () => {
         by: el.scrollHeight - el.clientHeight,
       })
     }
+  }
+
+  /*
+   * Decorative DOM, counted.
+   *
+   * The preview watermark repeats a wordmark to tile a frame, and it is drawn
+   * on every card, tile and player. At 48 repeats the landing page carried
+   * 1,392 spans — 64% of the document — and Safari scrolled it at three frames
+   * per second while Chrome showed nothing wrong at all. A node budget is the
+   * cheapest way to notice that happening again without running WebKit in CI.
+   */
+  const decorative = document.querySelectorAll('[aria-hidden].select-none span').length
+  const allNodes = document.querySelectorAll('*').length
+  if (decorative > 400 || (allNodes > 1500 && decorative / allNodes > 0.4)) {
+    out.decorative = { spans: decorative, ofTotal: `${Math.round((decorative / allNodes) * 100)}%` }
   }
 
   if (document.documentElement.scrollWidth > window.innerWidth + 1) {

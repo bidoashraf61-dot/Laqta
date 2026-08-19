@@ -3,7 +3,7 @@
 import { Link } from '@/components/ui/link'
 import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
-import { LogOut, ShieldCheck, User as UserIcon } from 'lucide-react'
+import { LogOut, ShieldCheck, User as UserIcon, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/overlays'
 import {
@@ -53,9 +53,27 @@ export function UserMenu({ session }: { session: Session | null }) {
             </span>
           ) : null}
         </DropdownMenuLabel>
+
+        {/*
+          The profile sits directly under the name and email it belongs to,
+          rather than as one row among the sections below.
+
+          `/account` was already in ACCOUNT_NAV, but labelled «حسابي» and
+          sitting fourth in a list of destinations — so the one place that
+          answers "what does this account know about me?" read as just another
+          section. It is filtered out of the loop below so there is exactly one
+          route to it.
+        */}
+        <DropdownMenuItem asChild>
+          <Link href="/account" className="gap-2">
+            <UserRound className="size-4" aria-hidden />
+            {t('account.profileTitle')}
+          </Link>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
-        {ACCOUNT_NAV.map((item) => (
+        {ACCOUNT_NAV.filter((item) => item.href !== '/account').map((item) => (
           <DropdownMenuItem key={item.href} asChild>
             <Link href={item.href}>
               <UserIcon />

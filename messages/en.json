@@ -34,7 +34,8 @@
     "admin": "Admin",
     "menu": "Menu",
     "close": "Close",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "downloads": "Downloads"
   },
   "search": {
     "placeholder": "Search anything… National Day, AlUla, Saudi businessman",
@@ -592,5 +593,22 @@
     "searchCreators": "Search by creator name or handle",
     "colCreator": "Creator",
     "approveCreator": "Approve creator"
+  },
+  "account": {
+    "profileTitle": "Your details",
+    "profileName": "Name",
+    "profileEmail": "Email",
+    "profilePhone": "Mobile",
+    "profileCountry": "Nationality",
+    "profileMember": "Member since",
+    "profileNotSet": "Not added",
+    "profileEdit": "Edit details",
+    "profileVerified": "Verified",
+    "profileUnverified": "Unverified",
+    "hubLibraryBody": "Every album you have bought, ready to download at original quality.",
+    "hubBoardsBody": "Shortlist shots and share them with your team before buying.",
+    "hubPurchasesBody": "Your orders and tax invoices, and the status of every payment.",
+    "hubDownloadsBody": "Download history: what was taken, when, and from which album.",
+    "hubSecurityBody": "Password, two-factor verification, and registered devices."
   }
 }

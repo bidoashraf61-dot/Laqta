@@ -28,7 +28,11 @@ export const ACCOUNT_NAV: NavItem[] = [
   { href: '/account', labelKey: 'nav.account' },
   { href: '/account/library', labelKey: 'nav.library' },
   { href: '/account/boards', labelKey: 'nav.boards' },
-  { href: '/account/orders', labelKey: 'nav.orders' },
+  // `/account/purchases`, not `/account/orders`. The route has always been
+  // "purchases"; the nav asked for "orders", so «طلباتي» 404'd from every page
+  // on the site that renders this list.
+  { href: '/account/purchases', labelKey: 'nav.orders' },
+  { href: '/account/downloads', labelKey: 'nav.downloads' },
 ]
 
 export const FOOTER_LEGAL: NavItem[] = [

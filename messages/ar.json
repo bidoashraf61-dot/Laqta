@@ -34,7 +34,8 @@
     "admin": "لوحة التحكم",
     "menu": "القائمة",
     "close": "إغلاق",
-    "skipToContent": "تخطَّ إلى المحتوى"
+    "skipToContent": "تخطَّ إلى المحتوى",
+    "downloads": "تحميلاتي"
   },
   "search": {
     "placeholder": "ابحث عن أي لقطة… اليوم الوطني، العلا، رجل أعمال سعودي",
@@ -939,5 +940,22 @@
     "showreelAlt": "عرض مجمّع للقطات من الكتالوج",
     "trailerAlt": "تريلر ألبوم {album}",
     "trailerTitle": "تريلر الألبوم"
+  },
+  "account": {
+    "profileTitle": "بياناتك",
+    "profileName": "الاسم",
+    "profileEmail": "البريد الإلكتروني",
+    "profilePhone": "الجوال",
+    "profileCountry": "الجنسية",
+    "profileMember": "عضو منذ",
+    "profileNotSet": "غير مضاف",
+    "profileEdit": "تعديل البيانات",
+    "profileVerified": "موثّق",
+    "profileUnverified": "غير موثّق",
+    "hubLibraryBody": "كل ألبوم اشتريته، جاهز للتحميل بالجودة الأصلية.",
+    "hubBoardsBody": "لوّح لقطاتك المرشّحة وشاركها مع فريقك قبل الشراء.",
+    "hubPurchasesBody": "طلباتك وفواتيرك الضريبية، وحالة كل عملية دفع.",
+    "hubDownloadsBody": "سجل التحميلات: ما نُزّل، ومتى، ومن أي ألبوم.",
+    "hubSecurityBody": "كلمة المرور، والتحقق بخطوتين، والأجهزة المسجَّلة."
   }
 }

@@ -226,6 +226,14 @@ model User {
   passwordHash  String?
   name          String?
   image         String?
+  /// Nationality, as an ISO 3166-1 alpha-2 code — "SA", "EG", "GB".
+  ///
+  /// A code rather than a display name, because the name has to be shown in
+  /// whichever language the reader is using and a stored string can only ever
+  /// be in one. Distinct from `billingAddress.country`, which is where an
+  /// invoice is sent: a Saudi national billing a Dubai office is two different
+  /// facts and the tax treatment follows the second.
+  country       String?
   locale        String     @default("ar")
   role          Role       @default(buyer)
   status        UserStatus @default(active)

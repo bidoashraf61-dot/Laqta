@@ -355,7 +355,10 @@ async function main() {
 
   const buyer = await db.user.upsert({
     where: { email: 'buyer@agency.sa' },
-    update: {},
+    // Not empty: `country` was added after this account first existed, so an
+    // `update: {}` left every already-seeded machine with a blank nationality
+    // on the account page — the same trap the albums hit.
+    update: { country: 'SA' },
     create: {
       email: 'buyer@agency.sa',
       phone: '+966500000003',
@@ -363,6 +366,7 @@ async function main() {
       phoneVerified: new Date(),
       passwordHash,
       name: 'وكالة أثر للإعلان',
+      country: 'SA',
       role: 'buyer',
       locale: 'ar',
       billingEntityType: 'business',

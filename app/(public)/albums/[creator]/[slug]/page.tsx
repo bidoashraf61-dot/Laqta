@@ -231,8 +231,10 @@ export default async function AlbumPage({
               albums at the same price.
             */}
             <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1">
-              <span className="numeric font-display text-3xl font-bold text-foreground">
-                {album.clipCount} {t('commerce.clip')}
+              {/* Only the number is LTR-isolated — see the note in
+                  album-card.tsx. At display size the wrong order is glaring. */}
+              <span className="font-display text-3xl font-bold text-foreground">
+                <span className="numeric">{album.clipCount}</span> {t('commerce.clip')}
               </span>
               <span className="text-sm text-muted-foreground">
                 {t('catalogue.runtimeTotal', { duration: formatDuration(album.totalRuntimeS) })}

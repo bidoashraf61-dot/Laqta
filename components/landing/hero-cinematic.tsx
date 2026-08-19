@@ -133,7 +133,17 @@ export function HeroCinematic() {
       if (disposed) return
 
       const duration = video.duration
-      if (video.readyState >= 2 && Number.isFinite(duration) && duration > 0) {
+      /*
+       * `>= 1`, not `>= 2`.
+       *
+       * HAVE_METADATA is enough to ISSUE a seek, and issuing one is what makes
+       * the browser fetch the frames. Requiring HAVE_CURRENT_DATA first was a
+       * deadlock in Safari: with `preload="metadata"` it settles at readyState
+       * 1 and waits to be asked for something, so the loop refused to seek, so
+       * it was never asked, so it stayed at 1. Chrome hid this by speculatively
+       * buffering to readyState 4 on its own.
+       */
+      if (video.readyState >= 1 && Number.isFinite(duration) && duration > 0) {
         const want = clamp(target, 0, duration)
         const now = performance.now()
         // Busy only while the ELEMENT says so, and only until the deadline.
@@ -213,7 +223,15 @@ export function HeroCinematic() {
         played.then(() => video.pause()).catch(() => {})
       }
     }
-    video.addEventListener('loadeddata', prime, { once: true })
+    /*
+     * `loadedmetadata`, not `loadeddata`.
+     *
+     * `loadeddata` fires at readyState 2 — which is the state Safari never
+     * reaches unprompted, so the priming play() that exists specifically FOR
+     * Safari was the one thing Safari never ran. `loadedmetadata` fires at
+     * readyState 1 and is therefore reached in every browser.
+     */
+    video.addEventListener('loadedmetadata', prime, { once: true })
 
     measure()
 

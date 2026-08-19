@@ -204,8 +204,17 @@ export function AlbumCard({
             what the price is FOR, so it leads.
           */}
           <p className="pointer-events-none flex items-baseline gap-2 text-off-white/80">
-            <span className="numeric text-sm font-bold text-off-white">
-              {album.clipCount} {t('commerce.clip')}
+            {/*
+              Only the NUMBER is LTR-isolated, not the phrase.
+
+              `.numeric` sets `direction: ltr`, so wrapping «16 لقطة» in it laid
+              the two out left-to-right as one box — and an Arabic reader,
+              coming from the right, met «لقطة» before the number. Isolating
+              just the digits leaves the phrase in RTL flow, so it reads
+              «16 لقطة» the way it is spoken.
+            */}
+            <span className="text-sm font-bold text-off-white">
+              <span className="numeric">{album.clipCount}</span> {t('commerce.clip')}
             </span>
             <span className="text-xs">·</span>
             <span className="text-xs">{orientationLabel(album.orientation)}</span>

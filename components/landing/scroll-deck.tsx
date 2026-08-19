@@ -58,10 +58,15 @@ export function ScrollDeck({ children, label }: { children: React.ReactNode; lab
 
     let raf = 0
     let disposed = false
+    let running = false
+    let lastTransform = ''
+    let lastIndex = -1
 
     const clear = () => {
       track.style.transform = ''
       setActive(0)
+      lastTransform = ''
+      lastIndex = -1
     }
 
     const measure = () => {
@@ -73,20 +78,64 @@ export function ScrollDeck({ children, label }: { children: React.ReactNode; lab
       const progress = Math.min(1, Math.max(0, -deck.getBoundingClientRect().top / scrollable))
       const distance = track.scrollWidth - window.innerWidth
       // Negative in LTR (the track moves left), positive in RTL.
-      track.style.transform = `translate3d(${(rtl ? 1 : -1) * progress * distance}px, 0, 0)`
-      setActive(Math.min(panels - 1, Math.round(progress * (panels - 1))))
+      const transform = `translate3d(${(rtl ? 1 : -1) * progress * distance}px, 0, 0)`
+
+      /*
+       * Only WRITE when the value actually changed.
+       *
+       * Assigning the same transform string still dirties style and costs a
+       * recalculation, so an unconditional write is 60 recalcs a second for a
+       * page that is standing still.
+       */
+      if (transform !== lastTransform) {
+        track.style.transform = transform
+        lastTransform = transform
+      }
+
+      const index = Math.min(panels - 1, Math.round(progress * (panels - 1)))
+      if (index !== lastIndex) {
+        setActive(index)
+        lastIndex = index
+      }
     }
 
     const tick = () => {
-      if (disposed) return
+      if (disposed || !running) return
       measure()
       raf = requestAnimationFrame(tick)
     }
 
-    // rAF rather than reacting to each scroll event: the transform is read back
-    // from layout every frame anyway, and a scroll handler that writes styles
-    // interleaves reads and writes into a layout thrash.
-    raf = requestAnimationFrame(tick)
+    /*
+     * The loop runs only while the deck is on screen.
+     *
+     * It used to run for the entire life of the page: a requestAnimationFrame
+     * every frame, reading `getBoundingClientRect` and writing a transform, for
+     * a section that is three screens down and usually not in view at all.
+     * Together with the hero's own loop that was 120 rAF callbacks and 60 style
+     * recalculations per second on a page nobody was touching — which is felt
+     * as the whole site being slow, not as this one section being slow.
+     */
+    const start = () => {
+      if (running || disposed) return
+      running = true
+      raf = requestAnimationFrame(tick)
+    }
+    const stop = () => {
+      running = false
+      cancelAnimationFrame(raf)
+    }
+
+    const visibility = new IntersectionObserver(
+      (entries) => (entries.some((e) => e.isIntersecting) ? start() : stop()),
+      // A screen of margin, so the track is already positioned correctly by the
+      // time the deck's first pixel appears.
+      { rootMargin: '100% 0px' },
+    )
+    visibility.observe(deck)
+
+    // A background tab should not animate at all.
+    const onVisibilityChange = () => (document.hidden ? stop() : undefined)
+    document.addEventListener('visibilitychange', onVisibilityChange)
 
     const onChange = () => measure()
     pinned.addEventListener('change', onChange)
@@ -94,7 +143,9 @@ export function ScrollDeck({ children, label }: { children: React.ReactNode; lab
 
     return () => {
       disposed = true
-      cancelAnimationFrame(raf)
+      stop()
+      visibility.disconnect()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       pinned.removeEventListener('change', onChange)
       reduced.removeEventListener('change', onChange)
     }

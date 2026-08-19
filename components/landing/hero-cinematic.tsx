@@ -51,6 +51,9 @@ export function HeroCinematic() {
     let disposed = false
     let seekIssuedAt = 0
     let recovered = false
+    let running = false
+    let lastRailOpacity = ''
+    let lastRailIndex = -1
 
     /*
      * How long a seek may be outstanding before we issue another.
@@ -102,15 +105,26 @@ export function HeroCinematic() {
        */
       if (rail) {
         const RAIL_START = 0.3
-        rail.style.opacity = String(clamp((progress - RAIL_START) / 0.08))
+        const opacity = String(clamp((progress - RAIL_START) / 0.08))
+        // Writing the same value still dirties style and costs a recalculation.
+        if (opacity !== lastRailOpacity) {
+          rail.style.opacity = opacity
+          lastRailOpacity = opacity
+        }
+
         const items = rail.children
         const span = (1 - RAIL_START) / items.length
         const index = clamp(Math.floor((progress - RAIL_START) / span), 0, items.length - 1)
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i] as HTMLElement
-          // `data-state` rather than a class: three states, and the CSS reads
-          // more like the thing it describes.
-          item.dataset.state = i === index ? 'on' : i < index ? 'past' : 'ahead'
+        // Four attribute writes per scroll event, every scroll event, is how a
+        // decorative rail ends up costing more than the film it sits on.
+        if (index !== lastRailIndex) {
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i] as HTMLElement
+            // `data-state` rather than a class: three states, and the CSS reads
+            // more like the thing it describes.
+            item.dataset.state = i === index ? 'on' : i < index ? 'past' : 'ahead'
+          }
+          lastRailIndex = index
         }
       }
     }
@@ -136,8 +150,37 @@ export function HeroCinematic() {
         }
       }
 
+      if (running) raf = requestAnimationFrame(tick)
+    }
+
+    /*
+     * The scrub loop runs only while the hero is on screen.
+     *
+     * It used to run for the life of the page — a requestAnimationFrame every
+     * frame reading `video.duration` and `currentTime`, long after the film had
+     * scrolled away. There is nothing to scrub when the hero is not visible,
+     * and a loop that never stops is felt as the whole site being slow rather
+     * than as this one section being slow.
+     */
+    const start = () => {
+      if (running || disposed) return
+      running = true
       raf = requestAnimationFrame(tick)
     }
+    const stop = () => {
+      running = false
+      cancelAnimationFrame(raf)
+    }
+
+    const visibility = new IntersectionObserver(
+      (entries) => (entries.some((e) => e.isIntersecting) ? start() : stop()),
+      { rootMargin: '50% 0px' },
+    )
+    visibility.observe(wrap)
+
+    // A background tab has nothing to scrub either.
+    const onVisibilityChange = () => (document.hidden ? stop() : start())
+    document.addEventListener('visibilitychange', onVisibilityChange)
 
     /*
      * Decoder recovery.
@@ -173,11 +216,12 @@ export function HeroCinematic() {
     video.addEventListener('loadeddata', prime, { once: true })
 
     measure()
-    raf = requestAnimationFrame(tick)
 
     return () => {
       disposed = true
-      cancelAnimationFrame(raf)
+      stop()
+      visibility.disconnect()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', measure)
       video.removeEventListener('error', onError)

@@ -602,13 +602,21 @@
     "profileCountry": "Nationality",
     "profileMember": "Member since",
     "profileNotSet": "Not added",
-    "profileEdit": "Edit details",
+    "profileEdit": "Edit your details",
     "profileVerified": "Verified",
     "profileUnverified": "Unverified",
     "hubLibraryBody": "Every album you have bought, ready to download at original quality.",
     "hubBoardsBody": "Shortlist shots and share them with your team before buying.",
     "hubPurchasesBody": "Your orders and tax invoices, and the status of every payment.",
     "hubDownloadsBody": "Download history: what was taken, when, and from which album.",
-    "hubSecurityBody": "Password, two-factor verification, and registered devices."
+    "hubSecurityBody": "Password, two-factor verification, and registered devices.",
+    "profileSaved": "Your details have been saved.",
+    "profileInvalid": "Check the fields: a name is required, and the email must be valid.",
+    "profileEmailTaken": "That email is already used by another account.",
+    "profilePhoneTaken": "That number is already used by another account.",
+    "profileEmailHint": "Your email is your sign-in. Changing it clears its verification until you confirm it again.",
+    "profilePhoneHint": "Used to sign in with a one-time code. Changing it clears its verification.",
+    "profileCountryNone": "Prefer not to say",
+    "profileCredentialWarning": "Your email and mobile are how you sign in. Changing either clears its verification until you confirm it again — make sure you can still receive on it before saving."
   }
 }

@@ -19,3 +19,20 @@ export function countryName(code: string): string {
     return code
   }
 }
+
+/**
+ * The countries offered in the nationality picker.
+ *
+ * Not every country on earth: a 200-item select is a scroll, not a choice.
+ * These are the markets this catalogue's buyers and creators actually come
+ * from — the GCC, the wider Arab world, and the three places agencies working
+ * on Saudi campaigns tend to be headquartered.
+ *
+ * `countryName` renders each in the reader's own language, so the list needs no
+ * translation of its own and cannot drift between the two storefronts.
+ */
+export const COUNTRIES = [
+  'SA', 'AE', 'KW', 'QA', 'BH', 'OM',
+  'EG', 'JO', 'LB', 'SY', 'IQ', 'YE', 'SD', 'MA', 'TN', 'DZ', 'LY', 'PS',
+  'GB', 'US', 'FR', 'DE', 'IN', 'PK', 'PH', 'TR',
+] as const

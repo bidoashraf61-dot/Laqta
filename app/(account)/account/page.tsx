@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { formatDate, t } from '@/lib/i18n'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageTitle } from '@/components/ui/typography'
 import { UserText } from '@/components/ui/bilingual'
@@ -110,8 +111,11 @@ export default async function AccountPage() {
 
       {/* ── Who you are ──────────────────────────────────────────────────── */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
           <CardTitle as="h2">{t('account.profileTitle')}</CardTitle>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/account/profile">{t('account.profileEdit')}</Link>
+          </Button>
         </CardHeader>
         <CardContent className="flex flex-col gap-6 sm:flex-row sm:items-start">
           {user?.image ? (

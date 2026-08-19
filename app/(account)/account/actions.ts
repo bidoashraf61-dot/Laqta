@@ -1,0 +1,133 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { z } from 'zod'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { t } from '@/lib/i18n'
+import { requestLocale } from '@/lib/locale-request'
+import type { ActionResult } from '@/components/dashboard/form'
+
+/**
+ * Edit the account's own details.
+ *
+ * ── What is editable here, and what deliberately is not ─────────────────────
+ * Name and nationality are plain profile data and change freely.
+ *
+ * Email and mobile are LOGIN CREDENTIALS — both are unique, and both are a
+ * sign-in rail (email/password and phone OTP). Changing either therefore does
+ * two things beyond writing the column: it clears that channel's verified
+ * stamp, so the account cannot claim a verification it has not passed, and it
+ * refuses a value already attached to another account rather than surfacing a
+ * database uniqueness error.
+ *
+ * Clearing the stamp is the important half. Without it, someone could point a
+ * verified account at an address they do not control and inherit the trust the
+ * old address had earned — which is how account recovery gets abused.
+ *
+ * ── Why the photo is not here ───────────────────────────────────────────────
+ * `User.image` is a URL, and this product has no upload pipeline yet — storage
+ * is behind a driver with a local stand-in (see lib/storage.ts). A file input
+ * that cannot store a file is worse than no file input, so the avatar stays as
+ * it is until that exists.
+ */
+
+const Profile = z.object({
+  name: z.string().trim().min(2).max(80),
+  // Kept loose on purpose: E.164 covers the world, and a stricter Saudi-only
+  // pattern would reject the agency staff who sign up on a Gulf or UK number.
+  phone: z
+    .string()
+    .trim()
+    .regex(/^\+?[0-9\s-]{7,20}$/)
+    .optional()
+    .or(z.literal('')),
+  email: z.string().trim().email().max(160),
+  // ISO 3166-1 alpha-2. Empty means "prefer not to say", which is a real
+  // answer and not a validation failure.
+  country: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z]{2}$/)
+    .optional()
+    .or(z.literal('')),
+})
+
+/**
+ * `(previous, formData)` — the shape `useActionState` passes, which is what
+ * `SettingsForm` is built on. The previous state is unused: this form either
+ * saves or explains why it did not, and has nothing to carry between attempts.
+ *
+ * The message comes back RESOLVED rather than as a key, because the component
+ * that renders it is a client component and cannot reach the server's
+ * translation store — the same rule as everywhere else in this codebase. The
+ * locale is seeded from the request header first; a server action is its own
+ * render pass and does not inherit the page's.
+ */
+export async function updateProfile(
+  _previous: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  await requestLocale()
+
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) return { ok: false, message: t('auth.signIn') }
+
+  const parsed = Profile.safeParse({
+    name: formData.get('name') ?? '',
+    phone: formData.get('phone') ?? '',
+    email: formData.get('email') ?? '',
+    country: formData.get('country') ?? '',
+  })
+  if (!parsed.success) return { ok: false, message: t('account.profileInvalid') }
+
+  const current = await db.user.findUnique({
+    where: { id: userId },
+    select: { email: true, phone: true },
+  })
+  if (!current) return { ok: false, message: t('state.error') }
+
+  const email = parsed.data.email.toLowerCase()
+  const phone = parsed.data.phone ? parsed.data.phone.replace(/[\s-]/g, '') : null
+
+  // Uniqueness checked here so the reader gets a sentence rather than a 500.
+  if (email !== current.email) {
+    const taken = await db.user.findFirst({ where: { email, NOT: { id: userId } }, select: { id: true } })
+    if (taken) return { ok: false, message: t('account.profileEmailTaken') }
+  }
+  if (phone && phone !== current.phone) {
+    const taken = await db.user.findFirst({ where: { phone, NOT: { id: userId } }, select: { id: true } })
+    if (taken) return { ok: false, message: t('account.profilePhoneTaken') }
+  }
+
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      name: parsed.data.name,
+      country: parsed.data.country ? parsed.data.country.toUpperCase() : null,
+      email,
+      phone,
+      // A changed credential loses its verification. See the note above.
+      ...(email !== current.email ? { emailVerified: null } : {}),
+      ...(phone !== current.phone ? { phoneVerified: null } : {}),
+    },
+  })
+
+  /*
+   * Redirect on success rather than returning a message.
+   *
+   * `revalidatePath` refreshes the account tree, which remounts this form and
+   * resets `useActionState` — so a success message returned here was wiped
+   * before it could render, and a save that had genuinely worked looked like
+   * nothing had happened.
+   *
+   * Sending the reader back to the hub is the better answer anyway: the
+   * confirmation is their own updated name and nationality on the page, which
+   * is stronger evidence than a sentence claiming it was saved. Failures still
+   * return a message and keep the form and its values.
+   */
+  revalidatePath('/account')
+  redirect('/account')
+}

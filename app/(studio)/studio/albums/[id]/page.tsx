@@ -49,7 +49,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
           <Bilingual ar={album.titleAr} en={album.titleEn} />
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          <span className="numeric">{album.clipCount}</span> {t('studio.clips')} ·{' '}
+          <span className="numeric">{album.clipCount}</span> {t('commerce.clip')} ·{' '}
           <span className="numeric">
             {formatMoney(Number(album.priceStandard), album.currency)}
           </span>

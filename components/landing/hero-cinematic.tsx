@@ -54,6 +54,7 @@ export function HeroCinematic() {
     let running = false
     let lastRailOpacity = ''
     let lastRailIndex = -1
+    let lastRailSeg = -1
 
     /*
      * How long a seek may be outstanding before we issue another.
@@ -93,18 +94,20 @@ export function HeroCinematic() {
       /*
        * The USP rail takes over where the headline leaves off.
        *
-       * It starts fading in at 0.30 — just before the headline is fully gone,
-       * so the two cross rather than leaving a beat of bare film — and then
-       * steps through its points across the rest of the scrub. The film is
-       * doing the arguing by that stage; these are the four facts a viewer
-       * needs alongside it, one at a time rather than as a list nobody reads.
+       * It is a SCRUBBER, not a list: one track down the start edge with a
+       * checkpoint per claim, filling as the film scrubs. Driven by the SAME
+       * progress value as the video, which is what makes it a ruler rather
+       * than a carousel — the marks are positions in the film, so scrolling
+       * back up walks them backwards and drains the track behind you.
        *
-       * Driven by the SAME progress value as the video, which is what makes it
-       * a ruler rather than a carousel: the marks are positions in the film,
-       * so scrolling back up walks them backwards.
+       * It shares the start edge with the headline, so it starts at 0.34 —
+       * AFTER the copy has reached zero at 0.32 — rather than crossing it.
+       * When the two sat on opposite edges they were allowed to overlap; on
+       * the same edge that overlap is just two paragraphs on top of each
+       * other.
        */
       if (rail) {
-        const RAIL_START = 0.3
+        const RAIL_START = 0.34
         const opacity = String(clamp((progress - RAIL_START) / 0.08))
         // Writing the same value still dirties style and costs a recalculation.
         if (opacity !== lastRailOpacity) {
@@ -114,7 +117,9 @@ export function HeroCinematic() {
 
         const items = rail.children
         const span = (1 - RAIL_START) / items.length
-        const index = clamp(Math.floor((progress - RAIL_START) / span), 0, items.length - 1)
+        const walked = (progress - RAIL_START) / span
+        const index = clamp(Math.floor(walked), 0, items.length - 1)
+
         // Four attribute writes per scroll event, every scroll event, is how a
         // decorative rail ends up costing more than the film it sits on.
         if (index !== lastRailIndex) {
@@ -123,8 +128,26 @@ export function HeroCinematic() {
             // `data-state` rather than a class: three states, and the CSS reads
             // more like the thing it describes.
             item.dataset.state = i === index ? 'on' : i < index ? 'past' : 'ahead'
+            // Segments behind the playhead are full, ahead of it are empty.
+            // Only the one under the playhead moves, and it is written below.
+            item.style.setProperty('--seg', i < index ? '1' : '0')
           }
           lastRailIndex = index
+        }
+
+        /*
+         * The live segment — the only thing on the rail that moves every frame.
+         *
+         * Quantised to whole percent. At 2px wide the difference between 41.3%
+         * and 41.6% is not a rendered pixel, and paying for a style write plus
+         * a composite on every scroll event to express it is the cost this
+         * hero cannot carry. One write per percent, at most.
+         */
+        const seg = Math.round(clamp(walked - index) * 100)
+        if (seg !== lastRailSeg) {
+          const item = items[index] as HTMLElement | undefined
+          if (item) item.style.setProperty('--seg', String(seg / 100))
+          lastRailSeg = seg
         }
       }
     }
@@ -323,9 +346,13 @@ export function HeroCinematic() {
             The USP rail.
 
             Absolutely positioned against the stage rather than placed in flow,
-            so it cannot push the headline around while it fades in. It sits at
-            the inline-END edge — the headline owns the start edge — and the
-            marks stack down the side like a ruler with the film as its scale.
+            so it cannot push the headline around while it fades in.
+
+            It sits at the inline-START edge — the RIGHT, in Arabic. It was at
+            the end edge, which put four lines of Arabic on the far LEFT of the
+            frame with the reader's eye on the other side of the screen. The
+            headline owns that edge first and hands it over: the copy is at
+            zero before the rail begins to arrive.
 
             Hidden from assistive tech: every one of these facts is stated in
             full, as ordinary prose, in the sections below. A screen reader
@@ -334,7 +361,10 @@ export function HeroCinematic() {
           */}
           <ul ref={railRef} aria-hidden className="hero-usp-rail" style={{ opacity: 0 }}>
             {[1, 2, 3, 4].map((n) => (
-              <li key={n} data-state="ahead">
+              <li key={n} data-state="ahead" style={{ ['--seg' as string]: 0 }}>
+                {/* The track to the next checkpoint. Its fill is the scrub
+                    position; the last item renders one and CSS hides it. */}
+                <span className="hero-usp-seg" />
                 <span className="hero-usp-tick" />
                 <span className="hero-usp-text">
                   <strong>{t(`landing.usp${n}`)}</strong>

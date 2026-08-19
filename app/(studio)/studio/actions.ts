@@ -6,7 +6,7 @@ import { requireCreator } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { getEarnings, submitForReview, MIN_PAYOUT_USD } from '@/lib/studio'
 import { recordAudit } from '@/lib/audit'
-import { t } from '@/lib/i18n'
+import { actionT } from '@/lib/locale-request'
 
 type Result = { ok: boolean; message?: string }
 
@@ -58,10 +58,11 @@ export async function setAlbumVisibility(
   albumId: string,
   next: 'live' | 'paused',
 ): Promise<Result> {
+  const tr = await actionT()
   const { user, album } = await ownedAlbum(albumId)
-  if (!album) return { ok: false, message: t('studio.albumMissing') }
+  if (!album) return { ok: false, message: tr('studio.albumMissing') }
   if (album.status !== 'live' && album.status !== 'paused') {
-    return { ok: false, message: t('state.error') }
+    return { ok: false, message: tr('state.error') }
   }
 
   await db.album.update({ where: { id: album.id }, data: { status: next } })
@@ -74,7 +75,7 @@ export async function setAlbumVisibility(
 
   revalidatePath('/studio/albums')
   revalidatePath(`/studio/albums/${album.id}`)
-  return { ok: true, message: t('actions.confirm') }
+  return { ok: true, message: tr('actions.confirm') }
 }
 
 /**
@@ -87,8 +88,9 @@ export async function setAlbumVisibility(
  * legitimately change while a request is queued.
  */
 export async function requestPayout(): Promise<Result> {
+  const tr = await actionT()
   const user = await requireCreator()
-  if (!user.creatorId) return { ok: false, message: t('state.forbidden') }
+  if (!user.creatorId) return { ok: false, message: tr('state.forbidden') }
 
   const [creator, earnings, open] = await Promise.all([
     db.creator.findUnique({
@@ -105,10 +107,10 @@ export async function requestPayout(): Promise<Result> {
     }),
   ])
 
-  if (!creator) return { ok: false, message: t('state.notFound') }
-  if (open) return { ok: false, message: t('dash.payoutRequested') }
+  if (!creator) return { ok: false, message: tr('state.notFound') }
+  if (open) return { ok: false, message: tr('dash.payoutRequested') }
   if (earnings.available < MIN_PAYOUT_USD) {
-    return { ok: false, message: t('dash.belowMinimum', { amount: MIN_PAYOUT_USD }) }
+    return { ok: false, message: tr('dash.belowMinimum', { amount: MIN_PAYOUT_USD }) }
   }
 
   const amount = earnings.available
@@ -135,7 +137,7 @@ export async function requestPayout(): Promise<Result> {
 
   revalidatePath('/studio/payouts')
   revalidatePath('/studio/earnings')
-  return { ok: true, message: t('dash.payoutRequested') }
+  return { ok: true, message: tr('dash.payoutRequested') }
 }
 
 /** ASCII slug from the English title, since the slug lives in a URL. */
@@ -156,23 +158,24 @@ function slugify(value: string) {
  * the tier is re-derived from the real clip count before review.
  */
 export async function createAlbum(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
   const user = await requireCreator()
-  if (!user.creatorId) return { ok: false, message: t('state.forbidden') }
+  if (!user.creatorId) return { ok: false, message: tr('state.forbidden') }
 
   const titleAr = String(formData.get('titleAr') ?? '').trim()
   const titleEn = String(formData.get('titleEn') ?? '').trim()
   const tier = String(formData.get('tier') ?? 'standard')
 
-  if (!titleAr) return { ok: false, message: t('studio.titleArRequired') }
-  if (!titleEn) return { ok: false, message: t('studio.titleEnRequired') }
+  if (!titleAr) return { ok: false, message: tr('studio.titleArRequired') }
+  if (!titleEn) return { ok: false, message: tr('studio.titleEnRequired') }
   if (!['mini', 'standard', 'pro', 'signature'].includes(tier)) {
-    return { ok: false, message: t('state.error') }
+    return { ok: false, message: tr('state.error') }
   }
 
   const band = await db.priceBand.findUnique({
     where: { tier: tier as 'mini' | 'standard' | 'pro' | 'signature' },
   })
-  if (!band) return { ok: false, message: t('state.error') }
+  if (!band) return { ok: false, message: tr('state.error') }
 
   const base = slugify(titleEn) || 'album'
   let slug = base
@@ -222,16 +225,17 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
  * gate actually reads.
  */
 export async function createRelease(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
   const user = await requireCreator()
-  if (!user.creatorId) return { ok: false, message: t('state.forbidden') }
+  if (!user.creatorId) return { ok: false, message: tr('state.forbidden') }
 
   const type = String(formData.get('type') ?? 'model')
   if (!['model', 'property', 'permit'].includes(type)) {
-    return { ok: false, message: t('state.error') }
+    return { ok: false, message: tr('state.error') }
   }
 
   const subjectName = String(formData.get('subjectName') ?? '').trim()
-  if (!subjectName) return { ok: false, message: t('dash.releaseSubject') }
+  if (!subjectName) return { ok: false, message: tr('dash.releaseSubject') }
 
   const validFrom = String(formData.get('validFrom') ?? '')
   const validTo = String(formData.get('validTo') ?? '')
@@ -261,7 +265,7 @@ export async function createRelease(_state: Result | null, formData: FormData): 
   })
 
   revalidatePath('/studio/releases')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 /**
@@ -274,14 +278,15 @@ export async function createRelease(_state: Result | null, formData: FormData): 
  * both guessable.
  */
 export async function setReleaseClips(releaseId: string, clipIds: string[]): Promise<Result> {
+  const tr = await actionT()
   const user = await requireCreator()
-  if (!user.creatorId) return { ok: false, message: t('state.forbidden') }
+  if (!user.creatorId) return { ok: false, message: tr('state.forbidden') }
 
   const release = await db.release.findFirst({
     where: { id: releaseId, creatorId: user.creatorId },
     select: { id: true },
   })
-  if (!release) return { ok: false, message: t('state.notFound') }
+  if (!release) return { ok: false, message: tr('state.notFound') }
 
   const owned = await db.clip.findMany({
     where: { id: { in: clipIds }, album: { creatorId: user.creatorId } },
@@ -304,15 +309,16 @@ export async function setReleaseClips(releaseId: string, clipIds: string[]): Pro
   })
 
   revalidatePath('/studio/releases')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 const HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]{1,38}$/
 
 /** Public profile — what a buyer sees on the creator page. */
 export async function updateProfile(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
   const user = await requireCreator()
-  if (!user.creatorId) return { ok: false, message: t('state.forbidden') }
+  if (!user.creatorId) return { ok: false, message: tr('state.forbidden') }
 
   const handle = String(formData.get('handle') ?? '')
     .trim()
@@ -320,14 +326,14 @@ export async function updateProfile(_state: Result | null, formData: FormData): 
   const displayNameAr = String(formData.get('displayNameAr') ?? '').trim()
   const displayNameEn = String(formData.get('displayNameEn') ?? '').trim()
 
-  if (!displayNameAr || !displayNameEn) return { ok: false, message: t('dash.displayNameAr') }
-  if (!HANDLE_PATTERN.test(handle)) return { ok: false, message: t('dash.handleHint') }
+  if (!displayNameAr || !displayNameEn) return { ok: false, message: tr('dash.displayNameAr') }
+  if (!HANDLE_PATTERN.test(handle)) return { ok: false, message: tr('dash.handleHint') }
 
   const taken = await db.creator.findFirst({
     where: { handle, NOT: { id: user.creatorId } },
     select: { id: true },
   })
-  if (taken) return { ok: false, message: t('dash.handleHint') }
+  if (taken) return { ok: false, message: tr('dash.handleHint') }
 
   await db.creator.update({
     where: { id: user.creatorId },
@@ -349,7 +355,7 @@ export async function updateProfile(_state: Result | null, formData: FormData): 
 
   revalidatePath('/studio/settings')
   revalidatePath(`/creators/${handle}`)
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 /**
@@ -362,12 +368,13 @@ export async function updatePayoutDetails(
   _state: Result | null,
   formData: FormData,
 ): Promise<Result> {
+  const tr = await actionT()
   const user = await requireCreator()
-  if (!user.creatorId) return { ok: false, message: t('state.forbidden') }
+  if (!user.creatorId) return { ok: false, message: tr('state.forbidden') }
 
   const method = String(formData.get('payoutMethod') ?? 'iban')
   if (!['iban', 'payoneer', 'wise'].includes(method)) {
-    return { ok: false, message: t('state.error') }
+    return { ok: false, message: tr('state.error') }
   }
 
   const iban =
@@ -379,10 +386,10 @@ export async function updatePayoutDetails(
 
   // The chosen rail must actually be reachable, or the first payout run fails
   // inside an export file rather than here, where it can still be fixed.
-  if (method === 'iban' && !iban) return { ok: false, message: t('dash.iban') }
+  if (method === 'iban' && !iban) return { ok: false, message: tr('dash.iban') }
   if (method === 'payoneer' && !payoneerEmail)
-    return { ok: false, message: t('dash.payoneerEmail') }
-  if (method === 'wise' && !wiseEmail) return { ok: false, message: t('dash.wiseEmail') }
+    return { ok: false, message: tr('dash.payoneerEmail') }
+  if (method === 'wise' && !wiseEmail) return { ok: false, message: tr('dash.wiseEmail') }
 
   await db.creator.update({
     where: { id: user.creatorId },
@@ -409,5 +416,5 @@ export async function updatePayoutDetails(
   })
 
   revalidatePath('/studio/settings')
-  return { ok: true, message: t('dash.saved') }
+  return { ok: true, message: tr('dash.saved') }
 }

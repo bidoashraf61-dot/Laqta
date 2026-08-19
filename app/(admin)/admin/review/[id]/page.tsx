@@ -79,7 +79,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
             {t('commerce.byCreator', { creator: task.album.creator.displayNameAr })}
           </UserText>{' '}
           · <span className="ltr-island">{task.album.creator.country}</span> ·{' '}
-          <span className="numeric">{task.album.clipCount}</span> {t('studio.clips')} ·{' '}
+          <span className="numeric">{task.album.clipCount}</span> {t('commerce.clip')} ·{' '}
           <span className="numeric">
             {formatMoney(Number(task.album.priceStandard), task.album.currency)}
           </span>

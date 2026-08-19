@@ -43,3 +43,6 @@ build/
 !/public/hero/
 !/public/hero/*.jpg
 *.tsbuildinfo
+
+# Playwright MCP scratch output
+.playwright-mcp/

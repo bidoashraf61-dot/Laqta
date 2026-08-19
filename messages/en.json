@@ -617,6 +617,22 @@
     "profileEmailHint": "Your email is your sign-in. Changing it clears its verification until you confirm it again.",
     "profilePhoneHint": "Used to sign in with a one-time code. Changing it clears its verification.",
     "profileCountryNone": "Prefer not to say",
-    "profileCredentialWarning": "Your email and mobile are how you sign in. Changing either clears its verification until you confirm it again — make sure you can still receive on it before saving."
+    "profileCredentialWarning": "Your email and mobile are how you sign in. Changing either clears its verification until you confirm it again — make sure you can still receive on it before saving.",
+    "verifySendEmail": "Send verification link",
+    "verifySendCode": "Send verification code",
+    "verifyConfirm": "Confirm",
+    "verifyCodeLabel": "Verification code",
+    "verifyEmailSent": "We sent a verification link to your email. It is valid for thirty minutes.",
+    "verifyCodeSent": "We sent a code to your mobile. It is valid for ten minutes.",
+    "verifyEmailNotConfigured": "Email delivery is not configured yet. Use this link to verify your address:",
+    "verifyCodeNotConfigured": "SMS delivery is not configured yet. Here is your code:",
+    "verifyCodeInvalid": "The code is digits only.",
+    "verifyCodeWrong": "That code is wrong or has expired. Ask for a new one.",
+    "verifyNoEmail": "There is no email on your account. Add one first from Edit your details.",
+    "verifyNoPhone": "There is no mobile on your account. Add one first from Edit your details.",
+    "verifyAlready": "This channel is already verified.",
+    "verifiedEmail": "Your email address is verified.",
+    "verifiedFailed": "That verification link is invalid or has expired. Ask for a new one.",
+    "verifyTitle": "Verifying your login channels"
   }
 }

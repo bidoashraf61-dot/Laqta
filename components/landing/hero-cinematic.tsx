@@ -162,7 +162,8 @@ export function HeroCinematic() {
     window.addEventListener('resize', measure)
 
     // Prime the decoder so the first seek paints instead of showing black.
-    // iOS will not render a muted video that has been seeked but never played.
+    // Safari — on the phone AND on the desktop — will not render a muted video
+    // that has been seeked but never played.
     const prime = () => {
       const played = video.play()
       if (played && typeof played.then === 'function') {
@@ -195,7 +196,20 @@ export function HeroCinematic() {
             poster="/hero/00-window-NIGHT.jpg"
             muted
             playsInline
-            preload="auto"
+            /*
+             * `metadata`, not `auto`.
+             *
+             * `auto` tells the browser to fetch the ENTIRE file as fast as it
+             * can — 30MB on desktop — before anything else on the page gets
+             * bandwidth. The landing page was pulling 41MB of video in its
+             * first six seconds while the reader watched a poster.
+             *
+             * A scrub does not need the whole file; it needs the duration and
+             * the seek index, which is what `metadata` fetches. The encodes are
+             * faststart (moov atom at the front), so that is a few KB, and the
+             * browser then range-requests only the parts actually scrubbed to.
+             */
+            preload="metadata"
             aria-hidden
           />
           {/* No watermark on the hero, deliberately — the one exception to the

@@ -101,7 +101,16 @@ export function AutoplayVideo({
         muted
         loop
         playsInline
-        preload="metadata"
+        /*
+         * `none`. This component already waits for the element to scroll into
+         * view before it plays, so preloading anything is fetching for a
+         * moment that may never come — and on the landing page it sits below
+         * a full-screen hero, so it almost never does on a first visit.
+         *
+         * The poster carries the frame until then, which is the whole reason
+         * a poster exists.
+         */
+        preload="none"
         aria-label={label}
         className="size-full object-cover"
       />

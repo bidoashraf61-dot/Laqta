@@ -155,6 +155,14 @@ payout requests ─→ PayoutRun ─→ bank file (CSV) ─→ mark run paid
   Coverage, and the "Dead ends worth knowing" list, which this spec closes three
   of.
 
+## Relationship to Spec D
+
+Spec D (content control) turns the admin area into a CMS and supersedes part of
+this one: the price-band editor built here becomes the editor D exposes
+alongside the other operating constants, and `/admin/merchandising` is deleted
+by D rather than extended. Build C as written — D layers on top and removes what
+it replaces.
+
 ## Deliberately not in scope
 
 Team seats and multi-user accounts (deferred). The business/enterprise entry

@@ -15,9 +15,17 @@ import { db } from '@/lib/db'
  * possible failure: a screen that says "check your inbox" for a message that
  * was never sent, and a support ticket nobody can reproduce.
  */
-export async function sendMail(to: string, subject: string, body: string) {
+export type Attachment = { filename: string; content: Buffer }
+
+export async function sendMail(
+  to: string,
+  subject: string,
+  body: string,
+  attachments: Attachment[] = [],
+) {
   if (!process.env.MAIL_PROVIDER || !process.env.MAIL_API_KEY) {
-    console.info(`[mail] to ${to} — ${subject}\n${body}\n(no mail provider configured)`)
+    const files = attachments.length ? `\n(+${attachments.length} attachment(s))` : ''
+    console.info(`[mail] to ${to} — ${subject}\n${body}${files}\n(no mail provider configured)`)
     return false
   }
   // Provider integration lands with the payments/SMS vendor selection.
@@ -61,6 +69,16 @@ export async function issueEmailVerification(userId: string, email: string, orig
   })
 
   const link = `${origin}/account/verify-email?token=${token}`
+
+  /*
+   * Sent directly rather than queued, deliberately.
+   *
+   * The outbox exists so a mail failure cannot roll back a purchase. Here the
+   * mail IS the operation — there is no transaction to protect and nothing to
+   * undo — and the caller shows the reader the outcome immediately, including
+   * the development link when no provider is configured. Queuing would put a
+   * drain between the click and that answer for no gain.
+   */
   const delivered = await sendMail(
     email,
     'تأكيد بريدك الإلكتروني — لقطة',
@@ -94,3 +112,6 @@ export async function consumeEmailVerification(token: string) {
   await db.user.update({ where: { id: userId }, data: { emailVerified: new Date() } })
   return { userId, email }
 }
+
+/** Whether a provider is wired. Surfaced on /admin/settings beside storage. */
+export const mailConfigured = Boolean(process.env.MAIL_PROVIDER && process.env.MAIL_API_KEY)

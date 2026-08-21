@@ -29,7 +29,8 @@ Two invariants govern this area and are restated in the specs that touch them:
 | `/account` | Account hub: role badge and cards naming the other surfaces (cards are inert; only the security link works). | [account.md](./account.md) |
 | `/account/profile` | Edit name, email, mobile and country; verify either login channel. | [account-profile.md](./account-profile.md) |
 | `/account/library` | Everything the user owns, one card per entitlement, from the frozen manifest. | [account-library.md](./account-library.md) |
-| `/account/library/[id]` | Download surface for one purchased album: ZIP plus per-clip master and proxy links. | [account-library-id.md](./account-library-id.md) |
+| `/account/library/[id]` | Download surface for one purchased album: ZIP, per-clip master and proxy links, and the licence certificate. | [account-library-id.md](./account-library-id.md) |
+| `/account/certificates/[orderItemId]` | The licence certificate PDF for one purchased album. Route handler. | [../api/certificates.md](../api/certificates.md) |
 | `/account/purchases` | Order history table — number, date, total, invoice, status. Read-only. | [account-purchases.md](./account-purchases.md) |
 | `/account/downloads` | Redemption log, latest 200. Read-only. | [account-downloads.md](./account-downloads.md) |
 | `/account/boards` | Lists the user's clip boards and their share state. No create/edit controls exist. | [account-boards.md](./account-boards.md) |

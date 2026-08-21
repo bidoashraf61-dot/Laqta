@@ -1,6 +1,6 @@
 import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
-import { Download, Info } from 'lucide-react'
+import { Download, FileText, Info } from 'lucide-react'
 import { requireUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { downloadUrl } from '@/lib/storage'
@@ -49,7 +49,9 @@ export default async function LibraryAlbumPage({ params }: { params: Promise<{ i
       album: { select: { titleAr: true, titleEn: true } },
       orderItem: {
         select: {
+          id: true,
           clipManifestSnapshot: true,
+          certificate: { select: { certificateNumber: true } },
           order: { select: { orderNumber: true, status: true } },
         },
       },
@@ -91,18 +93,41 @@ export default async function LibraryAlbumPage({ params }: { params: Promise<{ i
       </Alert>
 
       {paid ? (
-        <Button asChild variant="outline">
-          <Link
-            href={downloadUrl({
-              key: `albums/${entitlement.albumId}.zip`,
-              entitlementId: entitlement.id,
-              clipId: null,
-            })}
-          >
-            <Download />
-            {t('library.downloadAll')}
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          {/* A plain anchor, not next/link. Every download target is a route
+              handler that redirects to storage; the client router fetches an
+              RSC payload for it, fails, and falls back to a browser navigation
+              — a wasted round trip and a console error on the one page that
+              hands over what someone paid for. */}
+          <Button asChild variant="outline">
+            <a
+              href={downloadUrl({
+                key: `albums/${entitlement.albumId}.zip`,
+                entitlementId: entitlement.id,
+                clipId: null,
+              })}
+            >
+              <Download />
+              {t('library.downloadAll')}
+            </a>
+          </Button>
+
+          {/* The document a buyer submits when someone claims their footage.
+              A plain anchor: it opens a PDF from a route handler, which the
+              client router has no business trying to treat as a page. */}
+          {entitlement.orderItem.certificate ? (
+            <Button asChild variant="outline">
+              <a
+                href={`/account/certificates/${entitlement.orderItem.id}`}
+                target="_blank"
+                rel="noopener"
+              >
+                <FileText />
+                {t('library.licencesTitle')}
+              </a>
+            </Button>
+          ) : null}
+        </div>
       ) : null}
 
       <ul className="divide-y rounded-lg border">
@@ -114,16 +139,14 @@ export default async function LibraryAlbumPage({ params }: { params: Promise<{ i
 
             {paid && clip.masterKey ? (
               <Button asChild variant="outline" size="sm">
-                <Link
-                  href={downloadUrl({
+                <a href={downloadUrl({
                     key: clip.masterKey,
                     entitlementId: entitlement.id,
                     clipId: clip.id,
-                  })}
-                >
+                  })}>
                   <Download />
                   {t('library.downloadClip')}
-                </Link>
+                </a>
               </Button>
             ) : null}
 
@@ -131,15 +154,13 @@ export default async function LibraryAlbumPage({ params }: { params: Promise<{ i
                 only pull the 4GB original once the edit is locked. */}
             {paid && clip.proxyKey ? (
               <Button asChild variant="ghost" size="sm">
-                <Link
-                  href={downloadUrl({
+                <a href={downloadUrl({
                     key: clip.proxyKey,
                     entitlementId: entitlement.id,
                     clipId: clip.id,
-                  })}
-                >
+                  })}>
                   {t('library.downloadProxy')}
-                </Link>
+                </a>
               </Button>
             ) : null}
 

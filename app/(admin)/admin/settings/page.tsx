@@ -4,6 +4,8 @@ import { db } from '@/lib/db'
 import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
 import { MIN_PAYOUT_USD } from '@/lib/studio'
 import { storageConfigured } from '@/lib/storage'
+import { mailConfigured } from '@/lib/mail'
+import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import {
@@ -59,12 +61,18 @@ export default async function AdminSettingsPage() {
 
   await requireAdmin()
 
-  const [licence, recentAudit] = await Promise.all([
+  const [licence, recentAudit, mailPending, mailSent, mailFailed] = await Promise.all([
     db.licenceVersion.findFirst({ orderBy: { createdAt: 'desc' } }),
     db.auditLog.findMany({
       orderBy: { createdAt: 'desc' },
       take: 15,
       include: { actor: { select: { name: true, email: true } } },
+    }),
+    db.mailOutbox.count({ where: { sentAt: null, failedAt: null } }),
+    db.mailOutbox.count({ where: { sentAt: { not: null } } }),
+    // Failed = permanently parked, or out of attempts. Both need a human.
+    db.mailOutbox.count({
+      where: { OR: [{ failedAt: { not: null } }, { sentAt: null, attempts: { gte: 5 } }] },
     }),
   ])
 
@@ -134,6 +142,43 @@ export default async function AdminSettingsPage() {
           ) : (
             <p className="text-sm text-muted-foreground">{t('state.empty')}</p>
           )}
+        </Panel>
+
+        {/*
+          Mail, beside storage, because they fail the same way: silently, and
+          only where nobody is looking. With one person operating the platform,
+          "which emails did not go out" has to be answerable from a screen.
+        */}
+        <Panel title={t('dash.mail')}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              {mailConfigured ? t('dash.mailReady') : t('dash.mailNotConfigured')}
+            </p>
+            <Badge variant={mailConfigured ? 'success' : 'warning'}>
+              {mailConfigured ? t('dash.slotActive') : t('dash.slotInactive')}
+            </Badge>
+          </div>
+          <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
+            <div>
+              <dt className="text-muted-foreground">{t('dash.mailPending')}</dt>
+              <dd className="numeric text-lg font-bold">{mailPending}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t('dash.mailSent')}</dt>
+              <dd className="numeric text-lg font-bold">{mailSent}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t('dash.mailFailed')}</dt>
+              <dd
+                className={cn(
+                  'numeric text-lg font-bold',
+                  mailFailed > 0 && 'text-destructive',
+                )}
+              >
+                {mailFailed}
+              </dd>
+            </div>
+          </dl>
         </Panel>
 
         <Panel title={t('dash.storage')}>

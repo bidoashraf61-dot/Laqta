@@ -1,4 +1,7 @@
 import { db } from '@/lib/db'
+import { enqueue, drainSoon } from '@/lib/outbox'
+import { DEFAULT_LOCALE } from '@/lib/locale'
+import { siteUrl } from '@/lib/site'
 import { addBusinessDays } from '@/lib/utils'
 import { emptyChecklist } from '@/lib/review-checklist'
 
@@ -118,6 +121,39 @@ export async function submitForReview(albumId: string) {
       },
     }),
   ])
+
+  /*
+   * Tell the operator something arrived.
+   *
+   * This is the message that replaces refreshing a dashboard. It goes to
+   * OPERATOR_EMAIL rather than every admin: with one person running the
+   * platform, a distribution list is a configuration burden with no benefit,
+   * and the variable can hold a group address the day there is a team.
+   *
+   * The operator's own language is not knowable from a creator's submission,
+   * so it uses the product default — Arabic — which is also the language the
+   * admin area is written in.
+   */
+  const operator = process.env.OPERATOR_EMAIL
+  if (operator) {
+    const album = await db.album.findUnique({
+      where: { id: albumId },
+      select: { titleAr: true, creator: { select: { displayNameAr: true } } },
+    })
+    if (album) {
+      await enqueue(db, {
+        template: 'review.queued',
+        toEmail: operator,
+        locale: DEFAULT_LOCALE,
+        payload: {
+          album: album.titleAr,
+          creator: album.creator?.displayNameAr ?? '',
+          reviewUrl: siteUrl('/admin/review', DEFAULT_LOCALE),
+        },
+      })
+      drainSoon()
+    }
+  }
 
   return { ok: true, reasons: [] }
 }

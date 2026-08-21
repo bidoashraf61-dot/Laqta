@@ -1407,3 +1407,49 @@ enum AlbumReviewStatus {
   published
   hidden
 }
+
+/// Queued outbound mail.
+///
+/// ── Why a table and not a direct send ──────────────────────────────────────
+/// A message must never be sent from inside the transaction that creates the
+/// thing it describes, and a mail failure must never roll that thing back:
+/// someone who paid owns what they bought whether or not a mail server was
+/// reachable.
+///
+/// Rows are written in the SAME transaction as the order, the review decision
+/// or the price. That makes "the thing happened" and "the email is owed"
+/// atomic — the classic transactional outbox. A sender then drains the table
+/// afterwards, and a failure is retryable and, crucially, *visible*: with one
+/// person operating this platform, "which emails did not go out" has to be a
+/// question the dashboard can answer.
+model MailOutbox {
+  id       String @id @default(cuid())
+  /// Template name, e.g. 'order.confirmed'. A row value, never a schema change.
+  template String
+  toEmail  String
+
+  /// Frozen at write time, NOT resolved when sending.
+  ///
+  /// The sender runs outside any request, so it has no locale header — and
+  /// `t()` reads a store built on React's cache(), which only memoises inside a
+  /// render. Resolving language at send time would answer every recipient in
+  /// Arabic. See lib/locale-request.ts.
+  locale String
+
+  /// Ids and values the template needs. Never rendered copy — the wording is
+  /// resolved at send time from messages/*.json so an edit reaches queued mail.
+  payload Json
+
+  /// Storage keys of documents to attach, resolved at send time.
+  attachments String[] @default([])
+
+  attempts  Int       @default(0)
+  lastError String?
+  sentAt    DateTime?
+  /// Set when the failure is permanent — a bounce is not a transient error and
+  /// must not be retried until the attempt cap burns down.
+  failedAt  DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([sentAt, failedAt, createdAt])
+}

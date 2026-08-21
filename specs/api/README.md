@@ -1,6 +1,6 @@
 # Route handlers
 
-Laqta has exactly two HTTP route handlers. Everything else in the portal is a
+Laqta has a small, fixed set of HTTP route handlers. Everything else in the portal is a
 server component or a server action — there is no REST API, no public JSON
 surface, and no webhook endpoint (the payment driver in `lib/payments.ts`
 settles in-process, so there is nothing for a gateway to call back).
@@ -18,3 +18,4 @@ therefore its own gate.
 Supporting modules: `lib/storage.ts` (HMAC signing and key resolution),
 `lib/auth.ts` + `lib/auth.config.ts` (providers, callbacks, guards),
 `lib/orders.ts` (the frozen manifest that `/api/download` enforces).
+- [`certificates.md`](./certificates.md) — the licence certificate PDF, owner-only

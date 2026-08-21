@@ -46,3 +46,6 @@ build/
 
 # Playwright MCP scratch output
 .playwright-mcp/
+
+# Generated documents (certificates, invoices) — private, never committed
+.documents/

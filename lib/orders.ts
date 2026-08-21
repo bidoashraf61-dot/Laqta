@@ -2,6 +2,10 @@ import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { resolveCommission, vatOn } from '@/lib/commission'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
+import { enqueue, drainSoon } from '@/lib/outbox'
+import { generateCertificate } from '@/lib/certificate'
+import { DEFAULT_LOCALE, isLocale } from '@/lib/locale'
+import { siteUrl } from '@/lib/site'
 
 /**
  * Checkout.
@@ -214,7 +218,10 @@ export async function checkout({
 export async function settleOrder(orderId: string, reference: string) {
   const order = await db.order.findUnique({
     where: { id: orderId },
-    include: { items: true },
+    include: {
+      items: { include: { album: { select: { titleAr: true, titleEn: true } } } },
+      user: { select: { name: true, email: true, locale: true } },
+    },
   })
   if (!order || order.status === 'paid') return
 
@@ -275,7 +282,55 @@ export async function settleOrder(orderId: string, reference: string) {
         uuid: crypto.randomUUID(),
       },
     })
+
+    /*
+     * The confirmation is QUEUED here, in the same transaction that marks the
+     * order paid — so "they paid" and "we owe them an email" become one fact.
+     * It is not SENT here: a mail failure must never roll back a purchase.
+     *
+     * The certificate is not attached yet either. Rendering a PDF launches a
+     * browser, which has no business inside a database transaction; the drain
+     * below attaches it once it exists.
+     */
+    if (order.user?.email) {
+      await enqueue(tx, {
+        template: 'order.confirmed',
+        toEmail: order.user.email,
+        locale: order.user.locale,
+        payload: {
+          name: order.user.name ?? order.user.email,
+          orderNumber: order.orderNumber,
+          albums: order.items
+            .map((item) => `• ${item.album.titleAr}`)
+            .join('\n'),
+          libraryUrl: siteUrl('/account/library', order.user.locale ?? DEFAULT_LOCALE),
+        },
+      })
+    }
   })
+
+  /*
+   * Documents and delivery, after the money is safely committed.
+   *
+   * Every failure here is logged and swallowed. The order is paid, the
+   * entitlement exists, and the buyer can already download from their library
+   * — none of that may be undone because a PDF or an SMTP server misbehaved.
+   */
+  const locale = isLocale(order.user?.locale) ? order.user.locale : DEFAULT_LOCALE
+  const keys = (
+    await Promise.all(order.items.map((item) => generateCertificate(item.id, locale)))
+  ).filter((key): key is string => Boolean(key))
+
+  if (keys.length) {
+    await db.mailOutbox
+      .updateMany({
+        where: { template: 'order.confirmed', sentAt: null, payload: { path: ['orderNumber'], equals: order.orderNumber } },
+        data: { attachments: keys },
+      })
+      .catch((error) => console.error('[orders] could not attach certificates:', error))
+  }
+
+  drainSoon()
 }
 
 /**

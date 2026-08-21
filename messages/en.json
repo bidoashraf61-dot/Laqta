@@ -592,7 +592,13 @@
     "cityEn": "City (English)",
     "searchCreators": "Search by creator name or handle",
     "colCreator": "Creator",
-    "approveCreator": "Approve creator"
+    "approveCreator": "Approve creator",
+    "mail": "Email",
+    "mailReady": "Mail delivery is configured and sending.",
+    "mailNotConfigured": "No mail provider is connected. Messages are queued and not sent.",
+    "mailPending": "Pending",
+    "mailSent": "Sent",
+    "mailFailed": "Failed"
   },
   "account": {
     "profileTitle": "Your details",
@@ -634,5 +640,21 @@
     "verifiedEmail": "Your email address is verified.",
     "verifiedFailed": "That verification link is invalid or has expired. Ask for a new one.",
     "verifyTitle": "Verifying your login channels"
+  },
+  "email": {
+    "orderConfirmedSubject": "Your order is ready — {order}",
+    "orderConfirmedBody": "Hello {name},\n\nOrder {order} is complete, and the following albums are yours to keep:\n\n{albums}\n\nDownload them at original quality from your library:",
+    "orderSettledSubject": "Your transfer is confirmed — {order}",
+    "orderSettledBody": "We have received your transfer for order {order}. Downloads are now open at original quality.",
+    "certificateAttached": "Your licence certificate is attached. Keep it — it is the document you submit if anyone claims rights over your footage.",
+    "certificateFooter": "This certificate evidences a full commercial licence for the material named above. To verify its number, contact Laqta.",
+    "albumApprovedSubject": "Your album is live: {album}",
+    "albumApprovedBody": "“{album}” has been reviewed and published to the library. You can follow its views and sales from the studio.",
+    "albumChangesSubject": "Your album needs changes: {album}",
+    "albumChangesBody": "We reviewed “{album}” and need changes before it can be published. The notes:",
+    "albumPricedSubject": "Your album's price is ready to accept: {album}",
+    "albumPricedBody": "We have set the price for “{album}” at {price}. It will not publish until you accept.",
+    "reviewQueuedSubject": "New album awaiting review: {album}",
+    "reviewQueuedBody": "{creator} submitted “{album}” for review."
   }
 }

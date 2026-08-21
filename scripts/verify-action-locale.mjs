@@ -24,11 +24,20 @@
 import { readFileSync } from 'node:fs'
 import { globSync } from 'node:fs'
 
-const files = globSync(['app/**/*.ts', 'app/**/*.tsx', 'lib/**/*.ts', 'components/**/*.tsx'])
-  .filter((f) => {
+/*
+ * Two populations, one rule.
+ *
+ * Server actions, and everything that renders mail. A background sender has no
+ * request and therefore no render, so `t()` fails there for exactly the same
+ * reason — it just fails later, in a message nobody sees being written.
+ */
+const files = [
+  ...globSync(['app/**/*.ts', 'app/**/*.tsx', 'lib/**/*.ts', 'components/**/*.tsx']).filter((f) => {
     const head = readFileSync(f, 'utf8').slice(0, 200)
     return /^\s*['"]use server['"]/.test(head)
-  })
+  }),
+  ...globSync(['emails/**/*.ts', 'emails/**/*.tsx', 'lib/outbox.ts', 'lib/certificate.ts']),
+]
 
 // A `t(` call that is not `translate(`, not `.t(`, and not part of a longer name.
 const CALL = /(^|[^A-Za-z0-9_.$])t\(/
@@ -52,9 +61,9 @@ for (const file of files) {
   })
 }
 
-console.log(`Checked ${files.length} server-action modules.\n`)
+console.log(`Checked ${files.length} server-action and mail modules.\n`)
 if (findings.length) {
-  console.error('A server action translated with t(). It will answer in Arabic whatever the reader is on:\n')
+  console.error('Translated with t() outside a render. It will answer in Arabic whatever the reader is on:\n')
   for (const f of findings) console.error('  ' + f)
   console.error('\nUse `const tr = await actionT()` (or translate(locale, key)) instead.')
   process.exit(1)

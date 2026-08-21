@@ -42,6 +42,7 @@ downloads restates them, and no surface may work around them:
 - [`api/`](./api) — route handlers
 - [`localisation.md`](./localisation.md) — the Arabic/English contract, cross-cutting
 - [`glossary.md`](./glossary.md) — one word per concept, in both languages
+- [`mail.md`](./mail.md) — the transactional email rail, the outbox and the licence certificate, cross-cutting
 - [`motion.md`](./motion.md) — the entrance system, timing scale and reduced-motion policy, cross-cutting
 
 The two frozen invariants have no separate document: they are stated above, enforced

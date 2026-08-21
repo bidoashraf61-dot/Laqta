@@ -94,3 +94,22 @@ export function resolveKey(key: string) {
 export const storageConfigured = Boolean(
   process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY,
 )
+
+/**
+ * Where generated documents live on disk.
+ *
+ * Deliberately NOT under `public/`. A licence certificate carries the buyer's
+ * legal name and what they bought; anything in `public/` is served by filename
+ * to anyone who guesses it. These are read back through an authenticated route
+ * that re-checks ownership, the same posture as `/api/download`.
+ *
+ * When object storage is configured this becomes a bucket prefix and the route
+ * becomes a redirect to a presigned GET. Callers do not change.
+ */
+export function documentPath(key: string) {
+  const root = process.env.DOCUMENT_ROOT ?? '.documents'
+  // Keys are generated internally, never user-supplied — but a traversal here
+  // would write outside the root, so the guard is cheap insurance.
+  const safe = key.replace(/\.\./g, '').replace(/^\/+/, '')
+  return `${root}/${safe}`
+}

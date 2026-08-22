@@ -119,5 +119,15 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
           `\n\n${str(payload, 'reviewUrl')}` +
           signOff,
       }
+
+    default:
+      /*
+       * Reachable despite the exhaustive switch above: `drain` casts a
+       * database string to TemplateName, which defeats the type check. A
+       * template renamed in code while rows still name the old one — every
+       * deploy with a non-empty outbox — would otherwise return undefined and
+       * throw a TypeError on `.subject`, five times, with no clue why.
+       */
+      throw new Error(`Unknown mail template: ${String(name)}`)
   }
 }

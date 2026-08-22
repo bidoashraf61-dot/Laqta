@@ -5,6 +5,7 @@ import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/c
 import { MIN_PAYOUT_USD } from '@/lib/studio'
 import { storageConfigured } from '@/lib/storage'
 import { mailConfigured } from '@/lib/mail'
+import { MAX_ATTEMPTS } from '@/lib/outbox'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/state'
@@ -71,8 +72,12 @@ export default async function AdminSettingsPage() {
     db.mailOutbox.count({ where: { sentAt: null, failedAt: null } }),
     db.mailOutbox.count({ where: { sentAt: { not: null } } }),
     // Failed = permanently parked, or out of attempts. Both need a human.
+    // MAX_ATTEMPTS is imported, not repeated: raising the retry limit must not
+    // leave this panel counting messages that drain is still working on.
     db.mailOutbox.count({
-      where: { OR: [{ failedAt: { not: null } }, { sentAt: null, attempts: { gte: 5 } }] },
+      where: {
+        OR: [{ failedAt: { not: null } }, { sentAt: null, attempts: { gte: MAX_ATTEMPTS } }],
+      },
     }),
   ])
 

@@ -1,3 +1,4 @@
+import { isAbsolute, join } from 'node:path'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
 /**
@@ -107,9 +108,14 @@ export const storageConfigured = Boolean(
  * becomes a redirect to a presigned GET. Callers do not change.
  */
 export function documentPath(key: string) {
-  const root = process.env.DOCUMENT_ROOT ?? '.documents'
+  // Absolute, anchored to the project root. A relative root resolves against
+  // the process working directory, so a server started from elsewhere would
+  // write documents somewhere the download route cannot find them — and every
+  // certificate request would answer 503.
+  const configured = process.env.DOCUMENT_ROOT ?? '.documents'
+  const root = isAbsolute(configured) ? configured : join(process.cwd(), configured)
   // Keys are generated internally, never user-supplied — but a traversal here
   // would write outside the root, so the guard is cheap insurance.
   const safe = key.replace(/\.\./g, '').replace(/^\/+/, '')
-  return `${root}/${safe}`
+  return join(root, safe)
 }

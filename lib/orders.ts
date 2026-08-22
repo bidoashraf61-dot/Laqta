@@ -226,6 +226,9 @@ export async function settleOrder(orderId: string, reference: string) {
   if (!order || order.status === 'paid') return
 
   const holdDays = Number(process.env.PAYOUT_HOLD_DAYS ?? 30)
+  // Captured inside the transaction so the certificates can be attached to
+  // exactly the row that was queued, rather than one matching its payload.
+  let outboxId: string | null = null
 
   await db.$transaction(async (tx) => {
     await tx.order.update({
@@ -293,19 +296,29 @@ export async function settleOrder(orderId: string, reference: string) {
      * below attaches it once it exists.
      */
     if (order.user?.email) {
-      await enqueue(tx, {
+      const queued = await enqueue(tx, {
         template: 'order.confirmed',
         toEmail: order.user.email,
         locale: order.user.locale,
         payload: {
           name: order.user.name ?? order.user.email,
           orderNumber: order.orderNumber,
+          // Database copy follows the reader, like every other surface. The
+          // Arabic title is the fallback, never the default for an English
+          // recipient.
           albums: order.items
-            .map((item) => `• ${item.album.titleAr}`)
+            .map((item) => {
+              const title =
+                order.user?.locale === 'en'
+                  ? item.album.titleEn || item.album.titleAr
+                  : item.album.titleAr || item.album.titleEn
+              return `• ${title}`
+            })
             .join('\n'),
           libraryUrl: siteUrl('/account/library', order.user.locale ?? DEFAULT_LOCALE),
         },
       })
+      outboxId = queued.id
     }
   })
 
@@ -317,16 +330,28 @@ export async function settleOrder(orderId: string, reference: string) {
    * — none of that may be undone because a PDF or an SMTP server misbehaved.
    */
   const locale = isLocale(order.user?.locale) ? order.user.locale : DEFAULT_LOCALE
-  const keys = (
-    await Promise.all(order.items.map((item) => generateCertificate(item.id, locale)))
-  ).filter((key): key is string => Boolean(key))
 
-  if (keys.length) {
+  /*
+   * Sequential, NOT Promise.all.
+   *
+   * Each render launches its own Chrome, so mapping concurrently over the
+   * items starts one browser per album at the same instant — three for a
+   * typical order, ten for a big one, each a few hundred megabytes. On a small
+   * box the later launches fail, and the buyer silently gets no certificate.
+   * A purchase is not a latency-critical path; one at a time is correct.
+   */
+  const keys: string[] = []
+  for (const item of order.items) {
+    const key = await generateCertificate(item.id, locale)
+    if (key) keys.push(key)
+  }
+
+  // By id, captured from the enqueue above. Matching on the payload instead
+  // would couple attachment to the payload's shape, and updateMany reports
+  // success even when it matched nothing.
+  if (keys.length && outboxId) {
     await db.mailOutbox
-      .updateMany({
-        where: { template: 'order.confirmed', sentAt: null, payload: { path: ['orderNumber'], equals: order.orderNumber } },
-        data: { attachments: keys },
-      })
+      .update({ where: { id: outboxId }, data: { attachments: keys } })
       .catch((error) => console.error('[orders] could not attach certificates:', error))
   }
 

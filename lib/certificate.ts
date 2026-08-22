@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 import { db } from '@/lib/db'
 import { translate } from '@/lib/i18n'
 import { renderPdf } from '@/lib/documents'
@@ -28,7 +29,11 @@ import type { Locale } from '@/lib/locale'
  */
 async function fontFace(family: string, file: string, weight: number) {
   try {
-    const data = await readFile(`public/fonts/thmanyah/${file}`)
+    // Anchored to the project root. A relative path resolves against the
+    // process working directory, which is not the repo under a standalone
+    // build or a supervisor — and the catch below would swallow the miss and
+    // silently render every certificate in a system fallback face.
+    const data = await readFile(path.join(process.cwd(), 'public/fonts/thmanyah', file))
     return `@font-face{font-family:'${family}';src:url(data:font/woff2;base64,${data.toString('base64')}) format('woff2');font-weight:${weight};font-display:block}`
   } catch {
     // A missing font is not a reason to fail a certificate. Chrome falls back
@@ -154,7 +159,32 @@ function escapeHtml(value: string) {
  * The caller must treat null as "send the message without it" — never as a
  * reason to withhold what the buyer paid for.
  */
-export async function generateCertificate(orderItemId: string, locale: Locale) {
+/**
+ * In-flight renders, keyed by order item.
+ *
+ * Without this, a buyer clicking the certificate link twice — or a browser
+ * retrying the request — launches a second Chrome for the same document, and
+ * the two race to write the same file and the same `pdfKey`. Sharing the
+ * promise makes concurrent callers wait on one render instead of starting
+ * another.
+ *
+ * Per-process, deliberately. A cross-process lock would need a table and a
+ * lease, which is a great deal of machinery for a document generated once.
+ */
+const inFlight = new Map<string, Promise<string | null>>()
+
+export function generateCertificate(orderItemId: string, locale: Locale) {
+  const existing = inFlight.get(orderItemId)
+  if (existing) return existing
+
+  const render = renderCertificate(orderItemId, locale).finally(() => {
+    inFlight.delete(orderItemId)
+  })
+  inFlight.set(orderItemId, render)
+  return render
+}
+
+async function renderCertificate(orderItemId: string, locale: Locale) {
   const item = await db.orderItem.findUnique({
     where: { id: orderItemId },
     select: {

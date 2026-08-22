@@ -38,6 +38,12 @@ bidi reordering and glyph substitution they emit disconnected letters in reverse
 order. Chrome does both, lays out RTL, and renders the site's own fonts.
 Playwright is already a dependency for the browser gates.
 
+Certificates for a multi-item order render **one at a time**, never through
+`Promise.all` — each render launches its own Chrome, so mapping concurrently
+would start one browser per album at the same instant. Concurrent callers for
+the *same* order item share a single in-flight render rather than starting a
+second.
+
 A browser is launched **per render and closed**, not held open. A live browser
 keeps handles on the event loop, so `process.exit` never fires and any
 short-lived process hangs — `verify:entitlement` settles an order, renders a
@@ -74,6 +80,14 @@ certificate, and simply never returned.
 - **Transient failure** — retried up to 5 attempts.
 - **Permanent rejection** — parked immediately with `failedAt`, not retried.
 - **Concurrent drains** — a row is claimed by compare-and-set on `attempts`.
+- **No provider** — `drain` returns immediately with a `skipped` count rather
+  than re-rendering the oldest batch on every call. The no-provider branch does
+  not consume an attempt, so without this those rows would stay permanently
+  first in line and newer ones would never be reached.
+- **Unknown template** — `renderTemplate` throws by name. `drain` casts a
+  database string to `TemplateName`, so a template renamed while rows still
+  reference the old one would otherwise return `undefined` and fail five times
+  with a `TypeError`.
 
 ## Verified by
 

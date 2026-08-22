@@ -1,7 +1,7 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import { readFile } from 'node:fs/promises'
 import { db } from '@/lib/db'
-import { sendMail } from '@/lib/mail'
+import { sendMail, mailConfigured } from '@/lib/mail'
 import { documentPath } from '@/lib/storage'
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/locale'
 import { renderTemplate, type TemplateName } from '@/emails/registry'
@@ -26,7 +26,8 @@ import { renderTemplate, type TemplateName } from '@/emails/registry'
 /** Transaction client or the base client — either can write a row. */
 type Client = PrismaClient | Prisma.TransactionClient
 
-const MAX_ATTEMPTS = 5
+/** Exported so the admin panel counts failures by the same rule drain uses. */
+export const MAX_ATTEMPTS = 5
 
 export type EnqueueInput = {
   template: TemplateName
@@ -65,6 +66,20 @@ export async function enqueue(client: Client, input: EnqueueInput) {
  * the same message. Returns a small summary the admin screen can show.
  */
 export async function drain(limit = 25) {
+  /*
+   * Nothing can be sent without a provider, and trying anyway is not free.
+   *
+   * The no-provider branch below deliberately does NOT consume an attempt, so
+   * those rows stay permanently eligible and permanently first in line. Once
+   * more than `limit` accumulate, every drain would re-read and re-render the
+   * same oldest batch forever while newer rows are never touched. Returning
+   * early keeps the queue intact and honest until a provider exists.
+   */
+  if (!mailConfigured) {
+    const waiting = await db.mailOutbox.count({ where: { sentAt: null, failedAt: null } })
+    return { attempted: 0, sent: 0, failed: 0, skipped: waiting }
+  }
+
   const pending = await db.mailOutbox.findMany({
     where: { sentAt: null, failedAt: null, attempts: { lt: MAX_ATTEMPTS } },
     orderBy: { createdAt: 'asc' },
@@ -120,7 +135,7 @@ export async function drain(limit = 25) {
     }
   }
 
-  return { attempted: pending.length, sent, failed }
+  return { attempted: pending.length, sent, failed, skipped: 0 }
 }
 
 /**

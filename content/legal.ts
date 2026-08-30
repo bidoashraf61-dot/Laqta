@@ -101,10 +101,14 @@ export const TERMS: DocumentSection[] = [
     heading: 'النظام الواجب التطبيق',
     headingEn: 'Governing law',
     bodyEn: [
-      'These terms are governed by the laws of the Kingdom of Saudi Arabia, and the Saudi courts have jurisdiction over any dispute arising from them.',
+      // The operating company is registered in EGYPT, not Saudi Arabia. The
+      // footage is Saudi; the entity selling it is not. Naming the wrong
+      // jurisdiction in a governing-law clause is the kind of error that only
+      // surfaces in a dispute, when it is far too late to correct.
+      'These terms are governed by the laws of the Arab Republic of Egypt, where the operating company is registered, and the competent Egyptian courts have jurisdiction over any dispute arising from them.',
     ],
     body: [
-      'تخضع هذه الشروط لأنظمة المملكة العربية السعودية، وتختص الجهات القضائية السعودية بالنظر في أي نزاع ينشأ عنها.',
+      'تخضع هذه الشروط لقوانين جمهورية مصر العربية، حيث تُسجَّل الشركة المشغّلة، وتختص المحاكم المصرية المختصة بالنظر في أي نزاع ينشأ عنها.',
     ],
   },
 ]
@@ -172,7 +176,7 @@ export const PRIVACY: DocumentSection[] = [
       'To make any of these requests, get in touch through the contact page.',
     ],
     body: [
-      'لك حق الاطلاع على بياناتك وتصحيحها وطلب حذفها، ضمن ما تسمح به الأنظمة السعودية لحماية البيانات الشخصية. الحذف لا يشمل ما يلزمنا الاحتفاظ به نظاماً كالفواتير.',
+      'لك حق الاطلاع على بياناتك وتصحيحها وطلب حذفها، ضمن ما تسمح به قوانين حماية البيانات الشخصية الواجبة التطبيق. الحذف لا يشمل ما يلزمنا الاحتفاظ به نظاماً كالفواتير.',
       'للتقدّم بأي من هذه الطلبات تواصل معنا عبر صفحة التواصل.',
     ],
   },

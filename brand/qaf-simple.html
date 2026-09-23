@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ق — simplification studies</title>
+<style>
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2")format("woff2");font-weight:700}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Regular.woff2")format("woff2");font-weight:400}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Bold.woff2")format("woff2");font-weight:700}
+:root{--paper:#FAF8F3;--ink:#14141A;--mutedfg:#666370;--border:#CFC8BB;--film:#F5F2EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;padding:36px 44px;width:1240px}
+h1{font-family:"Thmanyah Serif Display",serif;font-size:29px;margin-bottom:4px}
+.sub{color:var(--mutedfg);font-size:12.5px;margin-bottom:24px}
+.row{display:grid;grid-template-columns:120px 1fr 330px;gap:20px;align-items:center;background:var(--ink);border-radius:10px;padding:16px 22px;margin-bottom:12px}
+.scales{display:flex;align-items:flex-end;gap:20px}
+.s{text-align:center}
+.s span{display:block;font-size:9px;color:#9a97a3;margin-top:4px}
+.meta h3{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--film)}
+.meta p{font-size:11px;color:#9a97a3;line-height:1.5}
+.tag{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:6px;margin-bottom:5px;background:var(--film);color:var(--ink)}
+.tag.n{background:#3a3a44;color:#c9c5bc}
+.shapes{font-size:9.5px;color:#9a97a3;margin-top:4px}
+</style>
+</head>
+<body>
+<h1>ق — تبسيط الرمز</h1>
+<div class="sub">Round 2 — breaking the face · the fix is moving the dots RIGHT, where they sit on the real letter</div>
+<div id="out"></div>
+
+<script>
+// two diamonds above — the thing that makes the mark a ق and not a bowl
+const DOTS = (r=8, y=18) => `M38 ${y-r}L${38+r} ${y}L38 ${y+r}L${38-r} ${y}Z M62 ${y-r}L${62+r} ${y}L62 ${y+r}L${62-r} ${y}Z`;
+
+const V = {
+  // D · asymmetric scoop — carried over as the best of the first round
+  d: `M20 48 A30 30 0 0 0 80 52 L80 30 L66 30 L66 52 A16 16 0 0 1 34 48 Z ${DOTS()}`,
+
+  // E · dots moved RIGHT and tightened — where they actually sit on the letter
+  e: `M18 52 A32 32 0 0 0 82 46 L68 46 A18 18 0 0 1 32 52 Z M58 9L65 16L58 23L51 16Z M74 9L81 16L74 23L67 16Z`,
+
+  // F · plus the head — ق's real top-right loop, which nothing else has
+  f: `M18 54 A32 32 0 0 0 82 48 L68 48 A18 18 0 0 1 32 54 Z M66 26 L82 26 L82 44 L68 44 L68 34 L66 34 Z M56 8L62.5 14.5L56 21L49.5 14.5Z M72 8L78.5 14.5L72 21L65.5 14.5Z`,
+
+  // G · squared vessel with the dots off-centre — Kufic register, no symmetry
+  g: `M16 46 L84 46 L74 82 L26 82 Z M30 56 L70 56 L64 72 L36 72 Z M56 8L63 15L56 22L49 15Z M72 8L79 15L72 22L65 15Z`
+};
+
+const META = [
+  ['d','ROUND 1 BEST','The scoop — centred dots','Carried over for comparison. Asymmetric bowl helps, but the dots are still centred and it keeps a residual face reading.'],
+  ['e','THE FIX','Dots moved right','The dots sit where they actually sit on the letter — right of centre, closer together. <b>The face disappears.</b> Three shapes.'],
+  ['f','STRONGEST','Dots right + the head','Adds ق\'s real top-right loop. Nothing else in the world looks like this — it can only be read as Arabic. Four shapes.'],
+  ['g','ALTERNATIVE','Vessel, dots right','The Kufic square version with corrected dot placement. Architectural rather than calligraphic.']
+];
+
+document.getElementById('out').innerHTML = META.map(([k,t,h,p])=>{
+  const d = V[k];
+  const svg = s => `<svg width="${s}" height="${s}" viewBox="0 0 100 100"><path d="${d}" fill="#F5F2EA" fill-rule="evenodd"/></svg>`;
+  const n = (d.match(/Z/g)||[]).length;
+  return `<div class="row"><div>${svg(96)}</div>
+    <div class="scales">
+      <div class="s">${svg(48)}<span>48</span></div>
+      <div class="s">${svg(32)}<span>32</span></div>
+      <div class="s">${svg(16)}<span>16</span></div>
+    </div>
+    <div class="meta"><span class="tag${t==='SIMPLEST'?'':' n'}">${t}</span><h3>${h}</h3><p>${p}</p>
+      <div class="shapes">${n} shapes</div></div></div>`;
+}).join('');
+</script>
+</body>
+</html>

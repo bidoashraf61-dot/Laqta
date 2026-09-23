@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ق — radiating symbol</title>
+<style>
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2")format("woff2");font-weight:700}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Regular.woff2")format("woff2");font-weight:400}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Bold.woff2")format("woff2");font-weight:700}
+:root{--paper:#FAF8F3;--ink:#14141A;--mutedfg:#666370;--border:#CFC8BB;--card:#FFF;--film:#F5F2EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;padding:38px 46px;width:1240px}
+h1{font-family:"Thmanyah Serif Display",serif;font-size:30px;margin-bottom:4px}
+.sub{color:var(--mutedfg);font-size:12.5px;margin-bottom:26px}
+.row{display:grid;grid-template-columns:150px 1fr 300px;gap:22px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 24px;margin-bottom:13px}
+.dark{background:var(--ink)}
+.dark .meta h3{color:var(--film)}
+.dark .meta p{color:#9a97a3}
+.scales{display:flex;align-items:flex-end;gap:20px}
+.s{text-align:center}
+.s span{display:block;font-size:9px;color:var(--mutedfg);margin-top:4px}
+.dark .s span{color:#9a97a3}
+.meta h3{font-size:14px;font-weight:700;margin-bottom:3px}
+.meta p{font-size:11px;color:var(--mutedfg);line-height:1.5}
+.tag{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:6px;margin-bottom:5px;background:var(--ink);color:var(--paper)}
+.dark .tag{background:var(--film);color:var(--ink)}
+.tag.ok{background:#E9DCC3;color:#5a4a1e}
+</style>
+</head>
+<body>
+<h1>ق — رمز مشعّ</h1>
+<div class="sub">The bowl of ق as an arc that breaks into light · tested at 100px, 48px, 32px, 16px</div>
+<div id="out"></div>
+
+<script>
+const CX=50, CY=54;
+
+// A tapered ray: wide at the inner end, narrowing outward.
+function ray(a, r0, len, w0, w1){
+  const t=a*Math.PI/180, c=Math.cos(t), s=Math.sin(t), px=-s, py=c;
+  const ix=CX+r0*c, iy=CY+r0*s, ox=CX+(r0+len)*c, oy=CY+(r0+len)*s;
+  return `M${(ix+px*w0).toFixed(1)} ${(iy+py*w0).toFixed(1)} L${(ix-px*w0).toFixed(1)} ${(iy-py*w0).toFixed(1)} L${(ox-px*w1).toFixed(1)} ${(oy-py*w1).toFixed(1)} L${(ox+px*w1).toFixed(1)} ${(oy+py*w1).toFixed(1)} Z`;
+}
+function diamond(x,y,r){return `M${x} ${y-r} L${x+r} ${y} L${x} ${y+r} L${x-r} ${y} Z`;}
+
+// Thick open arc — the bowl of ق. Gap sits upper-left where the rays take over.
+function arc(rOut, rIn, a0, a1){
+  const p=(a,r)=>[CX+r*Math.cos(a*Math.PI/180), CY+r*Math.sin(a*Math.PI/180)];
+  const [x1,y1]=p(a0,rOut), [x2,y2]=p(a1,rOut), [x3,y3]=p(a1,rIn), [x4,y4]=p(a0,rIn);
+  const large = (a1-a0)>180 ? 1 : 0;
+  return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${rOut} ${rOut} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${x3.toFixed(1)} ${y3.toFixed(1)} A${rIn} ${rIn} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z`;
+}
+
+// dots: two diamonds above the bowl
+const DOTS = d => diamond(41,12,d)+diamond(59,12,d);
+
+const V = {
+  a(){ // rays fanning out from the open end
+    let r=''; const n=8;
+    for(let i=0;i<n;i++){const a=196+i*13; const L=15-i*1.2; r+=ray(a,30,L,3.2,1.2);}
+    return arc(30,17,-70,190)+r+DOTS(6);
+  },
+  b(){ // fewer, bolder rays
+    let r=''; const n=5;
+    for(let i=0;i<n;i++){const a=200+i*18; const L=17-i*1.6; r+=ray(a,30,L,4.6,2);}
+    return arc(30,17,-60,192)+r+DOTS(6);
+  },
+  c(){ // film slats — parallel bars, not radial
+    let r=''; const n=5;
+    for(let i=0;i<n;i++){const y=28+i*11; const w=30-i*3.4; r+=`M${6} ${y} h${w} v6 h-${w} Z`;}
+    return arc(30,17,-60,175)+r+DOTS(6);
+  },
+  d(){ // rays inside the bowl, radiating toward the centre
+    let r=''; const n=9;
+    for(let i=0;i<n;i++){const a=200+i*15; const L=9; r+=ray(a,7,L,1.4,3);}
+    return arc(30,17,-70,190)+r+DOTS(6);
+  }
+};
+
+const META=[
+  ['a','STRONGEST','Fanning out','The bowl opens and eight tapered rays fan from its end — light escaping the frame. Closest to the reference, and the two diamonds keep it unmistakably ق.'],
+  ['b','GOOD','Bolder, fewer','Five heavier rays. Survives small far better; loses some of the reference\'s delicacy.'],
+  ['c','GOOD','Film slats','Rays replaced by parallel bars stepping down — reads as film frames rather than light. More literal to the product.'],
+  ['d','WEAKER','Turned inward','Rays pointing into the bowl instead of out. Reads as an aperture closing — but crowds badly and muddies at small size.']
+];
+
+document.getElementById('out').innerHTML = META.map(([k,t,h,p],idx)=>{
+  const paths = V[k]();
+  const svg = (size,fill) => `<svg width="${size}" height="${size}" viewBox="0 0 100 100"><path d="${paths}" fill="${fill}" fill-rule="nonzero"/></svg>`;
+  const dark = idx===0;
+  return `<div class="row${dark?' dark':''}">
+    <div>${svg(100, dark?'#F5F2EA':'#14141A')}</div>
+    <div class="scales">
+      <div class="s">${svg(48, dark?'#F5F2EA':'#14141A')}<span>48</span></div>
+      <div class="s">${svg(32, dark?'#F5F2EA':'#14141A')}<span>32</span></div>
+      <div class="s">${svg(16, dark?'#F5F2EA':'#14141A')}<span>16</span></div>
+    </div>
+    <div class="meta"><span class="tag${t==='STRONGEST'?'':' ok'}">${t}</span><h3>${h}</h3><p>${p}</p></div>
+  </div>`;
+}).join('');
+</script>
+</body>
+</html>

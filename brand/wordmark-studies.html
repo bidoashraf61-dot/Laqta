@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>لقطة — wordmark studies</title>
+<style>
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2")format("woff2");font-weight:700}
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Light.woff2")format("woff2");font-weight:300}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Regular.woff2")format("woff2");font-weight:400}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Bold.woff2")format("woff2");font-weight:700}
+:root{--paper:#FAF8F3;--ink:#14141A;--mutedfg:#666370;--border:#CFC8BB;--card:#FFF;--film:#F5F2EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;padding:44px 52px;width:1180px}
+h1{font-family:"Thmanyah Serif Display",serif;font-weight:700;font-size:32px;margin-bottom:4px}
+.sub{color:var(--mutedfg);font-size:13px;margin-bottom:30px;direction:ltr;text-align:left}
+.study{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:26px 30px;margin-bottom:16px;display:grid;grid-template-columns:1fr 290px;gap:26px;align-items:center}
+.stage{display:flex;align-items:center;justify-content:center;min-height:130px}
+.w{font-family:"Thmanyah Serif Display",serif;font-weight:700;font-size:82px;line-height:1;color:var(--ink)}
+.note{direction:ltr;text-align:left}
+.note h3{font-family:"Thmanyah Sans";font-size:14px;font-weight:700;margin-bottom:5px}
+.note p{font-family:"Thmanyah Sans";font-size:11.5px;color:var(--mutedfg);line-height:1.55}
+.tag{display:inline-block;font-family:"Thmanyah Sans";font-size:9px;font-weight:700;letter-spacing:.07em;padding:2px 7px;border-radius:6px;background:var(--ink);color:var(--paper);margin-bottom:6px}
+.tag.alt{background:#E9DCC3;color:#5a4a1e}
+.box{background:var(--ink);border-radius:6px;padding:26px 40px;display:flex;align-items:center;justify-content:center;aspect-ratio:2.39/1;width:100%;max-width:420px}
+.box .w{color:var(--film)}
+.rule-under{position:relative;padding-bottom:16px}
+.rule-under::after{content:"";position:absolute;inset-inline:0;bottom:0;height:5px;background:var(--ink);border-radius:2px}
+</style>
+</head>
+<body>
+<h1>لقطة — دراسات الشعار</h1>
+<div class="sub">Thmanyah Serif Display Bold · the real typeface, before and after custom edits</div>
+
+<div class="study">
+  <div class="stage"><div class="w">لقطة</div></div>
+  <div class="note"><span class="tag">BASELINE</span><h3>Untouched</h3><p>Thmanyah Serif Display Bold, set plainly. High contrast — heavy downstrokes, fine joins. Already handsome, but it's just type. Nothing here is <i>yours</i> yet.</p></div>
+</div>
+
+<div class="study">
+  <div class="stage"><div class="w">لقطـــة</div></div>
+  <div class="note"><span class="tag">EDIT 01</span><h3>Kashida before the final letter</h3><p>U+0640 inserted between ط and ة. Your <code>DESIGN.md</code> already does exactly this on headlines at 4 units. The word stays one connected line and simply grows wider.</p></div>
+</div>
+
+<div class="study">
+  <div class="stage"><div class="w">لقــــــــطة</div></div>
+  <div class="note"><span class="tag">EDIT 02</span><h3>Kashida at the centre</h3><p>Extension moved between ق and ط. The silhouette changes completely — a long open middle with the mass gathered at both ends.</p></div>
+</div>
+
+<div class="study">
+  <div class="stage"><div class="w rule-under">لقطـــة</div></div>
+  <div class="note"><span class="tag alt">EDIT 03</span><h3>Kashida + baseline rule</h3><p>The extension resolved into a solid bar beneath the word — the bottom edge of a letterbox, implied. Ties the mark to the 2.39:1 geometry without drawing the whole frame.</p></div>
+</div>
+
+<div class="study">
+  <div class="stage"><div class="box"><div class="w" style="font-size:64px">لقطـــة</div></div></div>
+  <div class="note"><span class="tag alt">EDIT 04</span><h3>Inside the letterbox</h3><p>The wordmark set in a 2.39:1 ink frame — your product's literal aspect ratio. Works as an emblem, an avatar, and the watermark on preview clips.</p></div>
+</div>
+
+<div class="study">
+  <div class="stage"><div class="w" style="font-weight:300">لقطـــة</div></div>
+  <div class="note"><span class="tag alt">EDIT 05</span><h3>Light cut</h3><p>Same word in Display Light. Higher contrast, more editorial, less shouty. Worth seeing before you commit to Bold — this reads more "gallery", which is your stated north star.</p></div>
+</div>
+
+</body>
+</html>

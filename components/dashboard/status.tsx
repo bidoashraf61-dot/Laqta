@@ -71,6 +71,11 @@ const RELEASE: StatusMap = {
   rejected: { key: 'dash.releaseRejected', variant: 'destructive' },
 }
 
+const CONTACT: StatusMap = {
+  open: { key: 'dash.messagesOpen', variant: 'warning' },
+  handled: { key: 'dash.messagesHandled', variant: 'neutral' },
+}
+
 const MAPS = {
   album: ALBUM,
   review: REVIEW,
@@ -79,6 +84,7 @@ const MAPS = {
   order: ORDER,
   dispute: DISPUTE,
   release: RELEASE,
+  contact: CONTACT,
 } as const
 
 export type StatusDomain = keyof typeof MAPS

@@ -59,6 +59,7 @@ certificate, and simply never returned.
 | `album.changes` | `decideReview` changes | Creator |
 | `album.priced` | Spec B (written, not yet fired) | Creator |
 | `review.queued` | `submitForReview` | Operator, via `OPERATOR_EMAIL` |
+| *(no template)* contact message | `sendContactMessage` → `notifyContactMessage` (`lib/notifications.ts`) | Operator, via `OPERATOR_EMAIL` — sent directly with `sendMail` after the `ContactMessage` row is stored, not through the outbox; the row is the record and `mailDelivered` says whether it left. Interim wrapper, to be reconciled with the fuller `lib/notifications.ts` |
 
 `reject` is deliberately silent — a delisting is a conversation, not a template.
 

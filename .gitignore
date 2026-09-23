@@ -49,3 +49,6 @@ build/
 
 # Generated documents (certificates, invoices) — private, never committed
 .documents/
+
+# Agent worktrees (local only)
+.claude/worktrees/

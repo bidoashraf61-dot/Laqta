@@ -1,6 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  /*
+   * The media CDN (`NEXT_PUBLIC_MEDIA_CDN_URL`, see docs/media-aws.md) is
+   * already covered by the https wildcard; posters render as plain <img> and
+   * previews as <video>, so neither goes through the image optimiser anyway.
+   *
+   * There is no Content-Security-Policy on this site. If one is added, it must
+   * allow the CDN origin in `img-src` and `media-src`, or every poster and
+   * preview breaks at once. (Downloads are top-level navigations redirected
+   * by /api/download, which CSP does not govern.)
+   */
   images: {
     remotePatterns: [{ protocol: 'https', hostname: '**' }],
   },

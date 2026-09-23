@@ -10,6 +10,7 @@ import type { FootageTile } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { pickLocalised } from '@/lib/locale'
+import { heroFilmUrl } from '@/lib/media'
 
 /**
  * The footage wall.
@@ -31,16 +32,17 @@ import { pickLocalised } from '@/lib/locale'
  * rather than a catalogue reel. It is here so the section, the player and the
  * autoplay behaviour are all real and reviewable; only the footage is stand-in.
  *
- * To ship the real one: drop the cut at `public/hero/vid/showreel-web.mp4`,
- * point `SHOWREEL_SRC` at it, and set `SHOWREEL_POSTER` to a frame from it.
- * Nothing else changes — that is the whole reason these are constants rather
- * than literals inline on the element, where "temporary" becomes permanent
- * because nobody can see that it was ever temporary.
+ * To ship the real one: upload the cut to the media bucket (e.g.
+ * `showreel/showreel-web.mp4`), point `SHOWREEL_SRC` at that key, and set
+ * `SHOWREEL_POSTER` to a frame from it. Nothing else changes — that is the
+ * whole reason these are constants rather than literals inline on the
+ * element, where "temporary" becomes permanent because nobody can see that it
+ * was ever temporary.
  *
- * `public/hero/vid/` is gitignored (staged media, see CLAUDE.md), so the file
- * is dropped in locally and by the deploy, not committed.
+ * Resolved like the hero: the CDN copy when `NEXT_PUBLIC_MEDIA_CDN_URL` is
+ * set, the gitignored local file otherwise (`lib/media.ts#heroFilmUrl`).
  */
-const SHOWREEL_SRC = '/hero/vid/hero-web-m.mp4'
+const SHOWREEL_SRC = heroFilmUrl(true)
 const SHOWREEL_POSTER = '/hero/06-alula.jpg'
 
 export function FootageWall({ footage }: { footage: FootageTile[] }) {

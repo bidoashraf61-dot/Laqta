@@ -597,6 +597,15 @@
     "makePublic": "Share by link"
   },
   "dash": {
+    "trailerEdit": "Trailer",
+    "trailerKey": "Trailer key in the media library",
+    "trailerHint": "A key in the public media library, or a full URL on the media domain. Leave it empty to remove the trailer; the album page goes back to its cover still.",
+    "trailerConvention": "The key the upload command writes for this album:",
+    "trailerInvalid": "That is not a key in the public media library. Enter a path in the trailers folder, or a URL on the media domain.",
+    "trailerNoCdn": "Trailer saved, but visitors will not see it until the media domain is configured. The cover still stays until then.",
+    "trailerCleared": "Trailer removed. The album page now shows its cover still.",
+    "trailerSet": "Has a trailer",
+    "trailerNone": "No trailer",
     "tierStandard": "Standard",
     "tierSilver": "Silver",
     "tierGold": "Gold",

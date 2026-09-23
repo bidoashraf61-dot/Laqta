@@ -40,7 +40,7 @@ Takes no `searchParams`; there is no search or filter on this route.
 - **Collection content is not editable here** — title, slug, hero media, description,
   sort order and album membership have no editor; only the two booleans are reachable.
 - **Media is a URL field, not an upload.** `mediaUrl` is free text; there is no file
-  picker and cloud storage is not wired (see `/admin/settings`).
+  picker. Media for slots is not resolved through `lib/media.ts`; paste a full URL.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants

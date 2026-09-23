@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { Link } from '@/components/ui/link'
 import { Headline, Prose } from '@/components/ui/typography'
 import { useT } from '@/lib/i18n-client'
+import { heroFilmUrl } from '@/lib/media'
 
 /**
  * The scroll-scrubbed hero.
@@ -44,7 +45,12 @@ export function HeroCinematic() {
     // Serve the lighter 720p encode to phones; the 1080p master is wasted on a
     // small decoder and only makes the scrub cost more.
     const mobile = window.matchMedia('(max-width: 860px)').matches
-    video.src = mobile ? '/hero/vid/hero-web-m.mp4' : '/hero/vid/hero-web.mp4'
+    // From the media CDN when `NEXT_PUBLIC_MEDIA_CDN_URL` is set — the staged
+    // files under public/hero/vid are gitignored and exist only where they
+    // were dropped in, so without the CDN a deploy shows the poster alone.
+    // Only the SOURCE moves; the scrub below is untouched. The CDN must send
+    // `Accept-Ranges` (S3 does) or seeking degrades to a full download.
+    video.src = heroFilmUrl(mobile)
 
     let raf = 0
     let target = 0

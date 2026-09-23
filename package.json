@@ -42,13 +42,18 @@
     "verify:licence": "tsx scripts/verify-licence.ts",
     "repair:licences": "tsx scripts/repair-licence-versions.ts",
     "content:export": "tsx scripts/export-content.ts",
-    "content:import": "tsx scripts/import-content.ts"
+    "content:import": "tsx scripts/import-content.ts",
+    "media:previews": "tsx scripts/media-previews.ts",
+    "media:upload": "tsx scripts/media-upload.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
+    "@aws-sdk/client-s3": "^3.1138.0",
+    "@aws-sdk/cloudfront-signer": "^3.1138.0",
+    "@aws-sdk/s3-request-presigner": "^3.1138.0",
     "@prisma/client": "^6.2.1",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",

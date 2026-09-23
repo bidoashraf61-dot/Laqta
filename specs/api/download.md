@@ -27,8 +27,11 @@ Read-only endpoint — no forms, no body, no mutation of catalogue or money. The
 - No session → `401 {"error":"unauthenticated"}`.
 - Entitlement missing, owned by another user, `revokedAt !== null`, or the parent order is not `paid` → `403 {"error":"no_entitlement"}`. This is what makes a refund kill an already-issued token immediately instead of at TTL lapse.
 - `clipId` present but not in `Entitlement.clipIdsSnapshot` → `403 {"error":"not_in_manifest"}`.
-- Success → `302` to `resolveKey(payload.key)` on the same origin.
-- **Not wired:** the local storage driver resolves a bare key to `/media/<key>` (`lib/storage.ts`), and there is no `/media` route, rewrite or `public/media` directory in the repo. On a local install the success path therefore redirects to a 404. Real bytes only arrive once `S3_ENDPOINT`/`S3_BUCKET_MASTERS` are set (`storageConfigured` is false without S3 credentials).
+- Success → `302` to `await resolveDownload(payload.key)` (`lib/storage.ts`), which depends on the driver:
+  - **`s3` driver** (`S3_MASTERS_BUCKET` + `AWS_REGION` set): a URL that expires in `S3_SIGNED_URL_TTL_SECONDS` — a **CloudFront signed URL** (`@aws-sdk/cloudfront-signer`) when `MASTERS_CDN_URL`, `CLOUDFRONT_KEY_PAIR_ID` and `CLOUDFRONT_PRIVATE_KEY` are all set, otherwise an **S3 presigned GET** (`@aws-sdk/s3-request-presigner`) with `Content-Disposition: attachment`. Credentials come from the AWS SDK default chain.
+  - **`local` driver** (nothing set): `/media/<key>` on the same origin. There is no `/media` route, rewrite or `public/media` directory, so a local redemption ends on a 404 — honestly, rather than pretending a file was served.
+  - A "/"-rooted key (dev-seed stand-in under `public/`) redirects to that path under either driver.
+- The public media bucket (previews, posters, trailers, hero) never passes through this route — see `lib/media.ts` and `docs/media-aws.md`.
 - **Stub:** `Download.bytes` defaults to `0` and is never written by this handler or anywhere else, despite the header comment describing a byte count. Abuse detection currently has hit counts, IPs and user agents — not volume.
 - No rate limit, no per-entitlement download cap, no concurrency guard.
 - Middleware does not guard this path (`requiredAccess` returns `null` for `/api/*`); the handler is the only gate.
@@ -37,7 +40,8 @@ Read-only endpoint — no forms, no body, no mutation of catalogue or money. The
 ## Invariants
 - **Frozen entitlement.** Ownership is served from the purchase-time snapshot. A clip is downloadable only if its id is in `Entitlement.clipIdsSnapshot` (mirror of `OrderItem.clipManifestSnapshot`). The live album is never consulted, so a clip deleted from the album after purchase still downloads and a clip added after purchase never does.
 - A valid signature is necessary but never sufficient: user identity, `revokedAt`, order status `paid` and manifest membership are all re-checked at redemption.
-- Masters are never addressable by a public path. Every byte goes through a token bound to key + entitlement + expiry (default TTL 900s, `S3_SIGNED_URL_TTL_SECONDS`).
+- Masters are never addressable by a public path. Every byte goes through a token bound to key + entitlement + expiry (default TTL 900s, `S3_SIGNED_URL_TTL_SECONDS`), and the storage URL it redirects to expires on the same TTL. The masters bucket blocks public access; the signed URL is minted only after every gate above has passed.
+- `lib/media.ts#mediaUrl` refuses `masters/`, `proxies/`, `albums/` and `documents/` keys, so no public page can build a URL to a master even by mistake.
 - Signature comparison must stay `timingSafeEqual` with a length check — no early-exit string compare.
 - Every redemption must produce exactly one `Download` row before the redirect is issued.
 

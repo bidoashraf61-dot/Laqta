@@ -79,7 +79,8 @@ export type ClipHit = {
   thumbnail: string | null
   previewHlsKey: string | null
   /**
-   * A directly playable preview, for hover-to-play. Distinct from
+   * KEY of the watermarked MP4 preview, for hover-to-play; the tile resolves
+   * it through `lib/media.ts#mediaUrl`. Distinct from
    * `previewHlsKey`: that is an HLS manifest for the full player, this is the
    * short MP4 loop a grid tile can drop into a <video> with no player at all.
    */
@@ -283,7 +284,7 @@ const postgresDriver: SearchDriver = {
           aspectRatio: true,
           thumbnailKeys: true,
           previewHlsKey: true,
-          proxyKey: true,
+          previewKey: true,
           // NOTE: masterKey is deliberately absent. The catalogue must never
           // be able to leak a path to an original.
           album: {
@@ -316,9 +317,9 @@ const postgresDriver: SearchDriver = {
         aspectRatio: row.aspectRatio,
         thumbnail: row.thumbnailKeys[0] ?? null,
         previewHlsKey: row.previewHlsKey,
-        // Object-storage keys are not URLs. Anything not rooted at "/" has no
-        // playable form yet and the tile correctly stays a still.
-        previewKey: row.proxyKey?.startsWith('/') ? row.proxyKey : null,
+        // A key, resolved by the tile through `lib/media.ts#mediaUrl` — null
+        // there (no CDN, no file) and the tile correctly stays a still.
+        previewKey: row.previewKey,
         album: {
           slug: row.album.slug,
           titleAr: row.album.titleAr,

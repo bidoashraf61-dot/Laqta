@@ -21,7 +21,12 @@ Cross-cutting rules that apply to every route here: Arabic on the bare path and
 English under `/en` (see [`../localisation.md`](../localisation.md)), RTL for
 Arabic and LTR for English, logical properties only;
 every preview frame carries `PreviewWatermark`; every album surface shows a price; a clip
-is never purchasable on its own, so every clip surface carries its album ribbon.
+is never purchasable on its own, so every clip surface carries its album ribbon. Every
+poster, preview, trailer and the hero film is resolved by one function,
+`lib/media.ts#mediaUrl` — never a raw key in `src`, never an ad-hoc `startsWith('/')`
+check — and a key that does not resolve leaves the poster in place, never a broken
+`<video>`. Public previews come from `Clip.previewKey`; `proxyKey` (the buyer's clean
+editing copy) is never selected on a public surface.
 
 ## Routes
 
@@ -70,13 +75,21 @@ specified there.
   hand from `/admin`. No real Paymob transaction has been run yet — USD charging on
   the owner's account is unconfirmed (see [`../api/payments-paymob.md`](../api/payments-paymob.md)).
 - mada, Tabby and Tamara are not wired and never offered.
-- No HLS preview playback. `previewHlsKey` is selected everywhere and rendered nowhere —
-  the catalogue shows stills.
-- No auto-cut album trailer. `Album.trailerUrl` is unread; the PDP uses the first clip's poster.
 - `/albums` has no sort control, and the taxonomy hubs accept `?page=` with no pagination UI.
 - `/contact` has a working form, but its WhatsApp number, support email, company name,
   Egyptian address and commercial registration number are **empty until the owner supplies
   them** (`content/contact.ts` / env). Each renders only once set; with none set the page is
   the form and guidance. The operator email needs `OPERATOR_EMAIL` and a mail provider —
   until then messages are read at `/admin/messages`.
+- No HLS / adaptive preview playback. Previews are single progressive 720p MP4s
+  (`Clip.previewKey`, made by `npm run media:previews`); `previewHlsKey` is selected in
+  places and rendered nowhere.
+- Media is wired to AWS S3 + CloudFront but only switched on by env
+  (`docs/media-aws.md`). Until `NEXT_PUBLIC_MEDIA_CDN_URL` is set, bucket keys resolve
+  to nothing and pages show posters; the hero plays only where `public/hero/vid/` exists.
+- The launch catalogue's previews are still the seed's hero-segment stand-ins (dev
+  database) until real masters are run through `media:previews` + `media:upload`.
+- No album has a trailer yet. Trailers are cut by hand (no auto-cut) and set per album
+  from `/admin/catalogue` or `media:upload`; without one the PDP shows the album's own
+  cover still. `Album.trailerUrl` is a dead legacy column — `trailerKey` is the field.
 - `/cart/add` and `/boards/[token]` are covered by no automated gate.

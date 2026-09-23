@@ -50,7 +50,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
               aspectRatio: true,
               thumbnailKeys: true,
               previewHlsKey: true,
-              proxyKey: true,
+              previewKey: true,
               album: {
                 select: {
                   slug: true,
@@ -87,7 +87,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
       aspectRatio: clip.aspectRatio,
       thumbnail: clip.thumbnailKeys[0] ?? null,
       previewHlsKey: clip.previewHlsKey,
-      previewKey: clip.proxyKey?.startsWith('/') ? clip.proxyKey : null,
+      previewKey: clip.previewKey,
       album: {
         slug: clip.album.slug,
         titleAr: clip.album.titleAr,

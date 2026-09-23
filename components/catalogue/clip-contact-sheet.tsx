@@ -4,6 +4,7 @@ import { formatDuration } from '@/lib/utils'
 import { revealDelay } from '@/lib/motion'
 import { t } from '@/lib/i18n'
 import { pickLocalised } from '@/lib/locale'
+import { mediaUrl } from '@/lib/media'
 
 /**
  * Every clip in an album, at its true shape.
@@ -89,9 +90,9 @@ export function ClipContactSheet({ clips }: { clips: ContactSheetClip[] }) {
             title={clipLabel(clip)}
             className="group relative block size-full overflow-hidden rounded-md border bg-ink"
           >
-            {clip.thumbnailKeys[0] ? (
+            {mediaUrl(clip.thumbnailKeys[0]) ? (
               <img
-                src={clip.thumbnailKeys[0]}
+                src={mediaUrl(clip.thumbnailKeys[0]) ?? undefined}
                 alt={t('catalogue.altClipThumb', { clip: clipLabel(clip) })}
                 loading="lazy"
                 className="size-full object-cover transition-transform duration-frame ease-lens group-hover:scale-105"

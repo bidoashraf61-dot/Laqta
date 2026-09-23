@@ -5,6 +5,7 @@ import { Pause, Play } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { useT } from '@/lib/i18n-client'
+import { mediaUrl } from '@/lib/media'
 
 /**
  * A large video that plays itself when it scrolls into view.
@@ -29,17 +30,27 @@ import { useT } from '@/lib/i18n-client'
  * own, and the button becomes the only way in, which is the point.
  */
 export function AutoplayVideo({
-  src,
-  poster,
+  src: srcKey,
+  poster: posterKey,
   label,
+  fit = 'cover',
   className,
 }: {
+  /** A media KEY or "/"-rooted path, resolved here through `lib/media.ts`. */
   src: string
   poster?: string | null
   /** Describes the footage for anyone who cannot see it. */
   label: string
+  /**
+   * `contain` for a single clip, whose shape is part of what is being sold —
+   * a 9:16 shot letterboxed on ink, never cropped into a 16:9 lie. `cover`
+   * for a trailer or reel, which is cut to fill its frame.
+   */
+  fit?: 'cover' | 'contain'
   className?: string
 }) {
+  const src = mediaUrl(srcKey)
+  const poster = mediaUrl(posterKey)
   const t = useT()
   // See watermark.tsx: a client component must supply this itself.
   const watermarkLabel = `${t('brand.name')} · ${t('catalogue.preview')}`
@@ -47,6 +58,7 @@ export function AutoplayVideo({
   const ref = React.useRef<HTMLVideoElement | null>(null)
   const [playing, setPlaying] = React.useState(false)
   const [reduced, setReduced] = React.useState(false)
+  const [failed, setFailed] = React.useState(false)
 
   React.useEffect(() => {
     setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -77,7 +89,7 @@ export function AutoplayVideo({
 
     io.observe(el)
     return () => io.disconnect()
-  }, [reduced])
+  }, [reduced, src, failed])
 
   function toggle() {
     const el = ref.current
@@ -92,6 +104,26 @@ export function AutoplayVideo({
     }
   }
 
+  /*
+   * No playable source — the key has no CDN to resolve against, or the file
+   * failed to load — and the player steps down to its poster. No play button:
+   * a control that can never do anything is how a still becomes "broken".
+   */
+  if (!src || failed) {
+    return (
+      <div className={cn('relative overflow-hidden rounded-lg bg-ink', className)}>
+        {poster ? (
+          <img
+            src={poster}
+            alt={label}
+            className={cn('size-full', fit === 'contain' ? 'object-contain' : 'object-cover')}
+          />
+        ) : null}
+        <PreviewWatermark label={watermarkLabel} />
+      </div>
+    )
+  }
+
   return (
     <div className={cn('relative overflow-hidden rounded-lg bg-ink', className)}>
       <video
@@ -101,6 +133,11 @@ export function AutoplayVideo({
         muted
         loop
         playsInline
+        // The element is the source of truth for the control's label — a
+        // browser can pause a video on its own (tab hidden, power saver).
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onError={() => setFailed(true)}
         /*
          * `none`. This component already waits for the element to scroll into
          * view before it plays, so preloading anything is fetching for a
@@ -112,7 +149,7 @@ export function AutoplayVideo({
          */
         preload="none"
         aria-label={label}
-        className="size-full object-cover"
+        className={cn('size-full', fit === 'contain' ? 'object-contain' : 'object-cover')}
       />
 
       {/*

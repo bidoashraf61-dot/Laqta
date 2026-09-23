@@ -132,9 +132,15 @@ a regression fails the suite rather than reaching an operator.
   interfaces. Payments: bank transfer + Paymob card/Apple Pay (dormant until the
   `PAYMOB_*` env is set; the signed webhook settles through the same
   `settleOrder` as the admin). Mail: Resend, dormant until `MAIL_*` is set.
-  Storage: honest local driver — S3 + CloudFront is in progress.
-- Hero video is staged in `public/hero/vid/` (gitignored); wiring is gated on a
-  user go-signal.
+  Storage: honest local driver plus an S3 driver (masters via S3-presigned or
+  CloudFront-signed URLs), switched on by env — see `docs/media-aws.md`.
+- **Every poster, preview, trailer and the hero film goes through
+  `lib/media.ts#mediaUrl`** — never a raw key in `src`. "/"-rooted keys serve
+  from `public/`; bucket keys resolve against `NEXT_PUBLIC_MEDIA_CDN_URL`, else
+  `null` (poster stays). Public previews are `Clip.previewKey`; `proxyKey` is the
+  buyer's clean editing copy and never appears on a public page.
+- Hero video: CDN when configured, else the gitignored `public/hero/vid/`.
+  Media pipeline: `npm run media:previews` → `npm run media:upload`.
 
 ## Specs are the shared memory — update them with every change
 

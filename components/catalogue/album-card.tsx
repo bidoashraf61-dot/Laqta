@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { Anchor } from '@/components/ui/link'
 import { revealDelay } from '@/lib/motion'
+import { mediaUrl } from '@/lib/media'
 
 /**
  * The album poster.
@@ -282,7 +283,8 @@ function coverAlt(album: AlbumCardData) {
  * rather than a broken-image icon — an empty grid of grey boxes reads as a
  * broken site, which is worse than an obviously-empty one.
  */
-function CoverImage({ src, alt }: { src: string | null; alt: string }) {
+function CoverImage({ src: key, alt }: { src: string | null; alt: string }) {
+  const src = mediaUrl(key)
   if (!src) {
     return (
       <span

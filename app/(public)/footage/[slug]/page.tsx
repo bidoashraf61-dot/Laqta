@@ -14,6 +14,8 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { ScrollArea } from '@/components/ui/overlays'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { AlbumShots } from '@/components/catalogue/album-shots'
+import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
+import { mediaUrl } from '@/lib/media'
 import { Sparkles, Video } from 'lucide-react'
 import { PageTitle } from '@/components/ui/typography'
 import { pickLocalised } from '@/lib/locale'
@@ -60,7 +62,9 @@ async function getClip(slug: string) {
       identifiableFaces: true,
       thumbnailKeys: true,
       previewHlsKey: true,
-      // masterKey stays out of every catalogue query.
+      // This clip's OWN watermarked preview — what the frame at the top plays.
+      previewKey: true,
+      // masterKey and proxyKey stay out of every catalogue query.
       location: { select: { slug: true, nameAr: true, nameEn: true } },
       taxonomy: {
         select: { taxonomy: { select: { kind: true, slug: true, nameAr: true, nameEn: true } } },
@@ -86,7 +90,7 @@ async function getClip(slug: string) {
               titleEn: true,
               thumbnailKeys: true,
               durationS: true,
-              proxyKey: true,
+              previewKey: true,
             },
           },
         },
@@ -114,7 +118,7 @@ export async function generateMetadata({
       type: 'video.other',
       locale: 'ar_SA',
       title: pickLocalised(clip.titleAr, clip.titleEn),
-      images: clip.thumbnailKeys[0] ? [clip.thumbnailKeys[0]] : [],
+      images: [mediaUrl(clip.thumbnailKeys[0])].filter((url): url is string => !!url),
     },
   }
 }
@@ -136,6 +140,8 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
 
   const albumUrl = `/albums/${clip.album.creator.handle}/${clip.album.slug}`
   const siblings = clip.album.clips.filter((sibling) => sibling.id !== clip.id)
+  const poster = mediaUrl(clip.thumbnailKeys[0])
+  const preview = mediaUrl(clip.previewKey)
 
   return (
     <div className="container-tight py-16">
@@ -143,11 +149,38 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
 
       <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-6">
-          <div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
-            {clip.thumbnailKeys[0] ? (
-              <img src={clip.thumbnailKeys[0]} alt="" className="size-full object-cover" />
-            ) : null}
-            <PreviewWatermark />
+          <div className="relative aspect-video overflow-hidden rounded-lg border bg-ink">
+            {/*
+              The shot itself, moving. A buyer who clicked a clip is judging
+              the move — speed, stability, where it lands — and a still cannot
+              answer that. It plays THIS clip's own preview, never a sibling's
+              or a reel, letterboxed (`contain`) so a 9:16 shot stays 9:16.
+              No preview yet, or no CDN to serve it: the still, as before.
+            */}
+            {preview ? (
+              <AutoplayVideo
+                src={preview}
+                poster={poster}
+                fit="contain"
+                label={t('catalogue.altClipThumb', {
+                  clip: pickLocalised(clip.titleAr, clip.titleEn),
+                })}
+                className="absolute inset-0 size-full rounded-none"
+              />
+            ) : (
+              <>
+                {poster ? (
+                  <img
+                    src={poster}
+                    alt={t('catalogue.altClipThumb', {
+                      clip: pickLocalised(clip.titleAr, clip.titleEn),
+                    })}
+                    className="size-full object-contain"
+                  />
+                ) : null}
+                <PreviewWatermark />
+              </>
+            )}
             {/*
               How this footage was made, stated on the frame.
 
@@ -174,15 +207,15 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                 ? t('catalogue.originGenerated')
                 : t('catalogue.originCaptured')}
             </Badge>
-            <Badge variant="film" className="absolute end-3 top-3 z-[2]">
-              {t('catalogue.previewWatermarked')}
-            </Badge>
-            <Badge
-              variant="neutral"
-              className="numeric absolute bottom-3 end-3 bg-ink/80 backdrop-blur"
-            >
-              {formatDuration(Number(clip.durationS))}
-            </Badge>
+            {/* Duration sits under the watermark note at the end edge — the
+                bottom corners belong to the player's pause control and its
+                "muted" note when the shot is moving. */}
+            <div className="absolute end-3 top-3 z-[2] flex flex-col items-end gap-1.5">
+              <Badge variant="film">{t('catalogue.previewWatermarked')}</Badge>
+              <Badge variant="film" className="numeric">
+                {formatDuration(Number(clip.durationS))}
+              </Badge>
+            </div>
           </div>
 
           <header className="space-y-2">
@@ -283,9 +316,9 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                   slug: sibling.slug,
                   titleAr: sibling.titleAr,
                   titleEn: sibling.titleEn,
-                  durationS: sibling.durationS,
+                  durationS: Number(sibling.durationS),
                   thumbnailKeys: sibling.thumbnailKeys,
-                  previewKey: sibling.proxyKey?.startsWith('/') ? sibling.proxyKey : null,
+                  previewKey: sibling.previewKey,
                 }))}
               />
             </section>
@@ -377,7 +410,7 @@ function VideoJsonLd({
     description:
       pickLocalised(clip.descriptionAr, clip.descriptionEn) ??
       pickLocalised(clip.titleAr, clip.titleEn),
-    thumbnailUrl: clip.thumbnailKeys,
+    thumbnailUrl: clip.thumbnailKeys.map(mediaUrl).filter((url): url is string => !!url),
     // ISO-8601 duration.
     duration: `PT${Math.floor(seconds / 60)}M${seconds % 60}S`,
     url,

@@ -18,6 +18,7 @@ import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { FilterChips, SearchBox, Toolbar } from '@/components/dashboard/toolbar'
 import { StatusBadge, statusLabel, statusValues } from '@/components/dashboard/status'
 import { ActionButton } from '@/components/dashboard/form'
+import { TrailerEditor } from '@/components/admin/trailer-editor'
 import { setAlbumStatus, toggleAlbumFeatured } from '@/app/(admin)/admin/actions'
 import { formatMoney, formatNumber, t } from '@/lib/i18n'
 import type { Metadata } from 'next'
@@ -92,6 +93,7 @@ export default async function AdminCataloguePage({
         isFeatured: true,
         salesCount: true,
         clearedForCommercial: true,
+        trailerKey: true,
         creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
       },
     }),
@@ -149,6 +151,11 @@ export default async function AdminCataloguePage({
                             {t('commerce.clearedForCommercial')}
                           </span>
                         ) : null}
+                        {/* Stated in words, not by an icon's colour: the
+                            album page leads with this cut when it is set. */}
+                        <span className="mt-0.5 block text-2xs text-muted-foreground">
+                          {album.trailerKey ? t('dash.trailerSet') : t('dash.trailerNone')}
+                        </span>
                       </TableCell>
                       <TableCell className="max-w-[10rem] truncate text-muted-foreground">
                         <UserText>{album.creator.displayNameAr}</UserText>
@@ -175,6 +182,11 @@ export default async function AdminCataloguePage({
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap justify-end gap-1.5">
+                          <TrailerEditor
+                            albumId={album.id}
+                            albumSlug={album.slug}
+                            trailerKey={album.trailerKey}
+                          />
                           {album.status === 'live' ? (
                             <ActionButton
                               action={setAlbumStatus.bind(null, album.id, 'paused')}

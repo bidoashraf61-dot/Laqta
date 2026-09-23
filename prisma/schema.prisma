@@ -406,6 +406,10 @@ model Album {
   /// one is produced — the page then leads with the cover still instead of an
   /// empty player, which is the difference between "no trailer yet" and
   /// "broken".
+  ///
+  /// A key in the public media bucket (`trailers/<slug>.mp4`), a "/"-rooted
+  /// dev file, or a URL on the media CDN — resolved by `lib/media.ts`. Set by
+  /// `/admin/catalogue` or `npm run media:upload`.
   trailerKey    String?
 
   compareAtPrice Decimal? @db.Decimal(10, 2)
@@ -417,6 +421,9 @@ model Album {
   currency       String   @default("USD")
 
   coverClipId    String?
+  /// UNUSED — superseded by `trailerKey`, which nothing reads alongside. Kept
+  /// only because dropping a column is not an additive change on the shared
+  /// dev database. Do not write it.
   trailerUrl     String?
   clipCount      Int     @default(0)
   totalRuntimeS  Int     @default(0)
@@ -506,7 +513,14 @@ model Clip {
 
   // Object storage keys. Masters are never publicly addressable.
   masterKey     String?
+  /// The CLEAN editing proxy a buyer downloads from their library. Private,
+  /// in the masters bucket, reached only through `/api/download`. Never
+  /// rendered on a public page — that is `previewKey`.
   proxyKey      String?
+  /// The public, WATERMARKED 720p preview (`npm run media:previews`): a key in
+  /// the media bucket served from the CDN, or a "/"-rooted dev file. Resolved
+  /// by `lib/media.ts#mediaUrl`; NULL means the clip shows its poster.
+  previewKey    String?
   previewHlsKey String?
   thumbnailKeys String[] @default([])
   spriteKey     String?

@@ -1,0 +1,135 @@
+# لقطة — الجزء 2 من 10
+
+هذا الجزء فيه **126 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
+طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## landing
+> الصفحة الرئيسية — المفاتيح المنتهية بـ Lead و Bold سطران لعنوان واحد
+
+- `landing.heroLabel` :: مكتبة لقطات فيديو سعودية   ⟂ EN: Opening sequence
+- `landing.scrollHint` :: اسحب لاستكشاف المكتبة   ⟂ EN: Scroll down
+- `landing.heroLead` :: يوم تصوير كامل،   ⟂ EN: Authentic Saudi footage,
+- `landing.heroBold` :: في ألبوم واحد.   ⟂ EN: ready to publish today.
+- `landing.heroBody` :: لقطات فيديو سعودية عالية الجودة، متناسقة الألوان والإضاءة، جاهزة لمونتاج حملتك القادمة مباشرة. ادفع مرة واحدة، وتملك الألبوم للأبد.   ⟂ EN: Ready-to-use Saudi footage albums for content creators and companies, with a full commercial licence and a single payment, for life.
+- `landing.heroChipNoSub` :: بلا اشتراكات   ⟂ EN: No subscription
+- `landing.browseAlbums` :: استكشف الألبومات   ⟂ EN: Browse the albums
+- `landing.trustClips` :: لقطة   ⟂ EN: clips
+- `landing.trustAlbums` :: ألبوم   ⟂ EN: albums
+- `landing.trustRegions` :: منطقة   ⟂ EN: regions
+- `landing.trustCreators` :: صانع محتوى   ⟂ EN: creators
+- `landing.trustResolution` :: ‏1080p و 4K   ⟂ EN: 1080p and 4K
+- `landing.trustCleared` :: مرخّصة تجارياً بالكامل   ⟂ EN: Cleared for commercial use
+- `landing.audienceTitle` :: لمن صُمّمت لقطة؟   ⟂ EN: Who this library is for
+- `landing.audienceLead` :: إن كان مشروعك يستهدف السوق السعودي،   ⟂ EN: If your work is about Saudi Arabia,
+- `landing.audienceBold` :: فهذه مكتبتك.   ⟂ EN: this is your library.
+- `landing.audience1Title` :: وكالات الإعلان   ⟂ EN: Advertising agencies
+- `landing.audience1Body` :: مواد سينمائية جاهزة لحملات العلامات السعودية، لتركيب مباشر ودون تعقيدات إنتاجية.   ⟂ EN: Campaigns for Saudi brands, with material you never have to apologise for.
+- `landing.audience2Title` :: الجهات الحكومية وشبه الحكومية   ⟂ EN: Government and semi-government
+- `landing.audience2Body` :: فواتير ضريبية، أوامر شراء، تحويل بنكي، وتصاريح موثّقة لكل لقطة.   ⟂ EN: Tax invoice, purchase order, bank transfer, and documented clearance on every shot.
+- `landing.audience3Title` :: فرق التسويق الداخلية   ⟂ EN: In-house marketing teams
+- `landing.audience3Body` :: أرشيف بصري جاهز يغنيك عن الميزانيات الضخمة وتنظيم أيام التصوير لكل حملة.   ⟂ EN: A ready library that saves you a full shoot day per campaign.
+- `landing.audience4Title` :: شركات الإنتاج   ⟂ EN: Production companies
+- `landing.audience4Body` :: مشاهد تأسيسية ولقطات ربط بجودة سينمائية وهيئة بصرية موحدة.   ⟂ EN: Connecting shots and establishers at cinematic quality with consistent specs.
+- `landing.featuredTitle` :: ألبومات مختارة هذا الأسبوع   ⟂ EN: Selected albums
+- `landing.featuredSubtitle` :: لقطات متناسقة تركّبها مباشرة في خطك الزمني   ⟂ EN: Albums that cut together on one timeline
+- `landing.locationsTitle` :: تصفّح حسب الموقع   ⟂ EN: Browse by location
+- `landing.locationsSubtitle` :: مشاهد سينمائية من معالم الرياض إلى عمق الربع الخالي   ⟂ EN: From Riyadh to the Empty Quarter
+- `landing.categoriesTitle` :: تصفّح حسب التصنيف   ⟂ EN: Browse by category
+- `landing.categoriesSubtitle` :: مشاهد جوية، تراث، أعمال، طبيعة، وغيرها   ⟂ EN: Aerial, heritage, business, nature and more
+- `landing.newTitle` :: أحدث الإضافات   ⟂ EN: New this week
+- `landing.newSubtitle` :: ألبومات جديدة أُضيفت هذا الأسبوع   ⟂ EN: The latest additions to the library
+- `landing.creatorsTitle` :: صنّاع المحتوى   ⟂ EN: Creators
+- `landing.creatorsSubtitle` :: عدسات محترفة تدرك تفاصيل الموقع والضوء والهوية المحلية   ⟂ EN: They know the location, the season and the light
+- `landing.howTitle` :: بثلاث خطوات، ألبومك في خط المونتاج   ⟂ EN: How does Laqta work?
+- `landing.howStep1Title` :: اختر الألبوم   ⟂ EN: Browse & watch the trailer
+- `landing.howStep1Body` :: استعرض التريلر وتأكد من تناسق اللقطات مع فكرة حملتك.   ⟂ EN: Watch the trailer and browse every shot in the album before you pay. Nothing is hidden behind the purchase.
+- `landing.howStep2Title` :: ادفع مرة واحدة   ⟂ EN: Buy the full album
+- `landing.howStep2Body` :: ترخيص تجاري شامل وبلا اشتراكات شهرية.   ⟂ EN: Pay once to get the album with all its shots — no subscriptions.
+- `landing.howStep3Title` :: حمّل واشتغل   ⟂ EN: Download & own forever
+- `landing.howStep3Body` :: ملفات جاهزة للمونتاج بدقة عالية وبلا علامات مائية.   ⟂ EN: Get the files in original resolution instantly, with a permanent license for your projects.
+- `landing.positioning` :: بلا اشتراكات شهريّة. ادفع مرة واحدة وامتلك المحتوى للأبد.   ⟂ EN: No subscriptions. Buy once, own it forever.
+- `landing.sellTitle` :: عندك أرشيف لقطات سعودية؟   ⟂ EN: Sitting on an archive? Turn it into income.
+- `landing.sellBody` :: انضم إلى منصة «لقطة»، حوّل مشاهدك إلى ألبومات متكاملة، وحقّق أرباحاً مع كل عملية بيع.   ⟂ EN: Every shot you filmed and never used, and every scene you generated with AI, can sell more than once. Publish an album on Laqta once, keep the larger share of every sale, and let it earn while you work on the next thing.
+- `landing.sellCta` :: بِع لقطاتك معنا   ⟂ EN: Start selling
+- `landing.notifyTitle` :: كن أول من يعلم عند الإطلاق   ⟂ EN: Tell me at launch
+- `landing.notifyBody` :: أدخل بريدك الإلكتروني وسنخطرك فور افتتاح الشراء بالمكتبة.   ⟂ EN: Leave your email and we'll write the moment the library opens.
+- `landing.notifyPlaceholder` :: أدخل بريدك الإلكتروني   ⟂ EN: Your email
+- `landing.notifyCta` :: اشترك الآن   ⟂ EN: Notify me
+- `landing.notifyThanks` :: تم بنجاح — سنراسلك عند الإطلاق.   ⟂ EN: Done — we'll be in touch at launch.
+- `landing.notifyInvalid` :: يُرجى إدخال بريد إلكتروني صحيح   ⟂ EN: Enter a valid email address
+- `landing.viewAll` :: استعرض الكل   ⟂ EN: View all
+- `landing.clipCount` :: {count} لقطة   ⟂ EN: {count} clips
+- `landing.albumCount` :: {count} ألبوم   ⟂ EN: {count} albums
+- `landing.wallLead` :: شريط سينمائي واحد،   ⟂ EN: Browse by the clip,
+- `landing.wallBold` :: لقصتك كاملة   ⟂ EN: buy by the album.
+- `landing.wallHint` :: مشاهد تأسيسية، لقطات ربط، وتفاصيل قريبة أُنتجت لتكتمل بها رؤيتك.   ⟂ EN: Tap any clip to open its album
+- `landing.collectionLead` :: ألبومات بصريّة متكاملة،   ⟂ EN: Ready Saudi collections,
+- `landing.collectionBold` :: تخدم كل قصة وحملة إعلانية.   ⟂ EN: for every story and occasion.
+- `landing.collectionBody` :: مجموعات احترافية تختصر عليك أياماً من التحضير والتصوير.   ⟂ EN: Albums that save a whole shoot day.
+- `landing.licenseLead` :: ترخيص تجاري واحد.   ⟂ EN: One licence,
+- `landing.licenseBold` :: بلا تعقيد.   ⟂ EN: and no question after it.
+- `landing.licenseBody` :: ترخيص تجاري كامل يشمل جميع الاستخدامات الإعلانية والتلفزيونية والرقمية، بلا حد على عدد المشاهدات، وبلا تاريخ انتهاء. ادفع مرة واحدة، تملك الألبوم للأبد.   ⟂ EN: Buy the album and you may use it in any project, for any client, with no cap on views and no expiry date.
+- `landing.licenseCta` :: استعرض بنود الترخيص   ⟂ EN: License details
+- `landing.lic1Title` :: ترخيص تجاري شامل   ⟂ EN: Full commercial license
+- `landing.lic1Body` :: استخدم المحتوى بحرية كاملة في مشاريعك التسويقية والإعلانية دون تكاليف مستترة.   ⟂ EN: Use the footage freely across your commercial and marketing projects, with no extra fees.
+- `landing.lic2Title` :: محتوى سعودي موثّق   ⟂ EN: Reviewed Saudi content
+- `landing.lic2Body` :: مراجعة دقيقة لكل ألبوم: الزي، الموقع، والتفاصيل الثقافية التي يدركها الجمهور المحلي.   ⟂ EN: A Saudi team reviews every album before it is published: the location, the dress, the details only a local viewer catches.
+- `landing.lic3Title` :: تسلسل بصري متناسق   ⟂ EN: A complete story per album
+- `landing.lic3Body` :: لقطات صُوّرت بنفس الإضاءة والموقع، لتدمجها مباشرة في خطك الزمني بلا عناء تعديل الألوان.   ⟂ EN: Shots from one location in one light, so they cut together on a single timeline without regrading.
+- `landing.lic4Title` :: ملكية دائمة ومدى الحياة   ⟂ EN: Permanent lifetime ownership
+- `landing.lic4Body` :: ادفع مرة واحدة فقط واحتفظ بالألبوم في مكتبتك مدى الحياة بلا رسوم تجديد.   ⟂ EN: Pay once and keep ownership of the album for life — no subscriptions.
+- `landing.faqLead` :: الأسئلة الشائعة،   ⟂ EN: Frequently asked questions,
+- `landing.faqBold` :: إجابات مباشرة لكل استفساراتك.   ⟂ EN: everything you need to know.
+- `landing.faq1Q` :: هل يمكنني شراء لقطة واحدة من الألبوم؟   ⟂ EN: How do I receive the album after purchase?
+- `landing.faq1A` :: تُباع اللقطات كألبومات كاملة فقط، لضمان حصولك على مشاهد متناسقة تخدم قصة مشروعك بالكامل.   ⟂ EN: The moment payment completes, you get direct, instant download links for the files in original quality.
+- `landing.faq2Q` :: ما الذي يغطيه الترخيص التجاري؟   ⟂ EN: Can I use the footage in commercial ads?
+- `landing.faq2A` :: يغطي جميع الاستخدامات التجارية والإعلانية عبر شبكات التواصل، والتلفزيون، والمنصات الرقمية، واللوحات الإعلانية، بلا حد للمشاهدات.   ⟂ EN: Yes — the full commercial license lets you use the footage across your advertising and marketing projects with no extra fees.
+- `landing.faq3Q` :: هل توجد اشتراكات شهرية؟   ⟂ EN: Do I need a monthly or yearly subscription?
+- `landing.faq3A` :: لا. ادفع سعر الألبوم مرة واحدة فقط وتملّك لقطاته للأبد.   ⟂ EN: No. You pay once and own the album for life, with no recurring fees and nothing hidden.
+- `landing.faq4Q` :: كيف أحصل على فاتورة ضريبية لشركتي؟   ⟂ EN: Is the content valid for future projects?
+- `landing.faq4A` :: تُصدر الفاتورة الضريبية فور إتمام الشراء، كما نوفّر خيارات التحويل البنكي وأوامر الشراء للجهات والشركات.   ⟂ EN: Yes — the license lets you use the album across current and upcoming projects on the same topic, with no time limits.
+- `landing.faq5Q` :: ما هي صيغ الملفات المتاحة للتحميل؟   ⟂ EN: How many shots are in each album?
+- `landing.faq5A` :: تتلقى ملفات فيديو عالية الجودة (نسخة المونتاج) جاهزة للدمج في برنامج المونتاج الخاص بك.   ⟂ EN: Album size varies by story. Every album states its shot count and runtime on its card and on its page.
+- `landing.offersLead` :: العروض الحصرية،   ⟂ EN: The newest albums,
+- `landing.offersBold` :: بأسعار الإطلاق الاستثنائية.   ⟂ EN: at launch prices.
+- `landing.offersHint` :: السعر المشطوب هو السعر الأساسي. تدفع السعر المخفّض وتمتلك الألبوم مدى الحياة.   ⟂ EN: The struck-through figure is the usual price. You pay the smaller one, and own the album forever.
+- `landing.shelfLead` :: جميع الألبومات المتاحة،   ⟂ EN: Every album available,
+- `landing.shelfBold` :: اختر الألبوم المناسب وابدأ المونتاج.   ⟂ EN: pick one and start.
+- `landing.heroExplore` :: تصفّح الألبومات   ⟂ EN: Explore Shoots
+- `landing.heroWatchTrailer` :: كيف تعمل لقطة؟   ⟂ EN: Watch Trailer
+- `landing.problemLead` :: لقطات من موقع واحد،   ⟂ EN: Shot in one place,
+- `landing.problemBold` :: بضوء واحد وهوية واحدة.   ⟂ EN: in one light, with one look.
+- `landing.problemBody` :: شراء لقطة من الشرق ولقطة من الغرب ينسخ هوية إعلانك البصرية، وتنظيم يوم تصوير كامل يلتهم ميزانيتك ويوماً كاملاً من وقتك. «لقطة» تجمع لك من ١٠ إلى ٢٤ لقطة متجانسة في ألبوم واحد، مصوّرة في نفس الموقع، بنفس الإضاءة، ونفس الهوية.   ⟂ EN: A single shoot day in Saudi Arabia costs more than a whole album, and takes weeks between the permit, the location and the edit. The album is ready now, at a price you know before you start.
+- `landing.collectionViewAll` :: عرض كل الألبومات   ⟂ EN: Browse all albums
+- `landing.priceLead` :: ألبوم كامل   ⟂ EN: No subscription, no monthly credits that expire —
+- `landing.priceBold` :: بسعر لقطة مفردة   ⟂ EN: pay once and own it for life.
+- `landing.priceSub` :: سعر محدد للألبوم بكامل الحقوق التجارية. لا تكاليف مستترة ولا رسوم إضافية حسب حجم المشروع.   ⟂ EN: One price per album, with full rights. No usage fees, and no difference between one project and the next.
+- `landing.price1Title` :: ملكية دائمة   ⟂ EN: Albums in different sizes
+- `landing.price1Body` :: ادفع مرة واحدة وشغّل الألبوم في كل مشروع قادم.   ⟂ EN: Every album states its shot count, its runtime and its price, so you can pick the size that fits your story and your budget.
+- `landing.price2Title` :: توفير الوقت   ⟂ EN: One-time purchase, no limits
+- `landing.price2Body` :: اختصر أيام التصوير والإعداد إلى دقائق من التصفّح.   ⟂ EN: Pay once and use the content across all your future projects, with no time limits.
+- `landing.price3Title` :: جودة متناسقة   ⟂ EN: Available for everyone
+- `landing.price3Body` :: لقطات متناغمة الألوان تخلق تسلسلاً سينمائياً طبيعياً.   ⟂ EN: From $79 for a small album — within reach of a freelancer, with a tax invoice government bodies accept.
+- `landing.priceCta` :: اختر ألبومك وابدأ المونتاج   ⟂ EN: Discover albums & start now
+- `landing.finalCtaLead` :: جاهز تبدأ   ⟂ EN: Save production hours,
+- `landing.finalCtaBold` :: مونتاج حملتك؟   ⟂ EN: and start cutting today.
+- `landing.finalCtaButton` :: استعرض الألبومات الآن   ⟂ EN: Explore Shoots
+- `landing.footerTagline` :: وجهتك الأولى للمحتوى البصري السعودي الأصيل.   ⟂ EN: Your first choice for authentic Saudi content.
+- `landing.problemStillAlt` :: مشهد من ألبومات لقطة: العلا خلال الساعة الذهبية   ⟂ EN: A frame from the Laqta catalogue: AlUla rock formations at golden hour
+- `landing.sellNote` :: مرحب بكافة صنّاع المحتوى في السعودية — مصوّرين، مشغّلي درون، ومبدعي الذكاء الاصطناعي.   ⟂ EN: Open to every kind of Saudi creator — filmmakers, drone operators and AI filmmakers alike.
+- `landing.seasonEyebrow` :: الأكثر طلباً   ⟂ EN: In season now
+- `landing.seasonLead` :: جاهز للموسم الحالي   ⟂ EN: Ready for
+- `landing.seasonBody` :: ألبومات مخصصة للمناسبة الحالية — حمّلها الآن وادعم عملك بمحتوى سينمائي جاهز.   ⟂ EN: Albums picked for this occasion — download today and start cutting before the season does.
+- `landing.offersEyebrow` :: أسعار الإطلاق   ⟂ EN: Launch offers
+- `landing.offersBody` :: ألبومات متكاملة بترخيص تجاري شامل بأسعار حصرية لفترة محدودة.   ⟂ EN: Ready-to-use albums with a full commercial licence, at launch pricing for a limited time.
+- `landing.deckLabel` :: دليل آليات العمل، الأسعار، والإجابات الشائعة   ⟂ EN: How Laqta works, pricing, and frequently asked questions
+- `landing.usp1` :: مواقع سعودية حقيقية   ⟂ EN: Actually shot in Saudi Arabia
+- `landing.usp1Note` :: توثيق واقعي من قلب المملكة، بعيداً عن المشاهد العامة   ⟂ EN: Real locations, not generic Gulf footage
+- `landing.usp2` :: ادفع مرة واحدة، وامتلك للأبد   ⟂ EN: Pay once, own it for life
+- `landing.usp2Note` :: بدون اشتراكات دورية أو نقاط منتهية الصلاحية   ⟂ EN: No subscription, no monthly credits that expire
+- `landing.usp3` :: ترخيص تجاري شامل   ⟂ EN: Full commercial licence
+- `landing.usp3Note` :: استغلال كامل بلا حدود على المبيعات أو المشاهدات   ⟂ EN: With no cap on views, anywhere
+- `landing.usp4` :: تصاريح موثّقة بالكامل   ⟂ EN: Permits and locations cleared
+- `landing.usp4Note` :: جاهزة للاستخدام في الحملات التجارية بثقة وأمان تام   ⟂ EN: Ready for paid campaigns without the worry
+- `landing.uspRailLabel` :: لماذا تختار لقطة؟   ⟂ EN: Why Laqta

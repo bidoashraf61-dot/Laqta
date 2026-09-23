@@ -1,0 +1,149 @@
+# لقطة — الجزء 7 من 10
+
+هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
+طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## dash
+> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
+
+- `dash.sectionOverview` :: نظرة عامة
+- `dash.sectionContent` :: المحتوى
+- `dash.sectionMoney` :: المال
+- `dash.sectionSettings` :: الإعدادات
+- `dash.sectionOperations` :: التشغيل
+- `dash.sectionCatalogue` :: الكتالوج
+- `dash.overview` :: الملخّص
+- `dash.analytics` :: التحليلات
+- `dash.payouts` :: التحويلات
+- `dash.settings` :: الإعدادات
+- `dash.merchandising` :: الواجهة والعرض
+- `dash.promos` :: أكواد الخصم
+- `dash.viewSite` :: عرض الموقع
+- `dash.expand` :: توسيع القائمة
+- `dash.collapse` :: طي القائمة
+- `dash.range7` :: ٧ أيام
+- `dash.range30` :: ٣٠ يوماً
+- `dash.range90` :: ٩٠ يوماً
+- `dash.rangeLabel` :: المدة
+- `dash.vsPrevious` :: مقارنة بالفترة السابقة
+- `dash.views` :: المشاهدات
+- `dash.purchases` :: المبيعات
+- `dash.revenue` :: الإيرادات
+- `dash.conversion` :: نسبة التحويل
+- `dash.cartAdds` :: إضافات السلة
+- `dash.boardAdds` :: إضافات الألواح
+- `dash.trendViews` :: المشاهدات يومياً
+- `dash.trendRevenue` :: الإيرادات يومياً
+- `dash.trendPurchases` :: المبيعات يومياً
+- `dash.funnel` :: من المشاهدة إلى الشراء
+- `dash.topAlbums` :: الأكثر أداءً
+- `dash.noData` :: لا توجد بيانات في هذه الفترة
+- `dash.noDataHint` :: ستظهر الأرقام هنا فور أول مشاهدة أو عملية بيع.
+- `dash.welcome` :: أهلاً، {name}
+- `dash.todayIs` :: ملخّص آخر {days} يوماً
+- `dash.needsAttention` :: يحتاج انتباهك
+- `dash.allClear` :: لا يوجد ما يحتاج تدخلاً الآن
+- `dash.quickActions` :: إجراءات سريعة
+- `dash.newAlbumHint` :: ابدأ بالعنوان والوصف واختر الشريحة. تُضاف اللقطات بعد الإنشاء.
+- `dash.albumTitleAr` :: عنوان الألبوم بالعربية
+- `dash.albumTitleEn` :: عنوان الألبوم بالإنجليزية
+- `dash.albumDescAr` :: الوصف بالعربية
+- `dash.albumDescEn` :: الوصف بالإنجليزية
+- `dash.albumTier` :: الشريحة
+- `dash.albumTierHint` :: الشريحة تحدّد السعر تلقائياً حسب عدد اللقطات — لا تُدخل سعراً يدوياً.
+- `dash.create` :: إنشاء
+- `dash.albumsManager` :: إدارة الألبومات
+- `dash.albumsManagerHint` :: كل ألبوماتك وحالتها وسعرها في مكان واحد.
+- `dash.filterAll` :: الكل
+- `dash.searchAlbums` :: ابحث في ألبوماتك
+- `dash.searchCreators` :: ابحث باسم صانع المحتوى أو المعرّف   ⟂ EN: Search by creator name or handle
+- `dash.searchOrders` :: ابحث برقم الطلب أو بريد المشتري
+- `dash.column` :: العمود
+- `dash.colAlbum` :: الألبوم
+- `dash.colStatus` :: الحالة
+- `dash.colClips` :: اللقطات
+- `dash.colPrice` :: السعر
+- `dash.colUpdated` :: آخر تحديث
+- `dash.colViews` :: المشاهدات
+- `dash.colSales` :: المبيعات
+- `dash.colRevenue` :: الإيرادات
+- `dash.colCreator` :: صانع المحتوى   ⟂ EN: Creator
+- `dash.colDate` :: التاريخ
+- `dash.colAmount` :: المبلغ
+- `dash.colStatusShort` :: الحالة
+- `dash.openAlbum` :: فتح
+- `dash.rowsCount` :: {count} صف
+- `dash.releasesTitle` :: التصاريح والتراخيص
+- `dash.releasesHint` :: تصاريح النماذج والمواقع والتصوير. اللقطات التي فيها وجوه واضحة لا تُنشر بدون تصريح نموذج.
+- `dash.releaseModel` :: تصريح نموذج
+- `dash.releaseProperty` :: تصريح موقع
+- `dash.releasePermit` :: تصريح تصوير
+- `dash.releasePending` :: قيد التحقق
+- `dash.releaseVerified` :: موثّق
+- `dash.releaseRejected` :: مرفوض
+- `dash.releaseAuthority` :: الجهة المُصدِرة
+- `dash.releaseSubject` :: الاسم / الجهة
+- `dash.releaseValidity` :: سريان التصريح
+- `dash.releaseClips` :: لقطات مرتبطة
+- `dash.noReleases` :: لا توجد تصاريح بعد
+- `dash.addRelease` :: إضافة تصريح
+- `dash.releaseType` :: نوع التصريح
+- `dash.releaseRef` :: الرقم المرجعي
+- `dash.releaseNotes` :: ملاحظات
+- `dash.validFrom` :: ساري من
+- `dash.validTo` :: ساري حتى
+- `dash.releaseFileNote` :: سجّل بيانات التصريح الآن؛ إرفاق نسخة المستند يتطلب تفعيل التخزين السحابي.
+- `dash.linkClips` :: ربط اللقطات
+- `dash.linkClipsHint` :: اختر اللقطات التي يغطّيها هذا التصريح. اللقطات التي فيها وجوه واضحة لا تُنشر بدون تصريح نموذج.
+- `dash.noLinkableClips` :: لا توجد لقطات قابلة للربط
+- `dash.saveLinks` :: حفظ الروابط
+- `dash.linkedCount` :: {count} لقطة مرتبطة
+- `dash.payoutsHint` :: اطلب تحويل رصيدك المتاح. يُراجع الطلب ثم يُحوَّل عبر القناة المسجّلة في إعداداتك.
+- `dash.payoutRequested` :: أُرسل الطلب
+- `dash.payoutMethod` :: قناة التحويل
+- `dash.payoutAmount` :: المبلغ
+- `dash.payoutNet` :: الصافي بعد الاستقطاع
+- `dash.payoutHistory` :: سجل التحويلات
+- `dash.noPayouts` :: لا توجد تحويلات بعد
+- `dash.statusRequested` :: بانتظار المراجعة
+- `dash.statusApproved` :: معتمد
+- `dash.statusProcessing` :: قيد التنفيذ
+- `dash.statusPaid` :: حُوّل
+- `dash.statusFailed` :: فشل
+- `dash.methodIban` :: حوالة بنكية (IBAN)
+- `dash.methodPayoneer` :: Payoneer
+- `dash.methodWise` :: Wise
+- `dash.belowMinimum` :: الحد الأدنى للتحويل {amount}
+- `dash.nothingAvailable` :: لا يوجد رصيد متاح للسحب الآن
+- `dash.profile` :: الملف التعريفي
+- `dash.profileHint` :: هذا ما يراه المشترون في صفحتك العامة.
+- `dash.displayNameAr` :: الاسم المعروض بالعربية
+- `dash.displayNameEn` :: الاسم المعروض بالإنجليزية
+- `dash.handle` :: المعرّف
+- `dash.handleHint` :: يظهر في رابط صفحتك
+- `dash.bioAr` :: نبذة بالعربية
+- `dash.bioEn` :: نبذة بالإنجليزية
+- `dash.country` :: الدولة
+- `dash.showreel` :: رابط الشوريل
+- `dash.payoutSettings` :: بيانات التحويل
+- `dash.payoutSettingsHint` :: تُجمَّد هذه البيانات لحظة اعتماد كل تحويل، فتغييرها لاحقاً لا يؤثّر على تحويل قيد التنفيذ.
+- `dash.iban` :: رقم الآيبان
+- `dash.bankName` :: اسم البنك
+- `dash.beneficiary` :: اسم المستفيد
+- `dash.payoneerEmail` :: بريد Payoneer
+- `dash.wiseEmail` :: بريد Wise
+- `dash.taxResidency` :: الإقامة الضريبية
+- `dash.saved` :: تم الحفظ
+- `dash.commissionShare` :: حصّتك من كل عملية بيع
+- `dash.tierStandard` :: قياسي   ⟂ EN: Standard
+- `dash.tierSilver` :: فضي   ⟂ EN: Silver
+- `dash.tierGold` :: ذهبي   ⟂ EN: Gold
+- `dash.tierHint` :: ترتفع حصّتك تلقائياً مع إجمالي مبيعاتك.
+- `dash.exclusive` :: حصري   ⟂ EN: Exclusive
+- `dash.queueTitle` :: قائمة المراجعة
+- `dash.queueHint` :: الألبومات المنتظرة قرارك، مرتّبة بالموعد النهائي.
+- `dash.queueEmpty` :: القائمة فارغة — لا يوجد ما يُراجع
+- `dash.overdue` :: تجاوز الموعد
+- `dash.dueToday` :: اليوم
+- `dash.unassigned` :: غير مُسنَد

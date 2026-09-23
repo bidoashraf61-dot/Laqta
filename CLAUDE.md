@@ -129,7 +129,10 @@ a regression fails the suite rather than reaching an operator.
   entitlement is served from `OrderItem.clipManifestSnapshot`; commission is
   frozen at purchase.
 - Payments (`lib/payments.ts`) and storage (`lib/storage.ts`) are behind driver
-  interfaces with honest local drivers — no gateway/S3 yet.
+  interfaces. Payments: bank transfer + Paymob card/Apple Pay (dormant until the
+  `PAYMOB_*` env is set; the signed webhook settles through the same
+  `settleOrder` as the admin). Mail: Resend, dormant until `MAIL_*` is set.
+  Storage: honest local driver — S3 + CloudFront is in progress.
 - Hero video is staged in `public/hero/vid/` (gitignored); wiring is gated on a
   user go-signal.
 

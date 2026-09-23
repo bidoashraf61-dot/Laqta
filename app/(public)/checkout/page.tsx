@@ -6,6 +6,7 @@ import { availableMethods } from '@/lib/payments'
 import { CheckoutForm } from '@/components/checkout/checkout-form'
 import { formatMoney, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
+import { Bilingual } from '@/components/ui/bilingual'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -56,7 +57,9 @@ export default async function CheckoutPage() {
       <div className="mb-6 space-y-1 rounded-lg border bg-card p-4">
         {cart.items.map((item) => (
           <div key={item.id} className="flex justify-between gap-4 text-sm">
-            <span className="truncate">{item.album.titleAr}</span>
+            <span className="truncate">
+              <Bilingual ar={item.album.titleAr} en={item.album.titleEn} />
+            </span>
             <span className="numeric">{formatMoney(Number(item.unitPrice), currency)}</span>
           </div>
         ))}

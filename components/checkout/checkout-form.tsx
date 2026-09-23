@@ -48,11 +48,23 @@ export function CheckoutForm({
   const [method, setMethod] = useState<PaymentMethod>(methods[0] ?? 'bank_transfer')
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<{ orderNumber: string; settled: boolean } | null>(null)
+  const [redirecting, setRedirecting] = useState(false)
+
+  // Card and Apple Pay are paid on Paymob's hosted page; bank transfer is not.
+  const hosted = method === 'card' || method === 'apple_pay'
+  const gatewayOffered = methods.some((option) => option === 'card' || option === 'apple_pay')
 
   function onSubmit(formData: FormData) {
     setError(null)
     startTransition(async () => {
       const result = await placeOrder(formData)
+      if (result.ok && result.redirectUrl) {
+        // A full navigation, not the router: the hosted checkout is another
+        // origin. The button stays locked so the order cannot be placed twice.
+        setRedirecting(true)
+        window.location.assign(result.redirectUrl)
+        return
+      }
       if (result.ok) {
         setDone({ orderNumber: result.orderNumber, settled: result.settled })
         return
@@ -172,10 +184,17 @@ export function CheckoutForm({
         <input type="hidden" name="method" value={method} />
 
         {/* Said plainly rather than shown as a disabled button nobody can
-            explain. Card, Apple Pay and BNPL land when a gateway is signed. */}
-        <Alert variant="info">
-          <AlertDescription>{t('checkout.gatewayPending')}</AlertDescription>
-        </Alert>
+            explain. Card and Apple Pay appear once Paymob is configured. */}
+        {gatewayOffered ? null : (
+          <Alert variant="info">
+            <AlertDescription>{t('checkout.gatewayPending')}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* The one thing a buyer should know before leaving the page. */}
+        {hosted ? (
+          <p className="text-sm text-muted-foreground">{t('checkout.redirectNote')}</p>
+        ) : null}
       </section>
 
       {error ? (
@@ -184,8 +203,20 @@ export function CheckoutForm({
         </Alert>
       ) : null}
 
-      <Button type="submit" variant="gold" size="lg" className="w-full" disabled={pending}>
-        {pending ? t('state.loading') : t('checkout.placeOrder')}
+      <Button
+        type="submit"
+        variant="gold"
+        size="lg"
+        className="w-full"
+        disabled={pending || redirecting}
+      >
+        {redirecting
+          ? t('checkout.redirecting')
+          : pending
+            ? t('state.loading')
+            : hosted
+              ? t('checkout.continueToPayment')
+              : t('checkout.placeOrder')}
       </Button>
     </form>
   )

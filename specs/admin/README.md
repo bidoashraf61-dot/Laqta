@@ -39,7 +39,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/catalogue` | Live catalogue: pause, resume, feature, delist; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
 | `/admin/taxonomy` | Categories, locations, tags, themes and the search synonym layer. | [admin-taxonomy.md](admin-taxonomy.md) |
 | `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles. | [admin-merchandising.md](admin-merchandising.md) |
-| `/admin/orders` | Find orders, settle a bank transfer, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
+| `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination) and mark them paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
 | `/admin/reports` | Zero-result search report plus the last 50 audit entries. Read-only. | [admin-reports.md](admin-reports.md) |
@@ -53,6 +53,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
   `/admin/review`, `/admin/disputes`, `/admin/payouts`, `/admin/taxonomy`.
 - `verify:money` covers the refund path (`lib/admin.refundOrderItem`).
+- `verify:payments` covers the Paymob callback into `settleOrder` and the derived
+  webhook/manual source shown on `/admin/orders` (handler level, not the rendered row).
 - `verify:entitlement` covers the order snapshot.
 - `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin.
 
@@ -65,3 +67,5 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.
 - `PriceBand` has no editor anywhere.
+- A refund or void done in the Paymob dashboard is only *flagged* on `/admin/orders`
+  (`reversed_at_gateway`); nothing reverses the Laqta ledger automatically.

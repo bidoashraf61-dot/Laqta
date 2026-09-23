@@ -13,6 +13,15 @@ import { markOrderPaid } from '@/app/(admin)/admin/actions'
 import { formatDate, formatMoney, formatPercent, t } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
+import { settlementSource } from '@/lib/paymob-callback'
+
+/** Gateway outcomes an operator has to look at. Everything else is routine. */
+const FLAGGED_OUTCOMES = [
+  'amount_mismatch',
+  'integration_mismatch',
+  'reversed_at_gateway',
+  'order_not_pending',
+] as const
 
 export async function generateMetadata(): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
@@ -78,6 +87,11 @@ export default async function AdminOrdersPage({
             creator: { select: { displayNameAr: true } },
           },
         },
+        paymentEvents: {
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+          select: { outcome: true },
+        },
       },
     }),
     db.order.groupBy({ by: ['status'], _count: { status: true } }),
@@ -104,89 +118,133 @@ export default async function AdminOrdersPage({
         <EmptyState title={t('dash.noOrders')} description={t('dash.ordersHint')} />
       ) : (
         <div className="space-y-3">
-          {orders.map((order) => (
-            <Panel key={order.id}>
-              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="flex flex-wrap items-center gap-2 font-medium">
-                    <span className="ltr-island">{order.orderNumber}</span>
-                    <StatusBadge domain="order" value={order.status} />
-                  </h2>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    <span className="ltr-island">{order.user.email}</span>
-                    {' · '}
-                    <span className="numeric">{formatDate(order.createdAt)}</span>
-                    {order.paymentMethod ? (
-                      <>
-                        {' · '}
-                        <span className="ltr-island">{order.paymentMethod}</span>
-                      </>
-                    ) : null}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="numeric text-lg font-bold text-gold">
-                    {formatMoney(Number(order.total), order.currency)}
-                  </p>
-                  {order.status === 'pending' ? (
-                    <ActionButton
-                      action={markOrderPaid.bind(null, order.id)}
-                      label={t('dash.confirmPaid')}
-                      confirm={t('dash.confirmPaid')}
-                    />
-                  ) : null}
-                </div>
-              </div>
-
-              <ul className="divide-y divide-border/60">
-                {order.items.map((item) => {
-                  const remaining = Number(item.grossAmount) - Number(item.refundedAmount)
-                  return (
-                    <li key={item.id} className="py-3">
-                      <div className="flex flex-wrap items-baseline justify-between gap-3">
-                        <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                          <Bilingual ar={item.album.titleAr} en={item.album.titleEn} />
-                        </span>
-                        <UserText className="truncate text-xs text-muted-foreground">
-                          {item.creator.displayNameAr}
-                        </UserText>
-                        <span className="numeric text-sm">
-                          {formatMoney(Number(item.grossAmount), order.currency)}
-                        </span>
-                      </div>
-
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {t('commerce.licence')}: {t('commerce.licenceCommercial')}
-                        {' · '}
-                        {t('dash.commissionShare')}{' '}
-                        <span className="numeric">
-                          {formatPercent(Number(item.commissionRate), 0)}
-                        </span>
-                        {Number(item.refundedAmount) > 0 ? (
+          {orders.map((order) => {
+            const source = settlementSource(order.status, order.paymentEvents)
+            const hosted = order.paymentMethod === 'card' || order.paymentMethod === 'apple_pay'
+            const flagged = Array.from(
+              new Set(
+                order.paymentEvents
+                  .map((event) => event.outcome)
+                  .filter((outcome) => (FLAGGED_OUTCOMES as readonly string[]).includes(outcome)),
+              ),
+            )
+            return (
+              <Panel key={order.id}>
+                <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="flex flex-wrap items-center gap-2 font-medium">
+                      <span className="ltr-island">{order.orderNumber}</span>
+                      <StatusBadge domain="order" value={order.status} />
+                    </h2>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      <span className="ltr-island">{order.user.email}</span>
+                      {' · '}
+                      <span className="numeric">{formatDate(order.createdAt)}</span>
+                      {order.paymentMethod ? (
+                        <>
+                          {' · '}
+                          <span className="ltr-island">{order.paymentMethod}</span>
+                        </>
+                      ) : null}
+                    </p>
+                    {order.gatewayRef || source ? (
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {order.gatewayRef ? (
                           <>
-                            {' · '}
-                            {t('dash.refundedAmount')}{' '}
-                            <span className="numeric text-clay">
-                              {formatMoney(Number(item.refundedAmount), order.currency)}
-                            </span>
+                            {t('dash.gatewayRef')}:{' '}
+                            <span className="ltr-island">{order.gatewayRef}</span>
+                          </>
+                        ) : null}
+                        {order.gatewayRef && source ? ' · ' : null}
+                        {source ? (
+                          <>
+                            {t('dash.settledVia')}:{' '}
+                            {source === 'webhook'
+                              ? t('dash.settledWebhook')
+                              : t('dash.settledManual')}
                           </>
                         ) : null}
                       </p>
+                    ) : null}
+                    {flagged.length > 0 ? (
+                      <ul className="mt-1 space-y-0.5 text-xs text-clay">
+                        {flagged.map((outcome) => (
+                          <li key={outcome}>
+                            {t('dash.gatewayFlag')}: {t(`dash.gatewayOutcome_${outcome}`)}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {order.status === 'pending' && hosted ? (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {t('dash.gatewayCardPendingHint')}
+                      </p>
+                    ) : null}
+                  </div>
 
-                      {order.status === 'paid' || order.status === 'partially_refunded' ? (
-                        <RefundControl
-                          orderItemId={item.id}
-                          remaining={remaining}
-                          currency={order.currency}
-                        />
-                      ) : null}
-                    </li>
-                  )
-                })}
-              </ul>
-            </Panel>
-          ))}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="numeric text-lg font-bold text-gold">
+                      {formatMoney(Number(order.total), order.currency)}
+                    </p>
+                    {order.status === 'pending' ? (
+                      <ActionButton
+                        action={markOrderPaid.bind(null, order.id)}
+                        label={t('dash.confirmPaid')}
+                        confirm={t('dash.confirmPaid')}
+                      />
+                    ) : null}
+                  </div>
+                </div>
+
+                <ul className="divide-y divide-border/60">
+                  {order.items.map((item) => {
+                    const remaining = Number(item.grossAmount) - Number(item.refundedAmount)
+                    return (
+                      <li key={item.id} className="py-3">
+                        <div className="flex flex-wrap items-baseline justify-between gap-3">
+                          <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                            <Bilingual ar={item.album.titleAr} en={item.album.titleEn} />
+                          </span>
+                          <UserText className="truncate text-xs text-muted-foreground">
+                            {item.creator.displayNameAr}
+                          </UserText>
+                          <span className="numeric text-sm">
+                            {formatMoney(Number(item.grossAmount), order.currency)}
+                          </span>
+                        </div>
+
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {t('commerce.licence')}: {t('commerce.licenceCommercial')}
+                          {' · '}
+                          {t('dash.commissionShare')}{' '}
+                          <span className="numeric">
+                            {formatPercent(Number(item.commissionRate), 0)}
+                          </span>
+                          {Number(item.refundedAmount) > 0 ? (
+                            <>
+                              {' · '}
+                              {t('dash.refundedAmount')}{' '}
+                              <span className="numeric text-clay">
+                                {formatMoney(Number(item.refundedAmount), order.currency)}
+                              </span>
+                            </>
+                          ) : null}
+                        </p>
+
+                        {order.status === 'paid' || order.status === 'partially_refunded' ? (
+                          <RefundControl
+                            orderItemId={item.id}
+                            remaining={remaining}
+                            currency={order.currency}
+                          />
+                        ) : null}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </Panel>
+            )
+          })}
 
           <p className="text-center text-xs text-muted-foreground">
             <Link href="/admin/reports" className="hover:text-foreground">

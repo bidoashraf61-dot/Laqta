@@ -26,6 +26,7 @@ Read-only. **There is no sort UI on this page** — the `?sort` parameter is hon
 - **Unbounded** — no pagination; the page grows linearly with the catalogue.
 
 ## Invariants
+- Header: `PageTitle` (Serif Display Bold) over the subtitle set in `<Prose>` (Serif Text), the site-wide head composition — not a muted Sans line.
 - Album cards render as a flat, cover-led **5:7 poster** (`components/catalogue/album-card.tsx`), not a 16:9 thumbnail. It was a faux-3D "pack" (hinged spine/lid) but read as fake with no real cover art — it is now a clean poster that drops straight into a real cover image when one is uploaded. The offer is «تشتري مرة واحدة وتملكها للأبد»; a thumbnail is the grammar of something you stream, a poster of something you own. Each album's accent colour is derived from its slug, so it is the same on every surface. The card is a container with a **stretched** album anchor plus a **sibling** creator-name anchor (→ `/creators/{handle}`) lifted above it — never nested links. The `.pack-*` CSS in globals.css is now unused.
 - Album cover images carry a real `alt` built from `catalogue.altAlbumCover` («ألبوم {album} — {count} لقطة سعودية»). `docs/website-content.md` §A4 bans an empty alt; these shipped as `alt=""`.
 - Only `status='live'` albums appear.

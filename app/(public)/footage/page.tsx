@@ -7,7 +7,7 @@ import { FilterRail } from '@/components/catalogue/filter-rail'
 import { EmptyState } from '@/components/ui/state'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/i18n'
-import { PageTitle } from '@/components/ui/typography'
+import { PageTitle, Prose } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
 
@@ -97,9 +97,9 @@ export default async function FootagePage({
 
   return (
     <div className="container py-10">
-      <header className="mb-6 space-y-1">
+      <header className="mb-8">
         <PageTitle>{t('catalogue.footageTitle')}</PageTitle>
-        <p className="text-muted-foreground">{t('catalogue.footageSubtitle')}</p>
+        <Prose className="mt-3">{t('catalogue.footageSubtitle')}</Prose>
       </header>
 
       <div className="flex gap-8">

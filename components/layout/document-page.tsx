@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { formatDate, t } from '@/lib/i18n'
-import { PageTitle } from '@/components/ui/typography'
+import { PageTitle, Prose } from '@/components/ui/typography'
 import { pickLocalised } from '@/lib/locale'
 
 /**
@@ -53,7 +53,7 @@ export function DocumentPage({
       <header className="mb-12 max-w-[62ch]">
         <PageTitle>{title}</PageTitle>
         {summary ? (
-          <p className="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">{summary}</p>
+          <Prose className="mt-5">{summary}</Prose>
         ) : null}
         {effectiveFrom ? (
           <p className="mt-4 text-sm text-muted-foreground">

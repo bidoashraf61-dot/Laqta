@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Link } from '@/components/ui/link'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { REVEAL } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 /**
@@ -151,7 +152,7 @@ export function Panel({
 }) {
   return (
     <section
-      data-reveal
+      {...REVEAL}
       className={cn(
         'rounded-lg border bg-card',
         accent === 'warning' && 'border-warning/40',
@@ -193,7 +194,7 @@ export function Panel({
  */
 export function StatGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" {...REVEAL}>
       {children}
     </div>
   )

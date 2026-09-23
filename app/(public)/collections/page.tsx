@@ -6,6 +6,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { CollectionCovers } from '@/components/catalogue/collection-covers'
 import { t } from '@/lib/i18n'
+import { REVEAL } from '@/lib/motion'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
 import { pickLocalised } from '@/lib/locale'
@@ -77,7 +78,7 @@ export default async function CollectionsPage() {
             <Link
               key={collection.slug}
               href={`/collections/${collection.slug}`}
-              data-reveal
+              {...REVEAL}
               className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-[border-color,box-shadow] duration-hover ease-lens hover:border-foreground/25 hover:shadow-lift"
             >
               {/* What is actually on the shelf. The card used to show the

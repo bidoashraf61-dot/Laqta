@@ -7,7 +7,7 @@ import { pickLocalised } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { Anchor } from '@/components/ui/link'
-import { revealDelay } from '@/lib/motion'
+import { REVEAL, revealDelay } from '@/lib/motion'
 import { mediaUrl } from '@/lib/media'
 
 /**
@@ -112,7 +112,7 @@ export function AlbumCard({
   return (
     <div
       className={cn('group relative', className)}
-      data-reveal
+      {...REVEAL}
       style={index === undefined ? undefined : revealDelay(index)}
     >
       <div className="relative aspect-[5/7] overflow-hidden rounded-lg border shadow-soft transition-[border-color,box-shadow] duration-hover ease-lens group-hover:border-foreground/25 group-hover:shadow-lift">

@@ -1,6 +1,13 @@
 {
   "extends": ["next/core-web-vitals", "prettier"],
   "rules": {
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "JSXAttribute[name.name='data-reveal']",
+        "message": "Spread REVEAL from '@/lib/motion' instead: RevealScope rewrites this attribute before streamed boundaries hydrate, and REVEAL declares the intended mismatch."
+      }
+    ]
   }
 }

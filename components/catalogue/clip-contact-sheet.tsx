@@ -1,7 +1,7 @@
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { Link } from '@/components/ui/link'
 import { formatDuration } from '@/lib/utils'
-import { revealDelay } from '@/lib/motion'
+import { REVEAL, revealDelay } from '@/lib/motion'
 import { t } from '@/lib/i18n'
 import { pickLocalised } from '@/lib/locale'
 import { mediaUrl } from '@/lib/media'
@@ -51,7 +51,7 @@ export function ClipContactSheet({ clips }: { clips: ContactSheetClip[] }) {
       {clips.map((clip, index) => (
         <li
           key={clip.id}
-          data-reveal
+          {...REVEAL}
           style={{
             // The tile's shape IS the clip's shape. Falls back to 16:9 only if
             // the probe never recorded dimensions, which is a broken ingest

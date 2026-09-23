@@ -8,6 +8,7 @@ import { Headline, Prose, Section } from '@/components/ui/typography'
 import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
 import { FaqSchema } from '@/components/catalogue/faq-schema'
 import type { Metadata } from 'next'
+import { REVEAL } from '@/lib/motion'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
 
@@ -186,7 +187,7 @@ export default async function SellPage() {
 
         <ol className="mx-auto mt-10 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {ALBUM_RULES.map((key, index) => (
-            <li key={key} className="rounded-lg border bg-card p-5" data-reveal>
+            <li key={key} className="rounded-lg border bg-card p-5" {...REVEAL}>
               <span className="numeric font-display text-2xl font-bold text-gold">{index + 1}</span>
               <h3 className="mt-1 font-subhead text-base font-bold">{t(`sell.${key}Title`)}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

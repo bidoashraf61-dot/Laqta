@@ -50,8 +50,8 @@ export function TheCollection({
              * labelled with the exact term the catalogue filters on, rather
              * than a second hand-written string that can drift from it.
              *
-             * `pickLocalised`, not `<Bilingual>`: `Headline` takes strings so
-             * it can apply kashida to them, and JSX cannot be elongated.
+             * `pickLocalised`, not `<Bilingual>`: `Headline` takes its lead and
+             * bold lines as strings.
              */
             bold={pickLocalised(season.nameAr, season.nameEn)}
             size="lg"

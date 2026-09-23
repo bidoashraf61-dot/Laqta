@@ -214,7 +214,9 @@ async function creatorJourney(context: BrowserContext) {
     await page.goto(`${BASE}/studio`, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1500)
     const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
-    const errored = text.includes('حدث خطأ')
+    // A marker, not the wording — see app/error.tsx. Checking for the ABSENCE
+    // of «حدث خطأ» meant a reworded error screen passed as a working page.
+    const errored = await page.evaluate(() => !!document.querySelector('[data-page="error"]'))
     const hasNav = (await page.locator('aside a').count()) > 0
     step('the studio overview renders (not an error boundary)', !errored && hasNav, `${await page.locator('aside a').count()} nav links`)
   })
@@ -296,7 +298,8 @@ async function adminJourney(context: BrowserContext) {
     await page.waitForTimeout(1500)
     const text = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
     const hasNav = (await page.locator('aside a').count()) > 0
-    step('the control panel renders (not an error boundary)', !text.includes('حدث خطأ') && hasNav)
+    const erroredPanel = await page.evaluate(() => !!document.querySelector('[data-page="error"]'))
+    step('the control panel renders (not an error boundary)', !erroredPanel && hasNav)
   })
 
   await guard('the review queue is ordered by SLA', async () => {
@@ -362,9 +365,9 @@ async function guardMatrix(browser: Browser) {
       await page.goto(`${BASE}${route}`, { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(900)
       const url = page.url()
-      const body = await page.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
-      const blocked =
-        url.includes('/sign-in') || url.includes('/forbidden') || /لا تملك صلاحية/.test(body)
+      // The DOM, not innerText — a marker attribute never appears in text.
+      const forbidden = await page.evaluate(() => !!document.querySelector('[data-page="forbidden"]'))
+      const blocked = url.includes('/sign-in') || url.includes('/forbidden') || forbidden
       step(`anonymous is refused ${route}`, blocked, url.replace(BASE, ''))
     })
   }
@@ -379,9 +382,13 @@ async function guardMatrix(browser: Browser) {
     await cPage.waitForTimeout(1200)
     // middleware.ts REWRITES rather than redirects — the typed URL stays in the
     // address bar by design — so the forbidden page is proven by its content.
-    const body = await cPage.evaluate(() => document.body.innerText.replace(/\u0640+/g, ''))
-    const refused = /لا تملك صلاحية/.test(body)
-    const leaked = /لوحة التحكم|قائمة المراجعة/.test(body) && !refused
+    // Proven by the forbidden page's MARKER, not its wording. This matched
+    // «لا تملك صلاحية»; when an editorial pass reworded the title it reported
+    // ADMIN CONTENT LEAKED on a page that was correctly blocked. The leak side
+    // no longer matches admin nav copy either: any 200 that is not the
+    // forbidden page, on /admin, for a creator, is a leak by definition.
+    const refused = await cPage.evaluate(() => !!document.querySelector('[data-page="forbidden"]'))
+    const leaked = !refused
     step('a creator is refused /admin', refused && !leaked, refused ? 'forbidden page' : 'ADMIN CONTENT LEAKED')
   })
   await cPage.close()

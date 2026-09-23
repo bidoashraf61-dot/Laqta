@@ -3,7 +3,6 @@ import { Link } from '@/components/ui/link'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { kashida } from '@/lib/arabic'
 
 /**
  * Dashboard vocabulary.
@@ -56,7 +55,7 @@ export function DashboardHeader({
               with the figures that are the actual reason for the screen. This is
               where Display's middle weight lives — the marketing surfaces keep
               700 for lines that are arguments. */}
-          <h1 className="font-display text-2xl font-medium">{kashida(title, 2)}</h1>
+          <h1 className="font-display text-2xl font-medium">{title}</h1>
           {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
         </div>
         {action}

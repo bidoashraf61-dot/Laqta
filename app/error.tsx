@@ -19,7 +19,11 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <div className="container py-20">
+    // `data-page="error"` is what the journey gates look for — not «حدث خطأ».
+    // They decide a page rendered by the ABSENCE of the error screen, so a
+    // copy edit to its wording would have turned every broken page into a
+    // silent pass. A marker cannot be reworded.
+    <div data-page="error" className="container py-20">
       <ErrorState
         title={t('state.error')}
         description={t('state.errorHint')}

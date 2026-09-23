@@ -855,13 +855,16 @@
    * positive letter-spacing rides along for the Latin runs inside a headline,
    * which do want it and are unaffected by cursive joining.
    */
+  /* Word spacing tightened when kashida was retired: the wide gaps were
+     balancing elongated words, and on plain words 0.14–0.2em reads as holes.
+     0.1 / 0.12em is what the chosen variant was approved at. */
   .headline-airy {
-    word-spacing: 0.14em;
+    word-spacing: 0.1em;
     letter-spacing: 0.01em;
   }
 
   .headline-airy-wide {
-    word-spacing: 0.2em;
+    word-spacing: 0.12em;
     letter-spacing: 0.015em;
   }
 
@@ -1162,157 +1165,186 @@
  * is no column free beside it. The same four facts are prose in the sections
  * underneath, so nothing is lost — this is emphasis, never the only statement.
  */
+/*
+ * The USP rail is a SCRUBBER, not a list: one track down the start edge with a
+ * checkpoint per claim, filling as the film scrubs. See hero-cinematic.tsx.
+ *
+ * ── Mobile first, deliberately ──────────────────────────────────────────────
+ * This rail used to be `display: none` below 1024px, so a phone visitor never
+ * saw the four claims at all — on the device most Saudi traffic arrives on.
+ * It now docks to the bottom of the frame on small screens, above the scroll
+ * cue, and moves to the vertical middle of the start edge on desktop.
+ *
+ * ── Readability over moving footage ─────────────────────────────────────────
+ * The film behind it runs from night cabin to bright cloud, so no single text
+ * colour holds contrast across the whole scrub. A soft ink shadow gives every
+ * line its own local ground without boxing the rail in a panel, and the
+ * inactive items stay well above the old 0.35 — at that opacity the claims
+ * you had not reached yet were decoration rather than a preview.
+ */
 .hero-usp-rail {
-  display: none;
+  position: absolute;
+  inset-inline: 1.25rem;
+  /* Clear of the scroll cue (bottom-6 plus its ~3.5rem height) with room to
+     breathe — at 6.5rem the last claim sat against «اسحب لاستكشاف المكتبة». */
+  bottom: 7.5rem;
+  display: grid;
+  gap: 1.1rem;
+  /* The rail is a readout, not a control. */
+  pointer-events: none;
+  transition: opacity var(--dur-panel) var(--ease-cut);
 }
 
 @media (min-width: 1024px) {
-  /*
-   * The USP rail is a SCRUBBER, not a list.
-   *
-   * It reads as one continuous track down the side of the frame with a
-   * checkpoint at each claim, and the track fills as the film scrubs — so the
-   * marks are positions in the footage rather than four bullets that happen to
-   * be stacked. A reader can see how far in they are and how much is left,
-   * which a bulleted list cannot say at all.
-   *
-   * It sits at the inline-START edge — the RIGHT in Arabic, which is where a
-   * reader's eye already is. It shared that edge with the headline, so the
-   * headline is fully gone before the rail begins to arrive (see RAIL_START in
-   * hero-cinematic.tsx); the two no longer cross, they hand over.
-   */
   .hero-usp-rail {
-    position: absolute;
-    inset-inline-start: 3.5rem;
+    inset-inline: 3.5rem auto;
+    bottom: auto;
     top: 50%;
     translate: 0 -50%;
-    display: grid;
     gap: 2.25rem;
-    max-inline-size: 21rem;
-    /* The rail is a readout, not a control. */
-    pointer-events: none;
-    transition: opacity var(--dur-panel) var(--ease-cut);
+    max-inline-size: 28rem;
   }
+}
 
+.hero-usp-rail li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 0.75rem 1fr;
+  align-items: start;
+  gap: 0.9rem;
+  transition:
+    opacity var(--dur-move) var(--ease-cut),
+    translate var(--dur-move) var(--ease-cut);
+}
+@media (min-width: 1024px) {
   .hero-usp-rail li {
-    position: relative;
-    display: grid;
-    grid-template-columns: 0.75rem 1fr;
-    align-items: start;
-    gap: 1rem;
-    transition:
-      opacity var(--dur-move) var(--ease-cut),
-      translate var(--dur-move) var(--ease-cut);
+    gap: 1.1rem;
   }
+}
 
-  /* Three states, and the difference between "not yet" and "already passed"
-     matters: a point you have scrolled past should read as behind you, not as
-     equally pending. */
-  .hero-usp-rail li[data-state='ahead'] {
-    opacity: 0.35;
-    translate: 0 0.25rem;
-  }
-  .hero-usp-rail li[data-state='past'] {
-    opacity: 0.5;
-  }
-  .hero-usp-rail li[data-state='on'] {
-    opacity: 1;
-  }
+/* Three states. A point you have scrolled past reads as behind you, not as
+   equally pending — but every state stays legible. */
+.hero-usp-rail li[data-state='ahead'] {
+  opacity: 0.62;
+  translate: 0 0.25rem;
+}
+.hero-usp-rail li[data-state='past'] {
+  opacity: 0.78;
+}
+.hero-usp-rail li[data-state='on'] {
+  opacity: 1;
+}
 
-  /* ── The track ─────────────────────────────────────────────────────────── */
+/* ── The track ─────────────────────────────────────────────────────────── */
 
-  /* The unfilled rail between this checkpoint and the next one. It reaches
-     past the bottom of its own row — `gap` plus the node's radius — so the
-     line is continuous through the gutter instead of restarting at every
-     item. The last item has no connector; nothing follows it. */
+/* The unfilled rail between this checkpoint and the next. It reaches past
+   the bottom of its own row — the gap plus the next node's top half — so the
+   line runs continuously through the gutter. */
+.hero-usp-seg {
+  position: absolute;
+  inset-inline-start: 0.3125rem; /* (0.75rem node − 2px rule) / 2 */
+  inset-block-start: 1.35rem;
+  inline-size: 2px;
+  block-size: calc(100% - 1.35rem + 1.1rem + 0.375rem);
+  border-radius: 999px;
+  background: hsl(var(--foreground) / 0.3);
+  overflow: hidden;
+}
+@media (min-width: 1024px) {
   .hero-usp-seg {
-    position: absolute;
-    inset-inline-start: 0.3125rem; /* (0.75rem node − 2px rule) / 2 */
-    inset-block-start: 1.25rem;
-    inline-size: 2px;
-    /* row remainder + the gap + the next node's top half */
-    block-size: calc(100% - 1.25rem + 2.25rem + 0.375rem);
-    border-radius: 999px;
-    background: hsl(var(--foreground) / 0.22);
-    overflow: hidden;
+    block-size: calc(100% - 1.35rem + 2.25rem + 0.375rem);
   }
-  .hero-usp-rail li:last-child .hero-usp-seg {
-    display: none;
-  }
+}
+.hero-usp-rail li:last-child .hero-usp-seg {
+  display: none;
+}
 
-  /*
-   * The filled portion.
-   *
-   * `--seg` is 0…1, written by the scrub loop. `transform` rather than
-   * `block-size` on purpose: height is a layout property and animating it once
-   * per scroll event on a pinned hero is exactly the cost the film cannot
-   * afford. This composites.
-   *
-   * No transition — it is dragged by the scroll position, and a 220ms ease on
-   * a value that updates every frame reads as lag, not as smoothing.
-   */
-  .hero-usp-seg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: hsl(var(--gold));
-    transform-origin: top;
-    transform: scaleY(var(--seg, 0));
-  }
+/* The filled portion. `--seg` is 0…1, written by the scrub loop. `transform`
+   rather than `block-size`: height is a layout property, and animating it on
+   every scroll event is the cost this hero cannot afford. No transition — it
+   is dragged by the scroll, and easing a per-frame value reads as lag. */
+.hero-usp-seg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--gold));
+  transform-origin: top;
+  transform: scaleY(var(--seg, 0));
+}
 
-  /* ── The checkpoint ────────────────────────────────────────────────────── */
+/* ── The checkpoint ────────────────────────────────────────────────────── */
 
+.hero-usp-tick {
+  position: relative;
+  z-index: 1;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  margin-block-start: 0.45rem; /* centres on the first line of the label */
+  border-radius: 999px;
+  border: 2px solid hsl(var(--foreground) / 0.6);
+  background: hsl(var(--ink));
+  transition:
+    background-color var(--dur-move) var(--ease-cut),
+    border-color var(--dur-move) var(--ease-cut),
+    box-shadow var(--dur-move) var(--ease-cut),
+    scale var(--dur-move) var(--ease-cut);
+}
+@media (min-width: 1024px) {
   .hero-usp-tick {
-    position: relative;
-    z-index: 1;
-    inline-size: 0.75rem;
-    block-size: 0.75rem;
-    margin-block-start: 0.375rem; /* centres on the first line of the label */
-    border-radius: 999px;
-    border: 2px solid hsl(var(--foreground) / 0.45);
-    background: hsl(var(--ink));
-    transition:
-      background-color var(--dur-move) var(--ease-cut),
-      border-color var(--dur-move) var(--ease-cut),
-      box-shadow var(--dur-move) var(--ease-cut),
-      scale var(--dur-move) var(--ease-cut);
+    margin-block-start: 0.6rem;
   }
+}
 
-  /* Reached: the checkpoint is ticked off, and stays ticked. */
-  .hero-usp-rail li[data-state='past'] .hero-usp-tick,
-  .hero-usp-rail li[data-state='on'] .hero-usp-tick {
-    border-color: hsl(var(--gold));
-    background: hsl(var(--gold));
-  }
+.hero-usp-rail li[data-state='past'] .hero-usp-tick,
+.hero-usp-rail li[data-state='on'] .hero-usp-tick {
+  border-color: hsl(var(--gold));
+  background: hsl(var(--gold));
+}
 
-  /* Here, now. The one moment on this hero where gold is spent on something
-     that is neither money nor the primary action — it is spent to say
-     "you are here", which is the whole job of a scrubber. */
-  .hero-usp-rail li[data-state='on'] .hero-usp-tick {
-    scale: 1.35;
-    box-shadow: 0 0 0 4px hsl(var(--gold) / 0.2);
-  }
+/* Here, now — the one moment gold is spent on something that is not money
+   or the primary action, because "you are here" is the whole job. */
+.hero-usp-rail li[data-state='on'] .hero-usp-tick {
+  scale: 1.35;
+  box-shadow: 0 0 0 4px hsl(var(--gold) / 0.22);
+}
 
-  .hero-usp-text {
-    display: grid;
-    gap: 0.25rem;
-  }
+/* ── The claim ─────────────────────────────────────────────────────────── */
+
+/* Sizes are the documented ramp steps — body (1rem), prose (1.2rem) and
+   prose-lead (1.35rem) — rather than the 1.0625 / 0.8125 literals this rail
+   used to carry, which were the only two type values on the site off the
+   ramp. */
+.hero-usp-text {
+  display: grid;
+  gap: 0.3rem;
+  text-shadow:
+    0 1px 2px hsl(var(--ink) / 0.55),
+    0 2px 18px hsl(var(--ink) / 0.5);
+}
+.hero-usp-text strong {
+  font-family: var(--font-subhead), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.hero-usp-text em {
+  font-style: normal;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: hsl(var(--foreground) / 0.88);
+}
+@media (min-width: 1024px) {
   .hero-usp-text strong {
-    font-family: var(--font-subhead), Georgia, serif;
-    font-size: 1.0625rem;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-  .hero-usp-text em {
-    font-style: normal;
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    color: hsl(var(--foreground) / 0.7);
+    font-size: 1.35rem;
   }
 }
 
 /* An element that changes as you scroll IS motion. Under reduced motion the
-   rail states all resolve, so the four points simply stand there together. */
+   scrub loop never starts, so the rail — which the loop fades in — never
+   appears, and the headline stands in its place for the whole hero. That is
+   acceptable because every one of the four claims is stated again as ordinary
+   prose further down the page. The state rules below only matter if a future
+   change reveals the rail without the loop. */
 @media (prefers-reduced-motion: reduce) {
   .hero-usp-rail li[data-state='ahead'],
   .hero-usp-rail li[data-state='past'] {

@@ -11,7 +11,7 @@
  *   - the key exists (a renamed key would silently add dead copy)
  *   - `{placeholders}` come back exactly as they went out — dropping `{count}`
  *     removes the number from a card
- *   - no tatweel, no «..», no licence wording `verify:licence` would reject
+ *   - no decorative tatweel, no «..», no licence wording `verify:licence` would reject
  *   - SEO descriptions stay within 160 characters
  *
  * Anything after `⟂` is ignored (the English hint), as is every line that is
@@ -39,7 +39,6 @@ const DOCS: Record<string, DocumentSection[]> = {
   privacy: legal.PRIVACY,
   licences: legal.LICENCES,
   contentPolicy: legal.CONTENT_POLICY,
-  refunds: legal.REFUNDS,
   about: legal.ABOUT,
   contact: legal.CONTACT,
 }
@@ -98,7 +97,9 @@ for (const raw of readFileSync(file, 'utf8').split('\n')) {
   if (!to) problems.push(`${key}: empty`)
   if (placeholders(from) !== placeholders(to))
     problems.push(`${key}: placeholders ${placeholders(from) || '∅'} → ${placeholders(to) || '∅'}`)
-  if (/ـ/.test(to)) problems.push(`${key}: tatweel`)
+  // Tatweel between two letters is decoration; after a detached prefix — «بـ»,
+  // «الـ{days}» — it is how Arabic writes the prefix, and stays.
+  if (/[\u0621-\u064A]ـ+[\u0621-\u064A]/.test(to)) problems.push(`${key}: tatweel`)
   if (/\.\./.test(to)) problems.push(`${key}: «..»`)
   if (/الترخيص القياسي|الترخيص الموسّع|بحد أقصى[^.]{0,40}[\d٠-٩]/u.test(to))
     problems.push(`${key}: licence wording verify:licence rejects`)

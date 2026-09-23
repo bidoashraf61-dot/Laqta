@@ -15,23 +15,23 @@
 - `auth.phone` :: رقم الجوال   ⟂ EN: Mobile number
 - `auth.name` :: الاسم   ⟂ EN: Name
 - `auth.continue` :: متابعة   ⟂ EN: Continue
-- `auth.orContinueWith` :: أو تابع عبر   ⟂ EN: Or continue with
+- `auth.orContinueWith` :: أو ادخل بـ   ⟂ EN: Or continue with
 - `auth.withEmail` :: البريد الإلكتروني   ⟂ EN: Email
 - `auth.withPhone` :: رمز الجوال   ⟂ EN: Mobile code
-- `auth.sendCode` :: إرسال الرمز   ⟂ EN: Send the code
-- `auth.resendCode` :: إعادة إرسال الرمز   ⟂ EN: Send it again
+- `auth.sendCode` :: أرسل الرمز   ⟂ EN: Send the code
+- `auth.resendCode` :: أعد إرسال الرمز   ⟂ EN: Send it again
 - `auth.codeLabel` :: رمز التحقق   ⟂ EN: Verification code
 - `auth.codeSent` :: أرسلنا رمزاً إلى {phone}   ⟂ EN: We sent a code to {phone}
-- `auth.verify` :: تحقق   ⟂ EN: Verify
+- `auth.verify` :: تأكيد   ⟂ EN: Verify
 - `auth.invalidCredentials` :: بيانات الدخول غير صحيحة   ⟂ EN: Those sign-in details aren't right
-- `auth.invalidCode` :: الرمز غير صحيح أو منتهي الصلاحية   ⟂ EN: That code is wrong or has expired
+- `auth.invalidCode` :: الرمز غير صحيح أو انتهت صلاحيته   ⟂ EN: That code is wrong or has expired
 - `auth.accountExists` :: هذا الحساب موجود مسبقاً   ⟂ EN: This account already exists
 - `auth.twoFactor` :: التحقق بخطوتين   ⟂ EN: Two-factor authentication
 - `auth.twoFactorPrompt` :: أدخل الرمز من تطبيق المصادقة   ⟂ EN: Enter the code from your authenticator app
 - `auth.haveAccount` :: عندك حساب؟   ⟂ EN: Already have an account?
 - `auth.noAccount` :: ما عندك حساب؟   ⟂ EN: Don't have an account?
-- `auth.signInTitle` :: تسجيل الدخول إلى لقطة   ⟂ EN: Sign in to Laqta
-- `auth.signUpTitle` :: إنشاء حساب في لقطة   ⟂ EN: Create your Laqta account
+- `auth.signInTitle` :: ادخل إلى لقطة   ⟂ EN: Sign in to Laqta
+- `auth.signUpTitle` :: أنشئ حسابك في لقطة   ⟂ EN: Create your Laqta account
 - `auth.phoneHint` :: مثال: 0501234567 أو 01012345678   ⟂ EN: For example: 0501234567 or 01012345678
 - `auth.changeNumber` :: تغيير الرقم   ⟂ EN: Change the number
 - `auth.devCodeNotice` :: وضع التطوير: الرمز هو {code}   ⟂ EN: Development mode: the code is {code}
@@ -77,8 +77,8 @@
 - `library.billingTitle` :: بيانات الفوترة   ⟂ EN: Billing
 - `library.settingsTitle` :: الإعدادات   ⟂ EN: Settings
 - `library.noDownloads` :: ما حمّلت شي بعد.   ⟂ EN: No downloads yet
-- `library.certificateNumber` :: رقم شهادة الترخيص   ⟂ EN: Certificate number
-- `library.invoiceNumber` :: رقم الفاتورة الضريبية   ⟂ EN: Invoice number
+- `library.certificateNumber` :: رقم الشهادة   ⟂ EN: Certificate number
+- `library.invoiceNumber` :: رقم الفاتورة   ⟂ EN: Invoice number
 
 ## sell
 > صفحة «بِع لقطاتك» — يقرؤها صانع المحتوى قبل أن يقرر

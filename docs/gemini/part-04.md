@@ -9,9 +9,9 @@
 
 - `checkout.title` :: إتمام الشراء   ⟂ EN: Checkout
 - `checkout.billing` :: بيانات الفوترة   ⟂ EN: Billing details
-- `checkout.entityIndividual` :: حساب فردي   ⟂ EN: Individual
+- `checkout.entityIndividual` :: فرد   ⟂ EN: Individual
 - `checkout.entityBusiness` :: منشأة   ⟂ EN: Business
-- `checkout.legalName` :: اسم الشركة / الجهة (اختياري)   ⟂ EN: Legal name
+- `checkout.legalName` :: الاسم النظامي للمنشأة (اختياري)   ⟂ EN: Legal name
 - `checkout.crNumber` :: رقم السجل التجاري   ⟂ EN: Commercial registration number
 - `checkout.vatNumber` :: الرقم الضريبي (اختياري)   ⟂ EN: VAT number
 - `checkout.poNumber` :: رقم أمر الشراء (اختياري)   ⟂ EN: Purchase order number (optional)
@@ -48,7 +48,7 @@
 - `request.invalid` :: اكتب وصفاً أوضح، وبريداً إلكترونياً صحيحاً.   ⟂ EN: Write a clearer description and a valid email.
 - `request.adminTitle` :: طلبات اللقطات   ⟂ EN: Footage requests
 - `request.adminHint` :: ما طلبه المشترون ولا يوجد في الكتالوج — أقصر قائمة لما يستحق الإنتاج.   ⟂ EN: What buyers asked for and the catalogue doesn't have yet — the shortest list of what's worth producing.
-- `request.colBrief` :: التفاصيل   ⟂ EN: Request
+- `request.colBrief` :: الطلب   ⟂ EN: Request
 - `request.colEmail` :: البريد   ⟂ EN: Email
 - `request.colDate` :: التاريخ   ⟂ EN: Date
 - `request.colStatus` :: الحالة   ⟂ EN: Status
@@ -63,7 +63,7 @@
 - `review.ratingLabel` :: التقييم   ⟂ EN: Your rating
 - `review.bodyLabel` :: تعليقك (اختياري)   ⟂ EN: Your review (optional)
 - `review.bodyPlaceholder` :: وش أفادك فيه الألبوم؟ ووش كان ناقص؟   ⟂ EN: What did it do for you? What was missing?
-- `review.submit` :: إرسال التقييم   ⟂ EN: Submit review
+- `review.submit` :: أرسل التقييم   ⟂ EN: Submit review
 - `review.thanks` :: شكراً، وصلنا تقييمك.   ⟂ EN: Thanks — we've got your review.
 - `review.mustOwn` :: التقييم متاح لمن اشترى الألبوم.   ⟂ EN: Reviews are open to buyers of this album.
 - `review.signInFirst` :: سجّل دخولك لتضيف تقييمك.   ⟂ EN: Sign in to leave a review.
@@ -77,7 +77,7 @@
 > الألواح: قوائم لقطات يجمعها المشتري ويشاركها
 
 - `boards.title` :: ألواحي   ⟂ EN: My boards
-- `boards.empty` :: ما أنشأت أي لوح بعد   ⟂ EN: No boards yet
+- `boards.empty` :: ما عندك ألواح بعد   ⟂ EN: No boards yet
 - `boards.emptyHint` :: اجمع اللقطات في لوح، وشاركه مع فريقك أو عميلك.   ⟂ EN: Gather clips into a board and share it with your client
 - `boards.create` :: لوح جديد   ⟂ EN: New board
 - `boards.name` :: اسم اللوح   ⟂ EN: Board name
@@ -91,7 +91,7 @@
 > مشغّل الفيديو والمعاينات
 
 - `media.play` :: تشغيل   ⟂ EN: Play
-- `media.pause` :: إيقاف   ⟂ EN: Pause
+- `media.pause` :: إيقاف مؤقت   ⟂ EN: Pause
 - `media.muted` :: بلا صوت   ⟂ EN: Muted
 - `media.showreelLead` :: كل اللقطات،   ⟂ EN: Every shot,
 - `media.showreelBold` :: في دقيقة واحدة.   ⟂ EN: in one minute.
@@ -102,13 +102,13 @@
 ## account
 > حساب المشتري وبياناته وتوثيق البريد والجوال
 
-- `account.profileTitle` :: البيانات الشخصية   ⟂ EN: Your details
+- `account.profileTitle` :: بياناتك   ⟂ EN: Your details
 - `account.profileName` :: الاسم الكامل   ⟂ EN: Name
 - `account.profileEmail` :: البريد الإلكتروني   ⟂ EN: Email
 - `account.profilePhone` :: رقم الجوال   ⟂ EN: Mobile
 - `account.profileCountry` :: الدولة   ⟂ EN: Nationality
-- `account.profileMember` :: تاريخ الانضمام   ⟂ EN: Member since
-- `account.profileNotSet` :: غير محدد   ⟂ EN: Not added
+- `account.profileMember` :: عضو منذ   ⟂ EN: Member since
+- `account.profileNotSet` :: لم يُضف   ⟂ EN: Not added
 - `account.profileEdit` :: تعديل بياناتك   ⟂ EN: Edit your details
 - `account.profileVerified` :: موثّق   ⟂ EN: Verified
 - `account.profileUnverified` :: غير موثّق   ⟂ EN: Unverified
@@ -133,7 +133,7 @@
 - `account.verifyCodeSent` :: أرسلنا رمزاً إلى جوالك. الرمز صالح لعشر دقائق.   ⟂ EN: We sent a code to your mobile. It is valid for ten minutes.
 - `account.verifyEmailNotConfigured` :: خدمة البريد غير مفعّلة بعد. استخدم هذا الرابط لتوثيق بريدك:   ⟂ EN: Email delivery is not configured yet. Use this link to verify your address:
 - `account.verifyCodeNotConfigured` :: خدمة الرسائل غير مفعّلة بعد. هذا هو رمزك:   ⟂ EN: SMS delivery is not configured yet. Here is your code:
-- `account.verifyCodeInvalid` :: الرمز يتكوّن من أرقام فقط.   ⟂ EN: The code is digits only.
+- `account.verifyCodeInvalid` :: الرمز أرقام فقط.   ⟂ EN: The code is digits only.
 - `account.verifyCodeWrong` :: الرمز غير صحيح أو انتهت صلاحيته. اطلب رمزاً جديداً.   ⟂ EN: That code is wrong or has expired. Ask for a new one.
 - `account.verifyNoEmail` :: ما فيه بريد على حسابك. أضفه أولاً من تعديل بياناتك.   ⟂ EN: There is no email on your account. Add one first from Edit your details.
 - `account.verifyNoPhone` :: ما فيه رقم جوال على حسابك. أضفه أولاً من تعديل بياناتك.   ⟂ EN: There is no mobile on your account. Add one first from Edit your details.

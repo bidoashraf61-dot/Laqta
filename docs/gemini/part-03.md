@@ -13,7 +13,7 @@
 - `catalogue.albumsSubtitle` :: لقطات من موقع واحد وبضوء واحد، جاهزة للمونتاج.   ⟂ EN: Ready-made albums that cut your long working hours
 - `catalogue.locationsTitle` :: تصفّح حسب الموقع   ⟂ EN: Locations
 - `catalogue.categoriesTitle` :: تصفّح حسب التصنيف   ⟂ EN: Categories
-- `catalogue.collectionsTitle` :: مجموعات اللقطات السعودية   ⟂ EN: Collections
+- `catalogue.collectionsTitle` :: المجموعات   ⟂ EN: Collections
 - `catalogue.creatorsTitle` :: صنّاع المحتوى   ⟂ EN: Creators
 - `catalogue.resultsCount` :: {count} نتيجة   ⟂ EN: {count} results
 - `catalogue.filters` :: تصفية النتائج   ⟂ EN: Filters
@@ -25,7 +25,7 @@
 - `catalogue.colourProfile` :: الملف اللوني   ⟂ EN: Colour profile
 - `catalogue.cameraMovement` :: حركة الكاميرا   ⟂ EN: Camera movement
 - `catalogue.shotSize` :: حجم اللقطة   ⟂ EN: Shot size
-- `catalogue.timeOfDay` :: توقيت التصوير   ⟂ EN: Time of day
+- `catalogue.timeOfDay` :: وقت اليوم   ⟂ EN: Time of day
 - `catalogue.people` :: الأشخاص   ⟂ EN: People
 - `catalogue.peopleWith` :: فيها أشخاص   ⟂ EN: With people
 - `catalogue.peopleWithout` :: بلا أشخاص   ⟂ EN: Without people
@@ -35,7 +35,7 @@
 - `catalogue.priceRange` :: نطاق السعر   ⟂ EN: Price range
 - `catalogue.sort` :: ترتيب حسب   ⟂ EN: Sort
 - `catalogue.sortRelevance` :: الأكثر صلة   ⟂ EN: Most relevant
-- `catalogue.sortNewest` :: الأحدث إضافة   ⟂ EN: Newest
+- `catalogue.sortNewest` :: الأحدث   ⟂ EN: Newest
 - `catalogue.sortPopular` :: الأكثر مبيعاً   ⟂ EN: Best selling
 - `catalogue.sortPriceAsc` :: السعر: من الأقل   ⟂ EN: Price: low to high
 - `catalogue.sortPriceDesc` :: السعر: من الأعلى   ⟂ EN: Price: high to low
@@ -46,13 +46,13 @@
 - `catalogue.specs` :: المواصفات التقنية   ⟂ EN: Specifications
 - `catalogue.duration` :: المدة   ⟂ EN: Duration
 - `catalogue.dimensions` :: الأبعاد   ⟂ EN: Dimensions
-- `catalogue.codec` :: ترميز الفيديو   ⟂ EN: Codec
+- `catalogue.codec` :: الترميز   ⟂ EN: Codec
 - `catalogue.camera` :: الكاميرا   ⟂ EN: Camera
 - `catalogue.lens` :: العدسة   ⟂ EN: Lens
 - `catalogue.totalRuntime` :: المدة الإجمالية   ⟂ EN: Total runtime
 - `catalogue.totalSize` :: حجم الملفات   ⟂ EN: Total size
 - `catalogue.clipCountLabel` :: عدد اللقطات   ⟂ EN: Number of clips
-- `catalogue.licence` :: معلومات الترخيص   ⟂ EN: Licence
+- `catalogue.licence` :: الترخيص   ⟂ EN: Licence
 - `catalogue.reassurance` :: امتلاك دائم · فاتورة ضريبية · تحميل بلا حد من مكتبتك   ⟂ EN: Instant download · permanent lifetime ownership · tax invoice
 - `catalogue.clearance` :: حالة التصاريح   ⟂ EN: Clearance and licensing
 - `catalogue.clearanceFull` :: مكتملة — مرخّصة تجارياً بالكامل   ⟂ EN: Complete — cleared for commercial use
@@ -133,7 +133,7 @@
 - `commerce.fromAlbum` :: من ألبوم: {album}   ⟂ EN: From the album: {album}
 - `commerce.clearedForCommercial` :: مرخّصة للاستخدام التجاري   ⟂ EN: Cleared for commercial use
 - `commerce.editorialOnly` :: للاستخدام التحريري فقط   ⟂ EN: Editorial use only
-- `commerce.byCreator` :: بواسطة {creator}   ⟂ EN: by {creator}
+- `commerce.byCreator` :: من {creator}   ⟂ EN: by {creator}
 - `commerce.licenceCommercial` :: ترخيص تجاري كامل   ⟂ EN: Full commercial licence
 
 ## cart

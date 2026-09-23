@@ -49,13 +49,19 @@ is never purchasable on its own, so every clip surface carries its album ribbon.
 | `/privacy` | Privacy policy | [privacy.md](privacy.md) |
 | `/licences` | Standard vs extended licence scope | [licences.md](licences.md) |
 | `/content-policy` | What may be uploaded and sold | [content-policy.md](content-policy.md) |
-| `/refunds` | Refund window and process | [refunds.md](refunds.md) |
 | `/forbidden` | 403, reached by rewrite so the URL survives | [forbidden.md](forbidden.md) |
 
 `/sign-in` and `/sign-up` also live in `app/(public)/` but belong to the auth area and are
 specified there.
 
 ## Known gaps in this area
+
+- **No refunds page, by decision (2026-09-23).** The public site says nothing about
+  refunds — no policy, no "no refunds" line, no window. `/refunds`, its footer link,
+  `footer.refunds`, `brand.seo.refunds` and `REFUNDS` were removed, and the old URL
+  now 404s. Refund *tooling* stays in `/admin` (orders, `Refund`/`RefundLine`,
+  frozen-rate reversal under `verify:money`) for the operator's own use. Do not add
+  a refund page or any refund copy to a public surface without the owner.
 
 - No payment gateway. `availableMethods()` returns `bank_transfer` only; every order
   settles by hand from `/admin`.

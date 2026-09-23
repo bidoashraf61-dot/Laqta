@@ -1,6 +1,6 @@
 # لقطة — الجزء 1 من 10
 
-هذا الجزء فيه **46 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **44 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
@@ -17,7 +17,6 @@
 - `brand.seo.contact` :: تواصل مع لقطة لطلب لقطات من موقع محدد، أو للسؤال عن الترخيص والفواتير الضريبية وحسابات الوكالات والجهات.   ⟂ EN: Get in touch to request footage of a specific location, or to ask about licence details, invoices and agency accounts. We reply within one business day.
 - `brand.seo.terms` :: الشروط التي تحكم استخدام لقطة وشراء الألبومات: الطلب والدفع، والتحميل، وحدود المسؤولية، والقانون الواجب التطبيق.   ⟂ EN: The terms governing use of the platform and the purchase of albums: orders, payment, downloads, limits of liability and governing law.
 - `brand.seo.privacy` :: كيف نجمع بياناتك ونستخدمها ونحميها: ما نطلبه، ومدة حفظه، وحقوقك، وكيف تتواصل معنا بشأنها.   ⟂ EN: How we collect, use and protect your data: what we ask for, how long we keep it, your rights, and how to reach us about them.
-- `brand.seo.refunds` :: سياسة الاسترجاع: لك سبعة أيام لطلب استرجاع كامل المبلغ ما دمت لم تحمّل أي ملف من الألبوم. بعد التحميل لا يُقبل الاسترجاع.   ⟂ EN: Refund policy: no refund once any file in an album has been downloaded. Before downloading, you have seven days to request a full refund.
 - `brand.seo.contentPolicy` :: ما يُقبل رفعه وبيعه على لقطة: الإفصاح عن المحتوى المُنتَج بالذكاء الاصطناعي، والتصاريح، والملاءمة الثقافية، والبلاغات.   ⟂ EN: What may be uploaded and sold here: mandatory disclosure of generated content, the exclusion of religious sites, and the ban on editorial use.
 
 ## nav
@@ -61,7 +60,6 @@
 - `footer.privacy` :: سياسة الخصوصية   ⟂ EN: Privacy policy
 - `footer.licences` :: تفاصيل الترخيص   ⟂ EN: License details
 - `footer.contentPolicy` :: سياسة المحتوى   ⟂ EN: Content policy
-- `footer.refunds` :: سياسة الاسترجاع   ⟂ EN: Refund policy
 - `footer.follow` :: تابعنا   ⟂ EN: Follow us
 - `footer.rights` :: جميع الحقوق محفوظة   ⟂ EN: Copyright reserved
 - `footer.tagline` :: ألبومات لقطات سعودية، تشتريها مرة وتبقى لك.   ⟂ EN: Your first choice for authentic Saudi content.

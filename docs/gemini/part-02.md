@@ -34,21 +34,21 @@
 - `landing.featuredTitle` :: ألبومات مختارة   ⟂ EN: Selected albums
 - `landing.featuredSubtitle` :: لقطات متناسقة تركّبها مباشرة في خطك الزمني   ⟂ EN: Albums that cut together on one timeline
 - `landing.locationsTitle` :: تصفّح حسب الموقع   ⟂ EN: Browse by location
-- `landing.locationsSubtitle` :: مشاهد سينمائية من معالم الرياض إلى عمق الربع الخالي   ⟂ EN: From Riyadh to the Empty Quarter
+- `landing.locationsSubtitle` :: من أفق الرياض إلى كثبان الربع الخالي   ⟂ EN: From Riyadh to the Empty Quarter
 - `landing.categoriesTitle` :: تصفّح حسب التصنيف   ⟂ EN: Browse by category
-- `landing.categoriesSubtitle` :: مشاهد جوية، تراث، أعمال، طبيعة، وغيرها   ⟂ EN: Aerial, heritage, business, nature and more
+- `landing.categoriesSubtitle` :: جوية، وتراث، وأعمال، وطبيعة، وغيرها   ⟂ EN: Aerial, heritage, business, nature and more
 - `landing.newTitle` :: أحدث الإضافات   ⟂ EN: New this week
 - `landing.newSubtitle` :: آخر ما أُضيف إلى المكتبة   ⟂ EN: The latest additions to the library
 - `landing.creatorsTitle` :: صنّاع المحتوى   ⟂ EN: Creators
 - `landing.creatorsSubtitle` :: يعرفون المكان وموسمه وضوءه.   ⟂ EN: They know the location, the season and the light
-- `landing.howTitle` :: بثلاث خطوات، ألبومك في خط المونتاج   ⟂ EN: How does Laqta work?
+- `landing.howTitle` :: بثلاث خطوات، ألبومك على خطك الزمني   ⟂ EN: How does Laqta work?
 - `landing.howStep1Title` :: اختر الألبوم   ⟂ EN: Browse & watch the trailer
 - `landing.howStep1Body` :: شاهد التريلر وكل لقطات الألبوم قبل أن تدفع.   ⟂ EN: Watch the trailer and browse every shot in the album before you pay. Nothing is hidden behind the purchase.
 - `landing.howStep2Title` :: ادفع مرة واحدة   ⟂ EN: Buy the full album
 - `landing.howStep2Body` :: ترخيص تجاري كامل، بلا اشتراك.   ⟂ EN: Pay once to get the album with all its shots — no subscriptions.
 - `landing.howStep3Title` :: حمّل واشتغل   ⟂ EN: Download & own forever
 - `landing.howStep3Body` :: النسخة الأصلية بجودتها الكاملة، ونسخة مونتاج خفيفة، بلا علامة مائية.   ⟂ EN: Get the files in original resolution instantly, with a permanent license for your projects.
-- `landing.positioning` :: بلا اشتراكات. ادفع مرة واحدة، والألبوم لك للأبد.   ⟂ EN: No subscriptions. Buy once, own it forever.
+- `landing.positioning` :: ألبوم واحد يغنيك عن يوم تصوير.   ⟂ EN: No subscriptions. Buy once, own it forever.
 - `landing.sellTitle` :: عندك أرشيف لقطات سعودية؟   ⟂ EN: Sitting on an archive? Turn it into income.
 - `landing.sellBody` :: رتّب لقطاتك في ألبوم، وانشره على لقطة مرة واحدة، واكسب من كل عملية بيع.   ⟂ EN: Every shot you filmed and never used, and every scene you generated with AI, can sell more than once. Publish an album on Laqta once, keep the larger share of every sale, and let it earn while you work on the next thing.
 - `landing.sellCta` :: بِع لقطاتك   ⟂ EN: Start selling
@@ -89,7 +89,7 @@
 - `landing.faq3A` :: لا. تدفع سعر الألبوم مرة واحدة، ويبقى لك للأبد.   ⟂ EN: No. You pay once and own the album for life, with no recurring fees and nothing hidden.
 - `landing.faq4Q` :: كيف أحصل على فاتورة ضريبية لشركتي؟   ⟂ EN: Is the content valid for future projects?
 - `landing.faq4A` :: تصدر الفاتورة الضريبية مع كل عملية شراء. وللشركات والجهات: الدفع بالتحويل البنكي أو بأمر شراء.   ⟂ EN: Yes — the license lets you use the album across current and upcoming projects on the same topic, with no time limits.
-- `landing.faq5Q` :: ما هي صيغ الملفات المتاحة للتحميل؟   ⟂ EN: How many shots are in each album?
+- `landing.faq5Q` :: ما الذي أحمّله بعد الشراء؟   ⟂ EN: How many shots are in each album?
 - `landing.faq5A` :: النسخة الأصلية بجودتها الكاملة، ومعها نسخة مونتاج خفيفة لكل لقطة. الدقة 1080p أو 4K حسب الألبوم، ومذكورة في صفحته.   ⟂ EN: Album size varies by story. Every album states its shot count and runtime on its card and on its page.
 - `landing.offersLead` :: أحدث الألبومات،   ⟂ EN: The newest albums,
 - `landing.offersBold` :: بأسعار الإطلاق.   ⟂ EN: at launch prices.
@@ -109,7 +109,7 @@
 - `landing.price1Body` :: ادفع مرة واحدة، واستخدم الألبوم في كل مشاريعك القادمة.   ⟂ EN: Every album states its shot count, its runtime and its price, so you can pick the size that fits your story and your budget.
 - `landing.price2Title` :: توفير الوقت   ⟂ EN: One-time purchase, no limits
 - `landing.price2Body` :: اختصر أيام التصوير والإعداد إلى دقائق من التصفّح.   ⟂ EN: Pay once and use the content across all your future projects, with no time limits.
-- `landing.price3Title` :: جودة متناسقة   ⟂ EN: Available for everyone
+- `landing.price3Title` :: لون وضوء واحد   ⟂ EN: Available for everyone
 - `landing.price3Body` :: لقطات بلون وضوء واحد، تُركّب في تسلسل واحد دون إعادة تلوين.   ⟂ EN: From $79 for a small album — within reach of a freelancer, with a tax invoice government bodies accept.
 - `landing.priceCta` :: اختر ألبومك   ⟂ EN: Discover albums & start now
 - `landing.finalCtaLead` :: جاهز تبدأ   ⟂ EN: Save production hours,

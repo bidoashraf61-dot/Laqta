@@ -25,7 +25,7 @@
 - `dash.range7` :: ٧ أيام
 - `dash.range30` :: ٣٠ يوماً
 - `dash.range90` :: ٩٠ يوماً
-- `dash.rangeLabel` :: المدة
+- `dash.rangeLabel` :: الفترة
 - `dash.vsPrevious` :: مقارنة بالفترة السابقة
 - `dash.views` :: المشاهدات
 - `dash.purchases` :: المبيعات
@@ -41,7 +41,7 @@
 - `dash.noData` :: لا توجد بيانات في هذه الفترة
 - `dash.noDataHint` :: ستظهر الأرقام هنا فور أول مشاهدة أو عملية بيع.
 - `dash.welcome` :: أهلاً، {name}
-- `dash.todayIs` :: ملخّص آخر {days} يوماً
+- `dash.todayIs` :: ملخّص الأيام الـ{days} الأخيرة
 - `dash.needsAttention` :: يحتاج انتباهك
 - `dash.allClear` :: لا يوجد ما يحتاج تدخلاً الآن
 - `dash.quickActions` :: إجراءات سريعة
@@ -84,7 +84,7 @@
 - `dash.releaseRejected` :: مرفوض
 - `dash.releaseAuthority` :: الجهة المُصدِرة
 - `dash.releaseSubject` :: الاسم / الجهة
-- `dash.releaseValidity` :: سريان التصريح
+- `dash.releaseValidity` :: مدة السريان
 - `dash.releaseClips` :: لقطات مرتبطة
 - `dash.noReleases` :: لا توجد تصاريح بعد
 - `dash.addRelease` :: إضافة تصريح
@@ -101,7 +101,7 @@
 - `dash.linkedCount` :: {count} لقطة مرتبطة
 - `dash.payoutsHint` :: اطلب تحويل رصيدك المتاح. يُراجع الطلب ثم يُحوَّل عبر القناة المسجّلة في إعداداتك.
 - `dash.payoutRequested` :: أُرسل الطلب
-- `dash.payoutMethod` :: قناة التحويل
+- `dash.payoutMethod` :: طريقة التحويل
 - `dash.payoutAmount` :: المبلغ
 - `dash.payoutNet` :: الصافي بعد الاستقطاع
 - `dash.payoutHistory` :: سجل التحويلات
@@ -110,8 +110,8 @@
 - `dash.statusApproved` :: معتمد
 - `dash.statusProcessing` :: قيد التنفيذ
 - `dash.statusPaid` :: حُوّل
-- `dash.statusFailed` :: فشل
-- `dash.methodIban` :: حوالة بنكية (IBAN)
+- `dash.statusFailed` :: تعذّر
+- `dash.methodIban` :: تحويل بنكي (IBAN)
 - `dash.methodPayoneer` :: Payoneer
 - `dash.methodWise` :: Wise
 - `dash.belowMinimum` :: الحد الأدنى للتحويل {amount}
@@ -128,13 +128,13 @@
 - `dash.showreel` :: رابط الشوريل
 - `dash.payoutSettings` :: بيانات التحويل
 - `dash.payoutSettingsHint` :: تُجمَّد هذه البيانات لحظة اعتماد كل تحويل، فتغييرها لاحقاً لا يؤثّر على تحويل قيد التنفيذ.
-- `dash.iban` :: رقم الآيبان
+- `dash.iban` :: رقم IBAN
 - `dash.bankName` :: اسم البنك
 - `dash.beneficiary` :: اسم المستفيد
 - `dash.payoneerEmail` :: بريد Payoneer
 - `dash.wiseEmail` :: بريد Wise
 - `dash.taxResidency` :: الإقامة الضريبية
-- `dash.saved` :: تم الحفظ
+- `dash.saved` :: حُفظ
 - `dash.commissionShare` :: حصّتك من كل عملية بيع
 - `dash.tierStandard` :: قياسي   ⟂ EN: Standard
 - `dash.tierSilver` :: فضي   ⟂ EN: Silver
@@ -144,6 +144,6 @@
 - `dash.queueTitle` :: قائمة المراجعة
 - `dash.queueHint` :: الألبومات المنتظرة قرارك، مرتّبة بالموعد النهائي.
 - `dash.queueEmpty` :: القائمة فارغة — لا يوجد ما يُراجع
-- `dash.overdue` :: تجاوز الموعد
-- `dash.dueToday` :: اليوم
+- `dash.overdue` :: متأخر
+- `dash.dueToday` :: مستحق اليوم
 - `dash.unassigned` :: غير مُسنَد

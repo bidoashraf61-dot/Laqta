@@ -18,11 +18,11 @@
 - `studio.draft` :: مسودة
 - `studio.inReview` :: قيد المراجعة
 - `studio.changesRequested` :: مطلوب تعديل
-- `studio.live` :: منشور بالمكتبة
+- `studio.live` :: منشور
 - `studio.paused` :: متوقف مؤقتاً
 - `studio.delisted` :: مسحوب
-- `studio.submit` :: إرسال للمراجعة
-- `studio.submitted` :: تم الإرسال للمراجعة
+- `studio.submit` :: أرسل للمراجعة
+- `studio.submitted` :: أُرسل للمراجعة
 - `studio.cannotSubmit` :: تعذّر الإرسال
 - `studio.minClips` :: الحد الأدنى ٨ لقطات
 - `studio.titleArRequired` :: العنوان العربي مطلوب
@@ -33,13 +33,13 @@
 - `studio.mixedFrameRate` :: معدلات إطارات مختلفة داخل الألبوم
 - `studio.mixedProfile` :: ملفات لونية مختلفة داخل الألبوم
 - `studio.mixedResolution` :: دقة مختلفة بين اللقطات
-- `studio.consistencyWhy` :: التفاوت الفني داخل الألبوم الواحد هو السبب الأول لطلبات الاسترجاع.
+- `studio.consistencyWhy` :: التفاوت داخل الألبوم أول ما يجعل المشتري يترك لقطاته ولا يستخدمها.
 - `studio.consistencyOk` :: المواصفات متناسقة
-- `studio.available` :: الأرباح المتاحة
+- `studio.available` :: المتاح للسحب
 - `studio.held` :: الأرباح المحجوزة
 - `studio.lifetime` :: إجمالي الأرباح
-- `studio.requestPayout` :: طلب سحب الأرباح
-- `studio.holdExplain` :: تُحجز أرباح كل عملية بيع ٣٠ يوماً حتى تُغلق نافذة الاسترجاع، ثم تصبح قابلة للسحب.
+- `studio.requestPayout` :: اطلب السحب
+- `studio.holdExplain` :: تُحجز أرباح كل عملية بيع ٣٠ يوماً من تاريخها، ثم تصبح قابلة للسحب.
 - `studio.ledger` :: كشف الحساب
 - `studio.entrySale` :: بيع
 - `studio.entryPayout` :: تحويل

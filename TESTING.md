@@ -40,6 +40,7 @@ others, which is why they all exist.
 | `npm run verify:search` | Does Arabic search fold and match? | no (db only) |
 | `npm run verify:entitlement` | Does "buy once, own forever" hold? | no (db only) |
 | `npm run verify:money` | Is commission frozen; do refunds reverse correctly? | no (db only) |
+| `npm run verify:payments` | Is the Paymob callback signed, idempotent, amount-checked, and identical to a manual settle? | no (db only; no network, no real keys) |
 | `npm run verify:auth` | Do both sign-in rails and the role matrix work? | no (db only) |
 | `npm run verify:arabic` | Does any English leak into any route? | **yes** |
 | `npm run verify:hero` | Does the landing film scrub, bounded, without strays? | **yes** |
@@ -103,9 +104,12 @@ is part of a user's job end to end, add a step to `scripts/verify-journeys.ts`.
 
 Honest list — these are **not** covered:
 
-- **No payment gateway.** `availableMethods()` filters every gateway rail out,
-  so bank transfer is the only path and an order can never reach `paid`
-  through the UI. The paid branch of checkout is unreachable in tests.
+- **Payment gateway dormant until configured.** Paymob (card + Apple Pay) is
+  built, but `availableMethods()` offers it only when the `PAYMOB_*` variables
+  are set. `verify:payments` drives the callback handler and the intention
+  request with a throwaway secret and a stubbed `fetch`; nothing has been
+  charged against a real Paymob account, and Paymob's hosted page itself is
+  never exercised by a gate.
 - **No cloud storage.** `storageConfigured` is false; the local driver resolves
   keys to `/media/<key>`. Download signing and entitlement checks are real, the
   byte source is not. No ZIP builder exists.

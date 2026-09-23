@@ -10,7 +10,7 @@ Three kinds of surface share this group:
   `Taxonomy`, `Collection`, `Creator`. Only `status='live'` albums and
   `ingestStatus='ready'` clips are ever visible, and `Clip.masterKey` is excluded from
   every query on every one of these routes.
-- **Commerce** — `/cart`, `/cart/add`, `/checkout`. These require authentication (via
+- **Commerce** — `/cart`, `/cart/add`, `/checkout`, `/checkout/return`. These require authentication (via
   `redirect()` in the page, not middleware) and are the only public routes that mutate.
   The two frozen invariants — `OrderItem.clipManifestSnapshot` for entitlement and the
   commission fields — are taken exactly once, inside `checkout()` in `lib/orders.ts`.
@@ -41,6 +41,7 @@ is never purchasable on its own, so every clip surface carries its album ribbon.
 | `/cart` | Review lines, change licence tier, remove | [cart.md](cart.md) |
 | `/cart/add` | GET add-to-cart that always redirects | [cart-add.md](cart-add.md) |
 | `/checkout` | Billing entity, payment method, and the order freeze | [checkout.md](checkout.md) |
+| `/checkout/return` | Read-only payment status after Paymob's hosted checkout | [checkout-return.md](checkout-return.md) |
 | `/boards/[token]` | Account-free shared shortlist for agency clients | [boards-token.md](boards-token.md) |
 | `/sell` | Creator recruitment and the revenue-share pitch | [sell.md](sell.md) |
 | `/about` | What Laqta is | [about.md](about.md) |
@@ -63,8 +64,12 @@ specified there.
   frozen-rate reversal under `verify:money`) for the operator's own use. Do not add
   a refund page or any refund copy to a public surface without the owner.
 
-- No payment gateway. `availableMethods()` returns `bank_transfer` only; every order
-  settles by hand from `/admin`.
+- **Card / Apple Pay are built but dormant.** The Paymob driver, the signed callback
+  and `/checkout/return` exist, but until the owner sets the `PAYMOB_*` variables
+  `availableMethods()` returns `bank_transfer` only and every order still settles by
+  hand from `/admin`. No real Paymob transaction has been run yet — USD charging on
+  the owner's account is unconfirmed (see [`../api/payments-paymob.md`](../api/payments-paymob.md)).
+- mada, Tabby and Tamara are not wired and never offered.
 - No HLS preview playback. `previewHlsKey` is selected everywhere and rendered nowhere —
   the catalogue shows stills.
 - No auto-cut album trailer. `Album.trailerUrl` is unread; the PDP uses the first clip's poster.

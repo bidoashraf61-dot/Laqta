@@ -777,8 +777,40 @@ model Order {
   refunds    Refund[]
   chargeback Chargeback?
 
+  /// Every verified gateway callback that named this order.
+  paymentEvents PaymentEvent[]
+
   @@index([status, createdAt])
   @@index([userId, createdAt])
+}
+
+/// One verified server-to-server callback from a payment gateway (Paymob).
+///
+/// This is the idempotency key AND the audit trail. A callback is claimed by
+/// inserting its row; a replay of the same transaction in the same state hits
+/// the unique constraint and is acknowledged without doing anything. Only
+/// callbacks whose HMAC verified are ever written — a forged request leaves no
+/// row. `outcome` is what the handler decided:
+///   settled | declined | pending | amount_mismatch | integration_mismatch |
+///   already_paid | order_not_pending | unknown_order | reversed_at_gateway
+model PaymentEvent {
+  id            String   @id @default(cuid())
+  gateway       String // 'paymob'
+  transactionId String
+  /// success | failed | pending | refunded | voided — part of the key, because
+  /// Paymob re-sends the SAME transaction id when it is later refunded/voided.
+  state         String
+  orderId       String?
+  outcome       String
+  amountCents   Int?
+  currency      String?
+  payload       Json
+  createdAt     DateTime @default(now())
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@unique([gateway, transactionId, state])
+  @@index([orderId, createdAt])
 }
 
 model OrderItem {

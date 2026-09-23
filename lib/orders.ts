@@ -45,7 +45,14 @@ export type BillingEntity = {
 }
 
 export type CheckoutResult =
-  | { ok: true; orderId: string; orderNumber: string; settled: boolean }
+  | {
+      ok: true
+      orderId: string
+      orderNumber: string
+      settled: boolean
+      /** Set when the method pays on a hosted page (Paymob). */
+      redirectUrl?: string
+    }
   | { ok: false; messageKey: string }
 
 const VAT_RATE = Number(process.env.VAT_RATE ?? 0.15)
@@ -61,11 +68,14 @@ export async function checkout({
   lines,
   billing,
   method,
+  locale,
 }: {
   userId: string
   lines: CheckoutLine[]
   billing: BillingEntity
   method: PaymentMethod
+  /** The buyer's reading language, for the gateway's return URL. */
+  locale?: string
 }): Promise<CheckoutResult> {
   if (lines.length === 0) return { ok: false, messageKey: 'cart.empty' }
 
@@ -181,12 +191,23 @@ export async function checkout({
     })
   })
 
+  const buyer = await db.user.findUnique({
+    where: { id: userId },
+    select: { name: true, email: true, phone: true },
+  })
+
   const outcome = await createPaymentIntent({
     orderId: order.id,
     orderNumber: order.orderNumber,
     amount: Number(order.total),
     currency: order.currency,
     method,
+    buyer: {
+      name: billing.legalName || buyer?.name || null,
+      email: buyer?.email ?? null,
+      phone: buyer?.phone ?? null,
+    },
+    locale,
   })
 
   if (outcome.status === 'unavailable') {
@@ -197,6 +218,23 @@ export async function checkout({
   if (outcome.status === 'paid') {
     await settleOrder(order.id, outcome.reference)
     return { ok: true, orderId: order.id, orderNumber: order.orderNumber, settled: true }
+  }
+
+  // Hosted checkout (Paymob). The order stays `pending` and is settled ONLY by
+  // the signed server callback (lib/paymob-callback.ts → settleOrder) — never
+  // by the buyer's browser coming back.
+  if (outcome.status === 'redirect') {
+    await db.order.update({
+      where: { id: order.id },
+      data: { gatewayRef: outcome.reference },
+    })
+    return {
+      ok: true,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      settled: false,
+      redirectUrl: outcome.url,
+    }
   }
 
   // Awaiting settlement — bank transfer / Net-30. The entitlement already

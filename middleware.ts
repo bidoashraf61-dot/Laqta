@@ -102,9 +102,12 @@ function requiredAccess(path: string): Access | null {
 export const config = {
   matcher: [
     /*
-     * Everything except Next internals, the auth API, and static assets.
-     * Files with an extension are excluded so /fonts/*.woff2 is untouched.
+     * Everything except Next internals, the auth API, the payment gateway
+     * callbacks, and static assets. Files with an extension are excluded so
+     * /fonts/*.woff2 is untouched. `api/payments` is a server-to-server POST
+     * authenticated by its HMAC alone; no session or locale logic belongs in
+     * front of it.
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
+    '/((?!api/auth|api/payments|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
   ],
 }

@@ -4,7 +4,8 @@ import { z } from 'zod'
 import { requireUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { checkout } from '@/lib/orders'
-import { PAYMENT_METHODS, type PaymentMethod } from '@/lib/payments'
+import { PAYMENT_METHODS, availableMethods, type PaymentMethod } from '@/lib/payments'
+import { requestLocale } from '@/lib/locale-request'
 
 const schema = z.object({
   billingEntityType: z.enum(['individual', 'business']),
@@ -18,7 +19,8 @@ const schema = z.object({
 })
 
 export type PlaceOrderResult =
-  { ok: true; orderNumber: string; settled: boolean } | { ok: false; messageKey: string }
+  | { ok: true; orderNumber: string; settled: boolean; redirectUrl?: string }
+  | { ok: false; messageKey: string }
 
 export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> {
   const user = await requireUser()
@@ -34,6 +36,13 @@ export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> 
     method: formData.get('method'),
   })
   if (!parsed.success) return { ok: false, messageKey: 'auth.somethingWentWrong' }
+
+  // A method the page did not offer is refused before an order exists. The
+  // page only renders `availableMethods()`, so this is a forged post or a
+  // configuration that changed between render and submit.
+  if (!availableMethods().includes(parsed.data.method as PaymentMethod)) {
+    return { ok: false, messageKey: 'checkout.gatewayPending' }
+  }
 
   // A compliant tax invoice for a business needs the legal name and the VAT
   // registration number. Refusing here is cheaper than issuing an invoice that
@@ -65,6 +74,9 @@ export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> 
       billingAddress,
     },
     method: parsed.data.method as PaymentMethod,
+    // Taken from the return value, not the ambient store: an action is not a
+    // render (see actionT in lib/locale-request.ts).
+    locale: await requestLocale(),
   })
 
   if (!result.ok) return result
@@ -80,6 +92,18 @@ export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> 
       ...(billingAddress ? { billingAddress } : {}),
     },
   })
+
+  // A hosted payment may be abandoned, so the cart survives the redirect and
+  // is emptied by the signed callback once the albums are actually paid for.
+  if (result.redirectUrl) {
+    return {
+      ok: true,
+      orderNumber: result.orderNumber,
+      settled: false,
+      redirectUrl: result.redirectUrl,
+    }
+  }
+
   await db.cartItem.deleteMany({ where: { cartId: cart.id } })
 
   return { ok: true, orderNumber: result.orderNumber, settled: result.settled }

@@ -35,6 +35,7 @@ the same `DATABASE_URL`** so you are all developing against one catalogue.
 | `npm run verify:search` | Arabic stemming, transliteration, filters, zero-result logging |
 | `npm run verify:entitlement` | buy → mutate the album → library unchanged |
 | `npm run verify:money` | commission frozen; refund reverses at the frozen rate |
+| `npm run verify:payments` | Paymob callback: HMAC, idempotency, amount match, same result as a manual settle |
 | `npm run verify:auth` | both sign-in rails, 2FA, and the full role-guard matrix |
 | `npm run verify:arabic` | no English leaking into any route (needs the server running) |
 
@@ -352,8 +353,12 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
 
 ## Known gaps — deliberate, not forgotten
 
-- **No payment gateway.** `lib/payments.ts` returns `unavailable` for card /
-  Apple Pay / BNPL rather than faking a charge. Bank transfer works end to end.
+- **Paymob is built but dormant.** Card and Apple Pay go through Paymob's
+  Intention API + hosted Unified Checkout (`lib/paymob.ts`), settled only by the
+  signed callback at `/api/payments/paymob`. They appear at checkout only once
+  the `PAYMOB_*` variables are set (see `.env.example` and
+  `specs/api/payments-paymob.md`). mada, Tabby and Tamara are not wired. Bank
+  transfer works end to end.
 - **No object storage.** `lib/storage.ts` signs and gates correctly; only
   `resolveKey` changes when S3 credentials exist. Upload UI is not built.
 - **No Meilisearch.** Search runs on Postgres behind `SearchDriver`.

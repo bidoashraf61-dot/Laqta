@@ -33,6 +33,7 @@ const ROUTES = [
   '/creators/yousef-shami',
   '/cart',
   '/checkout',
+  '/checkout/return',
   '/sign-in',
   '/sign-up',
   '/sell',

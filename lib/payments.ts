@@ -2,9 +2,19 @@
  * Payments.
  *
  * ── Status ──────────────────────────────────────────────────────────────────
- * No gateway is contracted yet, so the live driver is `manual`: it records the
- * intent and marks the order awaiting settlement, exactly as a real bank
- * transfer does. Nothing here pretends a card was charged.
+ * Two drivers:
+ *
+ *   - `manual` — bank transfer. Records the intent and leaves the order
+ *     awaiting settlement; an admin marks it paid from /admin/orders.
+ *   - `paymob` (lib/paymob.ts) — card and Apple Pay through Paymob's Intention
+ *     API + Unified Checkout. DORMANT until the PAYMOB_* variables are set;
+ *     until then card/Apple Pay stay out of `availableMethods()` exactly as
+ *     they did before the driver existed. It returns a `redirect` outcome and
+ *     never `paid`: only the signed server callback settles
+ *     (lib/paymob-callback.ts → settleOrder).
+ *
+ * mada, Tabby and Tamara are NOT part of the Paymob integration and stay
+ * hidden. Nothing here pretends a card was charged.
  *
  * That is deliberate. The alternative — a fake "card" path that flips orders
  * to paid — produces a system that looks finished, and the day a real gateway
@@ -25,6 +35,8 @@
  * ────────────────────────────────────────────────────────────────────────────
  */
 
+import { createPaymobIntention, paymobMethods } from '@/lib/paymob'
+
 export const PAYMENT_METHODS = [
   'card',
   'apple_pay',
@@ -36,7 +48,7 @@ export const PAYMENT_METHODS = [
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
-/** Methods that need a gateway we do not have yet. */
+/** Methods that need a gateway. Only card + Apple Pay have one (Paymob). */
 export const GATEWAY_METHODS: PaymentMethod[] = ['card', 'apple_pay', 'mada', 'tabby', 'tamara']
 
 export function isGatewayMethod(method: PaymentMethod) {
@@ -49,12 +61,18 @@ export type PaymentIntent = {
   amount: number
   currency: string
   method: PaymentMethod
+  /** What a hosted checkout needs to address the buyer. Nothing more is asked. */
+  buyer?: { name: string | null; email: string | null; phone: string | null }
+  /** The language the buyer is reading, so the return page answers in it. */
+  locale?: string
 }
 
 export type PaymentOutcome =
   | { status: 'paid'; reference: string }
   /** Recorded, not yet settled — bank transfer and Net-30 land here. */
   | { status: 'awaiting_settlement'; reference: string; instructionsKey: string }
+  /** Hand the buyer to a hosted checkout. Settlement arrives by callback. */
+  | { status: 'redirect'; reference: string; url: string }
   | { status: 'unavailable'; reasonKey: string }
 
 interface PaymentDriver {
@@ -76,13 +94,23 @@ const manualDriver: PaymentDriver = {
   },
 }
 
-const driver: PaymentDriver = manualDriver
-
-export async function createPaymentIntent(intent: PaymentIntent) {
-  return driver.createIntent(intent)
+const paymobDriver: PaymentDriver = {
+  createIntent: (intent) => createPaymobIntention(intent),
 }
 
-/** Which methods the checkout should offer as selectable today. */
+function driverFor(method: PaymentMethod): PaymentDriver {
+  return (paymobMethods() as PaymentMethod[]).includes(method) ? paymobDriver : manualDriver
+}
+
+export async function createPaymentIntent(intent: PaymentIntent) {
+  return driverFor(intent.method).createIntent(intent)
+}
+
+/**
+ * Which methods the checkout offers today: card / Apple Pay only when Paymob is
+ * configured with an integration for them, then bank transfer, always.
+ */
 export function availableMethods(): PaymentMethod[] {
-  return PAYMENT_METHODS.filter((method) => !isGatewayMethod(method))
+  const gateway = paymobMethods() as PaymentMethod[]
+  return PAYMENT_METHODS.filter((method) => !isGatewayMethod(method) || gateway.includes(method))
 }

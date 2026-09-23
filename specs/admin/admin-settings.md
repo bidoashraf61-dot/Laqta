@@ -15,7 +15,9 @@ rate does a Silver creator get" without reading TypeScript.
 - Constants, not database rows:
   - `lib/commission.TIER_RATES`, `TIER_THRESHOLDS_SAR`, `EXCLUSIVE_BONUS_POINTS`
   - `lib/studio.MIN_PAYOUT_SAR` (`500`)
-  - `lib/storage.storageConfigured` — `Boolean(S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY)`
+  - `lib/storage.storageConfigured` — `true` when the `s3` driver is active, i.e.
+    `S3_MASTERS_BUCKET` and `AWS_REGION` are both set (credentials come from the AWS SDK
+    default chain, so their presence is not part of the test)
   - `process.env.VAT_RATE` (default `0.15`)
   - Review SLA `"3"` and payout hold `"30"` are **hard-coded strings in the JSX**, not
     read from the constants or env that actually drive those behaviours.
@@ -33,9 +35,10 @@ no settings table and no editor anywhere in the admin area for these values.
 ## States
 - **No licence version on file** — the licence panel renders `state.empty`.
 - **No audit rows** — the audit panel renders `state.empty` text.
-- **Storage badge** — success when both S3 credentials are present in the environment,
+- **Storage badge** — success when masters are on S3 (`S3_MASTERS_BUCKET` + `AWS_REGION`),
   warning otherwise. It reflects only whether env vars are set; nothing here uploads,
-  probes the bucket, or verifies the credentials. Local development runs on the honest
+  probes the bucket, or verifies the credentials. It says nothing about the public media
+  CDN (`NEXT_PUBLIC_MEDIA_CDN_URL`) — see `docs/media-aws.md`. Local development runs on the honest
   local storage driver, so this badge is normally a warning.
 - **Audit entry with no actor** — em dash.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.

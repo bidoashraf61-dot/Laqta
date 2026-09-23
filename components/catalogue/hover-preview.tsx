@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { useT } from '@/lib/i18n-client'
+import { mediaUrl } from '@/lib/media'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 
 /**
@@ -27,16 +28,19 @@ import { PreviewWatermark } from '@/components/catalogue/watermark'
  * video is exactly what that preference is asking us not to do.
  */
 export function HoverPreview({
-  src,
-  poster,
+  src: previewKey,
+  poster: posterKey,
   alt,
   className,
 }: {
+  /** A media KEY, resolved here through `lib/media.ts#mediaUrl`. */
   src: string | null
   poster: string | null
   alt: string
   className?: string
 }) {
+  const src = mediaUrl(previewKey)
+  const poster = mediaUrl(posterKey)
   const t = useT()
   // See watermark.tsx: a client component must supply this itself.
   const watermarkLabel = `${t('brand.name')} · ${t('catalogue.preview')}`

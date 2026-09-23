@@ -106,9 +106,12 @@ Honest list — these are **not** covered:
 - **No payment gateway.** `availableMethods()` filters every gateway rail out,
   so bank transfer is the only path and an order can never reach `paid`
   through the UI. The paid branch of checkout is unreachable in tests.
-- **No cloud storage.** `storageConfigured` is false; the local driver resolves
-  keys to `/media/<key>`. Download signing and entitlement checks are real, the
-  byte source is not. No ZIP builder exists.
+- **No cloud storage in development.** The S3 driver exists but is off without
+  `S3_MASTERS_BUCKET` + `AWS_REGION`; the local driver resolves keys to
+  `/media/<key>`, which nothing serves. Download signing and entitlement checks
+  are real, the byte source is not. No ZIP builder exists. Public media keys
+  without `NEXT_PUBLIC_MEDIA_CDN_URL` resolve to null, so pages show posters.
+  `media:upload` is a dry run without AWS env. See `docs/media-aws.md`.
 - **No clip upload.** Nothing in the creator portal creates a `Clip`; they
   arrive via seed only. `canSubmit` requires ≥8 clips.
 - **Release documents are stubs** — `fileKey` is written as `pending/<id>`.

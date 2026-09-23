@@ -6,6 +6,7 @@ import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { Anchor } from '@/components/ui/link'
 import { cn, formatDuration } from '@/lib/utils'
 import { useT, useLocale } from '@/lib/i18n-client'
+import { mediaUrl } from '@/lib/media'
 
 /**
  * The album's shots, as a uniform grid of links.
@@ -37,7 +38,11 @@ export type AlbumShot = {
   titleEn: string
   durationS: number | string | { toString(): string }
   thumbnailKeys: string[]
-  /** Playable preview, or null until the transcode pipeline exists. */
+  /**
+   * KEY of the shot's OWN watermarked preview (`Clip.previewKey`), resolved
+   * here through `lib/media.ts#mediaUrl`. Null or unresolvable: the tile
+   * stays a still.
+   */
   previewKey: string | null
 }
 
@@ -90,6 +95,8 @@ function ShotTile({
 }) {
   const [armed, setArmed] = React.useState(false)
   const [hovered, setHovered] = React.useState(false)
+  const poster = mediaUrl(shot.thumbnailKeys[0])
+  const preview = mediaUrl(shot.previewKey)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
 
   /*
@@ -112,7 +119,7 @@ function ShotTile({
   }, [hovered, reduced])
 
   const start = () => {
-    if (reduced || !shot.previewKey) return
+    if (reduced || !preview) return
     setArmed(true)
     setHovered(true)
   }
@@ -135,9 +142,9 @@ function ShotTile({
         current ? 'border-gold shadow-glow' : 'border-border hover:border-foreground/25',
       )}
     >
-      {shot.thumbnailKeys[0] ? (
+      {poster ? (
         <img
-          src={shot.thumbnailKeys[0]}
+          src={poster}
           alt=""
           loading="lazy"
           // `contain`, not `cover`: a 9:16 clip shows as a tall frame inside the
@@ -148,11 +155,11 @@ function ShotTile({
         <span className="grid size-full place-items-center bg-gradient-to-br from-ink to-secondary" />
       )}
 
-      {armed && shot.previewKey ? (
+      {armed && preview ? (
         <video
           ref={videoRef}
-          src={shot.previewKey}
-          poster={shot.thumbnailKeys[0] ?? undefined}
+          src={preview}
+          poster={poster ?? undefined}
           muted
           loop
           playsInline

@@ -13,6 +13,7 @@ import { BackLink } from '@/components/dashboard/primitives'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { requestLocale } from '@/lib/locale-request'
+import { mediaUrl } from '@/lib/media'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   // Resolve the locale before rendering anything.
@@ -152,9 +153,9 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           {task.album.clips.map((clip) => (
             <div key={clip.id} className="overflow-hidden rounded-md border bg-card">
               <div className="relative aspect-video bg-muted">
-                {clip.thumbnailKeys[0] ? (
+                {mediaUrl(clip.thumbnailKeys[0]) ? (
                   <img
-                    src={clip.thumbnailKeys[0]}
+                    src={mediaUrl(clip.thumbnailKeys[0]) ?? undefined}
                     alt=""
                     loading="lazy"
                     className="size-full object-cover"

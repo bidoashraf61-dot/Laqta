@@ -1460,10 +1460,11 @@ async function main() {
         origin: a.origin,
         orientation: a.orientation,
         compareAtPrice: a.compareAt ?? null,
-        // Dev only, same standing as the clip proxies: a real trailer is cut
-        // per album once the pipeline exists. Gitignored, so a fresh checkout
-        // has none and the page correctly leads with the cover still.
-        trailerKey: DEMO_LOOPS[n % DEMO_LOOPS.length],
+        // No trailer. A hero segment standing in as "the album's trailer" is
+        // the site pretending: the page leads with the album's own cover
+        // still until a real cut is set from /admin/catalogue or uploaded by
+        // `npm run media:upload`.
+        trailerKey: null,
         offerLabelAr: a.offerAr ?? null,
         offerLabelEn: a.offerEn ?? null,
         clearanceStatus: 'full',
@@ -1513,8 +1514,11 @@ async function main() {
           // hover-to-play interaction can be built and tested before the
           // transcode pipeline exists. They live in public/hero/vid, which is
           // gitignored — a fresh checkout has no video and the tile correctly
-          // falls back to its poster.
+          // falls back to its poster. `previewKey` is what public pages play;
+          // `proxyKey` is the buyer's clean editing copy (library download).
+          // `npm run media:previews` replaces the stand-in with the clip's own.
           proxyKey: DEMO_LOOPS[i % DEMO_LOOPS.length],
+          previewKey: DEMO_LOOPS[i % DEMO_LOOPS.length],
           ingestStatus: 'ready',
           checksum: `demo-${a.slug}-${i}`,
         },

@@ -21,7 +21,12 @@ Cross-cutting rules that apply to every route here: Arabic on the bare path and
 English under `/en` (see [`../localisation.md`](../localisation.md)), RTL for
 Arabic and LTR for English, logical properties only;
 every preview frame carries `PreviewWatermark`; every album surface shows a price; a clip
-is never purchasable on its own, so every clip surface carries its album ribbon.
+is never purchasable on its own, so every clip surface carries its album ribbon. Every
+poster, preview, trailer and the hero film is resolved by one function,
+`lib/media.ts#mediaUrl` — never a raw key in `src`, never an ad-hoc `startsWith('/')`
+check — and a key that does not resolve leaves the poster in place, never a broken
+`<video>`. Public previews come from `Clip.previewKey`; `proxyKey` (the buyer's clean
+editing copy) is never selected on a public surface.
 
 ## Routes
 
@@ -65,9 +70,17 @@ specified there.
 
 - No payment gateway. `availableMethods()` returns `bank_transfer` only; every order
   settles by hand from `/admin`.
-- No HLS preview playback. `previewHlsKey` is selected everywhere and rendered nowhere —
-  the catalogue shows stills.
-- No auto-cut album trailer. `Album.trailerUrl` is unread; the PDP uses the first clip's poster.
+- No HLS / adaptive preview playback. Previews are single progressive 720p MP4s
+  (`Clip.previewKey`, made by `npm run media:previews`); `previewHlsKey` is selected in
+  places and rendered nowhere.
+- Media is wired to AWS S3 + CloudFront but only switched on by env
+  (`docs/media-aws.md`). Until `NEXT_PUBLIC_MEDIA_CDN_URL` is set, bucket keys resolve
+  to nothing and pages show posters; the hero plays only where `public/hero/vid/` exists.
+- The launch catalogue's previews are still the seed's hero-segment stand-ins (dev
+  database) until real masters are run through `media:previews` + `media:upload`.
+- No album has a trailer yet. Trailers are cut by hand (no auto-cut) and set per album
+  from `/admin/catalogue` or `media:upload`; without one the PDP shows the album's own
+  cover still. `Album.trailerUrl` is a dead legacy column — `trailerKey` is the field.
 - `/contact` has no form or address, `/albums` has no sort control, and the taxonomy hubs
   accept `?page=` with no pagination UI.
 - `/cart/add` and `/boards/[token]` are covered by no automated gate.

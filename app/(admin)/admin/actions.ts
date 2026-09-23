@@ -8,6 +8,7 @@ import { recordAudit } from '@/lib/audit'
 import { db } from '@/lib/db'
 import { actionT } from '@/lib/locale-request'
 import type { Checklist } from '@/lib/review-checklist'
+import { isPublicMediaKey, mediaUrl } from '@/lib/media'
 
 export async function submitReview(input: {
   taskId: string
@@ -251,6 +252,52 @@ export async function toggleAlbumFeatured(albumId: string, featured: boolean): P
   revalidatePath('/admin/merchandising')
   revalidatePath('/')
   return { ok: true, message: tr('actions.confirm') }
+}
+
+/**
+ * Set or clear an album's trailer.
+ *
+ * The value is a key in the PUBLIC media bucket (`trailers/<slug>.mp4`, as
+ * `npm run media:upload` writes it), a URL on the media CDN, or — in
+ * development — a "/"-rooted file under public/. Anything else is refused
+ * here, at save time: a typo that saved would surface only as a storefront
+ * that quietly shows a still, which nobody would connect back to this form.
+ *
+ * Empty clears it, and the album page leads with its cover still again.
+ */
+export async function saveAlbumTrailer(
+  _state: Result | null,
+  formData: FormData,
+): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  const albumId = String(formData.get('albumId') ?? '').trim()
+  const raw = String(formData.get('trailerKey') ?? '').trim()
+  if (!albumId) return { ok: false, message: tr('state.error') }
+  if (raw && !isPublicMediaKey(raw)) return { ok: false, message: tr('dash.trailerInvalid') }
+
+  const album = await db.album.update({
+    where: { id: albumId },
+    data: { trailerKey: raw || null },
+    select: { slug: true, creator: { select: { handle: true } } },
+  })
+  await recordAudit({
+    actorId: admin.id,
+    action: raw ? 'album.trailer_set' : 'album.trailer_cleared',
+    entity: 'Album',
+    entityId: albumId,
+    detail: { trailerKey: raw || null },
+  })
+
+  revalidatePath('/admin/catalogue')
+  revalidatePath(`/albums/${album.creator.handle}/${album.slug}`)
+
+  if (!raw) return { ok: true, message: tr('dash.trailerCleared') }
+  // Saved, but say so plainly when it cannot show yet: a bucket key with no
+  // CDN configured resolves to nothing, and the page keeps its still.
+  if (!mediaUrl(raw)) return { ok: true, message: tr('dash.trailerNoCdn') }
+  return { ok: true, message: tr('dash.saved') }
 }
 
 // ── Taxonomy ────────────────────────────────────────────────────────────────

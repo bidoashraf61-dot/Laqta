@@ -42,10 +42,13 @@ row written by the API route.
 - Clip with no `masterKey`: renders a neutral `—` badge instead of a download
   button.
 - Empty manifest: the `<ul>` renders with no rows (no dedicated empty state).
-- Storage is on the **local driver** — `lib/storage.ts` reports
-  `storageConfigured = false` without S3 credentials, and `resolveKey()` returns
-  a `/media/<key>` path. The signing and entitlement checks are real; only the
-  final byte source is local. The album ZIP key `albums/<albumId>.zip` is
+- Storage driver — `lib/storage.ts` has an `s3` driver (active when
+  `S3_MASTERS_BUCKET` + `AWS_REGION` are set: `/api/download` then 302s to a
+  short-lived CloudFront-signed or S3-presigned URL) and falls back to the
+  **local driver** in development, where redemption lands on a `/media/<key>`
+  path nothing serves. The signing and entitlement checks are real either way.
+  The «نسخة المونتاج» link downloads `proxyKey` — the clean editing proxy, private,
+  never the public watermarked `previewKey`. The album ZIP key `albums/<albumId>.zip` is
   synthesised by this page and is not produced by any zip-building job in the
   repo.
 

@@ -15,7 +15,7 @@ therefore its own gate.
 | `/api/download` | Redeem a signed, short-lived token for a clip master, a proxy, or an album ZIP — re-checking the entitlement at redemption and logging the hit. | [download.md](download.md) |
 | `/api/auth/[...nextauth]` | Mounts the Auth.js v5 handlers (session, csrf, callbacks, signout) for the email+password and phone-OTP rails, with TOTP as the second factor. | [auth-nextauth.md](auth-nextauth.md) |
 
-Supporting modules: `lib/storage.ts` (HMAC signing and key resolution),
+Supporting modules: `lib/storage.ts` (HMAC signing; `s3`/`local` drivers; `resolveDownload`),
 `lib/auth.ts` + `lib/auth.config.ts` (providers, callbacks, guards),
 `lib/orders.ts` (the frozen manifest that `/api/download` enforces).
 - [`certificates.md`](./certificates.md) — the licence certificate PDF, owner-only

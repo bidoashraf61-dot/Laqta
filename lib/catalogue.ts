@@ -188,9 +188,9 @@ export type FootageTile = {
   aspectRatio: string | null
   thumbKey: string | null
   /**
-   * A short muted loop for hover preview. NULL until the transcode pipeline
-   * exists, and the tile simply does not play — the poster stays. Never let a
-   * missing preview become a broken <video>.
+   * KEY of the watermarked preview (`Clip.previewKey`), resolved by the tile
+   * through `lib/media.ts#mediaUrl`. NULL — or unresolvable — and the tile
+   * simply does not play: the poster stays. Never a broken <video>.
    */
   previewKey: string | null
   album: {
@@ -225,7 +225,7 @@ export async function getFootageWall(take = 12): Promise<FootageTile[]> {
       titleEn: true,
       aspectRatio: true,
       thumbnailKeys: true,
-      proxyKey: true,
+      previewKey: true,
       album: {
         select: {
           slug: true,
@@ -247,11 +247,11 @@ export async function getFootageWall(take = 12): Promise<FootageTile[]> {
     titleEn: row.titleEn,
     aspectRatio: row.aspectRatio,
     thumbKey: row.thumbnailKeys[0] ?? null,
-    // Only serve a preview that is actually a playable URL. Object-storage
-    // keys ("proxies/demo/…") are not URLs and would render a broken <video>;
-    // until the transcode pipeline resolves them, anything not rooted at "/"
-    // is treated as absent.
-    previewKey: row.proxyKey?.startsWith('/') ? row.proxyKey : null,
+    // The public watermarked preview's KEY. The tile resolves it through
+    // `lib/media.ts#mediaUrl`, which answers null (poster stays) when it has
+    // no playable form. `proxyKey` — the buyer's clean editing copy — is
+    // never selected here.
+    previewKey: row.previewKey,
     album: {
       creatorHandle: row.album.creator.handle,
       slug: row.album.slug,

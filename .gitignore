@@ -49,3 +49,5 @@ build/
 
 # Generated documents (certificates, invoices) — private, never committed
 .documents/
+/public/hero/vid
+/.media/

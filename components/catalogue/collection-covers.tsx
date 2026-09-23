@@ -4,6 +4,7 @@ import * as React from 'react'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { useT } from '@/lib/i18n-client'
 import { cn } from '@/lib/utils'
+import { mediaUrl } from '@/lib/media'
 
 /**
  * The covers of the albums inside a collection, cycling.
@@ -27,7 +28,19 @@ import { cn } from '@/lib/utils'
  * Decorative: the collection's title and count are the real content, and they
  * are text beside this. Announcing five album covers would be noise.
  */
-export function CollectionCovers({ covers, className }: { covers: string[]; className?: string }) {
+export function CollectionCovers({
+  covers: coverKeys,
+  className,
+}: {
+  covers: string[]
+  className?: string
+}) {
+  // Keys in, URLs out (`lib/media.ts`). A cover with no servable form is
+  // dropped rather than cycled in as a broken image.
+  const covers = React.useMemo(
+    () => coverKeys.map(mediaUrl).filter((url): url is string => url !== null),
+    [coverKeys],
+  )
   const t = useT()
   const [index, setIndex] = React.useState(0)
 
@@ -68,7 +81,8 @@ export function CollectionCovers({ covers, className }: { covers: string[]; clas
     <div className={cn('relative overflow-hidden bg-ink', className)}>
       {covers.map((cover, position) => (
         <img
-          key={cover}
+          // Two albums can share a cover frame; the position disambiguates.
+          key={`${position}:${cover}`}
           src={cover}
           alt=""
           aria-hidden

@@ -20,6 +20,7 @@ import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
 import { requestLocale } from '@/lib/locale-request'
 import { pickLocalised } from '@/lib/locale'
+import { mediaUrl } from '@/lib/media'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -67,7 +68,7 @@ async function getAlbum(creatorHandle: string, slug: string) {
           colourProfile: true,
           aspectRatio: true,
           thumbnailKeys: true,
-          proxyKey: true,
+          previewKey: true,
           // masterKey is never selected here — the catalogue must not be able
           // to reference an original.
         },
@@ -95,7 +96,7 @@ export async function generateMetadata({
       locale: 'ar_SA',
       title: pickLocalised(album.titleAr, album.titleEn),
       description: pickLocalised(album.descriptionAr, album.descriptionEn) ?? '',
-      images: album.clips[0]?.thumbnailKeys[0] ? [album.clips[0].thumbnailKeys[0]] : [],
+      images: [mediaUrl(album.clips[0]?.thumbnailKeys[0])].filter((url): url is string => !!url),
     },
   }
 }
@@ -160,7 +161,14 @@ export default async function AlbumPage({
   const coverById = new Map(covers.map((clip) => [clip.id, clip.thumbnailKeys[0] ?? null]))
 
   const priceStandard = Number(album.priceStandard)
-  const hero = album.clips[0]?.thumbnailKeys[0] ?? null
+  // The album's own cover frame — the operator-chosen cover clip, else the
+  // first shot. Resolved through the one media resolver; null means no frame.
+  const coverClip = album.clips.find((clip) => clip.id === album.coverClipId) ?? album.clips[0]
+  const hero = mediaUrl(coverClip?.thumbnailKeys[0])
+  // Only the album's OWN trailer. Null (none set, or no CDN to resolve a key
+  // against) and the page leads with the cover still — never someone else's
+  // footage standing in for this album's cut.
+  const trailer = mediaUrl(album.trailerKey)
 
   return (
     <div className="container-tight py-16">
@@ -174,33 +182,40 @@ export default async function AlbumPage({
         <div className="min-w-0 space-y-8">
           {/* The trailer, large and first: a buyer judges an album by how it
               cuts, not by one frame. Where no trailer has been produced the
-              cover still stands in — an empty player would read as broken
-              rather than as "not made yet". */}
-          <div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
-            {album.trailerKey ? (
+              album's own cover still stands in — an empty player would read
+              as broken rather than as "not made yet", and another album's
+              footage would be a lie about this one. */}
+          <div className="relative aspect-video overflow-hidden rounded-lg border bg-ink">
+            {trailer ? (
+              // The player carries its own watermark, pause control and
+              // "muted" note; a second overlay here would double the mark.
               <AutoplayVideo
-                src={album.trailerKey}
+                src={trailer}
                 poster={hero}
                 label={t('media.trailerAlt', {
                   album: pickLocalised(album.titleAr, album.titleEn),
                 })}
                 className="size-full rounded-none border-0"
               />
-            ) : hero ? (
-              <img
-                src={hero}
-                alt={t('catalogue.altAlbumCover', {
-                  album: pickLocalised(album.titleAr, album.titleEn),
-                  count: String(album.clipCount),
-                })}
-                className="size-full object-cover"
-              />
             ) : (
-              <div className="grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
-                <span className="text-4xl font-bold text-gold/30">{t('brand.name')}</span>
-              </div>
+              <>
+                {hero ? (
+                  <img
+                    src={hero}
+                    alt={t('catalogue.altAlbumCover', {
+                      album: pickLocalised(album.titleAr, album.titleEn),
+                      count: String(album.clipCount),
+                    })}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <div className="grid size-full place-items-center bg-gradient-to-br from-ink to-secondary">
+                    <span className="text-4xl font-bold text-gold/30">{t('brand.name')}</span>
+                  </div>
+                )}
+                <PreviewWatermark />
+              </>
             )}
-            <PreviewWatermark />
             <Badge variant="film" className="absolute end-3 top-3 z-[2]">
               {t('catalogue.previewWatermarked')}
             </Badge>
@@ -275,9 +290,9 @@ export default async function AlbumPage({
                 slug: clip.slug,
                 titleAr: clip.titleAr,
                 titleEn: clip.titleEn,
-                durationS: clip.durationS,
+                durationS: Number(clip.durationS),
                 thumbnailKeys: clip.thumbnailKeys,
-                previewKey: clip.proxyKey?.startsWith('/') ? clip.proxyKey : null,
+                previewKey: clip.previewKey,
               }))}
             />
           </section>

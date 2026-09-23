@@ -354,9 +354,15 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
 
 - **No payment gateway.** `lib/payments.ts` returns `unavailable` for card /
   Apple Pay / BNPL rather than faking a charge. Bank transfer works end to end.
-- **No object storage.** `lib/storage.ts` signs and gates correctly; only
-  `resolveKey` changes when S3 credentials exist. Upload UI is not built.
+- **Object storage is wired, not switched on.** `lib/storage.ts` has an S3
+  driver (masters via S3-presigned or CloudFront-signed URLs) and
+  `lib/media.ts` resolves public media against the CloudFront domain; both
+  fall back to honest local behaviour until the AWS env is set — see
+  [docs/media-aws.md](docs/media-aws.md). Upload UI is not built; the
+  pipeline is `npm run media:previews` + `npm run media:upload`.
 - **No Meilisearch.** Search runs on Postgres behind `SearchDriver`.
 - **No ETA e-invoicing.** Invoice rows are created; the certified-provider
   integration is not built. Do not build e-invoicing by hand.
-- **Album trailers** are not auto-cut; the PDP falls back to the cover still.
+- **Album trailers** are not auto-cut. An operator sets one per album
+  (`/admin/catalogue`, or a cut dropped in `.media/out/trailers/` and
+  `media:upload`); without one the PDP leads with the album's cover still.

@@ -34,7 +34,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 8-check gated checklist. | [admin-review-id.md](admin-review-id.md) |
 | `/admin/creators` | Creator roster: approve, suspend, reinstate, set tier / commission override. | [admin-creators.md](admin-creators.md) |
 | `/admin/disputes` | DMCA and content complaints: disable content, then close with a written resolution. | [admin-disputes.md](admin-disputes.md) |
-| `/admin/catalogue` | Live catalogue: pause, resume, feature, delist; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
+| `/admin/catalogue` | Live catalogue: pause, resume, feature, delist, set an album's trailer; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
 | `/admin/taxonomy` | Categories, locations, tags, themes and the search synonym layer. | [admin-taxonomy.md](admin-taxonomy.md) |
 | `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles. | [admin-merchandising.md](admin-merchandising.md) |
 | `/admin/orders` | Find orders, settle a bank transfer, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
@@ -62,3 +62,6 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.
 - `PriceBand` has no editor anywhere.
+- The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
+  control. Files reach the bucket through `npm run media:upload` (`docs/media-aws.md`).
+  `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.

@@ -129,9 +129,16 @@ a regression fails the suite rather than reaching an operator.
   entitlement is served from `OrderItem.clipManifestSnapshot`; commission is
   frozen at purchase.
 - Payments (`lib/payments.ts`) and storage (`lib/storage.ts`) are behind driver
-  interfaces with honest local drivers — no gateway/S3 yet.
-- Hero video is staged in `public/hero/vid/` (gitignored); wiring is gated on a
-  user go-signal.
+  interfaces with honest local drivers. Storage has an S3 driver (masters via
+  S3-presigned or CloudFront-signed URLs), switched on by env — see
+  `docs/media-aws.md`.
+- **Every poster, preview, trailer and the hero film goes through
+  `lib/media.ts#mediaUrl`** — never a raw key in `src`. "/"-rooted keys serve
+  from `public/`; bucket keys resolve against `NEXT_PUBLIC_MEDIA_CDN_URL`, else
+  `null` (poster stays). Public previews are `Clip.previewKey`; `proxyKey` is the
+  buyer's clean editing copy and never appears on a public page.
+- Hero video: CDN when configured, else the gitignored `public/hero/vid/`.
+  Media pipeline: `npm run media:previews` → `npm run media:upload`.
 
 ## Specs are the shared memory — update them with every change
 

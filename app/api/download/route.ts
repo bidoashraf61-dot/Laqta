@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { verifyDownload, resolveKey } from '@/lib/storage'
+import { verifyDownload, resolveDownload } from '@/lib/storage'
 
 /**
  * Download redemption.
@@ -63,7 +63,9 @@ export async function GET(request: NextRequest) {
     },
   })
 
-  // With object storage configured this becomes a 302 to a presigned GET; the
-  // gate above is identical either way.
-  return NextResponse.redirect(new URL(resolveKey(payload.key), request.nextUrl.origin))
+  // The last hop: a short-lived CloudFront-signed or S3-presigned URL under the
+  // s3 driver, `/media/<key>` under the local one. The gate above is identical
+  // either way, and it has already run — signing never decides access.
+  const target = await resolveDownload(payload.key)
+  return NextResponse.redirect(new URL(target, request.nextUrl.origin))
 }

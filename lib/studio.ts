@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { enqueue, drainSoon } from '@/lib/outbox'
+import { operatorAddress } from '@/lib/notifications'
 import { DEFAULT_LOCALE } from '@/lib/locale'
 import { siteUrl } from '@/lib/site'
 import { addBusinessDays } from '@/lib/utils'
@@ -126,7 +127,7 @@ export async function submitForReview(albumId: string) {
    * Tell the operator something arrived.
    *
    * This is the message that replaces refreshing a dashboard. It goes to
-   * OPERATOR_EMAIL rather than every admin: with one person running the
+   * the operator address (MAIL_OPERATOR_TO) rather than every admin: with one person running the
    * platform, a distribution list is a configuration burden with no benefit,
    * and the variable can hold a group address the day there is a team.
    *
@@ -134,7 +135,7 @@ export async function submitForReview(albumId: string) {
    * so it uses the product default — Arabic — which is also the language the
    * admin area is written in.
    */
-  const operator = process.env.OPERATOR_EMAIL
+  const operator = operatorAddress()
   if (operator) {
     const album = await db.album.findUnique({
       where: { id: albumId },

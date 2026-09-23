@@ -28,9 +28,15 @@ the clip contact sheet, and the eight-check checklist that gates approval.
 | `BackLink` | link | → `/admin/review` |
 | Per-check state chips (pass / fail / not_applicable) × 8 checks | local `setState` in `ReviewChecklist` | client-only until a decision is submitted; nothing is persisted per check |
 | «ملاحظة للصانع» textarea | local state | becomes `ReviewTask.decisionNote` |
-| «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve`. Redirects to `/admin` |
-| «طلب تعديلات» (request changes) | `submitReview` | `ReviewTask.status='changes_requested'`; `Album.status='changes_requested'` (reopened for editing). Requires a note |
-| «رفض» (reject) | `submitReview` | `ReviewTask.status='rejected'`; `Album.status='delisted'`. Requires a note |
+| «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve`. Emails the creator `album.approved` (link to the live album page). Redirects to `/admin` |
+| «طلب تعديلات» (request changes) | `submitReview` | `ReviewTask.status='changes_requested'`; `Album.status='changes_requested'` (reopened for editing). Requires a note. Emails the creator `album.changes` quoting the note, linking `/studio/albums/[id]` |
+| «رفض» (reject) | `submitReview` | `ReviewTask.status='rejected'`; `Album.status='delisted'`. Requires a note. Emails the creator `album.rejected` quoting the reason and inviting a reply, linking `/studio/albums` |
+
+The decision emails are queued by `lib/notifications.notifyAlbumDecision(albumId)`
+after the decision transaction commits, in the creator's stored `User.locale`, with
+the album title in that language (Arabic fallback). Rejection used to be silent; it
+is now told, because a delisting with no message reads as a status chip with no
+reason. See `specs/mail.md`.
 
 Disclosure: the approve button is disabled while `canApprove(checklist)` fails, and the
 same gate is re-run on the server inside `decideReview` — the client gate is UX, not the
@@ -74,6 +80,11 @@ authorisation boundary.
 - The task update and the album update happen in one `$transaction` — a review decision
   cannot half-apply.
 - No money and no entitlement is touched here.
+- A mail problem never fails a decision: `notifyAlbumDecision` runs after the
+  transaction, catches its own errors, and is keyed on the review task — re-running it
+  for the same decision queues nothing; a later decision on a resubmission is a new
+  task and a new message. With no provider configured the row stays pending on
+  `/admin/settings`.
 
 ## Verified by
 **The route** is not covered: `/admin/review/[id]` is absent from
@@ -84,3 +95,8 @@ nothing loads this page automatically.
 (`tests/unit/review-checklist.test.ts`): the blocking-check table, `normaliseChecklist`
 rejecting an unknown state, every `canApprove` refusal, `checklistProgress` and
 `clearedForCommercial`.
+
+**The decision emails** are covered by `npm run verify:mail`: `album.approved`,
+`album.changes` and `album.rejected` render in both languages with no banned copy.
+The hook itself (`decideReview` → `notifyAlbumDecision`) is not exercised against the
+database by any gate.

@@ -23,7 +23,7 @@ against the commission rate frozen on that line.
 | --- | --- | --- |
 | `SearchBox` | GET form / `?q=` | re-queries the list |
 | `FilterChips` | plain `<a>` to `?status=` | re-queries the list |
-| «تأكيد الدفع» (only when `order.status === 'pending'`) | `markOrderPaid(orderId)` → `lib/orders.settleOrder(orderId, 'MANUAL-<admin8>')` | order → `paid`, `paidAt`, `gatewayRef`; per item a `CreatorLedger` `sale` entry with `availableAt = now + PAYOUT_HOLD_DAYS` (default 30) and the creator's `balanceHeld` / `lifetimeGmv` updated. Audits `order.settle_manual` |
+| «تأكيد الدفع» (only when `order.status === 'pending'`) | `markOrderPaid(orderId)` → `lib/orders.settleOrder(orderId, 'MANUAL-<admin8>')` | order → `paid`, `paidAt`, `gatewayRef`; per item a `CreatorLedger` `sale` entry with `availableAt = now + PAYOUT_HOLD_DAYS` (default 30) and the creator's `balanceHeld` / `lifetimeGmv` updated; an `Invoice`; and, in the same transaction, `notifyOrderPaid` queues the buyer's `order.confirmed` receipt (album titles, frozen subtotal / VAT / total, library link). After commit the licence certificates are rendered, attached to that row, and the outbox drains. Audits `order.settle_manual` |
 | «استرجاع» disclosure on a line (only when order is `paid` or `partially_refunded`) | opens `RefundControl` | — |
 | Refund form → submit | `refund({ orderItemId, amount, reason, policyBasis })` → `lib/admin.refundOrderItem` | see invariants below. Audits `order.refund` |
 | «التقارير» footer link | link | → `/admin/reports` |
@@ -44,6 +44,12 @@ textarea (required, 500 chars).
   computed `refundGross <= 0` → `state.error`.
 - **`settleOrder` on an already-paid order** returns early and does nothing; the action
   still reports success and writes an audit row.
+- **Two settlements racing** (a double click, or a gateway webhook arriving while the
+  operator settles) — the order is flipped by compare-and-set
+  (`updateMany where status != 'paid'`) inside the transaction; the loser matches
+  nothing and leaves, so the ledger, invoice and receipt happen once.
+- **No mail provider / mail failure** — the order is still paid; the receipt row stays
+  pending (or failed) in the outbox and shows on `/admin/settings`.
 - **Truncation** — hard `take: 50` orders, no pagination.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
@@ -71,4 +77,6 @@ textarea (required, 500 chars).
 ## Verified by
 `verify:arabic`, `audit`, `verify:money` (the refund path via `refundOrderItem`: frozen
 rate, ledger netting to zero, entitlement revoked on a full refund),
-`verify:entitlement` (snapshot immutability). Not covered by `verify:flows`.
+`verify:entitlement` (snapshot immutability), `verify:mail` (two concurrent
+`settleOrder` calls → one receipt and one invoice; `notifyOrderPaid` afterwards → no
+second receipt). Not covered by `verify:flows`.

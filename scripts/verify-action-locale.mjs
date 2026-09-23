@@ -36,7 +36,7 @@ const files = [
     const head = readFileSync(f, 'utf8').slice(0, 200)
     return /^\s*['"]use server['"]/.test(head)
   }),
-  ...globSync(['emails/**/*.ts', 'emails/**/*.tsx', 'lib/outbox.ts', 'lib/certificate.ts']),
+  ...globSync(['emails/**/*.ts', 'emails/**/*.tsx', 'lib/outbox.ts', 'lib/certificate.ts', 'lib/notifications.ts']),
 ]
 
 // A `t(` call that is not `translate(`, not `.t(`, and not part of a longer name.

@@ -29,7 +29,7 @@ Collect the billing entity and payment method, then place the order — the one 
 - **Business without a VAT number** — refused server-side with `checkout.vatNumber` before any order is created.
 - **Validation failure** — generic `auth.somethingWentWrong`.
 - **Album no longer live at submit time** — `checkout()` returns `cart.unavailable` (the album count must match the line count exactly).
-- **Success, unsettled** — the form is replaced by the success card with the order number, `checkout.successPending`, and the bank-transfer instructions alert. This is the only outcome reachable today.
+- **Success, unsettled** — the form is replaced by the success card with the order number, `checkout.successPending`, and the bank-transfer instructions alert. This is the only outcome reachable today. The alert's promise ("we'll send you the transfer details and the invoice") is kept by email: after the order is recorded, `checkout()` calls `notifyOrderPlaced(orderId)`, which queues `order.placed` to the buyer — order number, amount due, transfer reference, and the `BANK_*` account details (or "reply for the details" when `BANK_IBAN` is unset). See `specs/mail.md`.
 - **Success, settled** — `checkout.successPaid`. Only possible if a payment driver returns `status: 'paid'`; the current manual driver never does.
 - **Gateway method chosen** — cannot happen through the UI; if forced, `createPaymentIntent` returns `unavailable`, the order is set to `status='failed'`, and `checkout.gatewayPending` is returned. An `Alert` states plainly that card/Apple Pay/BNPL are pending a gateway.
 - **Pending** — submit button shows `state.loading` and is disabled.
@@ -44,6 +44,7 @@ Both frozen invariants (`lib/orders.ts`) are taken here and may never be recompu
 - Only `status='live'` albums can be checked out.
 - An unsettled order grants a visible entitlement but no download — settlement (`settleOrder`) is what posts the creator ledger, the 30-day payout hold and the invoice.
 - No fake payment path: gateway methods return an honest refusal rather than flipping an order to paid.
+- A mail problem never fails checkout: `notifyOrderPlaced` runs after the order commits, only for `bank_transfer` orders still `pending`, is keyed on the order number (one message per order) and catches its own errors. The receipt (`order.confirmed`) is not sent here — it fires when the order is settled (`settleOrder`, see `specs/admin/admin-orders.md`).
 
 ## Verified by
-`verify:money` (commission frozen; refund reverses the frozen rate), `verify:entitlement` (buy → mutate album → library unchanged), `audit`. Not in the `verify:arabic` route list.
+`verify:money` (commission frozen; refund reverses the frozen rate), `verify:entitlement` (buy → mutate album → library unchanged), `verify:mail` (the transfer notice renders in both languages and is queued once per order), `audit`. Not in the `verify:arabic` route list.

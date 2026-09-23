@@ -283,9 +283,9 @@ const MAX_MESSAGE = 5000
  * product default (Arabic) — the operator's language is not knowable from a
  * visitor — with Reply-To set to the visitor so answering is one click.
  *
- * Throws only if the message could not be stored: here the message IS the
- * operation, so the form must be able to tell the visitor it failed. A missing
- * MAIL_OPERATOR_TO is logged loudly, with the message, rather than lost.
+ * Returns whether the email was queued. The contact form stores the message
+ * in `ContactMessage` BEFORE calling this, so the message is never lost; a
+ * missing MAIL_OPERATOR_TO is logged loudly and returns false.
  */
 export async function notifyContactMessage(input: {
   name: string
@@ -293,7 +293,7 @@ export async function notifyContactMessage(input: {
   subject?: string
   message: string
   locale: 'ar' | 'en'
-}): Promise<void> {
+}): Promise<boolean> {
   const operator = operatorAddress()
   const email = input.email.trim()
   const payload = {
@@ -307,7 +307,7 @@ export async function notifyContactMessage(input: {
 
   if (!operator) {
     console.error('[notifications] MAIL_OPERATOR_TO is not set; contact message not queued:', payload)
-    return
+    return false
   }
 
   await enqueue(db, {
@@ -317,4 +317,5 @@ export async function notifyContactMessage(input: {
     payload,
   })
   drainSoon()
+  return true
 }

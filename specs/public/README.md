@@ -44,7 +44,7 @@ is never purchasable on its own, so every clip surface carries its album ribbon.
 | `/boards/[token]` | Account-free shared shortlist for agency clients | [boards-token.md](boards-token.md) |
 | `/sell` | Creator recruitment and the revenue-share pitch | [sell.md](sell.md) |
 | `/about` | What Laqta is | [about.md](about.md) |
-| `/contact` | The four support channels (described, not wired) | [contact.md](contact.md) |
+| `/contact` | Contact form (stored + mailed to the operator), plus WhatsApp, support email and company details once the owner sets them | [contact.md](contact.md) |
 | `/terms` | Terms of service | [terms.md](terms.md) |
 | `/privacy` | Privacy policy | [privacy.md](privacy.md) |
 | `/licences` | Standard vs extended licence scope | [licences.md](licences.md) |
@@ -68,6 +68,10 @@ specified there.
 - No HLS preview playback. `previewHlsKey` is selected everywhere and rendered nowhere —
   the catalogue shows stills.
 - No auto-cut album trailer. `Album.trailerUrl` is unread; the PDP uses the first clip's poster.
-- `/contact` has no form or address, `/albums` has no sort control, and the taxonomy hubs
-  accept `?page=` with no pagination UI.
+- `/albums` has no sort control, and the taxonomy hubs accept `?page=` with no pagination UI.
+- `/contact` has a working form, but its WhatsApp number, support email, company name,
+  Egyptian address and commercial registration number are **empty until the owner supplies
+  them** (`content/contact.ts` / env). Each renders only once set; with none set the page is
+  the form and guidance. The operator email needs `OPERATOR_EMAIL` and a mail provider —
+  until then messages are read at `/admin/messages`.
 - `/cart/add` and `/boards/[token]` are covered by no automated gate.

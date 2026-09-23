@@ -34,6 +34,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 8-check gated checklist. | [admin-review-id.md](admin-review-id.md) |
 | `/admin/creators` | Creator roster: approve, suspend, reinstate, set tier / commission override. | [admin-creators.md](admin-creators.md) |
 | `/admin/disputes` | DMCA and content complaints: disable content, then close with a written resolution. | [admin-disputes.md](admin-disputes.md) |
+| `/admin/requests` | Footage requests from buyers, in their own words. Read-only by design. | [admin-requests.md](admin-requests.md) |
+| `/admin/messages` | Messages from the public `/contact` form: read in full, reply by mail, mark handled / reopen. | [admin-messages.md](admin-messages.md) |
 | `/admin/catalogue` | Live catalogue: pause, resume, feature, delist; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
 | `/admin/taxonomy` | Categories, locations, tags, themes and the search synonym layer. | [admin-taxonomy.md](admin-taxonomy.md) |
 | `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles. | [admin-merchandising.md](admin-merchandising.md) |
@@ -45,7 +47,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover all 13 top-level routes. **`/admin/review/[id]` is in
+- `verify:arabic` and `audit` cover 14 top-level routes (now including `/admin/messages`).
+  `/admin/requests` is in neither. **`/admin/review/[id]` is in
   neither** — the surface where the review gate actually lives is unexercised by any gate.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
   `/admin/review`, `/admin/disputes`, `/admin/payouts`, `/admin/taxonomy`.

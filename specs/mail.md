@@ -71,7 +71,7 @@ to the server console and returns `false`; `drain` returns early with a
 | `album.rejected` | `decideReview` reject → `notifyAlbumDecision` | Creator | The reviewer's reason (mandatory), an invitation to reply, button → `/studio/albums` |
 | `album.priced` | Spec B (written, not yet fired) | Creator | — |
 | `review.queued` | `submitForReview` | Operator (`operatorAddress()`) | Album, creator, button → `/admin/review` |
-| `contact.message` | `notifyContactMessage(input)` — exported for the contact form | Operator (`operatorAddress()`) | Name, email, subject, sender's language, the message; **Reply-To is the visitor** |
+| `contact.message` | `sendContactMessage` stores a `ContactMessage` row first, then `notifyContactMessage(input)`; a mail failure never loses the message (it is in `/admin/messages`) and `mailDelivered` records whether it was queued | Operator (`operatorAddress()`) | Name, email, subject, sender's language, the message; **Reply-To is the visitor** |
 
 `reject` used to be deliberately silent. It is now told: a creator whose album
 turns "delisted" with no message learns it from a status chip with no reason,

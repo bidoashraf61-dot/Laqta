@@ -61,6 +61,7 @@ const ROUTES = [
   '/admin/review',
   '/admin/creators',
   '/admin/disputes',
+  '/admin/messages',
   '/admin/catalogue',
   '/admin/taxonomy',
   '/admin/merchandising',

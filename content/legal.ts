@@ -392,30 +392,30 @@ export const CONTACT: DocumentSection[] = [
     heading: 'الدعم',
     headingEn: 'Support',
     bodyEn: [
-      'For any question about an order, a licence, or a file that is not behaving as it should, write to us and we will reply within one business day. Quote the order number if your question is about a purchase \u2014 it saves the entire back-and-forth.',
+      'For any question about an order, a licence, or a file that is not behaving as it should, write to us using the form on this page. Quote the order number if your question is about a purchase \u2014 it saves the entire back-and-forth.',
     ],
     body: [
-      'لأي سؤال عن طلب، أو ترخيص، أو ملف لا يعمل كما ينبغي، راسلنا وسنرد خلال يوم عمل واحد. اذكر رقم الطلب إن كان سؤالك متعلقاً بعملية شراء — يختصر ذلك المراسلة كلها.',
+      'لأي سؤال عن طلب، أو ترخيص، أو ملف لا يعمل كما ينبغي، اكتب لنا من النموذج في هذه الصفحة. اذكر رقم الطلب إن كان سؤالك متعلقاً بعملية شراء — يختصر ذلك المراسلة كلها.',
     ],
   },
   {
     heading: 'صنّاع المحتوى',
     headingEn: 'Creators',
     bodyEn: [
-      'If you make Saudi material and want to list it, start from the \u201cSell your footage\u201d page. Partnership and exclusivity questions go to the same channel.',
+      'If you make Saudi material and want to list it, start from the \u201cSell your footage\u201d page. Partnership and exclusivity questions come through this form too.',
     ],
     body: [
-      'إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة «بِع لقطاتك». أسئلة الشراكات والحصرية تُرسل على القناة نفسها.',
+      'إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة «بِع لقطاتك». أسئلة الشراكات والحصرية تصلنا من هذا النموذج أيضاً.',
     ],
   },
   {
     heading: 'بلاغات الحقوق',
     headingEn: 'Rights reports',
     bodyEn: [
-      'Any rights holder may file a takedown report. Attach proof of your standing, a link to the material in question, and a specific description of the clips concerned. We act on serious reports as soon as we have assessed them.',
+      'Any rights holder may file a takedown report. Include proof of your standing, a link to the material in question, and a specific description of the clips concerned. We act on serious reports as soon as we have assessed them.',
     ],
     body: [
-      'لأي صاحب حق أن يتقدّم ببلاغ إزالة. أرفق ما يثبت صفتك، ورابط المادة محل البلاغ، ووصفاً محدّداً للقطات المعنية. نعالج البلاغات الجادة فور تقييمها.',
+      'لأي صاحب حق أن يتقدّم ببلاغ إزالة. اذكر ما يثبت صفتك، ورابط المادة محل البلاغ، ووصفاً محدّداً للقطات المعنية. نعالج البلاغات الجادة فور تقييمها.',
     ],
   },
   {

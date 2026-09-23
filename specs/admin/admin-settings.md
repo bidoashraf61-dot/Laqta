@@ -16,6 +16,9 @@ rate does a Silver creator get" without reading TypeScript.
   - `lib/commission.TIER_RATES`, `TIER_THRESHOLDS_SAR`, `EXCLUSIVE_BONUS_POINTS`
   - `lib/studio.MIN_PAYOUT_SAR` (`500`)
   - `lib/storage.storageConfigured` — `Boolean(S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY)`
+  - `lib/mail.mailConfigured` — `Boolean(MAIL_PROVIDER && MAIL_API_KEY && MAIL_FROM)`,
+    read at module load; the Mail panel beside storage shows it with pending / sent /
+    failed `MailOutbox` counts. See `specs/mail.md`.
   - `process.env.VAT_RATE` (default `0.15`)
   - Review SLA `"3"` and payout hold `"30"` are **hard-coded strings in the JSX**, not
     read from the constants or env that actually drive those behaviours.

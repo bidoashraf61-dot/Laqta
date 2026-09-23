@@ -7,14 +7,36 @@
  * an English reader, in an inbox nobody on the team owns. So the checks that
  * would otherwise be "open it and look" have to be a gate.
  *
- * Static and in-process: templates are pure functions of (locale, payload), so
- * every one can be rendered without a browser, a server or a database. That is
- * a property worth keeping — if a template ever needs a query, this gate is
- * what will notice.
+ * Four parts:
+ *   1. Templates — pure functions of (locale, payload), rendered in-process in
+ *      both languages, HTML and text. No browser, no server.
+ *   2. Copy rules — no refund copy, no filmed-on-location claims (the catalogue
+ *      is AI-generated), no first/largest claims. Owner decisions, enforced.
+ *   3. The Resend adapter — `fetch` is intercepted, so the request shape is
+ *      checked without a network or a key.
+ *   4. Idempotency against the database — a receipt is queued once however
+ *      many times the order is settled, and so is a transfer notice.
+ *
+ * This gate never sends real mail: the provider variables are blanked before
+ * anything can drain, and every fixture address is on the reserved `.test` TLD.
  */
+
+// Blank, not delete: Prisma loads .env lazily and dotenv never overrides a key
+// that already exists, even an empty one. A deployment's real Resend key in
+// .env must not turn this gate's fixtures into real messages.
+const REAL_ENV = {
+  MAIL_PROVIDER: process.env.MAIL_PROVIDER,
+  MAIL_API_KEY: process.env.MAIL_API_KEY,
+  MAIL_FROM: process.env.MAIL_FROM,
+  MAIL_REPLY_TO: process.env.MAIL_REPLY_TO,
+}
+for (const key of Object.keys(REAL_ENV)) process.env[key] = ''
+
 import { readFileSync } from 'node:fs'
 import { TEMPLATES, renderTemplate } from '../emails/registry'
+import { sendMail, RESEND_ENDPOINT } from '../lib/mail'
 import type { Locale } from '../lib/locale'
+
 const ar = JSON.parse(readFileSync('messages/ar.json', 'utf8'))
 const en = JSON.parse(readFileSync('messages/en.json', 'utf8'))
 
@@ -32,74 +54,170 @@ const pass = (message: string) => console.log(`  pass  ${message}`)
  * TEMPLATE's own words are English — but an album's Arabic title legitimately
  * appears inside an English message, so real data would make the check
  * meaningless. Payload values are deliberately not the thing under test.
+ *
+ * `message` carries markup: the contact form is untrusted input, and it must
+ * arrive in the operator's inbox as text, never as HTML.
  */
 const PAYLOAD = {
   name: 'Athar Agency',
+  email: 'visitor@example.test',
+  subject: 'Licensing question',
+  message: 'Hello <script>alert(1)</script> & welcome',
+  senderLocale: 'en',
   orderNumber: 'LQ-2026-1006',
-  albums: '• AlUla Aerials',
+  albumTitles: ['AlUla Aerials', 'Riyadh Nights'],
+  subtotal: 399,
+  vatAmount: 59.85,
+  total: 458.85,
+  currency: 'USD',
+  reference: 'BT-LQ-2026-1006',
+  bankName: 'Saudi National Bank',
+  bankAccountName: 'Laqta LLC',
+  bankIban: 'SA0380000000608010167519',
+  bankSwift: 'NCBKSAJE',
   album: 'AlUla Aerials',
   creator: 'Yousef Shami',
   price: '399 US$',
   notes: 'Please regrade shot 4.',
+  taskId: 'task_1',
   libraryUrl: 'https://laqta.sa/account/library',
+  orderUrl: 'https://laqta.sa/account/purchases',
   albumUrl: 'https://laqta.sa/albums/x/y',
   reviewUrl: 'https://laqta.sa/admin/review',
+  certificateAttached: true,
 }
-
-console.log('\nEvery template renders, in both languages')
 
 const ARABIC = /[؀-ۿ]/
 const LATIN_WORD = /\b[A-Za-z]{4,}\b/
+const GOLD = /#7A6127/gi
+
+/**
+ * Banned copy. Checked against every rendered message and every `email.*`
+ * value in both dictionaries, so a key added later is covered too.
+ */
+const BANNED: Array<{ rule: string; pattern: RegExp }> = [
+  // Owner decision: refunds are never mentioned, in any language.
+  { rule: 'refund copy', pattern: /refund|reimburs|money[- ]back|استرد|استرجا|مسترد|إرجاع المبلغ/i },
+  // The catalogue is AI-generated: nothing was filmed or shot anywhere.
+  {
+    rule: 'filmed-on-location claim',
+    pattern: /\bfilmed\b|\bshot (on|in|at)\b|on location|صُ?وِّ?رت? في|صوّرنا|صورناها|تم تصوير/i,
+  },
+  { rule: 'first/largest claim', pattern: /\b(first|largest|biggest)\b|الأكبر|الأول(ى)? من نوع|أكبر مكتبة/i },
+]
+
+/* ───────────────────────── 1. Templates ───────────────────────── */
+
+console.log('\nEvery template renders, in both languages, HTML and text')
 
 for (const template of TEMPLATES) {
+  let ok = true
   for (const locale of ['ar', 'en'] as Locale[]) {
     let rendered
     try {
       rendered = renderTemplate(template, locale, PAYLOAD)
     } catch (error) {
       fail(`${template} [${locale}] threw: ${(error as Error).message}`)
+      ok = false
       continue
     }
 
-    if (!rendered?.subject?.trim()) fail(`${template} [${locale}] has an empty subject`)
-    if (!rendered?.body?.trim()) fail(`${template} [${locale}] has an empty body`)
+    const before = failures
+    if (!rendered.subject?.trim()) fail(`${template} [${locale}] has an empty subject`)
+    if (!rendered.text?.trim()) fail(`${template} [${locale}] has an empty text part`)
+    if (!rendered.html?.trim()) fail(`${template} [${locale}] has an empty HTML part`)
 
-    const text = `${rendered.subject}\n${rendered.body}`
+    const text = `${rendered.subject}\n${rendered.text}`
 
     // An unresolved placeholder is the classic template bug: it ships looking
     // like a typo rather than failing.
-    const leftover = text.match(/\{[a-zA-Z]+\}/g)
+    const leftover = `${text}\n${rendered.html}`.match(/\{[a-zA-Z]+\}/g)
     if (leftover) fail(`${template} [${locale}] left ${leftover.join(', ')} unresolved`)
 
     // A missing key falls back to the key path, which reads as gibberish.
-    if (/\b(email|brand|dash)\.[a-zA-Z]+\b/.test(text)) {
+    if (/\b(email|brand|dash)\.[a-zA-Z]+\b/.test(text.replace(/\S+@\S+/g, ''))) {
       fail(`${template} [${locale}] rendered a dot-path — a key is missing`)
     }
 
-    if (locale === 'ar' && !ARABIC.test(text)) {
-      fail(`${template} [ar] contains no Arabic`)
+    // Direction and language are declared, or Gmail lays Arabic out LTR.
+    const dir = locale === 'ar' ? 'rtl' : 'ltr'
+    if (!rendered.html.includes(`<html lang="${locale}" dir="${dir}">`)) {
+      fail(`${template} [${locale}] HTML does not declare lang="${locale}" dir="${dir}"`)
     }
+
+    // Untrusted input is escaped, and nothing executable reaches an inbox.
+    if (/<script/i.test(rendered.html)) fail(`${template} [${locale}] HTML contains a raw <script>`)
+
+    // One Voice: gold appears at most once — the single primary action.
+    const gold = rendered.html.match(GOLD)?.length ?? 0
+    if (gold > 1) fail(`${template} [${locale}] uses gold ${gold} times (One Voice Rule: at most once)`)
+
+    if (locale === 'ar' && !ARABIC.test(text)) fail(`${template} [ar] contains no Arabic`)
     if (locale === 'en') {
-      // URLs and the brand's Latin name are legitimate; prose is not.
-      const prose = text
-        .replace(/https?:\/\/\S+/g, '')
-        .replace(/[•—\-]/g, '')
+      // URLs, addresses and the payload's Latin values are legitimate; the
+      // template's own prose must be English.
+      const prose = text.replace(/https?:\/\/\S+/g, '').replace(/[•—\-]/g, '')
       if (ARABIC.test(prose)) fail(`${template} [en] leaked Arabic into an English message`)
       if (!LATIN_WORD.test(prose)) fail(`${template} [en] contains no English`)
     }
+
+    for (const { rule, pattern } of BANNED) {
+      if (pattern.test(text)) fail(`${template} [${locale}] contains ${rule}: ${text.match(pattern)?.[0]}`)
+    }
+    if (failures > before) ok = false
   }
-  pass(template)
+  if (ok) pass(template)
+}
+
+// The contact message's Reply-To is the visitor, so answering is one click.
+{
+  const rendered = renderTemplate('contact.message', 'ar', PAYLOAD)
+  if (rendered.replyTo !== PAYLOAD.email) fail('contact.message does not reply to the visitor')
+  else pass('contact.message replies to the visitor')
+  if (!rendered.html.includes('&lt;script&gt;')) fail('contact.message did not escape the visitor’s markup')
+  else pass('untrusted contact text is escaped in HTML')
+}
+
+// Rows queued before the HTML templates carried one pre-bulleted string.
+{
+  const legacy = renderTemplate('order.confirmed', 'en', {
+    name: 'A',
+    orderNumber: 'LQ-1',
+    albums: '• AlUla Aerials\n• Riyadh Nights',
+    libraryUrl: 'https://laqta.sa/account/library',
+  })
+  if (!legacy.text.includes('• Riyadh Nights') || legacy.text.includes('• •')) {
+    fail('order.confirmed does not render a legacy queued row')
+  } else pass('order.confirmed still renders rows queued in the old shape')
+}
+
+console.log('\nCopy rules hold across every email string')
+
+for (const [name, dict] of [
+  ['ar', ar],
+  ['en', en],
+] as const) {
+  const values = Object.values(dict.email ?? {}) as string[]
+  let clean = true
+  for (const value of values) {
+    for (const { rule, pattern } of BANNED) {
+      if (pattern.test(value)) {
+        fail(`messages/${name}.json email.* contains ${rule}: "${value.match(pattern)?.[0]}"`)
+        clean = false
+      }
+    }
+  }
+  if (clean) pass(`${values.length} ${name} strings: no refund, filmed or first/largest copy`)
 }
 
 console.log('\nCopy lives in messages/*.json, not in the template')
 
-const source = readFileSync('emails/registry.ts', 'utf8')
-// A quoted Arabic string in the registry means a sentence was written inline,
-// which puts it beyond verify:arabic and every editorial pass.
-if (/['"`][^'"`]*[؀-ۿ]/.test(source)) {
-  fail('emails/registry.ts contains an inline Arabic string')
-} else {
-  pass('no sentence is hard-coded in a template')
+for (const file of ['emails/registry.ts', 'emails/layout.ts', 'lib/notifications.ts']) {
+  const source = readFileSync(file, 'utf8')
+  // A quoted Arabic string means a sentence was written inline, which puts it
+  // beyond verify:arabic and every editorial pass.
+  if (/['"`][^'"`\n]*[؀-ۿ]/.test(source)) fail(`${file} contains an inline Arabic string`)
+  else pass(`${file}: no sentence is hard-coded`)
 }
 
 console.log('\nBoth dictionaries carry the same email keys')
@@ -115,16 +233,17 @@ if (!missingEn.length && !missingAr.length) pass(`${arKeys.length} keys, both la
 
 console.log('\nEvery template a caller enqueues actually exists')
 
-const callers = readFileSync('lib/orders.ts', 'utf8') +
-  readFileSync('lib/admin.ts', 'utf8') +
-  readFileSync('lib/studio.ts', 'utf8')
+const callers = ['lib/orders.ts', 'lib/admin.ts', 'lib/studio.ts', 'lib/notifications.ts']
+  .map((file) => readFileSync(file, 'utf8'))
+  .join('\n')
 /*
- * Only `template:` assignments. An earlier version matched any dotted string
- * and flagged `action: 'order.refund'` — an audit action, not a message. A
- * gate that cries wolf gets switched off.
+ * Only `template:` assignments and the template names the notifications
+ * module chooses between. An earlier version matched any dotted string and
+ * flagged `action: 'order.refund'` — an audit action, not a message. A gate
+ * that cries wolf gets switched off.
  */
 let named = 0
-for (const match of callers.matchAll(/template:\s*([^,\n]+)/g)) {
+for (const match of callers.matchAll(/template(?::|\s*=)\s*([^\n]+(?:\n\s+[?:][^\n]+)*)/g)) {
   for (const quoted of match[1].matchAll(/'([a-z]+\.[a-z]+)'/g)) {
     named++
     if (!(TEMPLATES as readonly string[]).includes(quoted[1])) {
@@ -133,10 +252,202 @@ for (const match of callers.matchAll(/template:\s*([^,\n]+)/g)) {
   }
 }
 if (!named) fail('no caller enqueues anything — the rail is not wired')
-else pass(`${named} enqueue site(s), all naming a real template`)
+else pass(`${named} template reference(s) at enqueue sites, all real`)
 
-if (failures) {
-  console.error(`\n${failures} mail check(s) failed.\n`)
-  process.exit(1)
+/* ───────────────────────── 3. Resend adapter ───────────────────────── */
+
+async function adapter() {
+  console.log('\nThe Resend adapter sends the request Resend documents')
+
+  const realFetch = globalThis.fetch
+  const calls: Array<{ url: string; init: RequestInit }> = []
+  let respond = () => new Response(JSON.stringify({ id: 'email_123' }), { status: 200 })
+  globalThis.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+    calls.push({ url: String(url), init: init ?? {} })
+    return respond()
+  }) as typeof fetch
+
+  try {
+    // Unconfigured: the honest local driver, and no request at all.
+    const quiet = await sendMail('buyer@example.test', 'S', 'T')
+    if (quiet !== false || calls.length) fail('unconfigured sendMail did not fall back to the local driver')
+    else pass('without MAIL_* set, nothing is requested and delivery reports false')
+
+    process.env.MAIL_PROVIDER = 'resend'
+    process.env.MAIL_API_KEY = 're_test_key'
+    process.env.MAIL_FROM = 'لقطة <orders@laqta.test>'
+    process.env.MAIL_REPLY_TO = 'hello@laqta.test'
+
+    const delivered = await sendMail(
+      'buyer@example.test',
+      'Subject',
+      'Text part',
+      [{ filename: 'LIC-1.pdf', content: Buffer.from('%PDF-1.4 test') }],
+      { html: '<p>HTML part</p>', idempotencyKey: 'outbox:abc' },
+    )
+    const call = calls[0]
+    const headers = (call?.init.headers ?? {}) as Record<string, string>
+    const body = call ? JSON.parse(String(call.init.body)) : {}
+
+    const checks: Array<[string, boolean]> = [
+      ['returns true on 2xx', delivered === true],
+      ['POSTs to https://api.resend.com/emails', call?.url === RESEND_ENDPOINT && call?.init.method === 'POST'],
+      ['authorises with the key as a Bearer token', headers.Authorization === 'Bearer re_test_key'],
+      ['sends JSON', headers['Content-Type'] === 'application/json'],
+      ['passes the Idempotency-Key', headers['Idempotency-Key'] === 'outbox:abc'],
+      ['from is MAIL_FROM, verbatim', body.from === 'لقطة <orders@laqta.test>'],
+      ['to is an array', Array.isArray(body.to) && body.to[0] === 'buyer@example.test'],
+      ['carries subject, text and html', body.subject === 'Subject' && body.text === 'Text part' && body.html === '<p>HTML part</p>'],
+      ['reply_to defaults to MAIL_REPLY_TO', body.reply_to === 'hello@laqta.test'],
+      [
+        'attachments are base64 with a filename',
+        body.attachments?.[0]?.filename === 'LIC-1.pdf' &&
+          Buffer.from(body.attachments[0].content, 'base64').toString() === '%PDF-1.4 test',
+      ],
+    ]
+    for (const [name, ok] of checks) (ok ? pass : fail)(name)
+
+    // A per-message Reply-To (the contact form) wins over the default.
+    calls.length = 0
+    await sendMail('op@example.test', 'S', 'T', [], { replyTo: 'visitor@example.test' })
+    const replyBody = JSON.parse(String(calls[0]?.init.body ?? '{}'))
+    if (replyBody.reply_to !== 'visitor@example.test') fail('per-message replyTo does not override MAIL_REPLY_TO')
+    else pass('per-message replyTo overrides MAIL_REPLY_TO')
+    if ('attachments' in replyBody) fail('an empty attachment list is still sent')
+
+    // A rejection throws with the status, so the outbox can record and park it.
+    respond = () =>
+      new Response(JSON.stringify({ name: 'validation_error', message: 'Invalid `to` field.' }), { status: 422 })
+    try {
+      await sendMail('bad', 'S', 'T')
+      fail('a 422 from Resend did not throw')
+    } catch (error) {
+      const message = (error as Error).message
+      if (!/^resend 422: validation_error: Invalid `to` field\./.test(message)) fail(`unexpected error text: ${message}`)
+      else pass('a Resend rejection throws with its status and reason')
+    }
+
+    // Never hard-code a key.
+    const source = readFileSync('lib/mail.ts', 'utf8')
+    if (/re_[A-Za-z0-9]{8,}/.test(source)) fail('lib/mail.ts contains something that looks like a Resend key')
+    else pass('no key in source')
+  } finally {
+    globalThis.fetch = realFetch
+    // Blank again BEFORE anything below can queue and drain.
+    for (const key of Object.keys(REAL_ENV)) process.env[key] = ''
+  }
 }
-console.log('\nEvery message renders in both languages, with nothing left unresolved.\n')
+
+/* ───────────────────────── 4. Idempotency ───────────────────────── */
+
+async function idempotency() {
+  console.log('\nA receipt is queued once, however many times an order is settled')
+
+  const { db } = await import('../lib/db')
+  const { settleOrder } = await import('../lib/orders')
+  const { notifyOrderPaid, notifyOrderPlaced, notifyContactMessage } = await import('../lib/notifications')
+
+  const stamp = Date.now()
+  const email = `verify-mail-${stamp}@laqta.test`
+  const operator = `operator-${stamp}@laqta.test`
+  process.env.MAIL_OPERATOR_TO = operator
+
+  const user = await db.user.create({ data: { email, name: 'Verify Mail', locale: 'en' } })
+  const orders: string[] = []
+
+  try {
+    const make = async (suffix: string) => {
+      const order = await db.order.create({
+        data: {
+          orderNumber: `LQ-VERIFY-${stamp}-${suffix}`,
+          userId: user.id,
+          status: 'pending',
+          subtotal: 100,
+          vatRate: 0.15,
+          vatAmount: 15,
+          total: 115,
+          paymentMethod: 'bank_transfer',
+          gatewayRef: `BT-LQ-VERIFY-${stamp}-${suffix}`,
+        },
+      })
+      orders.push(order.id)
+      return order
+    }
+
+    const rows = (template: string, orderNumber: string) =>
+      db.mailOutbox.count({ where: { template, payload: { path: ['orderNumber'], equals: orderNumber } } })
+
+    // The transfer notice.
+    const placed = await make('A')
+    await notifyOrderPlaced(placed.id)
+    await notifyOrderPlaced(placed.id)
+    const placedRows = await rows('order.placed', placed.orderNumber)
+    if (placedRows !== 1) fail(`notifyOrderPlaced twice queued ${placedRows} rows, expected 1`)
+    else pass('notifyOrderPlaced twice → one transfer notice')
+    const placedRow = await db.mailOutbox.findFirst({ where: { template: 'order.placed', toEmail: email } })
+    if (placedRow?.locale !== 'en') fail(`transfer notice locale is ${placedRow?.locale}, expected the buyer's en`)
+    else pass("the notice is frozen in the buyer's stored language")
+
+    // Two settlements racing — an operator's double click, a retried webhook.
+    const raced = await make('B')
+    await Promise.all([settleOrder(raced.id, 'TEST-1'), settleOrder(raced.id, 'TEST-2')])
+    const receipts = await rows('order.confirmed', raced.orderNumber)
+    const invoices = await db.invoice.count({ where: { orderId: raced.id } })
+    if (receipts !== 1) fail(`two concurrent settleOrder calls queued ${receipts} receipts, expected 1`)
+    else pass('two concurrent settleOrder calls → one receipt')
+    if (invoices !== 1) fail(`two concurrent settleOrder calls issued ${invoices} invoices, expected 1`)
+    else pass('…and one invoice: the settlement itself ran once')
+
+    // Called again afterwards, as a webhook would.
+    const first = await db.mailOutbox.findFirst({
+      where: { template: 'order.confirmed', payload: { path: ['orderNumber'], equals: raced.orderNumber } },
+      select: { id: true },
+    })
+    const again = await notifyOrderPaid(raced.id)
+    if (again !== first?.id || (await rows('order.confirmed', raced.orderNumber)) !== 1) {
+      fail('notifyOrderPaid after settlement queued a second receipt')
+    } else pass('notifyOrderPaid after settlement returns the existing receipt')
+
+    // Never for an unpaid order.
+    const unpaid = await make('C')
+    if ((await notifyOrderPaid(unpaid.id)) !== null || (await rows('order.confirmed', unpaid.orderNumber))) {
+      fail('notifyOrderPaid queued a receipt for an unpaid order')
+    } else pass('no receipt for an order that is not paid')
+
+    // The contact form's signature, as the form calls it.
+    await notifyContactMessage({
+      name: 'Visitor',
+      email: 'visitor@example.test',
+      subject: 'Hello',
+      message: 'A question about licensing.',
+      locale: 'en',
+    })
+    const contact = await db.mailOutbox.findFirst({ where: { template: 'contact.message', toEmail: operator } })
+    if (!contact) fail('notifyContactMessage queued nothing for MAIL_OPERATOR_TO')
+    else pass('notifyContactMessage queues one message to MAIL_OPERATOR_TO')
+  } finally {
+    await db.mailOutbox.deleteMany({ where: { toEmail: { in: [email, operator] } } })
+    await db.invoice.deleteMany({ where: { orderId: { in: orders } } })
+    await db.order.deleteMany({ where: { id: { in: orders } } })
+    await db.user.delete({ where: { id: user.id } })
+    await db.$disconnect()
+  }
+}
+
+async function main() {
+  await adapter()
+  try {
+    await idempotency()
+  } catch (error) {
+    fail(`idempotency checks could not run (is the database up? npm run db:start): ${(error as Error).message}`)
+  }
+
+  if (failures) {
+    console.error(`\n${failures} mail check(s) failed.\n`)
+    process.exit(1)
+  }
+  console.log('\nEvery message renders in both languages, the adapter speaks Resend, and nothing sends twice.\n')
+  process.exit(0)
+}
+
+void main()

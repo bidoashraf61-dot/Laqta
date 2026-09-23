@@ -9,16 +9,16 @@
 
 - `brand.name` :: لقطة   ⟂ EN: Laqta
 - `brand.tagline` :: مكتبة اللقطات السعودية   ⟂ EN: The Saudi footage library
-- `brand.promise` :: ألبومات بصريّة سعودية بترخيص تجاري شامل. ادفع مرة واحدة وامتلكها مدى الحياة بلا اشتراكات.   ⟂ EN: Saudi footage albums under a full commercial licence. Pay once and own them for life, with no subscriptions.
-- `brand.forWhom` :: لصنّاع المحتوى، والشركات، وكل من يقود حملة إعلامية موجهة للجمهور السعودي.   ⟂ EN: For content creators and companies, and anyone working on a Saudi brand or a campaign about the Kingdom.
-- `brand.seo.home` :: ألبومات لقطات سعودية جاهزة للمونتاج بدقة سينمائية، أفقية ورأسية. توفر عليك أيام التصوير بترخيص تجاري شامل ودفعة واحدة للأبد.   ⟂ EN: Ready-to-edit Saudi footage albums in high resolution, landscape and vertical. Saudi cinematic content that saves you hours of production, with a full commercial licence and a one-time payment for life — no subscriptions.
-- `brand.seo.licences` :: ترخيص تجاري شامل وموحد لكل ألبوم: بلا حد للمشاهدات، يشمل الحملات المدفوعة والشاشات الخارجية، وبلا رسوم تجديد.   ⟂ EN: One licence per album: full commercial, with no cap on views, covering paid campaigns, out-of-home and products made for resale. Perpetual, with no expiry date.
-- `brand.seo.about` :: ألبومات بصريّة سعودية متكاملة تُباع لمرة واحدة وبملكية دائمة. استكشف رؤيتنا والخبرات خلف المنصة.   ⟂ EN: Saudi cinematic content sold as ready-made albums, under a full commercial licence with a one-time payment for life, at a price an Arab freelancer can actually pay. Read the story and how it works.
-- `brand.seo.contact` :: تواصل مع فريق لقطة لطلب لقطات لمواقع محددة، أو للاستفسار عن تراخيص المنشآت، الفواتير الضريبية، وحسابات الوكالات.   ⟂ EN: Get in touch to request footage of a specific location, or to ask about licence details, invoices and agency accounts. We reply within one business day.
-- `brand.seo.terms` :: الشروط والأحكام المنظمة لاستخدام منصة لقطة وشراء الألبومات: سياسات الشراء، الاستخدام، حقوق التحميل، والمسؤولية.   ⟂ EN: The terms governing use of the platform and the purchase of albums: orders, payment, downloads, limits of liability and governing law.
-- `brand.seo.privacy` :: سياسة الخصوصية وسرية البيانات: كيف نجمع بياناتك ونحميها، حقوقك المستحقة، وسبل التواصل المباشر مع فريقنا.   ⟂ EN: How we collect, use and protect your data: what we ask for, how long we keep it, your rights, and how to reach us about them.
-- `brand.seo.refunds` :: سياسة الاسترجاع: لا يُقبل الاسترجاع بعد تنزيل الملفات. وتتيح لك المنصة سبعة أيام لاسترداد المبلغ قبل التحميل.   ⟂ EN: Refund policy: no refund once any file in an album has been downloaded. Before downloading, you have seven days to request a full refund.
-- `brand.seo.contentPolicy` :: سياسة المحتوى المعتمدة: التزام الإفصاح عن الذكاء الاصطناعي، حظر الاستخدام الإخباري، واستثناء المشاعر والمواقع الدينية.   ⟂ EN: What may be uploaded and sold here: mandatory disclosure of generated content, the exclusion of religious sites, and the ban on editorial use.
+- `brand.promise` :: ألبومات لقطات سعودية بترخيص تجاري كامل. ادفع مرة واحدة، والألبوم لك للأبد، بلا اشتراكات.   ⟂ EN: Saudi footage albums under a full commercial licence. Pay once and own them for life, with no subscriptions.
+- `brand.forWhom` :: للوكالات وفرق التسويق وصنّاع المحتوى، ولكل من يعمل على حملة موجّهة للجمهور السعودي.   ⟂ EN: For content creators and companies, and anyone working on a Saudi brand or a campaign about the Kingdom.
+- `brand.seo.home` :: ألبومات لقطات فيديو سعودية جاهزة للمونتاج، أفقية وعمودية، بدقة 1080p و4K. ترخيص تجاري كامل، تدفع مرة واحدة والألبوم لك للأبد.   ⟂ EN: Ready-to-edit Saudi footage albums in high resolution, landscape and vertical. Saudi cinematic content that saves you hours of production, with a full commercial licence and a one-time payment for life — no subscriptions.
+- `brand.seo.licences` :: ترخيص واحد لكل ألبوم: تجاري كامل، دائم، بلا حد لعدد المشاهدات. يشمل الحملات المدفوعة والعرض خارج المنزل والمنتجات المعدّة لإعادة البيع.   ⟂ EN: One licence per album: full commercial, with no cap on views, covering paid campaigns, out-of-home and products made for resale. Perpetual, with no expiry date.
+- `brand.seo.about` :: لماذا بُنيت لقطة وكيف تعمل: ألبومات لقطات سعودية تُراجَع قبل النشر، وتُشترى مرة واحدة بترخيص تجاري كامل.   ⟂ EN: Saudi cinematic content sold as ready-made albums, under a full commercial licence with a one-time payment for life, at a price an Arab freelancer can actually pay. Read the story and how it works.
+- `brand.seo.contact` :: تواصل مع لقطة لطلب لقطات من موقع محدد، أو للسؤال عن الترخيص والفواتير الضريبية وحسابات الوكالات والجهات.   ⟂ EN: Get in touch to request footage of a specific location, or to ask about licence details, invoices and agency accounts. We reply within one business day.
+- `brand.seo.terms` :: الشروط التي تحكم استخدام لقطة وشراء الألبومات: الطلب والدفع، والتحميل، وحدود المسؤولية، والقانون الواجب التطبيق.   ⟂ EN: The terms governing use of the platform and the purchase of albums: orders, payment, downloads, limits of liability and governing law.
+- `brand.seo.privacy` :: كيف نجمع بياناتك ونستخدمها ونحميها: ما نطلبه، ومدة حفظه، وحقوقك، وكيف تتواصل معنا بشأنها.   ⟂ EN: How we collect, use and protect your data: what we ask for, how long we keep it, your rights, and how to reach us about them.
+- `brand.seo.refunds` :: سياسة الاسترجاع: لك سبعة أيام لطلب استرجاع كامل المبلغ ما دمت لم تحمّل أي ملف من الألبوم. بعد التحميل لا يُقبل الاسترجاع.   ⟂ EN: Refund policy: no refund once any file in an album has been downloaded. Before downloading, you have seven days to request a full refund.
+- `brand.seo.contentPolicy` :: ما يُقبل رفعه وبيعه على لقطة: الإفصاح عن المحتوى المُنتَج بالذكاء الاصطناعي، والتصاريح، والملاءمة الثقافية، والبلاغات.   ⟂ EN: What may be uploaded and sold here: mandatory disclosure of generated content, the exclusion of religious sites, and the ban on editorial use.
 
 ## nav
 > قوائم التنقل — كلمة أو كلمتان
@@ -30,7 +30,7 @@
 - `nav.locations` :: المواقع   ⟂ EN: Locations
 - `nav.collections` :: المجموعات   ⟂ EN: Collections
 - `nav.creators` :: صنّاع المحتوى   ⟂ EN: Creators
-- `nav.sell` :: بِع محتواك   ⟂ EN: Sell your footage
+- `nav.sell` :: بِع لقطاتك   ⟂ EN: Sell your footage
 - `nav.pricing` :: الأسعار   ⟂ EN: Pricing
 - `nav.help` :: المساعدة   ⟂ EN: Help
 - `nav.account` :: حسابي   ⟂ EN: Account
@@ -49,8 +49,8 @@
 
 - `search.placeholder` :: ابحث في المكتبة… اليوم الوطني، العلا، رجال أعمال، جبال طويق   ⟂ EN: Search anything… National Day, AlUla, Saudi businessman
 - `search.submit` :: بحث   ⟂ EN: Search
-- `search.noResults` :: لم نجد نتائج تطابق بحثك   ⟂ EN: No results
-- `search.noResultsHint` :: جرب استخدام كلمات بحث أكثر عمومية أو قم بتعديل التصفية   ⟂ EN: Try broader words, or clear a filter or two
+- `search.noResults` :: ما لقينا نتائج لبحثك   ⟂ EN: No results
+- `search.noResultsHint` :: جرّب كلمات أعم، أو شيل فلتر أو اثنين.   ⟂ EN: Try broader words, or clear a filter or two
 
 ## footer
 > تذييل الموقع
@@ -63,5 +63,5 @@
 - `footer.contentPolicy` :: سياسة المحتوى   ⟂ EN: Content policy
 - `footer.refunds` :: سياسة الاسترجاع   ⟂ EN: Refund policy
 - `footer.follow` :: تابعنا   ⟂ EN: Follow us
-- `footer.rights` :: حقوق النشر محفوظة   ⟂ EN: Copyright reserved
-- `footer.tagline` :: خيارك الأول للمحتوى السعودي الأصيل   ⟂ EN: Your first choice for authentic Saudi content.
+- `footer.rights` :: جميع الحقوق محفوظة   ⟂ EN: Copyright reserved
+- `footer.tagline` :: ألبومات لقطات سعودية، تشتريها مرة وتبقى لك.   ⟂ EN: Your first choice for authentic Saudi content.

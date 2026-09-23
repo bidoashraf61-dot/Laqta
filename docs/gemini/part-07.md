@@ -9,7 +9,7 @@
 
 - `dash.sectionOverview` :: نظرة عامة
 - `dash.sectionContent` :: المحتوى
-- `dash.sectionMoney` :: المال
+- `dash.sectionMoney` :: المالية
 - `dash.sectionSettings` :: الإعدادات
 - `dash.sectionOperations` :: التشغيل
 - `dash.sectionCatalogue` :: الكتالوج
@@ -17,7 +17,7 @@
 - `dash.analytics` :: التحليلات
 - `dash.payouts` :: التحويلات
 - `dash.settings` :: الإعدادات
-- `dash.merchandising` :: الواجهة والعرض
+- `dash.merchandising` :: واجهة الموقع
 - `dash.promos` :: أكواد الخصم
 - `dash.viewSite` :: عرض الموقع
 - `dash.expand` :: توسيع القائمة
@@ -37,7 +37,7 @@
 - `dash.trendRevenue` :: الإيرادات يومياً
 - `dash.trendPurchases` :: المبيعات يومياً
 - `dash.funnel` :: من المشاهدة إلى الشراء
-- `dash.topAlbums` :: الأكثر أداءً
+- `dash.topAlbums` :: الأعلى أداءً
 - `dash.noData` :: لا توجد بيانات في هذه الفترة
 - `dash.noDataHint` :: ستظهر الأرقام هنا فور أول مشاهدة أو عملية بيع.
 - `dash.welcome` :: أهلاً، {name}

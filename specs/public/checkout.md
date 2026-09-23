@@ -20,7 +20,7 @@ Collect the billing entity and payment method, then place the order — the one 
 | `legalName`, `crNumber`, `vatNumber`, `poNumber` | Form fields (business only) | Passed into `placeOrder`; `legalName` and `vatNumber` are `required` in the DOM and `vatNumber` re-checked server-side |
 | `addressLine1`, `city` | Form fields | Composed into `billingAddress` as `{ line1, city, country: 'SA' }` when either is set |
 | Payment-method radio | Client state | Writes a hidden `method` input. Only `bank_transfer` is offered |
-| "أكمل الطلب" (`checkout.placeOrder`) | Server action `placeOrder(formData)` in `app/(public)/checkout/actions.ts` | Zod-validates, calls `checkout()` in `lib/orders.ts`, persists the billing entity onto `User`, empties the cart |
+| «تأكيد الطلب» (`checkout.placeOrder`) | Server action `placeOrder(formData)` in `app/(public)/checkout/actions.ts` | Zod-validates, calls `checkout()` in `lib/orders.ts`, persists the billing entity onto `User`, empties the cart |
 | "اذهب إلى المكتبة" (success) | Link | `/account/library` |
 
 ## States

@@ -19,22 +19,22 @@ finds nothing.
 |---|---|---|
 | The catalogue's unit | ألبوم / ألبومات | album / albums |
 | A single piece of footage | لقطة / لقطات | clip / shot |
-| Go to the catalogue | استكشف اللقطات | Explore the footage |
-| See every album | تصفح جميع الألبومات | Browse all albums |
+| Go to the catalogue | تصفّح اللقطات | Browse the footage |
+| See every album | عرض كل الألبومات | Browse all albums |
 | The album's preview film | التريلر / شاهد التريلر | trailer / Watch trailer |
 | Who supplies the footage | **صنّاع المحتوى** (with shadda) | creators |
 | The commercial grant | ترخيص تجاري كامل | full commercial licence |
 | Link to the licence page | تفاصيل الترخيص | License details |
-| What you keep after paying | امتلاك دائم للأبد | permanent lifetime ownership |
+| What you keep after paying | امتلاك دائم | permanent lifetime ownership |
 | How you pay | ادفع مرة واحدة · بلا اشتراكات | pay once · no subscriptions |
 | What lands in your library | الجودة الأصلية | original quality |
 | Common questions | الأسئلة الشائعة | Frequently asked questions |
 | The aircraft | **درون** | drone |
-| Footage made with a camera | تصوير واقعي | Real footage |
+| Footage made with a camera | تصوير حقيقي | Real footage |
 | Footage made with generative tools | ذكاء اصطناعي | AI generated |
 | The album's shape | أفقي / عمودي / أفقي وعمودي | Landscape / Portrait / Landscape & portrait |
-| Footer rights line | حقوق النشر محفوظة | Copyright reserved |
-| Brand line | خيارك الأول للمحتوى السعودي الأصيل | Your first choice for authentic Saudi content |
+| Footer rights line | جميع الحقوق محفوظة | Copyright reserved |
+| Brand line | ألبومات لقطات سعودية، تشتريها مرة وتبقى لك. | Your first choice for authentic Saudi content |
 
 ## Deliberately NOT adopted from the source document
 
@@ -73,6 +73,12 @@ and on the page, and cannot drift from the catalogue.
 
 **A note in a spec is not an enforcement mechanism.** These survived a copy
 sweep that explicitly listed them.
+
+It happened again. A later editorial pass reintroduced a comparison as
+`landing.priceLead`/`priceBold` «ألبوم كامل بسعر لقطة مفردة», alongside «مواقع
+سعودية حقيقية» and «تصاريح موثّقة» about an AI-generated catalogue. The
+creative-director polish of 2026-09-23 removed them, and `verify:licence` now
+fails on any of them (`OVERCLAIMS`), in both languages and in `content/legal.ts`.
 
 ## Invariants
 

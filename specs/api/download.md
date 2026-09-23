@@ -17,8 +17,8 @@ Read-only endpoint — no forms, no body, no mutation of catalogue or money. The
 
 | Control | Action | Effect |
 | --- | --- | --- |
-| "تنزيل الكل" (album ZIP) on `/account/library/[id]` | `GET /api/download?token=…&sig=…` signed with `key = albums/<albumId>.zip`, `clipId = null` | Logs a `Download` with `isAlbumZip = true`, then 302s to the resolved key |
-| "تنزيل" per clip | `GET /api/download` signed with `key = clip.masterKey`, `clipId = clip.id` | Logs a `Download`, then 302s to the resolved key |
+| «تحميل الألبوم كاملاً» (album ZIP) on `/account/library/[id]` | `GET /api/download?token=…&sig=…` signed with `key = albums/<albumId>.zip`, `clipId = null` | Logs a `Download` with `isAlbumZip = true`, then 302s to the resolved key |
+| «تحميل» per clip | `GET /api/download` signed with `key = clip.masterKey`, `clipId = clip.id` | Logs a `Download`, then 302s to the resolved key |
 | Proxy link per clip | `GET /api/download` signed with `key = clip.proxyKey`, `clipId = clip.id` | Same path; the proxy is the editing copy |
 
 ## States

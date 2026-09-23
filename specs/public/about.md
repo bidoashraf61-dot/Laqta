@@ -22,6 +22,7 @@ Read-only.
 - Content is Arabic only.
 
 ## Invariants
+- Rendered through `DocumentPage` (shared by about, terms, privacy, licences, content-policy): the summary under the title is `<Prose>` (Serif Text 1.2rem / 1.85), matching the site-wide head composition.
 - Policy and marketing prose lives in `content/legal.ts`, not in the message dictionary — these are reviewed as whole documents by counsel, not as strings.
 - Measure capped at `62ch` so it tracks Arabic glyph width rather than a Latin assumption.
 

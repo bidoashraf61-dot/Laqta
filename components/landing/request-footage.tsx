@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { requestFootage } from '@/app/(public)/actions'
 import { Button } from '@/components/ui/button'
-import { Headline, Section } from '@/components/ui/typography'
+import { Headline, Prose, Section } from '@/components/ui/typography'
 import { useT } from '@/lib/i18n-client'
 
 /**
@@ -98,7 +98,7 @@ export function RequestFootage({ compact = false }: { compact?: boolean }) {
     <Section tone="olive">
       <div className="mx-auto max-w-2xl">
         <Headline lead={t('request.lead')} bold={t('request.bold')} size="lg" />
-        <p className="mt-4 text-foreground">{t('request.body')}</p>
+        <Prose className="mt-5">{t('request.body')}</Prose>
         {form}
       </div>
     </Section>

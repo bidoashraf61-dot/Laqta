@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { EmptyState } from '@/components/ui/state'
 import { formatNumber, t } from '@/lib/i18n'
-import { PageTitle } from '@/components/ui/typography'
+import { PageTitle, Prose } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
 
@@ -92,12 +92,12 @@ export default async function AlbumsPage({
 
   return (
     <div className="container-tight py-16">
-      <header className="mb-6 space-y-1">
+      <header className="mb-8">
         <PageTitle>{t('catalogue.albumsTitle')}</PageTitle>
-        <p className="text-muted-foreground">
+        <Prose className="mt-3">
           {t('catalogue.albumsSubtitle')} ·{' '}
           <span className="numeric">{formatNumber(albums.length)}</span>
-        </p>
+        </Prose>
       </header>
 
       {albums.length === 0 ? (

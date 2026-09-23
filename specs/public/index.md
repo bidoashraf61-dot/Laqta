@@ -13,7 +13,7 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 
 ## Sections (in order)
 1. `HeroCinematic` — scroll-scrubbed film; two CTAs. Two-cut headline (Thmanyah Sans Light lead, Serif Display Bold statement), no kashida. The USP rail — four claims as a vertical scrubber — sits at the inline-start edge on desktop and **docks to the bottom of the frame on mobile**; it was `display:none` below 1024px until 2026-09, so phone visitors never saw it.
-2. `ProblemSolution` — a **split**: media at the inline-start (the right, in Arabic), copy at the inline-end. Stacks copy-first on phones. Headline «لقطات من موقع واحد، بضوء واحد وهوية واحدة.», drawn from the section's own claim. The media slot is a placeholder still, built to take a video (`.mp4`/`.webm`, preferred) or an image/GIF for the planned Premiere-timeline capture — one constant, `MEDIA.src`.
+2. `ProblemSolution` — a **split**: media at the inline-start (the right, in Arabic), copy at the inline-end. Stacks copy-first on phones. Headline «لقطات من موقع واحد، بضوء واحد وهوية واحدة.», drawn from the section's own claim. Body claim: an album gathers **٣٠–٧٠ matching clips around one subject** (EN «30 to 70 matching clips around a single subject»; changed from 10–24 by the owner on 2026-09-24). The media slot is a placeholder still, built to take a video (`.mp4`/`.webm`, preferred) or an image/GIF for the planned Premiere-timeline capture — one constant, `MEDIA.src`.
 3. `FootageWall` — showreel (id `#showreel`) + hover-preview tile masonry.
 4. `TheCollection` — album posters, centred head, seasonal tagline, "all albums" button, `olive` ground.
 5. `LicensingRights` — features/rights checklist (`components/landing/licensing.tsx`).
@@ -23,6 +23,8 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 9. `RequestFootage` — request a custom album.
 10. `FinalCta` — closing buyer push (`components/landing/final-cta.tsx`), `olive` ground.
 11. `CreatorCta` — creator invite, last.
+
+**Type composition (every section head).** `<Headline size="lg">`: Thmanyah Sans Light lead over a Serif Display Bold statement, and the paragraph under it is always `<Prose>` (Serif Text 1.2rem / 1.85) — never a muted Sans `<p>`. The owner signed this off on 2026-09-24 against the ProblemSolution and season-band sections as the model for the whole site. `TheCollection` and `RequestFootage` bodies moved to `<Prose>` in that change.
 
 ## Controls
 

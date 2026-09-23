@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
 import { EmptyState } from '@/components/ui/state'
-import { Headline, Section } from '@/components/ui/typography'
+import { Headline, Prose, Section } from '@/components/ui/typography'
 import { t } from '@/lib/i18n'
 import { pickLocalised } from '@/lib/locale'
 
@@ -60,9 +60,9 @@ export function TheCollection({
           <Headline lead={t('landing.offersLead')} bold={t('landing.offersBold')} size="lg" />
         )}
 
-        <p className="mt-4 text-muted-foreground">
+        <Prose className="mx-auto mt-5">
           {season ? t('landing.seasonBody') : t('landing.offersBody')}
-        </p>
+        </Prose>
       </div>
 
       {albums.length === 0 ? (

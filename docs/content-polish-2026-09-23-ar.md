@@ -425,3 +425,16 @@
 - `actions.copied` :: نُسخ
 - `account.verifiedEmail` :: وثّقنا بريدك الإلكتروني.
 - `email.orderSettledSubject` :: وصل تحويلك — {order}
+
+## الإنجليزية (English pass)
+
+196 English strings and 7 English paragraphs of the documents, written to mirror the
+polished Arabic in meaning. Main fixes: the landing FAQ asked five *different*
+questions from the Arabic (now the same five); "From $79" on the landing broke the
+price-on-album-pages-only rule; "instant download links" was false while payment is
+bank transfer; the hero now carries the approved Arabic idea («يوم تصوير كامل، في
+ألبوم واحد.» → "A full shoot day, in one album."); "license" → "licence" (British,
+as the rest of the site); "a Saudi team reviews", "the fastest way", "at a price an
+Arab freelancer can pay" and "Saudi data protection regulations" removed as
+unverifiable or wrong for an Egyptian company. The dashboards stay Arabic-only by
+design (`specs/localisation.md`).

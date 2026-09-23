@@ -29,7 +29,7 @@ export const TERMS: DocumentSection[] = [
     heading: 'من نحن وما الذي تشتريه',
     headingEn: 'Who we are and what you are buying',
     bodyEn: [
-      'Laqta is a digital marketplace for footage of the Kingdom of Saudi Arabia. The platform connects creators with buyers and claims no ownership of the material listed: the rights to every clip remain with its creator, and what you buy is a licence of defined scope, not ownership of the material itself.',
+      'Laqta is a digital marketplace for Saudi video footage. The platform connects creators with buyers and claims no ownership of the material listed: the rights to every clip remain with its creator, and what you buy is a licence of defined scope, not ownership of the material itself.',
       'The unit of sale is the album, not the individual clip. When a purchase completes, the list of clips included in your order is fixed exactly as it stood at the moment of payment, and stays yours to download with no time limit \u2014 even if the creator later edits the album or removes it from the catalogue.',
     ],
     body: [
@@ -66,7 +66,7 @@ export const TERMS: DocumentSection[] = [
     headingEn: 'What the licence does not cover',
     bodyEn: [
       'The licence gives you no right to resell the clip as it is, to make it available in another footage library, or to use it in a way that reflects badly on a person appearing in it, or on a place or a religious or national symbol.',
-      'See the licences page for a breakdown of what the licence covers and the few things it does not.',
+      'See the licence page for a breakdown of what the licence covers and the few things it does not.',
     ],
     body: [
       'لا يمنحك الترخيص حقاً في إعادة بيع اللقطة كما هي، أو إتاحتها في مكتبة لقطات أخرى، أو استخدامها بما يسيء إلى شخص ظاهر فيها أو إلى مكان أو رمز ديني أو وطني.',
@@ -172,7 +172,7 @@ export const PRIVACY: DocumentSection[] = [
     heading: 'حقوقك',
     headingEn: 'Your rights',
     bodyEn: [
-      'You have the right to see your data, correct it, and ask for it to be deleted, within what the Saudi personal data protection regulations allow. Deletion does not extend to what we are legally required to keep, such as invoices.',
+      'You have the right to see your data, correct it, and ask for it to be deleted, within what the applicable personal data protection laws allow. Deletion does not extend to what we are legally required to keep, such as invoices.',
       'To make any of these requests, get in touch through the contact page.',
     ],
     body: [
@@ -187,7 +187,7 @@ export const LICENCES: DocumentSection[] = [
     heading: 'ترخيص واحد يُشترى مرة واحدة',
     headingEn: 'One licence, bought once',
     bodyEn: [
-      'There is no subscription and no monthly allowance that expires. You buy the album once, keep the right to use its clips with no time limit, and it stays downloadable from your library.',
+      'There is no subscription and no monthly allowance that expires. You buy the album once, keep the right to use its clips with no time limit, and the album stays downloadable from your library.',
     ],
     body: [
       'لا يوجد اشتراك ولا رصيد شهري ينتهي. تشتري الألبوم مرة واحدة، وتحتفظ بحق استخدام لقطاته بلا حد زمني، ويبقى الألبوم قابلاً للتحميل من مكتبتك.',
@@ -258,7 +258,7 @@ export const CONTENT_POLICY: DocumentSection[] = [
     heading: 'ما الذي نقبله',
     headingEn: 'What we accept',
     bodyEn: [
-      'Footage from inside the Kingdom, at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album is the single largest cause of refund requests, because the editor ends up with material that will not cut together on one timeline.',
+      'Saudi footage at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.',
     ],
     body: [
       'لقطات سعودية بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.',
@@ -320,7 +320,7 @@ export const CONTENT_POLICY: DocumentSection[] = [
     heading: 'العلامة المائية والمعاينة',
     headingEn: 'Watermarking and previews',
     bodyEn: [
-      'Every clip uploaded to Laqta is shown publicly with an automatic watermark \u2014 on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview establishes what the clip is without handing over a usable copy.',
+      'Every clip uploaded to Laqta is shown publicly with an automatic watermark — on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview shows what the clip is without handing over a usable copy.',
       "The original file, at full resolution and without a watermark, is delivered only to the buyer once payment completes. This protects the creator's rights and makes previews safe to show anywhere.",
     ],
     body: [
@@ -368,7 +368,7 @@ export const ABOUT: DocumentSection[] = [
     headingEn: 'The business model',
     bodyEn: [
       'You buy the album once and own its licence forever. No subscription, no allowance expiring at the end of the month, no surprises at renewal. A tax invoice comes with every purchase.',
-      'The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days before becoming withdrawable, because the refund window has to close before the money leaves.',
+      'The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days, then become withdrawable.',
     ],
     body: [
       'تشتري الألبوم مرة واحدة وتملك ترخيصه للأبد. لا اشتراك، ولا رصيد ينتهي آخر الشهر، ولا مفاجآت عند التجديد. تصلك فاتورة ضريبية عن كل عملية.',

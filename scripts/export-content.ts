@@ -117,7 +117,6 @@ const DOCS: Array<[string, string, DocumentSection[]]> = [
   ['privacy', 'سياسة الخصوصية — نص قانوني', legal.PRIVACY],
   ['licences', 'تفاصيل الترخيص — ترخيص واحد فقط', legal.LICENCES],
   ['contentPolicy', 'سياسة المحتوى', legal.CONTENT_POLICY],
-  ['refunds', 'سياسة الاسترجاع', legal.REFUNDS],
   ['about', 'عن لقطة', legal.ABOUT],
   ['contact', 'تواصل معنا', legal.CONTACT],
 ]

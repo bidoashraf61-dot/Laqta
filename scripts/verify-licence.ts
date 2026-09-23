@@ -59,7 +59,6 @@ const DOCUMENTS: Record<string, DocumentSection[]> = {
   privacy: legal.PRIVACY,
   licences: legal.LICENCES,
   contentPolicy: legal.CONTENT_POLICY,
-  refunds: legal.REFUNDS,
   about: legal.ABOUT,
   contact: legal.CONTACT,
 }

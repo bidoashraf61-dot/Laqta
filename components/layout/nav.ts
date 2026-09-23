@@ -42,7 +42,6 @@ export const FOOTER_LEGAL: NavItem[] = [
   { href: '/privacy', labelKey: 'footer.privacy' },
   { href: '/licences', labelKey: 'footer.licences' },
   { href: '/content-policy', labelKey: 'footer.contentPolicy' },
-  { href: '/refunds', labelKey: 'footer.refunds' },
 ]
 
 /** Role-gated entries — the studio and admin links only appear when usable. */

@@ -11,7 +11,7 @@
  *   - the key exists (a renamed key would silently add dead copy)
  *   - `{placeholders}` come back exactly as they went out — dropping `{count}`
  *     removes the number from a card
- *   - no tatweel, no «..», no licence wording `verify:licence` would reject
+ *   - no decorative tatweel, no «..», no licence wording `verify:licence` would reject
  *   - SEO descriptions stay within 160 characters
  *
  * Anything after `⟂` is ignored (the English hint), as is every line that is
@@ -19,7 +19,10 @@
  *
  * Dry-run by default; pass `--apply` to write.
  *
- *     npx tsx scripts/import-content.ts docs/gemini/return-01.md [--apply]
+ *     npx tsx scripts/import-content.ts docs/gemini/return-01.md [--apply] [--locale en]
+ *
+ * `--locale en` applies to `messages/en.json` and the English side of the
+ * documents (`headingEn` / `bodyEn` / `listEn`) instead.
  */
 import { readFileSync, writeFileSync } from 'node:fs'
 import * as legal from '../content/legal'
@@ -33,18 +36,23 @@ if (!file) {
   process.exit(2)
 }
 const apply = flags.includes('--apply')
+const locale = flags.includes('--locale') ? flags[flags.indexOf('--locale') + 1] : 'ar'
+if (locale !== 'ar' && locale !== 'en') {
+  console.error('--locale must be ar or en')
+  process.exit(2)
+}
+const messagesFile = `messages/${locale}.json`
 
 const DOCS: Record<string, DocumentSection[]> = {
   terms: legal.TERMS,
   privacy: legal.PRIVACY,
   licences: legal.LICENCES,
   contentPolicy: legal.CONTENT_POLICY,
-  refunds: legal.REFUNDS,
   about: legal.ABOUT,
   contact: legal.CONTACT,
 }
 
-const ar = JSON.parse(readFileSync('messages/ar.json', 'utf8')) as Tree
+const ar = JSON.parse(readFileSync(messagesFile, 'utf8')) as Tree
 
 function getMessage(key: string): string | undefined {
   let node: string | Tree | undefined = ar
@@ -68,8 +76,10 @@ function getDoc(key: string): string | undefined {
   if (!m) return undefined
   const section = DOCS[m[1]]?.[Number(m[2]) - 1]
   if (!section) return undefined
-  if (m[3] === 'heading') return m[4] ? undefined : section.heading
-  const list = m[3] === 'body' ? section.body : section.list
+  const en = locale === 'en'
+  if (m[3] === 'heading') return m[4] ? undefined : en ? section.headingEn : section.heading
+  const list =
+    m[3] === 'body' ? (en ? section.bodyEn : section.body) : en ? section.listEn : section.list
   return m[4] ? list?.[Number(m[4]) - 1] : undefined
 }
 
@@ -98,7 +108,9 @@ for (const raw of readFileSync(file, 'utf8').split('\n')) {
   if (!to) problems.push(`${key}: empty`)
   if (placeholders(from) !== placeholders(to))
     problems.push(`${key}: placeholders ${placeholders(from) || '∅'} → ${placeholders(to) || '∅'}`)
-  if (/ـ/.test(to)) problems.push(`${key}: tatweel`)
+  // Tatweel between two letters is decoration; after a detached prefix — «بـ»,
+  // «الـ{days}» — it is how Arabic writes the prefix, and stays.
+  if (/[\u0621-\u064A]ـ+[\u0621-\u064A]/.test(to)) problems.push(`${key}: tatweel`)
   if (/\.\./.test(to)) problems.push(`${key}: «..»`)
   if (/الترخيص القياسي|الترخيص الموسّع|بحد أقصى[^.]{0,40}[\d٠-٩]/u.test(to))
     problems.push(`${key}: licence wording verify:licence rejects`)
@@ -122,6 +134,25 @@ if (!apply) {
 // ── Write ─────────────────────────────────────────────────────────────────
 let legalSource = readFileSync('content/legal.ts', 'utf8')
 const literal = (s: string) => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
+/**
+ * Every string literal in the source whose VALUE equals `text` — matched by
+ * value, not spelling, because the English is written with \u2014 escapes and
+ * sometimes in double quotes, and the same text can be spelt several ways.
+ */
+const LITERAL = /'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"/g
+function spansOf(text: string): Array<[number, number]> {
+  const spans: Array<[number, number]> = []
+  for (const m of legalSource.matchAll(LITERAL)) {
+    let value: unknown
+    try {
+      value = new Function(`return ${m[0]}`)()
+    } catch {
+      continue
+    }
+    if (value === text) spans.push([m.index!, m.index! + m[0].length])
+  }
+  return spans
+}
 
 for (const { key, from, to } of edits) {
   if (!key.startsWith('doc.')) {
@@ -131,15 +162,15 @@ for (const { key, from, to } of edits) {
   // Documents are source, not data: replace the exact Arabic literal, and
   // refuse if it is not there exactly once — a paragraph that appears twice
   // cannot be edited by its text alone.
-  const needle = literal(from)
-  const count = legalSource.split(needle).length - 1
-  if (count !== 1) {
-    console.error(`✗ ${key}: found ${count} times in content/legal.ts — edit it by hand`)
+  const spans = spansOf(from)
+  if (spans.length !== 1) {
+    console.error(`✗ ${key}: found ${spans.length} times in content/legal.ts — edit it by hand`)
     process.exit(1)
   }
-  legalSource = legalSource.replace(needle, () => literal(to))
+  const [start, end] = spans[0]
+  legalSource = legalSource.slice(0, start) + literal(to) + legalSource.slice(end)
 }
 
-writeFileSync('messages/ar.json', JSON.stringify(ar, null, 2) + '\n')
+writeFileSync(messagesFile, JSON.stringify(ar, null, 2) + '\n')
 writeFileSync('content/legal.ts', legalSource)
 console.log(`✓ applied ${edits.length} change(s).`)

@@ -42,7 +42,6 @@ const ROUTES = [
   '/privacy',
   '/licences',
   '/content-policy',
-  '/refunds',
   '/account',
   '/account/library',
   '/account/purchases',

@@ -29,11 +29,11 @@ export const TERMS: DocumentSection[] = [
     heading: 'من نحن وما الذي تشتريه',
     headingEn: 'Who we are and what you are buying',
     bodyEn: [
-      'Laqta is a digital marketplace for footage of the Kingdom of Saudi Arabia. The platform connects creators with buyers and claims no ownership of the material listed: the rights to every clip remain with its creator, and what you buy is a licence of defined scope, not ownership of the material itself.',
+      'Laqta is a digital marketplace for Saudi video footage. The platform connects creators with buyers and claims no ownership of the material listed: the rights to every clip remain with its creator, and what you buy is a licence of defined scope, not ownership of the material itself.',
       'The unit of sale is the album, not the individual clip. When a purchase completes, the list of clips included in your order is fixed exactly as it stood at the moment of payment, and stays yours to download with no time limit \u2014 even if the creator later edits the album or removes it from the catalogue.',
     ],
     body: [
-      'لقطة سوق رقمي للقطات من داخل المملكة العربية السعودية. المنصّة تصل بين صنّاع المحتوى وبين المشترين، ولا تدّعي ملكية المواد المعروضة: تظل حقوق كل لقطة لصانعها، وما تشتريه أنت هو ترخيص استخدام محدّد النطاق، لا ملكية المادة نفسها.',
+      'لقطة سوق رقمي للقطات فيديو سعودية. تصل المنصّة صنّاع المحتوى بالمشترين، ولا تدّعي ملكية المواد المعروضة: تظل حقوق كل لقطة لصانعها، وما تشتريه أنت ترخيص استخدام محدّد النطاق، لا ملكية المادة نفسها.',
       'الوحدة المعروضة للبيع هي الألبوم، لا اللقطة المفردة. عند إتمام الشراء تُثبَّت قائمة اللقطات المشمولة في طلبك كما هي لحظة الدفع، وتبقى ملكك للتحميل بلا حد زمني حتى لو عدّل الصانع الألبوم أو أزاله من الكتالوج لاحقاً.',
     ],
   },
@@ -66,11 +66,11 @@ export const TERMS: DocumentSection[] = [
     headingEn: 'What the licence does not cover',
     bodyEn: [
       'The licence gives you no right to resell the clip as it is, to make it available in another footage library, or to use it in a way that reflects badly on a person appearing in it, or on a place or a religious or national symbol.',
-      'See the licences page for a breakdown of what the licence covers and the few things it does not.',
+      'See the licence page for a breakdown of what the licence covers and the few things it does not.',
     ],
     body: [
       'لا يمنحك الترخيص حقاً في إعادة بيع اللقطة كما هي، أو إتاحتها في مكتبة لقطات أخرى، أو استخدامها بما يسيء إلى شخص ظاهر فيها أو إلى مكان أو رمز ديني أو وطني.',
-      'راجع صفحة التراخيص لتفصيل ما يشمله الترخيص وما لا يشمله.',
+      'راجع صفحة الترخيص لتفصيل ما يشمله وما لا يشمله.',
     ],
   },
   {
@@ -172,7 +172,7 @@ export const PRIVACY: DocumentSection[] = [
     heading: 'حقوقك',
     headingEn: 'Your rights',
     bodyEn: [
-      'You have the right to see your data, correct it, and ask for it to be deleted, within what the Saudi personal data protection regulations allow. Deletion does not extend to what we are legally required to keep, such as invoices.',
+      'You have the right to see your data, correct it, and ask for it to be deleted, within what the applicable personal data protection laws allow. Deletion does not extend to what we are legally required to keep, such as invoices.',
       'To make any of these requests, get in touch through the contact page.',
     ],
     body: [
@@ -187,10 +187,10 @@ export const LICENCES: DocumentSection[] = [
     heading: 'ترخيص واحد يُشترى مرة واحدة',
     headingEn: 'One licence, bought once',
     bodyEn: [
-      'There is no subscription and no monthly allowance that expires. You buy the album once, keep the right to use its clips with no time limit, and it stays downloadable from your library.',
+      'There is no subscription and no monthly allowance that expires. You buy the album once, keep the right to use its clips with no time limit, and the album stays downloadable from your library.',
     ],
     body: [
-      'لا يوجد اشتراك ولا رصيد شهري ينتهي. تشتري الألبوم مرة واحدة، وتحتفظ بحق استخدام لقطاته بلا حد زمني، وتبقى قابلة للتحميل من مكتبتك.',
+      'لا يوجد اشتراك ولا رصيد شهري ينتهي. تشتري الألبوم مرة واحدة، وتحتفظ بحق استخدام لقطاته بلا حد زمني، ويبقى الألبوم قابلاً للتحميل من مكتبتك.',
     ],
   },
   {
@@ -258,10 +258,10 @@ export const CONTENT_POLICY: DocumentSection[] = [
     heading: 'ما الذي نقبله',
     headingEn: 'What we accept',
     bodyEn: [
-      'Footage from inside the Kingdom, at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album is the single largest cause of refund requests, because the editor ends up with material that will not cut together on one timeline.',
+      'Saudi footage at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.',
     ],
     body: [
-      'لقطات من داخل المملكة، بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد هو السبب الأول لطلبات الاسترجاع، لأن المونتير يجد نفسه أمام مواد لا تُركّب على خط زمني واحد.',
+      'لقطات سعودية بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.',
     ],
   },
   {
@@ -320,11 +320,11 @@ export const CONTENT_POLICY: DocumentSection[] = [
     heading: 'العلامة المائية والمعاينة',
     headingEn: 'Watermarking and previews',
     bodyEn: [
-      'Every clip uploaded to Laqta is shown publicly with an automatic watermark \u2014 on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview establishes what the clip is without handing over a usable copy.',
+      'Every clip uploaded to Laqta is shown publicly with an automatic watermark — on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview shows what the clip is without handing over a usable copy.',
       "The original file, at full resolution and without a watermark, is delivered only to the buyer once payment completes. This protects the creator's rights and makes previews safe to show anywhere.",
     ],
     body: [
-      'كل لقطة تُرفع إلى لقطة تُعرض للجمهور بعلامة مائية تلقائياً — تظهر على كل مصغّرة وكل معاينة وكل مشغّل، دون استثناء ودون خطوة إضافية من الصانع. المعاينة تثبت اللقطة دون أن تسلّم نسخة صالحة للاستخدام.',
+      'كل لقطة تُرفع إلى المنصّة تُعرض للجمهور بعلامة مائية تلقائياً — على كل مصغّرة وكل معاينة وكل مشغّل، دون استثناء ودون خطوة إضافية من الصانع. المعاينة تُعرّف باللقطة دون أن تسلّم نسخة صالحة للاستخدام.',
       'الملف الأصلي بالدقة الكاملة وبلا علامة مائية لا يُسلَّم إلا للمشتري بعد إتمام الدفع. هذا يحمي حق الصانع ويجعل المعاينة آمنة للعرض في كل مكان.',
     ],
   },
@@ -336,69 +336,6 @@ export const CONTENT_POLICY: DocumentSection[] = [
     ],
     body: [
       'لأي صاحب حق أن يتقدّم ببلاغ. نعطّل المحتوى محل البلاغ فور تقييمه تقييماً أولياً جادّاً، ثم نمنح الصانع فرصة الرد. التعطيل إجراء قابل للتراجع بطبيعته، ولهذا نلجأ إليه سريعاً بدل الانتظار.',
-    ],
-  },
-]
-
-export const REFUNDS: DocumentSection[] = [
-  {
-    heading: 'المبدأ',
-    headingEn: 'The principle',
-    bodyEn: [
-      'The product is digital and delivered the moment you pay, so there is no refund for a simple change of mind. A refund is due when you did not get what you paid for.',
-    ],
-    body: [
-      'المنتج رقمي ويُسلَّم فور الدفع، لذا لا يوجد استرجاع لمجرّد تغيير الرأي. الاسترجاع مستحق حين لا تحصل على ما دفعت مقابله.',
-    ],
-  },
-  {
-    heading: 'متى نسترجع',
-    headingEn: 'When we refund',
-    bodyEn: [],
-    listEn: [
-      'A technical fault in the file: corruption, or specifications differing from what the album page stated.',
-      'A licence mismatch: the album turns out not to cover the use stated on its page.',
-      'A duplicate purchase of the same album on the same licence within fourteen days.',
-      'Content disabled after purchase as the result of an upheld rights report.',
-    ],
-    body: [],
-    list: [
-      'خلل تقني في الملف: تلف، أو اختلاف المواصفات عمّا هو معلن في صفحة الألبوم.',
-      'عدم مطابقة الترخيص: تبيّن أن الألبوم لا يغطي الاستخدام المعلن في صفحته.',
-      'شراء الألبوم نفسه مرتين خلال أربعة عشر يوماً.',
-      'تعطيل المحتوى بعد الشراء نتيجة بلاغ حقوق ثبتت صحته.',
-    ],
-  },
-  {
-    heading: 'المدة',
-    headingEn: 'The window',
-    bodyEn: [
-      'A request is made within fourteen days of the purchase date. Requests based on a rights report are not subject to that window, because their cause arises late by nature.',
-    ],
-    body: [
-      'يُقدَّم الطلب خلال أربعة عشر يوماً من تاريخ الشراء. الطلبات المبنية على بلاغ حقوق لا تخضع لهذه المدة، لأن سببها ينشأ متأخراً بطبيعته.',
-    ],
-  },
-  {
-    heading: 'كيف يعمل الاسترجاع',
-    headingEn: 'How a refund works',
-    bodyEn: [
-      'The amount is returned to the same payment method within the period the provider sets. Your right to download the refunded material ends the moment a full refund is processed.',
-      "The creator's share is reversed at the rate frozen against the order at the moment of purchase, not at their current rate. This is what guarantees a creator's statement returns to exactly zero on a full refund.",
-    ],
-    body: [
-      'يُعاد المبلغ إلى وسيلة الدفع نفسها خلال المدة التي يحدّدها مزوّد الخدمة. يُلغى حقك في تحميل المادة المسترجعة فور تنفيذ الاسترجاع الكامل.',
-      'تُعكس حصّة الصانع بالنسبة المجمّدة على الطلب لحظة الشراء، لا بنسبته الحالية. هذا يضمن أن كشف حساب الصانع يعود إلى الصفر تماماً عند الاسترجاع الكامل.',
-    ],
-  },
-  {
-    heading: 'الاسترجاع الجزئي',
-    headingEn: 'Partial refunds',
-    bodyEn: [
-      'Where the fault affects only part of an album, a partial refund in proportion to the affected part is possible, and the rest of the licence stays valid and downloadable.',
-    ],
-    body: [
-      'إن كان الخلل في جزء من الألبوم فقط، يجوز الاسترجاع الجزئي بنسبة المتأثر، ويبقى باقي الترخيص سارياً وقابلاً للتحميل.',
     ],
   },
 ]
@@ -431,11 +368,11 @@ export const ABOUT: DocumentSection[] = [
     headingEn: 'The business model',
     bodyEn: [
       'You buy the album once and own its licence forever. No subscription, no allowance expiring at the end of the month, no surprises at renewal. A tax invoice comes with every purchase.',
-      'The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days before becoming withdrawable, because the refund window has to close before the money leaves.',
+      'The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days, then become withdrawable.',
     ],
     body: [
       'تشتري الألبوم مرة واحدة وتملك ترخيصه للأبد. لا اشتراك، ولا رصيد ينتهي آخر الشهر، ولا مفاجآت عند التجديد. تصلك فاتورة ضريبية عن كل عملية.',
-      'يحتفظ صانع المحتوى بحقوق مادته، ويأخذ حصّة من كل عملية بيع ترتفع مع إجمالي مبيعاته. تُحجز أرباح كل عملية ثلاثين يوماً قبل أن تصبح قابلة للسحب، لأن نافذة الاسترجاع يجب أن تُغلق قبل أن يخرج المال.',
+      'يحتفظ صانع المحتوى بحقوق مادته، ويأخذ حصّة من كل عملية بيع ترتفع مع إجمالي مبيعاته. تُحجز أرباح كل عملية ثلاثين يوماً، ثم تصبح قابلة للسحب.',
     ],
   },
   {

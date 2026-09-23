@@ -38,7 +38,6 @@ const PUBLIC_ROUTES = [
   '/contact',
   '/terms',
   '/privacy',
-  '/refunds',
   '/content-policy',
   '/cart',
   '/sign-in',

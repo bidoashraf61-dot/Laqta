@@ -14,7 +14,7 @@
 - `dash.creatorApproved` :: معتمد
 - `dash.creatorSuspended` :: موقوف
 - `dash.creatorRejected` :: مرفوض
-- `dash.approveCreator` :: اعتماد صانع المحتوى   ⟂ EN: Approve creator
+- `dash.approveCreator` :: اعتماد   ⟂ EN: Approve creator
 - `dash.suspendCreator` :: إيقاف
 - `dash.reinstateCreator` :: إعادة تفعيل
 - `dash.tier` :: الشريحة
@@ -59,12 +59,12 @@
 - `dash.termEn` :: الاسم بالإنجليزية
 - `dash.termSlug` :: المعرّف
 - `dash.termSynonyms` :: المرادفات (افصل بفاصلة)
-- `dash.termParent` :: التصنيف الأب
-- `dash.termNone` :: بدون
+- `dash.termParent` :: التصنيف الأعلى
+- `dash.termNone` :: لا شيء
 - `dash.termAlbums` :: ألبوم
 - `dash.noTerms` :: لا توجد مصطلحات
 - `dash.merchandisingTitle` :: واجهة الموقع
-- `dash.merchandisingHint` :: ما يظهر في الصفحة الرئيسية: البانر، الألبومات المميّزة، والمجموعات — بدون لمس الكود.
+- `dash.merchandisingHint` :: ما يظهر في الصفحة الرئيسية: البانر، والألبومات المميّزة، والمجموعات — دون تعديل الكود.
 - `dash.slots` :: الخانات
 - `dash.slotActive` :: مفعّلة
 - `dash.slotInactive` :: متوقفة
@@ -86,7 +86,7 @@
 - `dash.ordersHint` :: كل عمليات الشراء، والاسترجاع، والفواتير الضريبية.
 - `dash.orderPaid` :: مدفوع
 - `dash.orderPending` :: بانتظار الدفع
-- `dash.orderFailed` :: فشل
+- `dash.orderFailed` :: فشل الدفع
 - `dash.orderRefunded` :: مسترجع
 - `dash.orderPartial` :: استرجاع جزئي
 - `dash.orderItems` :: بنود الطلب
@@ -122,7 +122,7 @@
 - `dash.promoRedemptions` :: الاستخدامات
 - `dash.promoLimit` :: الحد الأقصى
 - `dash.promoWindow` :: فترة الصلاحية
-- `dash.promoMinOrder` :: حد أدنى للطلب
+- `dash.promoMinOrder` :: الحد الأدنى للطلب
 - `dash.promoActive` :: مفعّل
 - `dash.promoInactive` :: متوقف
 - `dash.newPromo` :: كود جديد
@@ -130,7 +130,7 @@
 - `dash.platformSettings` :: إعدادات المنصّة
 - `dash.platformSettingsHint` :: الأرقام التي تحكم التشغيل: مهلة المراجعة، ومدة الحجز، والحد الأدنى للتحويل، والضريبة، ونسب العمولة.
 - `dash.reviewSla` :: مهلة المراجعة (أيام عمل)
-- `dash.holdDays` :: مدة حجز أرباح البيع (أيام)
+- `dash.holdDays` :: مدة حجز الأرباح (أيام)
 - `dash.minPayout` :: الحد الأدنى للتحويل
 - `dash.vatRate` :: نسبة ضريبة القيمة المضافة
 - `dash.commissionTiers` :: نسب العمولة
@@ -140,10 +140,10 @@
 - `dash.auditActor` :: المنفِّذ
 - `dash.storage` :: التخزين السحابي
 - `dash.licenceCurrent` :: نسخة الترخيص السارية
-- `dash.cityAr` :: المدينة (عربي)   ⟂ EN: City (Arabic)
-- `dash.cityEn` :: المدينة (إنجليزي)   ⟂ EN: City (English)
+- `dash.cityAr` :: المدينة بالعربية   ⟂ EN: City (Arabic)
+- `dash.cityEn` :: المدينة بالإنجليزية   ⟂ EN: City (English)
 - `dash.mail` :: البريد الإلكتروني   ⟂ EN: Email
 - `dash.mailReady` :: خدمة البريد مفعّلة وتُرسل الرسائل.   ⟂ EN: Mail delivery is configured and sending.
 - `dash.mailNotConfigured` :: لم يُربط مزوّد بريد بعد. الرسائل تنتظر في الطابور ولا تُرسل.   ⟂ EN: No mail provider is connected. Messages are queued and not sent.
-- `dash.mailPending` :: في الانتظار   ⟂ EN: Pending
+- `dash.mailPending` :: بانتظار الإرسال   ⟂ EN: Pending
 - `dash.mailSent` :: أُرسلت   ⟂ EN: Sent

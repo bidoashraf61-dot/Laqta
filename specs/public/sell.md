@@ -15,8 +15,8 @@ Recruit creators: lead with their revenue share, then answer the two objections 
 
 | Control | Action | Effect |
 | --- | --- | --- |
-| "قدّم طلبك" (×2, hero and closing band) | Link | `/sign-up?role=creator` |
-| "تصفّح أولاً" | Link | `/albums` |
+| «قدّم كصانع محتوى» (`sell.apply`, ×2, hero and closing band) | Link | `/sign-up?role=creator` |
+| «تصفّح المكتبة أولاً» (`sell.browseFirst`) | Link | `/albums` |
 | Content-policy link | Link | `/content-policy` |
 
 Read-only — no form, no server action on this page. The application itself happens at `/sign-up`.

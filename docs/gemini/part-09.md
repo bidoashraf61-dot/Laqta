@@ -1,6 +1,6 @@
 # لقطة — الجزء 9 من 10
 
-هذا الجزء فيه **132 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **128 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
@@ -17,7 +17,7 @@
 - `admin.catalogue` :: الكتالوج
 - `admin.creators` :: صنّاع المحتوى
 - `admin.orders` :: الطلبات
-- `admin.payouts` :: المدفوعات
+- `admin.payouts` :: التحويلات
 - `admin.reports` :: التقارير
 - `admin.reviewQueue` :: قائمة المراجعة
 - `admin.slaDue` :: الموعد النهائي
@@ -36,7 +36,7 @@
 - `admin.duplicates` :: تكرار محتمل
 - `admin.noDuplicates` :: لا يوجد تكرار
 - `admin.zeroResults` :: عمليات بحث بلا نتائج
-- `admin.searches` :: بحثة
+- `admin.searches` :: عملية بحث
 - `admin.payoutRuns` :: دفعات التحويل
 - `admin.exportIban` :: تصدير حوالات IBAN
 - `admin.exportWise` :: تصدير Payoneer / Wise
@@ -54,11 +54,11 @@
 
 - `state.loading` :: جارٍ التحميل…   ⟂ EN: Loading…
 - `state.empty` :: ما فيه شي هنا بعد   ⟂ EN: Nothing here yet
-- `state.error` :: حدث خطأ   ⟂ EN: Something went wrong
-- `state.errorHint` :: حاول مرة أخرى، وإن تكرر الأمر تواصل معنا   ⟂ EN: Try again — if it keeps happening, get in touch
+- `state.error` :: حصل خطأ   ⟂ EN: Something went wrong
+- `state.errorHint` :: جرّب مرة ثانية، وإذا تكرر تواصل معنا.   ⟂ EN: Try again — if it keeps happening, get in touch
 - `state.retry` :: إعادة المحاولة   ⟂ EN: Try again
 - `state.notFound` :: الصفحة غير موجودة   ⟂ EN: Page not found
-- `state.notFoundHint` :: الرابط قد يكون غير صحيح أو أن المحتوى أُزيل   ⟂ EN: The link may be wrong, or the content was removed
+- `state.notFoundHint` :: ممكن الرابط غلط، أو أن المحتوى أُزيل.   ⟂ EN: The link may be wrong, or the content was removed
 - `state.forbidden` :: الوصول غير مسموح   ⟂ EN: You don't have access
 - `state.forbiddenHint` :: الصفحة هذه ما عندك صلاحية لزيارتها. إذا تعتقد فيه خطأ، تواصل معنا.   ⟂ EN: This page belongs to a different role. If you think that's wrong, get in touch.
 - `state.backHome` :: العودة إلى الرئيسية   ⟂ EN: Back to home
@@ -105,7 +105,7 @@
 > عبارات مشتركة في الصفحات القانونية
 
 - `legal.effectiveFrom` :: ساري اعتباراً من   ⟂ EN: In effect from
-- `legal.questions` :: سؤال لم تجد إجابته هنا؟   ⟂ EN: Question you didn't find answered here?
+- `legal.questions` :: عندك سؤال ما لقيت جوابه هنا؟   ⟂ EN: Question you didn't find answered here?
 - `legal.contactUs` :: تواصل معنا   ⟂ EN: Get in touch
 
 ## email
@@ -155,6 +155,11 @@
 
 - `doc.privacy.1.heading` :: ما الذي نجمعه   ⟂ EN: What we collect
 - `doc.privacy.1.body.1` :: نجمع الحد الذي تحتاجه الخدمة فعلاً، لا أكثر:   ⟂ EN: We collect what the service genuinely needs, and no more:
+- `doc.privacy.1.list.1` :: بيانات الحساب: الاسم، البريد الإلكتروني، رقم الجوال إن اخترت الدخول به.   ⟂ EN: Account details: your name, email address, and mobile number if you choose to sign in with it.
+- `doc.privacy.1.list.2` :: بيانات الفوترة: الاسم النظامي والرقم الضريبي والعنوان، وهي بيانات تفرضها الفاتورة الضريبية.   ⟂ EN: Billing details: legal name, VAT number and address — the details a tax invoice requires.
+- `doc.privacy.1.list.3` :: سجل الطلبات والتحميلات، لأنه ما يثبت حقك في المادة التي اشتريتها.   ⟂ EN: Your order and download history, because it is what proves your right to the material you bought.
+- `doc.privacy.1.list.4` :: عمليات البحث داخل الموقع. تُستخدم لتحسين النتائج، ولمعرفة ما يبحث عنه المشترون ولا نملكه.   ⟂ EN: Searches made on the site. These improve results, and show us what buyers are looking for that we do not have.
+- `doc.privacy.1.list.5` :: بيانات تقنية أساسية عن الجلسة لأغراض الأمان ومنع إساءة الاستخدام.   ⟂ EN: Basic technical session data, for security and to prevent abuse.
 - `doc.privacy.2.heading` :: ما الذي لا نجمعه   ⟂ EN: What we do not collect
 - `doc.privacy.2.body.1` :: لا نخزّن بيانات بطاقتك. تمرّ عملية الدفع عبر مزوّد خدمة الدفع ولا يصلنا منها سوى مرجع العملية.   ⟂ EN: We do not store your card details. Payment goes through the payment provider, and all that reaches us is a transaction reference.
 - `doc.privacy.2.body.2` :: لا نبيع بياناتك الشخصية لأي طرف، ولا نستخدمها في إعلانات خارج المنصّة.   ⟂ EN: We do not sell your personal data to anyone, and we do not use it for advertising off the platform.
@@ -166,16 +171,3 @@
 - `doc.privacy.5.heading` :: حقوقك   ⟂ EN: Your rights
 - `doc.privacy.5.body.1` :: لك حق الاطلاع على بياناتك وتصحيحها وطلب حذفها، ضمن ما تسمح به قوانين حماية البيانات الشخصية الواجبة التطبيق. الحذف لا يشمل ما يلزمنا الاحتفاظ به نظاماً كالفواتير.   ⟂ EN: You have the right to see your data, correct it, and ask for it to be deleted, within what the Saudi personal data protection regulations allow. Deletion does not extend to what we are legally required to keep, such as invoices.
 - `doc.privacy.5.body.2` :: للتقدّم بأي من هذه الطلبات تواصل معنا عبر صفحة التواصل.   ⟂ EN: To make any of these requests, get in touch through the contact page.
-
-## doc.licences
-> تفاصيل الترخيص — ترخيص واحد فقط
-
-- `doc.licences.1.heading` :: ترخيص واحد يُشترى مرة واحدة   ⟂ EN: One licence, bought once
-- `doc.licences.1.body.1` :: لا يوجد اشتراك ولا رصيد شهري ينتهي. تشتري الألبوم مرة واحدة، وتحتفظ بحق استخدام لقطاته بلا حد زمني، وتبقى قابلة للتحميل من مكتبتك.   ⟂ EN: There is no subscription and no monthly allowance that expires. You buy the album once, keep the right to use its clips with no time limit, and it stays downloadable from your library.
-- `doc.licences.2.heading` :: ما يغطّيه الترخيص   ⟂ EN: What the licence covers
-- `doc.licences.2.body.1` :: ترخيص واحد، ويغطي الاستخدام التجاري كاملاً:   ⟂ EN: One licence, and it covers commercial use in full:
-- `doc.licences.3.heading` :: ما يمنعه الترخيص   ⟂ EN: What the licence prohibits
-- `doc.licences.4.heading` :: التحريري مقابل التجاري   ⟂ EN: Editorial versus commercial
-- `doc.licences.4.body.1` :: الألبوم الموسوم "مرخّص للاستخدام التجاري" اكتملت تصاريحه: تصاريح النماذج والمواقع والتصوير كلها موثّقة. أما "للاستخدام التحريري فقط" فيعني أن تصريحاً ما ناقص، ويقتصر استخدامه على السياق الإخباري والتوثيقي دون الترويج لمنتج أو خدمة.   ⟂ EN: An album marked “cleared for commercial use” has complete clearance: model, location and filming permits are all documented. “Editorial use only” means some clearance is missing, and use is limited to news and documentary contexts, without promoting a product or service.
-- `doc.licences.5.heading` :: شهادة الترخيص   ⟂ EN: The licence certificate
-- `doc.licences.5.body.1` :: تصدر مع كل عملية شراء شهادة ترخيص تحمل رقماً وقائمة اللقطات المشمولة ونص الترخيص الساري لحظة الشراء. تعديل نص الترخيص لاحقاً لا يغيّر ما اشتريته: الشهادة تحفظ النص كما كان.   ⟂ EN: Every purchase issues a licence certificate carrying a number, the list of clips covered, and the text of the licence as it stood at the moment of purchase. Changing the licence text later does not change what you bought: the certificate preserves the text as it was.

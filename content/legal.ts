@@ -228,7 +228,7 @@ export const LICENCES: DocumentSection[] = [
       'إعادة بيع اللقطة كما هي أو إدراجها في مكتبة لقطات أخرى.',
       'الاستخدام الذي يسيء إلى شخص ظاهر في اللقطة أو يوحي بتأييده لمنتج أو رأي.',
       'الاستخدام الذي يمسّ الرموز الدينية أو الوطنية أو الأماكن المقدّسة.',
-      'استخدام لقطة موسومة "للاستخدام التحريري فقط" في سياق تجاري.',
+      'استخدام لقطة موسومة «للاستخدام التحريري فقط» في سياق تجاري.',
     ],
   },
   {
@@ -238,7 +238,7 @@ export const LICENCES: DocumentSection[] = [
       'An album marked \u201ccleared for commercial use\u201d has complete clearance: model, location and filming permits are all documented. \u201cEditorial use only\u201d means some clearance is missing, and use is limited to news and documentary contexts, without promoting a product or service.',
     ],
     body: [
-      'الألبوم الموسوم "مرخّص للاستخدام التجاري" اكتملت تصاريحه: تصاريح النماذج والمواقع والتصوير كلها موثّقة. أما "للاستخدام التحريري فقط" فيعني أن تصريحاً ما ناقص، ويقتصر استخدامه على السياق الإخباري والتوثيقي دون الترويج لمنتج أو خدمة.',
+      'الألبوم الموسوم «مرخّص للاستخدام التجاري» اكتملت تصاريحه: تصاريح النماذج والمواقع والتصوير كلها موثّقة. أما «للاستخدام التحريري فقط» فيعني أن تصريحاً ما ناقص، ويقتصر استخدامه على السياق الإخباري والتوثيقي دون الترويج لمنتج أو خدمة.',
     ],
   },
   {
@@ -261,7 +261,7 @@ export const CONTENT_POLICY: DocumentSection[] = [
       'Footage from inside the Kingdom, at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album is the single largest cause of refund requests, because the editor ends up with material that will not cut together on one timeline.',
     ],
     body: [
-      'لقطات من داخل المملكة، بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو ملفات الألوان داخل ألبوم واحد هو السبب الأول لطلبات الاسترجاع، لأن المونتير يجد نفسه أمام مواد لا تُركّب على تايم لاين واحد.',
+      'لقطات من داخل المملكة، بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد هو السبب الأول لطلبات الاسترجاع، لأن المونتير يجد نفسه أمام مواد لا تُركّب على خط زمني واحد.',
     ],
   },
   {
@@ -365,7 +365,7 @@ export const REFUNDS: DocumentSection[] = [
     list: [
       'خلل تقني في الملف: تلف، أو اختلاف المواصفات عمّا هو معلن في صفحة الألبوم.',
       'عدم مطابقة الترخيص: تبيّن أن الألبوم لا يغطي الاستخدام المعلن في صفحته.',
-      'شراء مكرّر لنفس الألبوم بنفس الترخيص خلال أربع عشرة يوماً.',
+      'شراء الألبوم نفسه مرتين خلال أربعة عشر يوماً.',
       'تعطيل المحتوى بعد الشراء نتيجة بلاغ حقوق ثبتت صحته.',
     ],
   },
@@ -409,11 +409,11 @@ export const ABOUT: DocumentSection[] = [
     headingEn: 'Why Laqta exists',
     bodyEn: [
       'Search for \u201cRiyadh\u201d in any global footage library and you will find the same skyline from a plane, and scenes that cannot tell one district from another. The problem is not the price \u2014 it is that whoever assembled that library did not know the place.',
-      'Laqta is a Saudi footage library: made inside the Kingdom, with complete clearances, and indexed under place names as the people who live there say them \u2014 not as a machine translates them.',
+      'Laqta is a Saudi footage library: reviewed before publication, and indexed under place names as the people who live there say them \u2014 not as a machine translates them.',
     ],
     body: [
-      'ابحث عن "الرياض" في أي مكتبة لقطات عالمية وستجد الأفق نفسه من الطائرة، ومشاهد لا تعرف الفرق بين حيّ وحيّ. المشكلة ليست السعر، بل أن من جمع تلك اللقطات لم يكن يعرف المكان.',
-      'لقطة مكتبة لقطات سعودية: مادتها من داخل المملكة، تُراجَع قبل النشر، ومفهرسة بأسماء الأماكن كما ينطقها أهلها — لا كما تُترجم آلياً.',
+      'ابحث عن «الرياض» في أي مكتبة لقطات عالمية وستجد الأفق نفسه من الطائرة، ومشاهد لا تعرف الفرق بين حيّ وحيّ. المشكلة ليست السعر، بل أن من جمع تلك اللقطات لم يكن يعرف المكان.',
+      'لقطة مكتبة لقطات سعودية: تُراجَع قبل النشر، ومفهرسة بأسماء الأماكن كما ينطقها أهلها — لا كما تُترجم آلياً.',
     ],
   },
   {
@@ -423,7 +423,7 @@ export const ABOUT: DocumentSection[] = [
       'Arabic search here is not a translation of English search. \u201c\u0627\u0644\u0639\u0644\u0627\u201d, \u201cAlUla\u201d and \u201c\u0627\u0644\u0639\u064f\u0644\u0627\u201d all reach the same material, and so do variations of hamza, alef maqsura and teh marbuta. The index is built on a synonym layer the platform team edits, not on text matching.',
     ],
     body: [
-      'البحث العربي هنا ليس ترجمة للبحث الإنجليزي. "العلا" و"AlUla" و"العُلا" كلها تصل إلى المادة نفسها، وكذلك اختلافات الهمزة والألف المقصورة والتاء المربوطة. الفهرس مبني على طبقة مرادفات يحرّرها فريق المنصّة، لا على مطابقة نصية.',
+      'البحث العربي هنا ليس ترجمة للبحث الإنجليزي. «العلا» و«AlUla» و«العُلا» كلها تصل إلى المادة نفسها، وكذلك اختلافات الهمزة والألف المقصورة والتاء المربوطة. الفهرس مبني على طبقة مرادفات يحرّرها فريق المنصّة، لا على مطابقة نصية.',
     ],
   },
   {
@@ -468,7 +468,7 @@ export const CONTACT: DocumentSection[] = [
       'If you make Saudi material and want to list it, start from the \u201cSell your footage\u201d page. Partnership and exclusivity questions go to the same channel.',
     ],
     body: [
-      'إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة "بِع لقطاتك". أسئلة الشراكات والحصريات تُرسل على القناة نفسها.',
+      'إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة «بِع لقطاتك». أسئلة الشراكات والحصرية تُرسل على القناة نفسها.',
     ],
   },
   {

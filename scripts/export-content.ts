@@ -17,7 +17,8 @@
  * not say what is being deleted — and the importer strips everything after
  * that mark, so a writer who leaves it in costs nothing.
  *
- * Output: docs/gemini/00-brief.md plus part-NN.md files.
+ * Output: docs/gemini/00-brief.md plus part-NN.md files. The return is applied
+ * with `npm run content:import -- <file> [--apply]` (scripts/import-content.ts).
  *
  *     npx tsx scripts/export-content.ts
  */
@@ -127,6 +128,11 @@ for (const [id, note, sections] of DOCS) {
     lines.push(line(`doc.${id}.${n}.heading`, sec.heading, sec.headingEn))
     sec.body.forEach((para, j) =>
       lines.push(line(`doc.${id}.${n}.body.${j + 1}`, para, sec.bodyEn?.[j])),
+    )
+    // Bullet lists too: an earlier export left them out, so the refund
+    // conditions and the licence's exclusions were never put in front of a writer.
+    sec.list?.forEach((item, j) =>
+      lines.push(line(`doc.${id}.${n}.list.${j + 1}`, item, sec.listEn?.[j])),
     )
   })
   blocks.push({ title: `doc.${id}`, note, lines })

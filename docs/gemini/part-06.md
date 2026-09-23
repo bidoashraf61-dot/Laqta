@@ -7,45 +7,45 @@
 ## studio
 > استوديو صانع المحتوى — نبرة عملية مختصرة
 
-- `studio.title` :: استوديو المحتوى
+- `studio.title` :: الاستوديو
 - `studio.albums` :: ألبوماتي
-- `studio.earnings` :: الأرباح المالية
-- `studio.releases` :: التراخيص والتصاريح
-- `studio.demand` :: متطلبات السوق
-- `studio.demandHint` :: وش تحتاج السوق الحين؟ ألبومات عليها طلب عالي من المشترين.
+- `studio.earnings` :: الأرباح
+- `studio.releases` :: التصاريح
+- `studio.demand` :: طلبات المشترين
+- `studio.demandHint` :: ما بحث عنه المشترون ولم يجدوه في المكتبة — قائمة جاهزة لألبومك القادم.
 - `studio.searches` :: عملية بحث
-- `studio.newAlbum` :: إنشاء ألبوم جديد
+- `studio.newAlbum` :: ألبوم جديد
 - `studio.draft` :: مسودة
-- `studio.inReview` :: قيد المراجعة الفنية
-- `studio.changesRequested` :: يتطلب تعديلات
+- `studio.inReview` :: قيد المراجعة
+- `studio.changesRequested` :: مطلوب تعديل
 - `studio.live` :: منشور بالمكتبة
 - `studio.paused` :: متوقف مؤقتاً
-- `studio.delisted` :: مستبعد
+- `studio.delisted` :: مسحوب
 - `studio.submit` :: إرسال للمراجعة
 - `studio.submitted` :: تم الإرسال للمراجعة
-- `studio.cannotSubmit` :: تعذر الإرسال حالياً
-- `studio.minClips` :: الحد الأدنى يتطلب ٨ لقطات
-- `studio.titleArRequired` :: العنوان باللغة العربية مطلوب
-- `studio.titleEnRequired` :: العنوان باللغة الإنجليزية مطلوب
-- `studio.modelReleaseMissing` :: توجد لقطات تتضمن وجوه واضحة بدون تصريح نموذج
+- `studio.cannotSubmit` :: تعذّر الإرسال
+- `studio.minClips` :: الحد الأدنى ٨ لقطات
+- `studio.titleArRequired` :: العنوان العربي مطلوب
+- `studio.titleEnRequired` :: العنوان الإنجليزي مطلوب
+- `studio.modelReleaseMissing` :: لقطات فيها وجوه واضحة بلا تصريح نموذج
 - `studio.albumMissing` :: الألبوم غير موجود
-- `studio.consistencyTitle` :: جاري التحقق من تكامل أبعاد وجودة اللقطات المرفوعة..
-- `studio.mixedFrameRate` :: تفاوت في معدل الإطارات داخل الألبوم
-- `studio.mixedProfile` :: اختلاف في الملفات اللونية المرفقة
-- `studio.mixedResolution` :: تباين في الدقة البصرية بين اللقطات
+- `studio.consistencyTitle` :: فحص التناسق
+- `studio.mixedFrameRate` :: معدلات إطارات مختلفة داخل الألبوم
+- `studio.mixedProfile` :: ملفات لونية مختلفة داخل الألبوم
+- `studio.mixedResolution` :: دقة مختلفة بين اللقطات
 - `studio.consistencyWhy` :: التفاوت الفني داخل الألبوم الواحد هو السبب الأول لطلبات الاسترجاع.
-- `studio.consistencyOk` :: المواصفات الفنية متناسقة بالكامل
+- `studio.consistencyOk` :: المواصفات متناسقة
 - `studio.available` :: الأرباح المتاحة
 - `studio.held` :: الأرباح المحجوزة
 - `studio.lifetime` :: إجمالي الأرباح
 - `studio.requestPayout` :: طلب سحب الأرباح
-- `studio.holdExplain` :: تُحجز الأرباح لمدة ٣٠ يوماً من تاريخ كل عملية بيع لضمان استقرار المعاملات قبل التحويل.
-- `studio.ledger` :: كشف الحساب المالي
-- `studio.entrySale` :: عملية بيع
-- `studio.entryPayout` :: تحويل مالي
-- `studio.entryRefund` :: عملية استرجاع
-- `studio.entryAdjustment` :: تسوية حساب
+- `studio.holdExplain` :: تُحجز أرباح كل عملية بيع ٣٠ يوماً حتى تُغلق نافذة الاسترجاع، ثم تصبح قابلة للسحب.
+- `studio.ledger` :: كشف الحساب
+- `studio.entrySale` :: بيع
+- `studio.entryPayout` :: تحويل
+- `studio.entryRefund` :: استرجاع
+- `studio.entryAdjustment` :: تسوية
 - `studio.entryWithholding` :: استقطاع ضريبي
-- `studio.clips` :: لقطات
-- `studio.uploadHint` :: يتطلب رفع الملفات ربط وتفعيل التخزين السحابي
-- `studio.noAlbums` :: لا توجد ألبومات مضافة بعد
+- `studio.clips` :: اللقطات
+- `studio.uploadHint` :: رفع الملفات يحتاج تفعيل التخزين السحابي
+- `studio.noAlbums` :: ما عندك ألبومات بعد

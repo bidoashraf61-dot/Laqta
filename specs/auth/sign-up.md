@@ -36,12 +36,12 @@ the OTP rail on `/sign-in`.
 - **Pending** — button label swaps to `t('state.loading')`, disabled.
 - **Validation error** — any Zod failure returns `auth.invalidCredentials` →
   «بيانات الدخول غير صحيحة». Client-side `required`/`minLength` catch most of it first.
-- **Duplicate email** — returns `auth.accountExists` → «هذا الحساب موجود مسبقًا».
+- **Duplicate email** — returns `auth.accountExists` → «هذا الحساب موجود مسبقاً».
   This is a deliberate enumeration trade-off: `/sign-up` discloses existence,
   `/sign-in` does not.
 - **Created but session failed** — if the post-create `signIn` throws an
   `AuthError`, the action returns `auth.somethingWentWrong` →
-  «تعذّر إكمال العملية، حاول مجددًا». **The user row is already committed**;
+  «تعذّر إكمال العملية، حاول مجدداً». **The user row is already committed**;
   there is no rollback, so the retry path is `/sign-in`.
 - **Empty / loading** — n/a, static form.
 - No email verification is sent or required (`User.emailVerified` stays null).

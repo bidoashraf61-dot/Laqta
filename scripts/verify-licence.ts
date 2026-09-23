@@ -13,7 +13,10 @@
  * certificate — a document generated after the sale, which is the worst
  * possible moment to discover it.
  */
+import { readFileSync } from 'node:fs'
 import { db } from '../lib/db'
+import * as legal from '../content/legal'
+import type { DocumentSection } from '../components/layout/document-page'
 
 /**
  * Phrasing that only makes sense in a world with more than one licence.
@@ -29,6 +32,37 @@ const CONTRADICTIONS: Array<[RegExp, string]> = [
   [/الترخيص القياسي|standard licen[cs]e/i, 'names a "standard" tier'],
   [/الترخيص الموسّع|extended licen[cs]e/i, 'names an "extended" tier'],
 ]
+
+/**
+ * Claims the copy has made and the product cannot back.
+ *
+ * The launch catalogue is AI-generated, so "real locations" and "permits
+ * cleared" are false about it (specs/public/index.md). A price comparison names
+ * a competitor by implication and cannot be substantiated. "Every use" is false
+ * while the licence excludes reselling the clip itself.
+ */
+const OVERCLAIMS: Array<[RegExp, string]> = [
+  [/بسعر لقطة (?:مفردة|واحدة)|أرخص ب|cheaper than|\d+\s*(?:×|x|times) cheaper/i, 'compares price'],
+  [/مواقع (?:سعودية )?حقيقية|actually shot|real locations/i, 'claims the footage was filmed on location'],
+  [/تصاريح موثّقة|permits (?:and locations )?cleared|documented clearance/i, 'claims permits were cleared'],
+  [/جميع الاستخدامات|every use\b|all uses\b/i, 'claims the licence covers every use'],
+]
+
+type Tree = { [k: string]: string | Tree }
+const flatten = (tree: Tree, prefix = ''): Array<[string, string]> =>
+  Object.entries(tree).flatMap(([k, v]) =>
+    typeof v === 'string' ? [[prefix + k, v] as [string, string]] : flatten(v, `${prefix}${k}.`),
+  )
+
+const DOCUMENTS: Record<string, DocumentSection[]> = {
+  terms: legal.TERMS,
+  privacy: legal.PRIVACY,
+  licences: legal.LICENCES,
+  contentPolicy: legal.CONTENT_POLICY,
+  refunds: legal.REFUNDS,
+  about: legal.ABOUT,
+  contact: legal.CONTACT,
+}
 
 async function main() {
   let failures = 0
@@ -78,6 +112,33 @@ async function main() {
   } else {
     console.log('  pass  nothing retired')
   }
+
+  // The same promise, made on the page instead of the certificate. These claims
+  // were removed from the copy, recorded in specs/public/index.md and
+  // specs/glossary.md as banned, and still came back through an editorial
+  // pass — twice. A spec note did not hold them; a failing gate does.
+  console.log('\nThe site copy makes no claim the product cannot back')
+  const copy = [
+    ...flatten(JSON.parse(readFileSync('messages/ar.json', 'utf8'))),
+    ...flatten(JSON.parse(readFileSync('messages/en.json', 'utf8'))),
+    ...Object.entries(DOCUMENTS).flatMap(([id, sections]) =>
+      sections.flatMap((s, i) =>
+        [s.heading, s.headingEn, ...s.body, ...(s.bodyEn ?? []), ...(s.list ?? []), ...(s.listEn ?? [])]
+          .filter((text): text is string => Boolean(text))
+          .map((text): [string, string] => [`doc.${id}.${i + 1}`, text]),
+      ),
+    ),
+  ]
+  let honest = true
+  for (const [key, text] of copy) {
+    for (const [pattern, why] of [...CONTRADICTIONS, ...OVERCLAIMS]) {
+      if (pattern.test(text)) {
+        fail(`${key} ${why}: «${text.slice(0, 80)}»`)
+        honest = false
+      }
+    }
+  }
+  if (honest) console.log(`  pass  ${copy.length} strings, no banned claim`)
 
   await db.$disconnect()
 

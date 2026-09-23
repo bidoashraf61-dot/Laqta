@@ -53,7 +53,7 @@
 - `dash.kindCategory` :: تصنيف
 - `dash.kindLocation` :: موقع
 - `dash.kindTag` :: وسم
-- `dash.kindTheme` :: ثيم
+- `dash.kindTheme` :: موضوع
 - `dash.addTerm` :: إضافة مصطلح
 - `dash.termAr` :: الاسم بالعربية
 - `dash.termEn` :: الاسم بالإنجليزية
@@ -85,7 +85,7 @@
 - `dash.ordersTitle` :: الطلبات
 - `dash.ordersHint` :: كل عمليات الشراء، والاسترجاع، والفواتير الضريبية.
 - `dash.orderPaid` :: مدفوع
-- `dash.orderPending` :: معلّق
+- `dash.orderPending` :: بانتظار الدفع
 - `dash.orderFailed` :: فشل
 - `dash.orderRefunded` :: مسترجع
 - `dash.orderPartial` :: استرجاع جزئي
@@ -98,7 +98,7 @@
 - `dash.basisTechnical` :: خلل تقني في الملف
 - `dash.basisLicence` :: الترخيص لا يطابق الاستخدام
 - `dash.basisDuplicate` :: شراء مكرّر
-- `dash.basisGoodwill` :: حسن نية
+- `dash.basisGoodwill` :: استرجاع ودّي
 - `dash.orderNumber` :: رقم الطلب
 - `dash.paymentMethod` :: وسيلة الدفع
 - `dash.remaining` :: المتبقّي
@@ -128,7 +128,7 @@
 - `dash.newPromo` :: كود جديد
 - `dash.noPromos` :: لا توجد أكواد
 - `dash.platformSettings` :: إعدادات المنصّة
-- `dash.platformSettingsHint` :: الأرقام التي تحكم التشغيل. لا تحتاج نشر كود لتغييرها.
+- `dash.platformSettingsHint` :: الأرقام التي تحكم التشغيل: مهلة المراجعة، ومدة الحجز، والحد الأدنى للتحويل، والضريبة، ونسب العمولة.
 - `dash.reviewSla` :: مهلة المراجعة (أيام عمل)
 - `dash.holdDays` :: مدة حجز أرباح البيع (أيام)
 - `dash.minPayout` :: الحد الأدنى للتحويل

@@ -28,17 +28,17 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 
 | Control | Action | Effect |
 | --- | --- | --- |
-| Hero primary «استكشف اللقطات» | Link | `/footage` |
-| Hero secondary «شاهد التريلر» | Plain `<a href="#showreel">` | Scrolls to the showreel in the footage wall (same-page hash, never the client router) |
+| Hero primary «تصفّح اللقطات» (`landing.heroExplore`) | Link | `/footage` |
+| Hero secondary «كيف تعمل لقطة؟» (`landing.heroWatchTrailer`) | Plain `<a href="#showreel">` | Scrolls to the showreel in the footage wall (same-page hash, never the client router) |
 | Footage-wall tile | Link | `/albums/{creatorHandle}/{albumSlug}` — never a clip page or clip checkout |
 | Footage-wall "view all" | Link | `/footage` |
 | Album poster in the collection (stretched link) | Link | `/albums/{creatorHandle}/{slug}` |
 | Creator name on a poster (sibling link, lifted above the stretch) | Link | `/creators/{creatorHandle}` |
-| Collection «تصفّح جميع الألبومات» | Link | `/albums` |
-| Licensing CTA | Link | `/licences` |
-| Pricing CTA «اكتشف الألبومات وابدأ الآن» | Link | `/albums` |
-| Final CTA «استكشف اللقطات» | Link | `/footage` |
-| Creator CTA | Link | `/sell` |
+| Collection «عرض كل الألبومات» (`landing.collectionViewAll`) | Link | `/albums` |
+| Licensing CTA «اقرأ بنود الترخيص» (`landing.licenseCta`) | Link | `/licences` |
+| Pricing CTA «اختر ألبومك» (`landing.priceCta`) | Link | `/albums` |
+| Final CTA «تصفّح اللقطات» (`landing.finalCtaButton`) | Link | `/footage` |
+| Creator CTA «بِع لقطاتك» (`landing.sellCta`) | Link | `/sell` |
 | Hero film | Client scroll scrub, no navigation | `currentTime` tracked to wrapper scroll progress; read-only |
 
 ## States
@@ -48,9 +48,9 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 - **Hero/showreel video missing** — `public/hero/vid/` is gitignored; on a fresh checkout the `<video>` has no source and only the poster/copy render.
 
 ## Invariants
-- **The catalogue is AI-generated.** No page may claim the footage was filmed in the Kingdom or that permits were cleared, and marketing copy must never use «تصوير» or any ص-و-ر form (the buyer-pain line says «الإنتاج», not «التصوير»). Copy describes what the buyer *gets*; the production-method disclosure lives only in the content policy (`docs/website-content.md` §0), not the footer or marketing.
-- **The «١٦ مرة» price claim is owner-asserted.** `landing.priceBold` states the album is 16× cheaper than any competitor; it is a marketing claim the owner stands behind, not a computed figure. Change it here and in `en.json` together if the substantiation changes.
-- **Licence claims must match `content/legal.ts`** — two tiers: standard up to 500k views per channel, extended uncapped. Landing copy must not contradict the licences page.
+- **The launch catalogue is AI-generated.** No page may claim Laqta's footage was filmed in the Kingdom, shot at real locations, or had permits cleared — no «مواقع حقيقية», «تصاريح موثّقة», «من داخل المملكة», «مصوّرة» about the catalogue. The ص-و-ر root is allowed in exactly one sense: the **buyer's own alternative** — «يوم تصوير كامل،» (the owner-approved hero lead), «يغنيك عن يوم تصوير». What the buyer gets is described by what is true of every album: reviewed before publication, one full commercial licence, a certificate with every purchase. The production-method disclosure lives in the content policy and the per-album origin badge, not in marketing.
+- **No comparative price claim.** `landing.priceLead`/`priceBold` say «بلا اشتراك ولا رصيد ينتهي، ادفع مرة واحدة، والألبوم لك.» — the verifiable difference from a subscription library. An earlier «١٦ مرة» claim was removed, and an editorial pass later reintroduced one as «ألبوم كامل بسعر لقطة مفردة»; both are banned. See `specs/glossary.md`.
+- **Licence claims must match `content/legal.ts`** — one licence: full commercial, perpetual, no cap on views; excludes reselling the clip itself. Landing copy must not contradict the licences page, and must not say «جميع الاستخدامات».
 - A clip is bait; the album is the product. Every wall tile links to an album; no surface offers a single clip for sale.
 - Every preview frame is watermarked via `PreviewWatermark`.
 - Album cards are flat, cover-led **5:7 posters** (not faux-3D boxes; see `specs/public/albums.md`) — a real cover image drops straight into the cover slot when uploaded. Wall tiles honour the clip's real aspect ratio — forcing 16:9 is banned. The card is a container `<div>`, not an anchor: a stretched anchor covers it for the album link, and the creator name is a **sibling** anchor lifted above the stretch — never a nested `<a>`.

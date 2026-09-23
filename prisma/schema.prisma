@@ -791,8 +791,40 @@ model Order {
   refunds    Refund[]
   chargeback Chargeback?
 
+  /// Every verified gateway callback that named this order.
+  paymentEvents PaymentEvent[]
+
   @@index([status, createdAt])
   @@index([userId, createdAt])
+}
+
+/// One verified server-to-server callback from a payment gateway (Paymob).
+///
+/// This is the idempotency key AND the audit trail. A callback is claimed by
+/// inserting its row; a replay of the same transaction in the same state hits
+/// the unique constraint and is acknowledged without doing anything. Only
+/// callbacks whose HMAC verified are ever written — a forged request leaves no
+/// row. `outcome` is what the handler decided:
+///   settled | declined | pending | amount_mismatch | integration_mismatch |
+///   already_paid | order_not_pending | unknown_order | reversed_at_gateway
+model PaymentEvent {
+  id            String   @id @default(cuid())
+  gateway       String // 'paymob'
+  transactionId String
+  /// success | failed | pending | refunded | voided — part of the key, because
+  /// Paymob re-sends the SAME transaction id when it is later refunded/voided.
+  state         String
+  orderId       String?
+  outcome       String
+  amountCents   Int?
+  currency      String?
+  payload       Json
+  createdAt     DateTime @default(now())
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@unique([gateway, transactionId, state])
+  @@index([orderId, createdAt])
 }
 
 model OrderItem {
@@ -1466,4 +1498,47 @@ model MailOutbox {
   createdAt DateTime  @default(now())
 
   @@index([sentAt, failedAt, createdAt])
+}
+
+/// A message sent from the public /contact form.
+///
+/// Stored first, mailed second: the row is the record, and the email to the
+/// operator is a courtesy that may fail (no provider is wired yet). A message
+/// that only existed in a send nobody received would be a message lost.
+model ContactMessage {
+  id String @id @default(cuid())
+
+  name    String
+  /// Where to reply. No account required — most people who write have none.
+  email   String
+  /// One of the topic keys in content/contact.ts (buying, selling, custom,
+  /// rights, other), or null when the visitor did not pick one.
+  topic   String?
+  message String
+  /// The language the visitor wrote from, so the reply can answer in it.
+  locale  String  @default("ar")
+
+  status      ContactMessageStatus @default(open)
+  handledAt   DateTime?
+  handledById String?
+
+  /// Whether the operator notification actually left. False with no mail
+  /// provider configured — the admin list is then the only place it shows.
+  mailDelivered Boolean @default(false)
+
+  /// Salted SHA-256 of the sender's IP. Used only for the rate limit; the raw
+  /// address is never stored.
+  ipHash String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([ipHash, createdAt])
+  @@index([email, createdAt])
+}
+
+enum ContactMessageStatus {
+  open
+  handled
 }

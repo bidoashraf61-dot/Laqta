@@ -4,32 +4,118 @@ import { db } from '@/lib/db'
 /**
  * Email delivery, and the tokens that ride on it.
  *
- * ── An honest local driver, like SMS and payments and storage ───────────────
- * No provider is wired yet. Rather than pretend otherwise, `sendMail` logs the
- * message — including the link — to the SERVER console and reports that it did
- * not deliver, exactly as `lib/otp.ts` does for SMS. The caller can then tell
- * the reader the truth, and a developer can still complete the flow locally by
- * reading the console.
+ * ── Two drivers ─────────────────────────────────────────────────────────────
+ * `resend` — the chosen provider. A plain `fetch` to its REST endpoint rather
+ * than the SDK: one POST does not justify a dependency, and a fetch is what
+ * `verify:mail` can intercept to check the request shape without a network.
+ *
+ * The honest local driver — used whenever MAIL_PROVIDER, MAIL_API_KEY and
+ * MAIL_FROM are not all set. `sendMail` logs the message — including the link —
+ * to the SERVER console and reports that it did not deliver, exactly as
+ * `lib/otp.ts` does for SMS. The caller can then tell the reader the truth, and
+ * a developer can still complete the flow locally by reading the console.
  *
  * The alternative — a silent no-op returning success — produces the worst
  * possible failure: a screen that says "check your inbox" for a message that
  * was never sent, and a support ticket nobody can reproduce.
+ *
+ * No key is ever written in code. MAIL_API_KEY comes from the environment only.
  */
 export type Attachment = { filename: string; content: Buffer }
+
+export type MailOptions = {
+  /** The HTML part. The positional `body` is always sent as the text part. */
+  html?: string
+  /** Overrides MAIL_REPLY_TO — the contact form replies to its sender. */
+  replyTo?: string
+  /**
+   * Makes a retry of the SAME message a no-op at the provider. The outbox
+   * passes its row id: a drain that timed out after Resend had accepted the
+   * message would otherwise send it a second time on the next attempt.
+   */
+  idempotencyKey?: string
+}
+
+export const RESEND_ENDPOINT = 'https://api.resend.com/emails'
+
+/** Read live, not at import — a gate or a late-set env must be honoured. */
+export function isMailConfigured() {
+  return Boolean(process.env.MAIL_PROVIDER && process.env.MAIL_API_KEY && process.env.MAIL_FROM)
+}
 
 export async function sendMail(
   to: string,
   subject: string,
   body: string,
   attachments: Attachment[] = [],
+  options: MailOptions = {},
 ) {
-  if (!process.env.MAIL_PROVIDER || !process.env.MAIL_API_KEY) {
+  if (!isMailConfigured()) {
     const files = attachments.length ? `\n(+${attachments.length} attachment(s))` : ''
     console.info(`[mail] to ${to} — ${subject}\n${body}${files}\n(no mail provider configured)`)
     return false
   }
-  // Provider integration lands with the payments/SMS vendor selection.
-  throw new Error(`Mail provider "${process.env.MAIL_PROVIDER}" is not implemented yet`)
+
+  const provider = (process.env.MAIL_PROVIDER ?? '').toLowerCase()
+  if (provider === 'resend') return sendViaResend(to, subject, body, attachments, options)
+
+  throw new Error(`Mail provider "${process.env.MAIL_PROVIDER}" is not implemented`)
+}
+
+/**
+ * Resend — https://resend.com/docs/api-reference/emails/send-email
+ *
+ * Throws on any non-2xx with the status in the message, so the outbox records
+ * it as `lastError` and `/admin/settings` can count it. A rejection that names
+ * the recipient reads as permanent to the outbox and is parked, not retried.
+ */
+async function sendViaResend(
+  to: string,
+  subject: string,
+  text: string,
+  attachments: Attachment[],
+  options: MailOptions,
+) {
+  const replyTo = options.replyTo || process.env.MAIL_REPLY_TO || undefined
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${process.env.MAIL_API_KEY}`,
+    'Content-Type': 'application/json',
+  }
+  // Resend keeps an idempotency key for 24 hours, max 256 characters.
+  if (options.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey.slice(0, 256)
+
+  const response = await fetch(RESEND_ENDPOINT, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      from: process.env.MAIL_FROM,
+      to: [to],
+      subject,
+      text,
+      ...(options.html ? { html: options.html } : {}),
+      ...(replyTo ? { reply_to: replyTo } : {}),
+      ...(attachments.length
+        ? {
+            attachments: attachments.map((file) => ({
+              filename: file.filename,
+              content: file.content.toString('base64'),
+            })),
+          }
+        : {}),
+    }),
+  })
+
+  if (!response.ok) {
+    let detail = response.statusText
+    try {
+      const payload = (await response.json()) as { message?: string; name?: string }
+      detail = [payload.name, payload.message].filter(Boolean).join(': ') || detail
+    } catch {
+      // Not JSON — keep the status text.
+    }
+    throw new Error(`resend ${response.status}: ${detail}`.slice(0, 500))
+  }
+  return true
 }
 
 /** Long enough that guessing is not a strategy. */
@@ -114,4 +200,4 @@ export async function consumeEmailVerification(token: string) {
 }
 
 /** Whether a provider is wired. Surfaced on /admin/settings beside storage. */
-export const mailConfigured = Boolean(process.env.MAIL_PROVIDER && process.env.MAIL_API_KEY)
+export const mailConfigured = isMailConfigured()

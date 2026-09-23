@@ -34,10 +34,12 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 8-check gated checklist. | [admin-review-id.md](admin-review-id.md) |
 | `/admin/creators` | Creator roster: approve, suspend, reinstate, set tier / commission override. | [admin-creators.md](admin-creators.md) |
 | `/admin/disputes` | DMCA and content complaints: disable content, then close with a written resolution. | [admin-disputes.md](admin-disputes.md) |
+| `/admin/requests` | Footage requests from buyers, in their own words. Read-only by design. | [admin-requests.md](admin-requests.md) |
+| `/admin/messages` | Messages from the public `/contact` form: read in full, reply by mail, mark handled / reopen. | [admin-messages.md](admin-messages.md) |
 | `/admin/catalogue` | Live catalogue: pause, resume, feature, delist, set an album's trailer; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
 | `/admin/taxonomy` | Categories, locations, tags, themes and the search synonym layer. | [admin-taxonomy.md](admin-taxonomy.md) |
 | `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles. | [admin-merchandising.md](admin-merchandising.md) |
-| `/admin/orders` | Find orders, settle a bank transfer, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
+| `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination) and mark them paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
 | `/admin/reports` | Zero-result search report plus the last 50 audit entries. Read-only. | [admin-reports.md](admin-reports.md) |
@@ -45,11 +47,14 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover all 13 top-level routes. **`/admin/review/[id]` is in
+- `verify:arabic` and `audit` cover 14 top-level routes (now including `/admin/messages`).
+  `/admin/requests` is in neither. **`/admin/review/[id]` is in
   neither** — the surface where the review gate actually lives is unexercised by any gate.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
   `/admin/review`, `/admin/disputes`, `/admin/payouts`, `/admin/taxonomy`.
 - `verify:money` covers the refund path (`lib/admin.refundOrderItem`).
+- `verify:payments` covers the Paymob callback into `settleOrder` and the derived
+  webhook/manual source shown on `/admin/orders` (handler level, not the rendered row).
 - `verify:entitlement` covers the order snapshot.
 - `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin.
 
@@ -65,3 +70,5 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
   control. Files reach the bucket through `npm run media:upload` (`docs/media-aws.md`).
   `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.
+- A refund or void done in the Paymob dashboard is only *flagged* on `/admin/orders`
+  (`reversed_at_gateway`); nothing reverses the Laqta ledger automatically.

@@ -10,7 +10,7 @@ Three kinds of surface share this group:
   `Taxonomy`, `Collection`, `Creator`. Only `status='live'` albums and
   `ingestStatus='ready'` clips are ever visible, and `Clip.masterKey` is excluded from
   every query on every one of these routes.
-- **Commerce** — `/cart`, `/cart/add`, `/checkout`. These require authentication (via
+- **Commerce** — `/cart`, `/cart/add`, `/checkout`, `/checkout/return`. These require authentication (via
   `redirect()` in the page, not middleware) and are the only public routes that mutate.
   The two frozen invariants — `OrderItem.clipManifestSnapshot` for entitlement and the
   commission fields — are taken exactly once, inside `checkout()` in `lib/orders.ts`.
@@ -46,10 +46,11 @@ editing copy) is never selected on a public surface.
 | `/cart` | Review lines, change licence tier, remove | [cart.md](cart.md) |
 | `/cart/add` | GET add-to-cart that always redirects | [cart-add.md](cart-add.md) |
 | `/checkout` | Billing entity, payment method, and the order freeze | [checkout.md](checkout.md) |
+| `/checkout/return` | Read-only payment status after Paymob's hosted checkout | [checkout-return.md](checkout-return.md) |
 | `/boards/[token]` | Account-free shared shortlist for agency clients | [boards-token.md](boards-token.md) |
 | `/sell` | Creator recruitment and the revenue-share pitch | [sell.md](sell.md) |
 | `/about` | What Laqta is | [about.md](about.md) |
-| `/contact` | The four support channels (described, not wired) | [contact.md](contact.md) |
+| `/contact` | Contact form (stored + mailed to the operator), plus WhatsApp, support email and company details once the owner sets them | [contact.md](contact.md) |
 | `/terms` | Terms of service | [terms.md](terms.md) |
 | `/privacy` | Privacy policy | [privacy.md](privacy.md) |
 | `/licences` | Standard vs extended licence scope | [licences.md](licences.md) |
@@ -68,8 +69,18 @@ specified there.
   frozen-rate reversal under `verify:money`) for the operator's own use. Do not add
   a refund page or any refund copy to a public surface without the owner.
 
-- No payment gateway. `availableMethods()` returns `bank_transfer` only; every order
-  settles by hand from `/admin`.
+- **Card / Apple Pay are built but dormant.** The Paymob driver, the signed callback
+  and `/checkout/return` exist, but until the owner sets the `PAYMOB_*` variables
+  `availableMethods()` returns `bank_transfer` only and every order still settles by
+  hand from `/admin`. No real Paymob transaction has been run yet — USD charging on
+  the owner's account is unconfirmed (see [`../api/payments-paymob.md`](../api/payments-paymob.md)).
+- mada, Tabby and Tamara are not wired and never offered.
+- `/albums` has no sort control, and the taxonomy hubs accept `?page=` with no pagination UI.
+- `/contact` has a working form, but its WhatsApp number, support email, company name,
+  Egyptian address and commercial registration number are **empty until the owner supplies
+  them** (`content/contact.ts` / env). Each renders only once set; with none set the page is
+  the form and guidance. The operator email needs `OPERATOR_EMAIL` and a mail provider —
+  until then messages are read at `/admin/messages`.
 - No HLS / adaptive preview playback. Previews are single progressive 720p MP4s
   (`Clip.previewKey`, made by `npm run media:previews`); `previewHlsKey` is selected in
   places and rendered nowhere.
@@ -81,6 +92,4 @@ specified there.
 - No album has a trailer yet. Trailers are cut by hand (no auto-cut) and set per album
   from `/admin/catalogue` or `media:upload`; without one the PDP shows the album's own
   cover still. `Album.trailerUrl` is a dead legacy column — `trailerKey` is the field.
-- `/contact` has no form or address, `/albums` has no sort control, and the taxonomy hubs
-  accept `?page=` with no pagination UI.
 - `/cart/add` and `/boards/[token]` are covered by no automated gate.

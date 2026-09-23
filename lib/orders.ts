@@ -2,10 +2,10 @@ import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { resolveCommission, vatOn } from '@/lib/commission'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
-import { enqueue, drainSoon } from '@/lib/outbox'
+import { drainSoon } from '@/lib/outbox'
+import { attachCertificates, notifyOrderPaid, notifyOrderPlaced } from '@/lib/notifications'
 import { generateCertificate } from '@/lib/certificate'
 import { DEFAULT_LOCALE, isLocale } from '@/lib/locale'
-import { siteUrl } from '@/lib/site'
 
 /**
  * Checkout.
@@ -45,7 +45,14 @@ export type BillingEntity = {
 }
 
 export type CheckoutResult =
-  | { ok: true; orderId: string; orderNumber: string; settled: boolean }
+  | {
+      ok: true
+      orderId: string
+      orderNumber: string
+      settled: boolean
+      /** Set when the method pays on a hosted page (Paymob). */
+      redirectUrl?: string
+    }
   | { ok: false; messageKey: string }
 
 const VAT_RATE = Number(process.env.VAT_RATE ?? 0.15)
@@ -61,11 +68,14 @@ export async function checkout({
   lines,
   billing,
   method,
+  locale,
 }: {
   userId: string
   lines: CheckoutLine[]
   billing: BillingEntity
   method: PaymentMethod
+  /** The buyer's reading language, for the gateway's return URL. */
+  locale?: string
 }): Promise<CheckoutResult> {
   if (lines.length === 0) return { ok: false, messageKey: 'cart.empty' }
 
@@ -181,12 +191,23 @@ export async function checkout({
     })
   })
 
+  const buyer = await db.user.findUnique({
+    where: { id: userId },
+    select: { name: true, email: true, phone: true },
+  })
+
   const outcome = await createPaymentIntent({
     orderId: order.id,
     orderNumber: order.orderNumber,
     amount: Number(order.total),
     currency: order.currency,
     method,
+    buyer: {
+      name: billing.legalName || buyer?.name || null,
+      email: buyer?.email ?? null,
+      phone: buyer?.phone ?? null,
+    },
+    locale,
   })
 
   if (outcome.status === 'unavailable') {
@@ -199,6 +220,23 @@ export async function checkout({
     return { ok: true, orderId: order.id, orderNumber: order.orderNumber, settled: true }
   }
 
+  // Hosted checkout (Paymob). The order stays `pending` and is settled ONLY by
+  // the signed server callback (lib/paymob-callback.ts → settleOrder) — never
+  // by the buyer's browser coming back.
+  if (outcome.status === 'redirect') {
+    await db.order.update({
+      where: { id: order.id },
+      data: { gatewayRef: outcome.reference },
+    })
+    return {
+      ok: true,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      settled: false,
+      redirectUrl: outcome.url,
+    }
+  }
+
   // Awaiting settlement — bank transfer / Net-30. The entitlement already
   // exists so the buyer can see what they have bought, but nothing downloads
   // until an admin marks the order paid.
@@ -206,6 +244,12 @@ export async function checkout({
     where: { id: order.id },
     data: { gatewayRef: outcome.reference },
   })
+
+  // What to transfer, where, and what happens next. Only bank transfer is
+  // told (the function checks); it never throws, so a mail problem cannot
+  // turn a placed order into an error on the checkout page.
+  await notifyOrderPlaced(order.id)
+
   return { ok: true, orderId: order.id, orderNumber: order.orderNumber, settled: false }
 }
 
@@ -230,11 +274,22 @@ export async function settleOrder(orderId: string, reference: string) {
   // exactly the row that was queued, rather than one matching its payload.
   let outboxId: string | null = null
 
-  await db.$transaction(async (tx) => {
-    await tx.order.update({
-      where: { id: orderId },
+  const settled = await db.$transaction(async (tx) => {
+    /*
+     * Compare-and-set, not a blind update.
+     *
+     * The check above reads outside the transaction, so two callers — an
+     * operator's double click, a gateway webhook retried while the first
+     * delivery is still settling — can both pass it. The conditional update
+     * takes the row lock: the second caller waits, then matches nothing and
+     * leaves. Without it the creator ledger would be posted twice and the
+     * buyer would get two receipts.
+     */
+    const flipped = await tx.order.updateMany({
+      where: { id: orderId, status: { not: 'paid' } },
       data: { status: 'paid', paidAt: new Date(), gatewayRef: reference },
     })
+    if (flipped.count === 0) return false
 
     for (const item of order.items) {
       const creator = await tx.creator.findUnique({
@@ -287,40 +342,22 @@ export async function settleOrder(orderId: string, reference: string) {
     })
 
     /*
-     * The confirmation is QUEUED here, in the same transaction that marks the
-     * order paid — so "they paid" and "we owe them an email" become one fact.
-     * It is not SENT here: a mail failure must never roll back a purchase.
+     * The receipt is QUEUED here, in the same transaction that marks the order
+     * paid — so "they paid" and "we owe them an email" become one fact. It is
+     * not SENT here: a mail failure must never roll back a purchase.
+     * `notifyOrderPaid` is idempotent on the order number, so a gateway
+     * webhook calling it again after this commit sends nothing twice.
      *
      * The certificate is not attached yet either. Rendering a PDF launches a
-     * browser, which has no business inside a database transaction; the drain
-     * below attaches it once it exists.
+     * browser, which has no business inside a database transaction; it is
+     * attached below once it exists, and only then is the drain asked to run.
      */
-    if (order.user?.email) {
-      const queued = await enqueue(tx, {
-        template: 'order.confirmed',
-        toEmail: order.user.email,
-        locale: order.user.locale,
-        payload: {
-          name: order.user.name ?? order.user.email,
-          orderNumber: order.orderNumber,
-          // Database copy follows the reader, like every other surface. The
-          // Arabic title is the fallback, never the default for an English
-          // recipient.
-          albums: order.items
-            .map((item) => {
-              const title =
-                order.user?.locale === 'en'
-                  ? item.album.titleEn || item.album.titleAr
-                  : item.album.titleAr || item.album.titleEn
-              return `• ${title}`
-            })
-            .join('\n'),
-          libraryUrl: siteUrl('/account/library', order.user.locale ?? DEFAULT_LOCALE),
-        },
-      })
-      outboxId = queued.id
-    }
+    outboxId = await notifyOrderPaid(orderId, { client: tx, drain: false })
+    return true
   })
+
+  // Another caller settled it between our read and our lock. Nothing to do.
+  if (!settled) return
 
   /*
    * Documents and delivery, after the money is safely committed.
@@ -347,13 +384,8 @@ export async function settleOrder(orderId: string, reference: string) {
   }
 
   // By id, captured from the enqueue above. Matching on the payload instead
-  // would couple attachment to the payload's shape, and updateMany reports
-  // success even when it matched nothing.
-  if (keys.length && outboxId) {
-    await db.mailOutbox
-      .update({ where: { id: outboxId }, data: { attachments: keys } })
-      .catch((error) => console.error('[orders] could not attach certificates:', error))
-  }
+  // would couple attachment to the payload's shape. Never throws.
+  if (outboxId) await attachCertificates(outboxId, keys)
 
   drainSoon()
 }

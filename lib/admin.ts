@@ -1,8 +1,6 @@
 import { db } from '@/lib/db'
 import { recordAudit } from '@/lib/audit'
-import { enqueue, drainSoon } from '@/lib/outbox'
-import { DEFAULT_LOCALE, isLocale } from '@/lib/locale'
-import { siteUrl } from '@/lib/site'
+import { notifyAlbumDecision } from '@/lib/notifications'
 import { reverseCommission } from '@/lib/commission'
 import {
   canApprove,
@@ -82,21 +80,6 @@ export async function decideReview(input: ReviewDecisionInput) {
     select: {
       id: true,
       albumId: true,
-      // For the decision message. A creator learns the outcome from us, not by
-      // refreshing the studio.
-      album: {
-        select: {
-          slug: true,
-          titleAr: true,
-          titleEn: true,
-          creator: {
-            select: {
-              handle: true,
-              user: { select: { email: true, locale: true } },
-            },
-          },
-        },
-      },
     },
   })
   if (!task) return { ok: false as const, messageKey: 'state.notFound' }
@@ -156,28 +139,12 @@ export async function decideReview(input: ReviewDecisionInput) {
    *
    * Queued after the decision commits rather than inside it: the decision is
    * the operator's action and must stand whether or not mail is reachable.
-   * `reject` is deliberately silent here — a delisting is a conversation, not
-   * a template, and `admin.decisionNote` already forced a written reason.
+   * All three outcomes are told, rejection included — a creator whose album
+   * silently turns "delisted" learns it from a status chip with no reason.
+   * `admin.decisionNote` already forced the written reason the message quotes.
+   * `notifyAlbumDecision` never throws and is keyed on the review task.
    */
-  const recipient = task.album?.creator?.user
-  if (recipient?.email && input.decision !== 'reject') {
-    const locale = isLocale(recipient.locale) ? recipient.locale : DEFAULT_LOCALE
-    const album = locale === 'en' ? task.album.titleEn : task.album.titleAr
-    await enqueue(db, {
-      template: input.decision === 'approve' ? 'album.approved' : 'album.changes',
-      toEmail: recipient.email,
-      locale,
-      payload: {
-        album,
-        notes: input.note || '',
-        albumUrl:
-          input.decision === 'approve'
-            ? siteUrl(`/albums/${task.album.creator.handle}/${task.album.slug}`, locale)
-            : siteUrl(`/studio/albums/${task.albumId}`, locale),
-      },
-    })
-    drainSoon()
-  }
+  await notifyAlbumDecision(task.albumId)
 
   await recordAudit({
     actorId: input.reviewerId,

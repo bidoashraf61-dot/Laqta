@@ -1,7 +1,7 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import { readFile } from 'node:fs/promises'
 import { db } from '@/lib/db'
-import { sendMail, mailConfigured } from '@/lib/mail'
+import { sendMail, isMailConfigured } from '@/lib/mail'
 import { documentPath } from '@/lib/storage'
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/locale'
 import { renderTemplate, type TemplateName } from '@/emails/registry'
@@ -75,7 +75,7 @@ export async function drain(limit = 25) {
    * same oldest batch forever while newer rows are never touched. Returning
    * early keeps the queue intact and honest until a provider exists.
    */
-  if (!mailConfigured) {
+  if (!isMailConfigured()) {
     const waiting = await db.mailOutbox.count({ where: { sentAt: null, failedAt: null } })
     return { attempted: 0, sent: 0, failed: 0, skipped: waiting }
   }
@@ -107,7 +107,13 @@ export async function drain(limit = 25) {
       )
 
       const attachments = await loadAttachments(row.attachments)
-      const delivered = await sendMail(row.toEmail, rendered.subject, rendered.body, attachments)
+      const delivered = await sendMail(row.toEmail, rendered.subject, rendered.text, attachments, {
+        html: rendered.html,
+        replyTo: rendered.replyTo,
+        // A retry of this row is the same message: the provider drops the
+        // duplicate if an earlier attempt was accepted but timed out here.
+        idempotencyKey: `outbox:${row.id}`,
+      })
 
       if (delivered) {
         await db.mailOutbox.update({ where: { id: row.id }, data: { sentAt: new Date(), lastError: null } })
@@ -150,7 +156,7 @@ export function drainSoon() {
 }
 
 function isPermanent(message: string) {
-  return /invalid recipient|no such user|mailbox unavailable|550|blocked|suppress/i.test(message)
+  return /invalid recipient|invalid `to`|no such user|mailbox unavailable|550|blocked|suppress/i.test(message)
 }
 
 async function loadAttachments(keys: string[]) {

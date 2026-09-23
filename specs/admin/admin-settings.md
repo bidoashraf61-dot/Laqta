@@ -18,6 +18,9 @@ rate does a Silver creator get" without reading TypeScript.
   - `lib/storage.storageConfigured` — `true` when the `s3` driver is active, i.e.
     `S3_MASTERS_BUCKET` and `AWS_REGION` are both set (credentials come from the AWS SDK
     default chain, so their presence is not part of the test)
+  - `lib/mail.mailConfigured` — `Boolean(MAIL_PROVIDER && MAIL_API_KEY && MAIL_FROM)`,
+    read at module load; the Mail panel beside storage shows it with pending / sent /
+    failed `MailOutbox` counts. See `specs/mail.md`.
   - `process.env.VAT_RATE` (default `0.15`)
   - Review SLA `"3"` and payout hold `"30"` are **hard-coded strings in the JSX**, not
     read from the constants or env that actually drive those behaviours.

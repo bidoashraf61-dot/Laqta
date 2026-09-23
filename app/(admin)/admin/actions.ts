@@ -705,3 +705,38 @@ export async function setDisputeStatus(
   revalidatePath('/admin/disputes')
   return { ok: true, message: tr('actions.confirm') }
 }
+
+// ── Contact messages ────────────────────────────────────────────────────────
+
+/**
+ * Mark a /contact message handled, or reopen it.
+ *
+ * "Handled" means the operator dealt with it — replied, forwarded, or decided
+ * no reply was owed. The message itself is never edited or deleted here: it is
+ * the visitor's own words and the record of what was asked.
+ */
+export async function setContactMessageStatus(
+  messageId: string,
+  status: 'open' | 'handled',
+): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  await db.contactMessage.update({
+    where: { id: messageId },
+    data:
+      status === 'handled'
+        ? { status, handledAt: new Date(), handledById: admin.id }
+        : { status, handledAt: null, handledById: null },
+  })
+
+  await recordAudit({
+    actorId: admin.id,
+    action: `contact.${status}`,
+    entity: 'ContactMessage',
+    entityId: messageId,
+  })
+
+  revalidatePath('/admin/messages')
+  return { ok: true, message: tr('actions.confirm') }
+}

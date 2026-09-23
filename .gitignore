@@ -51,3 +51,6 @@ build/
 .documents/
 /public/hero/vid
 /.media/
+
+# Agent worktrees (local only)
+.claude/worktrees/

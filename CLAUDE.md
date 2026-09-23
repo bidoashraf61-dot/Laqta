@@ -129,9 +129,11 @@ a regression fails the suite rather than reaching an operator.
   entitlement is served from `OrderItem.clipManifestSnapshot`; commission is
   frozen at purchase.
 - Payments (`lib/payments.ts`) and storage (`lib/storage.ts`) are behind driver
-  interfaces with honest local drivers. Storage has an S3 driver (masters via
-  S3-presigned or CloudFront-signed URLs), switched on by env — see
-  `docs/media-aws.md`.
+  interfaces. Payments: bank transfer + Paymob card/Apple Pay (dormant until the
+  `PAYMOB_*` env is set; the signed webhook settles through the same
+  `settleOrder` as the admin). Mail: Resend, dormant until `MAIL_*` is set.
+  Storage: honest local driver plus an S3 driver (masters via S3-presigned or
+  CloudFront-signed URLs), switched on by env — see `docs/media-aws.md`.
 - **Every poster, preview, trailer and the hero film goes through
   `lib/media.ts#mediaUrl`** — never a raw key in `src`. "/"-rooted keys serve
   from `public/`; bucket keys resolve against `NEXT_PUBLIC_MEDIA_CDN_URL`, else

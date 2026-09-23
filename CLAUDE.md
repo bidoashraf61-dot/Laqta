@@ -13,7 +13,7 @@ Concretely, before writing or changing any user-facing UI:
    a screen without it.
 2. **Obey the design system.** `DESIGN.md` (repo root) + `.impeccable/design.json`
    are the normative tokens and rules; `docs/design-language.md` is the fuller
-   rationale. The palette, the gold ration (One Voice Rule), the two-weight
+   rationale. The palette, the gold ration (One Voice Rule), the two-cut
    headline, the Thmanyah three-cut typography, the letterbox motif and the RTL
    rules are binding, not suggestions.
 3. **Run the detector before you call a UI change done:**

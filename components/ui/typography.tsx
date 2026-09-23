@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { cn } from '@/lib/utils'
-import { kashida } from '@/lib/arabic'
 
 /**
  * The type system.
@@ -40,7 +39,6 @@ export function Headline({
   children,
   as: Tag = 'h2',
   size = 'headline',
-  stretch = true,
   className,
 }: {
   lead?: string
@@ -48,21 +46,22 @@ export function Headline({
   children?: React.ReactNode
   as?: 'h1' | 'h2' | 'h3'
   size?: 'display' | 'headline' | 'lg'
-  /** Set false where the copy must stay literal — a name, a code, a quote. */
+  /** @deprecated No effect since kashida was retired; kept so call sites compile. */
   stretch?: boolean
   className?: string
 }) {
   const scale =
     size === 'display' ? 'text-display' : size === 'headline' ? 'text-headline' : 'text-2xl'
 
-  // Kashida, scaled to the size.
+  // No kashida. Retired 2026-09 by the owner after seeing it on the hero.
   //
-  // The bigger the type, the further a scribe draws the stroke — at 72px two
-  // units barely register, and at 24px four turn a section head into a banner.
-  // `stretch` opts out; `kashida()` also declines on its own wherever the
-  // letters do not join (see lib/arabic.ts), so most copy needs no thought.
-  const units = size === 'display' ? 4 : size === 'headline' ? 3 : 2
-  const draw = (s?: string) => (stretch && s ? kashida(s, units) : s)
+  // The rule elongated the join before the final letter of EVERY word —
+  // «تصويــــر كامــــل» at display size — which a scribe never does: kashida
+  // justifies a line, one word at a time. Applied to every word it turns a
+  // headline into a banner. Headlines now render their copy literally.
+  // `lib/arabic.ts` keeps the helper, correct and tested, for a deliberate
+  // single-word use; it is simply no longer applied by default.
+  const draw = (s?: string) => s
 
   // The statement line is BOLD (700), not Black (900).
   //
@@ -105,8 +104,19 @@ export function Headline({
     >
       {lead ? (
         <>
-          <span className="block font-light">{draw(lead)}</span>
-          <span className="block font-bold">{draw(bold)}</span>
+          {/*
+            Two CUTS, not just two weights (option E, chosen by the owner).
+
+            The lead is Thmanyah Sans Light and the statement is Serif Display
+            Bold. Two weights of one serif read as the same voice getting
+            louder; a sans lead against a serif statement reads as a quiet
+            setup and a spoken line — more contrast between the two lines for
+            the same space, and the thin serif Light that struggled over the
+            hero film is gone. Both faces are Thmanyah, so the three-cut system
+            is still the whole type palette.
+          */}
+          <span className="block font-sans font-light">{draw(lead)}</span>
+          <span className="block font-display font-bold">{draw(bold)}</span>
         </>
       ) : (
         <span className="font-bold">
@@ -132,7 +142,6 @@ export function Headline({
 export function PageTitle({
   children,
   as: Tag = 'h1',
-  stretch = true,
   className,
 }: {
   children: React.ReactNode
@@ -142,7 +151,7 @@ export function PageTitle({
 }) {
   return (
     <Tag className={cn('font-display text-headline font-bold', className)}>
-      {stretch && typeof children === 'string' ? kashida(children, 3) : children}
+      {children}
     </Tag>
   )
 }

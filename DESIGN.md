@@ -32,7 +32,7 @@ typography:
     lineHeight: 1.2
     letterSpacing: "-0.01em"
   headline-lead:
-    fontFamily: "Thmanyah Serif Display, Georgia, serif"
+    fontFamily: "Thmanyah Sans, system-ui, sans-serif"
     fontSize: "clamp(1.5rem, 2.6vw, 2.125rem)"
     fontWeight: 300
     lineHeight: 1.2
@@ -317,27 +317,27 @@ is the same colour on the landing page, in search and on a creator profile.
 This gives up the 16:9 crop deliberately, closing an open item in
 docs/design-language.md.
 
-### Kashida — كشيدة
+### Kashida — كشيدة (retired)
 
-Headlines elongate the join before a word's final letter, using U+0640 TATWEEL.
-`lib/arabic.ts` owns the rule; `Headline` and `PageTitle` apply it.
+**Headlines no longer elongate.** Until 2026-09 every headline stretched the
+join before each word's final letter with U+0640 TATWEEL — four units at
+display size — which read as «تصويــــر كامــــل». The owner saw it on the hero
+and rejected it; eight treatments were rendered on the real film and a plain
+setting was chosen.
 
-**It is not letter-spacing.** Arabic is cursive; `letter-spacing` pries apart
-glyphs drawn joined and the word visibly breaks. Kashida lengthens the
-connecting stroke, so the word stays one line and simply becomes wider.
+The rule was wrong in kind, not just degree: a scribe draws kashida to justify
+a LINE, one word at a time. Applied to every word it turns a headline into a
+banner. `lib/arabic.ts` keeps `kashida()` — it is correct, and declines after
+the fourteen letters that never join forward — for a deliberate, single-word
+use. Nothing applies it by default.
 
-Scale by size: display 4 units, headline 3, dashboard title 2. The function
-declines on its own after any of the fourteen letters that never join forward
-(ا أ إ آ ٱ د ذ ر ز و ؤ ة ى ء) and never splits the lam-alef ligature.
+**Letter-spacing stays out of Arabic** for the same reason it always did:
+Arabic is cursive, and tracking pries apart glyphs drawn joined. Openness in a
+headline comes from word-spacing (`.headline-airy`, 0.1em; `-wide`, 0.12em).
 
-**It only applies to plain strings.** A title carrying an album name or a
-creator's handle passes through untouched — elongating someone's name is not a
-flourish, it is a misspelling.
-
-**Gates must normalise it.** Any check matching rendered Arabic against
-dictionary copy has to strip `/\u0640+/g` first. `verify:hero`, `verify:auth`
-and `verify:journeys` all do; a missed strip in the auth matrix reads as
-"allowed" on a page that actually blocked.
+**Gates still strip `/\u0640+/g`** before matching rendered Arabic against
+dictionary copy. It is now a no-op on headlines, and harmless; leave it, so a
+future deliberate kashida cannot silently break the auth matrix again.
 
 ### Named Rules
 **The One Voice Rule.** Gold means money, the primary action, or the active
@@ -399,10 +399,17 @@ the point of licensing a superfamily.
   no weight change could.
 
 ### Named Rules
-**The Two-Weight Headline Rule.** A headline is one size set as two lines — a
-Light lead over a Bold statement — giving internal hierarchy with no second
-size, colour, or rule. Arabic copy splits on its comma:
-`لقطات سعودية،` (light) / **`بجودة سينمائية.`** (bold).
+**The Two-Cut Headline Rule.** A headline is one size set as two lines — a
+**Thmanyah Sans Light** lead over a **Thmanyah Serif Display Bold** statement —
+giving internal hierarchy with no second size, colour, or rule. Arabic copy
+splits on its comma: `لقطات سعودية،` (sans light) / **`بجودة سينمائية.`**
+(serif bold). The lead line ends on «،», never «..» — a double full stop reads
+as chat punctuation.
+
+Chosen 2026-09 over seven alternatives rendered on the hero film (option E).
+Two weights of one serif read as one voice getting louder; a sans lead against
+a serif statement reads as a quiet setup and a spoken line, and it retires the
+thin serif Light that struggled over moving footage.
 
 **The Isolated-Latin Rule.** Any Latin run inside Arabic — a codec name, camera
 model, IBAN, order number — is wrapped `.ltr-island` or `.numeric`
@@ -600,7 +607,7 @@ scale is missing a rung and this file gains one.
   under 15% of a screen.
 - **Do** set page titles in Serif Display, editorial prose in Serif Text, and
   every control in Sans.
-- **Do** use the two-weight headline where copy splits on a comma.
+- **Do** use the two-cut headline where copy splits on a comma.
 - **Do** wrap every Latin run inside Arabic in `.ltr-island` / `.numeric`, and
   put dates/money in an inner numeric span, never on a flex element.
 - **Do** reach for a tonal step (paper → card → muted) before a shadow.

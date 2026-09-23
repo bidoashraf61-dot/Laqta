@@ -3,51 +3,74 @@ import { Headline, Prose, Section } from '@/components/ui/typography'
 import { t } from '@/lib/i18n'
 
 /**
- * ⚠️ PLACEHOLDER — to be replaced.
+ * ⚠️ PLACEHOLDER MEDIA — to be replaced.
  *
- * A still from the hero reel, standing in until the real still for this
- * section is produced. It is a deliberate placeholder rather than an empty
- * box: a grey rectangle labelled "image goes here" reads as an unfinished
- * page in a review, while a real frame reads as the layout it will be.
+ * A still from the hero reel, standing in for the real asset: a screen capture
+ * of an album's cuts being laid onto a Premiere Pro timeline. The section's
+ * argument is "these clips cut together", and that is a claim best answered by
+ * watching them do it.
  *
- * Drop the replacement at `public/landing/problem-solution.jpg` (16:9,
- * ≥1920px wide) and point this constant at it. Nothing else changes.
+ * To replace it, drop the file in `public/landing/` and change `MEDIA.src`.
+ * The slot renders a video for `.mp4` / `.webm` and an image for anything else,
+ * so a `.gif` works too — but prefer a short muted MP4 loop: a timeline capture
+ * as a GIF runs to tens of megabytes and loses the colour a grade depends on,
+ * where the same loop as H.264 is typically a tenth of the size and sharper.
  */
-const STILL_SRC = '/hero/06-alula.jpg'
+const MEDIA = { src: '/hero/06-alula.jpg' }
+
+const isVideo = (src: string) => /\.(mp4|webm)$/i.test(src)
 
 /**
- * The problem, then the shortcut.
+ * The problem, then the shortcut — as a split.
  *
- * Right after the hero: name the pain (producing Saudi content is slow and
- * expensive) and answer it in one breath — ready-made, culturally-accurate
- * cinematic albums. Editorial and centred; it earns the catalogue that follows.
+ * Media on the inline-START side, copy on the inline-END side: in Arabic that
+ * puts the picture on the right, where the eye enters the row, and the argument
+ * on the left. In English the same logical layout mirrors to picture-left,
+ * copy-right, as it should.
  *
- * The still under the copy is doing work, not filling space. This section makes
- * a claim about the quality of the footage immediately after the hero has
- * stopped moving, and a claim about pictures is better answered with one.
+ * On a phone the two stack with the COPY first. Reading a headline before an
+ * illustration of it is the right order at a glance, and a timeline capture is
+ * the illustration, not the claim.
  */
 export function ProblemSolution() {
   return (
     <Section tone="base">
-      <div className="mx-auto max-w-3xl text-center">
-        <Headline lead={t('landing.problemLead')} bold={t('landing.problemBold')} size="lg" />
-        <Prose className="mx-auto mt-6">{t('landing.problemBody')}</Prose>
-      </div>
+      <div className="grid items-center gap-10 md:grid-cols-2 md:gap-14 lg:gap-20">
+        <div className="text-start">
+          <Headline lead={t('landing.problemLead')} bold={t('landing.problemBold')} size="lg" />
+          <Prose className="mt-6">{t('landing.problemBody')}</Prose>
+        </div>
 
-      {/*
-        16:9, because that is the shape the footage is delivered in — the frame
-        is a sample of the product, not a decorative band. Watermarked like
-        every other moving or still frame on the site; see watermark.tsx.
-      */}
-      <figure className="relative mx-auto mt-12 aspect-video max-w-4xl overflow-hidden rounded-lg border bg-ink shadow-soft">
-        <img
-          src={STILL_SRC}
-          alt={t('landing.problemStillAlt')}
-          loading="lazy"
-          className="size-full object-cover"
-        />
-        <PreviewWatermark />
-      </figure>
+        {/*
+          16:9, because that is the shape both the footage and a timeline
+          capture arrive in — the frame is a sample of the product, not a
+          decorative band. Watermarked like every other frame on the site.
+          `md:order-first` moves it to the start column on wider screens while
+          the DOM keeps the copy first for the stacked phone layout.
+        */}
+        <figure className="relative aspect-video overflow-hidden rounded-lg border bg-ink shadow-soft md:order-first">
+          {isVideo(MEDIA.src) ? (
+            <video
+              src={MEDIA.src}
+              className="size-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label={t('landing.problemStillAlt')}
+            />
+          ) : (
+            <img
+              src={MEDIA.src}
+              alt={t('landing.problemStillAlt')}
+              loading="lazy"
+              className="size-full object-cover"
+            />
+          )}
+          <PreviewWatermark />
+        </figure>
+      </div>
     </Section>
   )
 }

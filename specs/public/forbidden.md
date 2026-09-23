@@ -28,3 +28,14 @@ Read-only.
 
 ## Verified by
 `verify:arabic`. Not in the `audit` route list.
+
+## Gate contract
+
+The page root carries **`data-page="forbidden"`**, and that attribute — not the
+title's wording — is what `verify:auth` and `verify:journeys` match. Both gates
+used to match the literal «لا تملك صلاحية الوصول»; an editorial pass changed the
+title, and the role-guard matrix reported three correctly blocked pages as
+"allowed" while `verify:journeys` reported a correctly blocked `/admin` as
+"ADMIN CONTENT LEAKED". Copy on this page is free to change. The marker is not.
+
+Title `state.forbidden` «الوصول غير مسموح»; body `state.forbiddenHint`.

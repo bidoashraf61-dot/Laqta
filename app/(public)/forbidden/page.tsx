@@ -22,7 +22,19 @@ export default async function ForbiddenPage() {
   await requestLocale()
 
   return (
-    <div className="container flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
+    /*
+     * `data-page="forbidden"` is what `verify:auth` matches — NOT the copy.
+     *
+     * The gate used to look for the literal «لا تملك صلاحية الوصول». An
+     * editorial pass changed the title, the match silently missed, and the
+     * role-guard matrix reported three blocked pages as "allowed". The guards
+     * were fine; the gate had coupled a security check to wording that is
+     * supposed to be editable. A marker nobody rewrites cannot drift.
+     */
+    <div
+      data-page="forbidden"
+      className="container flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center"
+    >
       <ShieldAlert className="size-12 text-warning" />
       <PageTitle>{t('state.forbidden')}</PageTitle>
       <p className="max-w-md text-muted-foreground">{t('state.forbiddenHint')}</p>

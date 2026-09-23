@@ -12,14 +12,14 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 - `Clip.masterKey` is never selected.
 
 ## Sections (in order)
-1. `HeroCinematic` — scroll-scrubbed film; two CTAs.
-2. `ProblemSolution` — editorial problem→shortcut beat (`components/landing/problem-solution.tsx`), centred, `offwhite` ground.
+1. `HeroCinematic` — scroll-scrubbed film; two CTAs. Two-cut headline (Thmanyah Sans Light lead, Serif Display Bold statement), no kashida. The USP rail — four claims as a vertical scrubber — sits at the inline-start edge on desktop and **docks to the bottom of the frame on mobile**; it was `display:none` below 1024px until 2026-09, so phone visitors never saw it.
+2. `ProblemSolution` — a **split**: media at the inline-start (the right, in Arabic), copy at the inline-end. Stacks copy-first on phones. Headline «لقطات من موقع واحد، بضوء واحد وهوية واحدة.», drawn from the section's own claim. The media slot is a placeholder still, built to take a video (`.mp4`/`.webm`, preferred) or an image/GIF for the planned Premiere-timeline capture — one constant, `MEDIA.src`.
 3. `FootageWall` — showreel (id `#showreel`) + hover-preview tile masonry.
 4. `TheCollection` — album posters, centred head, seasonal tagline, "all albums" button, `olive` ground.
 5. `LicensingRights` — features/rights checklist (`components/landing/licensing.tsx`).
 6. `HowItWorks` — three steps (`components/landing/sections.tsx`).
-7. `PricingValue` — value case + three points + buy CTA (`components/landing/pricing-value.tsx`), `accent` (gold-tint) ground.
-8. `LandingFaq` — five Q&A + `FAQPage` JSON-LD.
+7. `PricingValue` — value case + three points + buy CTA (`components/landing/pricing-value.tsx`), `accent` (gold-tint) ground. Each point carries an **ink** icon on a paper disc (∞, clock, palette) — ink, not gold, because the section already spends gold on the buy button.
+8. `LandingFaq` — five Q&A + `FAQPage` JSON-LD. **Numbered** in the reader's own digits (١–٥ in Arabic, 1–5 in English) inside each `<dt>`, with a hanging indent so answers align under the question. On two columns the reading order zig-zags; the number makes it visible.
 9. `RequestFootage` — request a custom album.
 10. `FinalCta` — closing buyer push (`components/landing/final-cta.tsx`), `olive` ground.
 11. `CreatorCta` — creator invite, last.

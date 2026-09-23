@@ -68,13 +68,16 @@ async function probe(jar: Jar, path: string) {
     redirect: 'manual',
   })
   if (response.status === 307 || response.status === 302) return 'redirected'
-  // Strip kashida (U+0640) before matching. The forbidden page's title runs
-  // through PageTitle, which draws the joins out, so the rendered copy is
-  // "لا تملــك صلاحيــة الوصول" and a literal compare silently misses. A miss
-  // here reports 'allowed' for a page that actually blocked — a false pass on
-  // the role-guard matrix, which is the one place that must never happen.
-  const body = (await response.text()).replace(/\u0640+/g, '')
-  if (body.includes('لا تملك صلاحية الوصول')) return 'forbidden'
+  // Match a MARKER, never copy.
+  //
+  // This matched the literal «لا تملك صلاحية الوصول», first through a kashida
+  // strip and then not at all: an editorial pass rewrote the title, the match
+  // missed, and three blocked pages were reported as 'allowed'. A miss here is
+  // a false result on the role-guard matrix, the one place that must never
+  // produce one — so it keys on `data-page="forbidden"`, which no copy edit
+  // touches. See app/(public)/forbidden/page.tsx.
+  const body = await response.text()
+  if (body.includes('data-page="forbidden"')) return 'forbidden'
   return response.ok ? 'allowed' : `http ${response.status}`
 }
 

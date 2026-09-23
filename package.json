@@ -39,7 +39,8 @@
     "verify:action-locale": "node scripts/verify-action-locale.mjs",
     "verify:mail": "tsx scripts/verify-mail.ts",
     "verify:licence": "tsx scripts/verify-licence.ts",
-    "repair:licences": "tsx scripts/repair-licence-versions.ts"
+    "repair:licences": "tsx scripts/repair-licence-versions.ts",
+    "content:export": "tsx scripts/export-content.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

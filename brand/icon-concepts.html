@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Icon concepts — لقطة</title>
+<style>
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2")format("woff2");font-weight:700}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Regular.woff2")format("woff2");font-weight:400}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Bold.woff2")format("woff2");font-weight:700}
+:root{--paper:#FAF8F3;--ink:#14141A;--mutedfg:#666370;--border:#CFC8BB;--card:#FFF;--gold:#83682A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;padding:40px 48px;width:1240px}
+h1{font-family:"Thmanyah Serif Display",Georgia,serif;font-size:34px;margin-bottom:6px}
+.sub{color:var(--mutedfg);font-size:13px;margin-bottom:32px}
+.row{display:grid;grid-template-columns:150px 1fr 210px;gap:24px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:14px}
+.big{width:110px;height:110px}
+.scales{display:flex;align-items:flex-end;gap:22px}
+.s{text-align:center}
+.s span{display:block;font-size:9px;color:var(--mutedfg);margin-top:5px}
+.meta h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.meta p{font-size:11.5px;color:var(--mutedfg);line-height:1.55}
+.verdict{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:6px;margin-bottom:6px}
+.best{background:var(--ink);color:var(--paper)}
+.ok{background:#E9DCC3;color:#5a4a1e}
+.no{background:#F0EBE0;color:#A85838}
+svg{display:block}
+</style>
+</head>
+<body>
+<h1>أيقونة لقطة — icon concepts</h1>
+<div class="sub">Ink on paper · tested at 110px, 48px, 32px and 16px · the 16px column is the one that decides it</div>
+
+<!-- 1 STACKED LETTERBOXES -->
+<div class="row">
+  <svg class="big" viewBox="0 0 100 100"><g fill="#14141A">
+    <rect x="10" y="24" width="80" height="14" rx="2"/>
+    <rect x="18" y="43" width="64" height="14" rx="2"/>
+    <rect x="26" y="62" width="48" height="14" rx="2"/>
+  </g></svg>
+  <div class="scales">
+    <div class="s"><svg width="48" height="48" viewBox="0 0 100 100"><g fill="#14141A"><rect x="10" y="24" width="80" height="14" rx="2"/><rect x="18" y="43" width="64" height="14" rx="2"/><rect x="26" y="62" width="48" height="14" rx="2"/></g></svg><span>48</span></div>
+    <div class="s"><svg width="32" height="32" viewBox="0 0 100 100"><g fill="#14141A"><rect x="10" y="24" width="80" height="14" rx="2"/><rect x="18" y="43" width="64" height="14" rx="2"/><rect x="26" y="62" width="48" height="14" rx="2"/></g></svg><span>32</span></div>
+    <div class="s"><svg width="16" height="16" viewBox="0 0 100 100"><g fill="#14141A"><rect x="10" y="24" width="80" height="14" rx="2"/><rect x="18" y="43" width="64" height="14" rx="2"/><rect x="26" y="62" width="48" height="14" rx="2"/></g></svg><span>16</span></div>
+  </div>
+  <div class="meta"><span class="verdict best">STRONGEST</span><h3>The stack</h3><p>Three widescreen bars — an <b>album</b>, not a clip. Says the one thing no competitor can: you sell sets. Your 2.39:1 geometry, already in the system.</p></div>
+</div>
+
+<!-- 2 CORNER BRACKETS -->
+<div class="row">
+  <svg class="big" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="9" stroke-linecap="square">
+    <path d="M12 40 V25 H32"/><path d="M88 40 V25 H68"/>
+    <path d="M12 60 V75 H32"/><path d="M88 60 V75 H68"/>
+  </g></svg>
+  <div class="scales">
+    <div class="s"><svg width="48" height="48" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="9" stroke-linecap="square"><path d="M12 40 V25 H32"/><path d="M88 40 V25 H68"/><path d="M12 60 V75 H32"/><path d="M88 60 V75 H68"/></g></svg><span>48</span></div>
+    <div class="s"><svg width="32" height="32" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="10" stroke-linecap="square"><path d="M12 40 V25 H32"/><path d="M88 40 V25 H68"/><path d="M12 60 V75 H32"/><path d="M88 60 V75 H68"/></g></svg><span>32</span></div>
+    <div class="s"><svg width="16" height="16" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="12" stroke-linecap="square"><path d="M12 40 V25 H32"/><path d="M88 40 V25 H68"/><path d="M12 60 V75 H32"/><path d="M88 60 V75 H68"/></g></svg><span>16</span></div>
+  </div>
+  <div class="meta"><span class="verdict best">STRONGEST</span><h3>The framing marks</h3><p>Viewfinder corners composing a widescreen shot. <b>لقطة literally means "a framed shot"</b> — this is the word drawn. Nobody in stock footage uses it.</p></div>
+</div>
+
+<!-- 3 FRAME IN FRAME -->
+<div class="row">
+  <svg class="big" viewBox="0 0 100 100"><path fill="#14141A" fill-rule="evenodd" d="M6 29 h88 v42 h-88 z M18 39 h64 v22 h-64 z"/></svg>
+  <div class="scales">
+    <div class="s"><svg width="48" height="48" viewBox="0 0 100 100"><path fill="#14141A" fill-rule="evenodd" d="M6 29 h88 v42 h-88 z M18 39 h64 v22 h-64 z"/></svg><span>48</span></div>
+    <div class="s"><svg width="32" height="32" viewBox="0 0 100 100"><path fill="#14141A" fill-rule="evenodd" d="M6 29 h88 v42 h-88 z M18 39 h64 v22 h-64 z"/></svg><span>32</span></div>
+    <div class="s"><svg width="16" height="16" viewBox="0 0 100 100"><path fill="#14141A" fill-rule="evenodd" d="M6 29 h88 v42 h-88 z M20 40 h60 v20 h-60 z"/></svg><span>16</span></div>
+  </div>
+  <div class="meta"><span class="verdict ok">GOOD</span><h3>The frame</h3><p>A single 2.39:1 letterbox, hollow. Cleanest and most literal to the design system. Risk: a plain rectangle is hard to own.</p></div>
+</div>
+
+<!-- 4 ARABIC LETTER IN FRAME -->
+<div class="row">
+  <svg class="big" viewBox="0 0 100 100">
+    <rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/>
+    <text x="50" y="63" text-anchor="middle" font-family="Thmanyah Serif Display, Georgia, serif" font-weight="700" font-size="34" fill="#FAF8F3">ق</text>
+  </svg>
+  <div class="scales">
+    <div class="s"><svg width="48" height="48" viewBox="0 0 100 100"><rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/><text x="50" y="63" text-anchor="middle" font-family="Thmanyah Serif Display, Georgia, serif" font-weight="700" font-size="34" fill="#FAF8F3">ق</text></svg><span>48</span></div>
+    <div class="s"><svg width="32" height="32" viewBox="0 0 100 100"><rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/><text x="50" y="63" text-anchor="middle" font-family="Thmanyah Serif Display, Georgia, serif" font-weight="700" font-size="34" fill="#FAF8F3">ق</text></svg><span>32</span></div>
+    <div class="s"><svg width="16" height="16" viewBox="0 0 100 100"><rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/><text x="50" y="64" text-anchor="middle" font-family="Thmanyah Serif Display, Georgia, serif" font-weight="700" font-size="38" fill="#FAF8F3">ق</text></svg><span>16</span></div>
+  </div>
+  <div class="meta"><span class="verdict ok">GOOD</span><h3>The letter in the frame</h3><p>ق inside the letterbox. Unmistakably Arabic and unmistakably yours. Risk: the dots vanish below ~24px.</p></div>
+</div>
+
+<!-- 5 HORIZON -->
+<div class="row">
+  <svg class="big" viewBox="0 0 100 100">
+    <rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/>
+    <path d="M6 60 q22 -13 44 -2 q22 11 44 -6 v19 h-88 z" fill="#FAF8F3"/>
+  </svg>
+  <div class="scales">
+    <div class="s"><svg width="48" height="48" viewBox="0 0 100 100"><rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/><path d="M6 60 q22 -13 44 -2 q22 11 44 -6 v19 h-88 z" fill="#FAF8F3"/></svg><span>48</span></div>
+    <div class="s"><svg width="32" height="32" viewBox="0 0 100 100"><rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/><path d="M6 60 q22 -13 44 -2 q22 11 44 -6 v19 h-88 z" fill="#FAF8F3"/></svg><span>32</span></div>
+    <div class="s"><svg width="16" height="16" viewBox="0 0 100 100"><rect x="6" y="29" width="88" height="42" rx="3" fill="#14141A"/><path d="M6 60 q22 -13 44 -2 q22 11 44 -6 v19 h-88 z" fill="#FAF8F3"/></svg><span>16</span></div>
+  </div>
+  <div class="meta"><span class="verdict ok">GOOD</span><h3>The dune horizon</h3><p>A dune line inside the frame — Saudi landscape, stated quietly. Warmer than the geometric options. Risk: edges toward the desert cliché.</p></div>
+</div>
+
+<!-- 6 APERTURE -->
+<div class="row">
+  <svg class="big" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="8">
+    <circle cx="50" cy="50" r="30"/><path d="M50 20 L76 65 M50 20 L24 65 M76 65 L24 65"/>
+  </g></svg>
+  <div class="scales">
+    <div class="s"><svg width="48" height="48" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="8"><circle cx="50" cy="50" r="30"/><path d="M50 20 L76 65 M50 20 L24 65 M76 65 L24 65"/></g></svg><span>48</span></div>
+    <div class="s"><svg width="32" height="32" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="9"><circle cx="50" cy="50" r="30"/><path d="M50 20 L76 65 M50 20 L24 65 M76 65 L24 65"/></g></svg><span>32</span></div>
+    <div class="s"><svg width="16" height="16" viewBox="0 0 100 100"><g fill="none" stroke="#14141A" stroke-width="11"><circle cx="50" cy="50" r="30"/><path d="M50 20 L76 65 M50 20 L24 65 M76 65 L24 65"/></g></svg><span>16</span></div>
+  </div>
+  <div class="meta"><span class="verdict no">AVOID</span><h3>The aperture</h3><p>Shown so you can see why not. Every camera brand on earth uses it. Generic, mushy at 16px, says "photography" not "Saudi footage library".</p></div>
+</div>
+
+</body>
+</html>

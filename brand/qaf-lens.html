@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ق — lens treatments</title>
+<style>
+@font-face{font-family:"Thmanyah Serif Display";src:url("../public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2")format("woff2");font-weight:700}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Regular.woff2")format("woff2");font-weight:400}
+@font-face{font-family:"Thmanyah Sans";src:url("../public/fonts/thmanyah/thmanyahsans-Bold.woff2")format("woff2");font-weight:700}
+:root{--paper:#FAF8F3;--ink:#14141A;--mutedfg:#666370;--border:#CFC8BB;--film:#F5F2EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Thmanyah Sans",system-ui,sans-serif;padding:36px 44px;width:1240px}
+h1{font-family:"Thmanyah Serif Display",serif;font-size:29px;margin-bottom:4px}
+.sub{color:var(--mutedfg);font-size:12.5px;margin-bottom:24px}
+.row{display:grid;grid-template-columns:130px 1fr 320px;gap:20px;align-items:center;background:var(--ink);border-radius:10px;padding:16px 22px;margin-bottom:12px}
+.scales{display:flex;align-items:flex-end;gap:20px}
+.s{text-align:center}
+.s span{display:block;font-size:9px;color:#9a97a3;margin-top:4px}
+.meta h3{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--film)}
+.meta p{font-size:11px;color:#9a97a3;line-height:1.5}
+.tag{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:6px;margin-bottom:5px;background:var(--film);color:var(--ink)}
+.tag.no{background:#5a3a33;color:#F5D9D2}
+</style>
+</head>
+<body>
+<h1>ق — معالجات العدسة</h1>
+<div class="sub">What to add, and what it costs at 16px</div>
+<div id="out"></div>
+
+<script>
+const CX=50, CY=56, RO=32, RI=19;
+const P=(a,r)=>[CX+r*Math.cos(a*Math.PI/180), CY+r*Math.sin(a*Math.PI/180)];
+
+function arc(rOut,rIn,a0,a1){
+  const [x1,y1]=P(a0,rOut),[x2,y2]=P(a1,rOut),[x3,y3]=P(a1,rIn),[x4,y4]=P(a0,rIn);
+  const lg=(a1-a0)>180?1:0;
+  return `M${x1.toFixed(1)} ${y1.toFixed(1)}A${rOut} ${rOut} 0 ${lg} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}L${x3.toFixed(1)} ${y3.toFixed(1)}A${rIn} ${rIn} 0 ${lg} 0 ${x4.toFixed(1)} ${y4.toFixed(1)}Z`;
+}
+function ray(a,r0,len,w0,w1){
+  const t=a*Math.PI/180,c=Math.cos(t),s=Math.sin(t),px=-s,py=c;
+  const ix=CX+r0*c,iy=CY+r0*s,ox=CX+(r0+len)*c,oy=CY+(r0+len)*s;
+  return `M${(ix+px*w0).toFixed(1)} ${(iy+py*w0).toFixed(1)}L${(ix-px*w0).toFixed(1)} ${(iy-py*w0).toFixed(1)}L${(ox-px*w1).toFixed(1)} ${(oy-py*w1).toFixed(1)}L${(ox+px*w1).toFixed(1)} ${(oy+py*w1).toFixed(1)}Z`;
+}
+function ring(r,w){ // hollow ring as one even-odd path
+  return `M${CX-r} ${CY}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0Z`+
+         `M${CX-(r-w)} ${CY}a${r-w} ${r-w} 0 1 1 ${2*(r-w)} 0a${r-w} ${r-w} 0 1 1 ${-2*(r-w)} 0Z`;
+}
+const dia=(x,y,r)=>`M${x} ${y-r}L${x+r} ${y}L${x} ${y+r}L${x-r} ${y}Z`;
+const DOTS = dia(41,14,7)+dia(59,14,7);
+
+// the mark from the reference: open arc + fanning rays + two diamonds
+function base(){
+  let r='';
+  for(let i=0;i<9;i++){const a=192+i*11.5; const L=16-i*1.1; r+=ray(a,RO,L,3.4,1.4);}
+  return arc(RO,RI,-72,188)+r+DOTS;
+}
+
+const V={
+  a: ()=> base(),
+  b: ()=> base()+ring(RI-4.5,2.2),
+  c: ()=> base()+dia(60,44,4.5),
+  d: ()=> { let s=base(); for(let i=0;i<6;i++){const a=-60+i*60; const [x1,y1]=P(a,RI-2),[x2,y2]=P(a+55,RI-2); s+=`M${CX} ${CY}L${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}Z`;} return s; },
+  e: ()=> base()+ring(RI-4,1.8)+ring(RI-9,1.6)+ring(RI-13.5,1.4)
+};
+
+const META=[
+ ['a','KEEP','As it stands','The rays already read as an iris opening. Distinctive because it is <b>not</b> a literal lens. This is the benchmark.'],
+ ['b','ADD THIS','One inner ring','A single thin ring inside the aperture — a lens element, implied. Adds depth and glass without a single cliché. <b>Survives 16px.</b>'],
+ ['c','MAYBE','Catchlight','A small diamond in the dark centre — the reflection on glass. Ties to the dot device. ⚠️ Risk: reads as a third dot and muddles the ق.'],
+ ['d','AVOID','Aperture blades','The literal iris. Every camera brand owns this, it fights the rays (both radial), and it turns to porridge below 32px.'],
+ ['e','AVOID','Nested rings','Barrel depth. Handsome large, <b>completely illegible at 16px</b> — the rings merge into a grey disc.']
+];
+
+document.getElementById('out').innerHTML = META.map(([k,t,h,p])=>{
+  const d=V[k]();
+  const svg=s=>`<svg width="${s}" height="${s}" viewBox="0 0 100 100"><path d="${d}" fill="#F5F2EA" fill-rule="evenodd"/></svg>`;
+  return `<div class="row"><div>${svg(96)}</div>
+    <div class="scales">
+      <div class="s">${svg(48)}<span>48</span></div>
+      <div class="s">${svg(32)}<span>32</span></div>
+      <div class="s">${svg(16)}<span>16</span></div>
+    </div>
+    <div class="meta"><span class="tag${t.startsWith('AVOID')?' no':''}">${t}</span><h3>${h}</h3><p>${p}</p></div></div>`;
+}).join('');
+</script>
+</body>
+</html>

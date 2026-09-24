@@ -28,6 +28,7 @@ hand the user back to wherever the guard interrupted them.
 | Phone form → «إرسال الرمز» | `requestPhoneCode(formData)` | Requires ≥6 digits, normalises via `normalisePhone`, calls `issueOtp(phone)`. Returns `{ phone, devCode }`. |
 | Code form → «تحقق» | `signInWithPhone(formData)` | Calls Auth.js `signIn('phone', { phone, code, redirect: false })`. |
 | «تغيير الرقم» | client state reset | Clears `sentTo`/`devCode`, returns to the number step. Does not invalidate the issued OTP. |
+| Link «نسيت كلمة المرور؟» | `Link` → `/forgot-password` | Under the password field, inline-end, muted (not gold — the submit button is the form's one gold voice). Email tab only; the phone rail has no password. See [`forgot-password.md`](./forgot-password.md). |
 | Link «إنشاء حساب» | navigation to `/sign-up` | Read-only link. |
 
 Hidden `callbackUrl` input is emitted on the email form and on the OTP verify
@@ -57,7 +58,8 @@ step, not on the send-code step.
   `SMS_PROVIDER` and `SMS_API_KEY` set does `sendSms` reach the unimplemented
   branch and throw.
 - **Empty** — n/a, the form always renders.
-- No password-reset, no "resend code" control (`auth.resendCode` exists in the
+- Password reset lives on its own routes (`/forgot-password` →
+  `/reset-password`), linked from the email tab. No "resend code" control (`auth.resendCode` exists in the
   dictionary but is unused), no email-verification step.
 
 ## Invariants
@@ -74,6 +76,10 @@ step, not on the send-code step.
   — a first-time verified number silently creates a `User` with `role: 'buyer'`
   (schema default), no name and no email.
 - `status: 'suspended'` users are rejected on both rails.
+- **A password reset ends every session.** The `jwt` callback stamps
+  `token.signedInAt` at sign-in and, on every later call, reads
+  `User.passwordChangedAt` (one indexed read per `auth()`); a session that began
+  before it returns `null`. See [`reset-password.md`](./reset-password.md).
 - Touches no money and no downloads.
 
 ## Verified by

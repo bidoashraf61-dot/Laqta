@@ -43,6 +43,12 @@ const WINDOW_MS = 60 * 60 * 1000
 export const PASSWORD_MIN = 8
 
 const sha256 = (value: string) => createHash('sha256').update(value).digest('hex')
+/**
+ * For the request counter: salted with AUTH_SECRET, so the stored value cannot
+ * be reversed by hashing the IPv4 space or a list of addresses — the same rule
+ * the contact form's rate limit follows.
+ */
+const salted = (value: string) => sha256(`${process.env.AUTH_SECRET ?? 'laqta'}:${value}`)
 
 export type ResetRequestOutcome = {
   /**
@@ -66,8 +72,8 @@ export async function requestPasswordReset(input: {
   pageLocale: Locale
 }): Promise<ResetRequestOutcome> {
   const email = input.email.trim().toLowerCase()
-  const emailHash = sha256(`email:${email}`)
-  const ipHash = sha256(`ip:${input.ip || 'unknown'}`)
+  const emailHash = salted(`email:${email}`)
+  const ipHash = salted(`ip:${input.ip || 'unknown'}`)
   const since = new Date(Date.now() - WINDOW_MS)
 
   // Recorded first, so a flood keeps itself limited rather than resetting

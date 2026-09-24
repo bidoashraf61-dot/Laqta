@@ -592,7 +592,8 @@
     "resetDone": "Sign in with the new password now. If your account uses two-factor authentication, we'll still ask for the authenticator code.",
     "resetInvalidTitle": "This link no longer works",
     "resetInvalid": "Reset links work once, within {minutes} minutes of asking. Ask for a new one.",
-    "resetRequestNew": "Ask for a new link"
+    "resetRequestNew": "Ask for a new link",
+    "invalidEmail": "Enter a valid email address."
   },
   "library": {
     "title": "My library",

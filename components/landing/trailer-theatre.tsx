@@ -207,8 +207,10 @@ export function TrailerTheatre({ items }: { items: TheatreItem[] }) {
             <span aria-hidden className="text-muted-foreground">
               ·
             </span>
-            {/* The one gold thing in the section: what it costs. */}
-            <span className="numeric text-2xl font-bold text-gold">{current.price}</span>
+            {/* Ink, not gold: the primary button below is this section's one
+                gold element (`default` resolves to gold), and two gold things
+                side by side is the One Voice Rule broken. */}
+            <span className="numeric text-2xl font-bold text-foreground">{current.price}</span>
           </p>
           <Button asChild size="lg" className="mt-6">
             {/* A plain anchor: the album is the load-bearing navigation here. */}
@@ -264,7 +266,9 @@ export function TrailerTheatre({ items }: { items: TheatreItem[] }) {
                       </span>
                     </span>
                     {selected ? (
-                      <span className="shrink-0 text-xs font-medium text-foreground">
+                      // Hidden on phones, where it truncated the title; the
+                      // ring on the thumb and `aria-pressed` still carry it.
+                      <span className="hidden shrink-0 text-xs font-medium text-foreground sm:inline">
                         {t('landing.trailersNowShowing')}
                       </span>
                     ) : null}

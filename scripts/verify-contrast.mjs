@@ -1,6 +1,6 @@
 import { chromium } from 'playwright'
 
-const BASE = 'http://localhost:3000'
+const BASE = process.env.VERIFY_BASE_URL ?? process.env.LAQTA_BASE ?? 'http://localhost:3000'
 const PUBLIC_ROUTES = ['/', '/albums', '/footage', '/sell', '/licences', '/about', '/terms',
                        '/creators', '/collections', '/contact', '/cart', '/sign-in',
                        '/en', '/en/albums', '/en/sell', '/en/licences']

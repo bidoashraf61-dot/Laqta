@@ -22,7 +22,7 @@
 
 import { chromium } from 'playwright'
 
-const BASE = process.env.LAQTA_BASE ?? 'http://localhost:3000'
+const BASE = process.env.VERIFY_BASE_URL ?? process.env.LAQTA_BASE ?? 'http://localhost:3000'
 
 /** Pages built from stacked full-width bands. */
 const ROUTES = ['/', '/sell', '/en', '/en/sell']

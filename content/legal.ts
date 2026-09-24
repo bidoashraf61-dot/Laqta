@@ -152,10 +152,16 @@ export const PRIVACY: DocumentSection[] = [
     bodyEn: [
       'Our support team sees your data only when they need it to help you. Any administrative access to a user account is logged with its reason, and can be reviewed afterwards.',
       'A creator sees their own sales figures. They do not see your identity as a buyer.',
+      // ⚠️ FOR COUNSEL (added 2026-09-24): error monitoring (Sentry, see
+      // docs/sentry.md). Names no vendor and no transfer country on purpose —
+      // counsel to confirm whether PDPL / Egypt's Law 151 need the processor
+      // or the cross-border transfer named here. Keep AR and EN in step.
+      'When something on the site breaks, a technical report of the error (the page, the browser and the error message, without your email, your IP address or your cookies) may be sent to an error-monitoring service that processes it on our behalf, only to find and fix the fault.',
     ],
     body: [
       'يطّلع فريق الدعم على بياناتك عند الحاجة لخدمتك فقط. أي دخول إداري إلى حساب مستخدم يُسجَّل مع سببه، ويمكن مراجعته لاحقاً.',
       'يرى صانع المحتوى أرقام مبيعاته، ولا يرى هويتك كمشترٍ.',
+      'عند حدوث خطأ تقني في الموقع، قد يُرسَل تقرير عنه (الصفحة والمتصفح ونص الخطأ، دون بريدك أو عنوان الإنترنت الخاص بجهازك أو ملفات تعريف الارتباط) إلى مزوّد خدمة لرصد الأخطاء يعالجه نيابةً عنّا، لغرض واحد: إيجاد الخلل وإصلاحه.',
     ],
   },
   {

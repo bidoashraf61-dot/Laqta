@@ -262,9 +262,9 @@ export async function notifyAlbumDecision(albumId: string): Promise<void> {
         albumUrl:
           template === 'album.approved'
             ? siteUrl(`/albums/${album.creator.handle}/${album.slug}`, locale)
-            : template === 'album.changes'
-              ? siteUrl(`/studio/albums/${album.id}`, locale)
-              : siteUrl('/studio/albums', locale),
+            : // Changes and rejection both land on the album, where the
+              // reviewer's note and the failed checks are shown.
+              siteUrl(`/studio/albums/${album.id}`, locale),
       },
     })
     drainSoon()

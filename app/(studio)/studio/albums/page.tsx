@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/table'
 import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { FilterChips, SearchBox, Toolbar } from '@/components/dashboard/toolbar'
+import { Badge } from '@/components/ui/badge'
 import { StatusBadge, statusLabel, statusValues } from '@/components/dashboard/status'
 import { ActionButton } from '@/components/dashboard/form'
 import { setAlbumVisibility } from '@/app/(studio)/studio/actions'
@@ -91,6 +92,8 @@ export default async function StudioAlbumsPage({
         priceStandard: true,
         currency: true,
         updatedAt: true,
+        // Latest decision only — tells a rejection apart from a takedown.
+        reviewTasks: { orderBy: { createdAt: 'desc' }, take: 1, select: { decision: true } },
       },
     }),
     db.album.groupBy({ by: ['status'], where: { creatorId }, _count: { status: true } }),
@@ -169,7 +172,12 @@ export default async function StudioAlbumsPage({
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <StatusBadge domain="album" value={album.status} />
+                      {album.status === 'delisted' &&
+                      album.reviewTasks[0]?.decision === 'reject' ? (
+                        <Badge variant="destructive">{t('studio.notAccepted')}</Badge>
+                      ) : (
+                        <StatusBadge domain="album" value={album.status} />
+                      )}
                     </TableCell>
                     <TableCell className="numeric text-end text-muted-foreground">
                       {formatNumber(album.clipCount)}

@@ -32,6 +32,7 @@ the one control that needs no review round trip: pause and resume.
 - **No `loading.tsx`** — the three queries resolve before first paint; the toolbar's own transition is the only progressive feedback.
 
 ## Invariants
+- A `delisted` album whose latest `ReviewTask.decision` is `reject` shows a destructive «لم يُقبل» badge instead of the generic status, so a rejection is visible from the list; the row links to the album, where the reason is.
 - `setAlbumVisibility` re-resolves the creator from the session and scopes by `creatorId` (admins bypass the scope) — rendering the page is not the authorisation boundary.
 - Visibility moves only between `live` and `paused`. Anything re-entering the catalogue from another state must pass through review; this control cannot publish.
 - Price is displayed, never editable here — it comes from the album's `PriceBand`-derived `priceStandard`.

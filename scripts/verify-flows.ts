@@ -12,6 +12,7 @@
  */
 
 import { chromium, type Browser, type Page } from 'playwright'
+import { PrismaClient } from '@prisma/client'
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
 
@@ -180,6 +181,67 @@ async function main() {
       report('mobile nav trigger present', false)
     }
     await page.close()
+  }
+
+  // ── Creator: a rejected album shows why, on the album and in the list ───
+  //
+  // A fixture album is rejected with a note and a failed check, then removed.
+  // The creator must see the reason, the failed check's name, and the
+  // «لم يُقبل» badge — and must NOT see the reviewer's working note.
+  {
+    const db = new PrismaClient()
+    const creator = await db.creator.findFirst({ where: { user: { email: 'creator@laqta.sa' } } })
+    if (!creator) {
+      report('rejected album explains itself', false, 'seed creator missing')
+    } else {
+      const slug = `verify-rejected-${Date.now()}`
+      const album = await db.album.create({
+        data: {
+          slug,
+          creatorId: creator.id,
+          titleAr: 'ألبوم اختبار مرفوض',
+          titleEn: 'Rejected test album',
+          priceStandard: 100,
+          status: 'delisted',
+          delistedAt: new Date(),
+          reviewTasks: {
+            create: {
+              status: 'rejected',
+              decision: 'reject',
+              decisionNote: 'سبب الرفض للاختبار: الإضاءة غير متناسقة.',
+              decidedAt: new Date(),
+              checklist: {
+                quality: { state: 'fail', note: 'ملاحظة داخلية لا يراها صانع المحتوى' },
+              },
+            },
+          },
+        },
+      })
+      try {
+        const page = await creatorContext.newPage()
+        const errors = watchErrors(page)
+        await page.goto(`${BASE}/studio/albums/${album.id}`, { waitUntil: 'domcontentloaded' })
+        await page.waitForTimeout(900)
+        const body = await page.locator('main').innerText()
+        report(
+          'rejected album shows the reason and the failed check',
+          body.includes('لم يُقبل هذا الألبوم') &&
+            body.includes('سبب الرفض للاختبار') &&
+            body.includes('مستوى الجودة'),
+        )
+        report('reviewer working note stays private', !body.includes('ملاحظة داخلية'))
+
+        await page.goto(`${BASE}/studio/albums?status=delisted`, { waitUntil: 'domcontentloaded' })
+        await page.waitForTimeout(900)
+        const row = page.locator('tr', { hasText: 'ألبوم اختبار مرفوض' })
+        report('album list marks it «لم يُقبل»', (await row.getByText('لم يُقبل').count()) > 0)
+        report('no errors on the rejected album', errors.length === 0, errors.slice(0, 2).join(' | '))
+        await page.close()
+      } finally {
+        await db.album.delete({ where: { id: album.id } })
+        await db.$disconnect()
+      }
+    }
   }
 
   // Every route that carries filter chips, because the bug this replaced was

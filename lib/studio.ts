@@ -32,6 +32,14 @@ import { emptyChecklist } from '@/lib/review-checklist'
  * Lives here rather than beside the action because a `'use server'` module may
  * only export async functions.
  */
+/**
+ * An album is 30 to 70 clips around one subject (owner, 2026-09-24). The
+ * public copy promises exactly this range, so the submission gate enforces
+ * both ends — a 12-clip album would make the landing page a false claim.
+ */
+export const MIN_ALBUM_CLIPS = 30
+export const MAX_ALBUM_CLIPS = 70
+
 export const MIN_PAYOUT_USD = 100
 
 export function analyseConsistency(
@@ -86,7 +94,8 @@ export async function canSubmit(albumId: string): Promise<SubmitCheck> {
   const reasons: string[] = []
   if (!album) return { ok: false, reasons: ['studio.albumMissing'] }
 
-  if (album.clips.length < 8) reasons.push('studio.minClips')
+  if (album.clips.length < MIN_ALBUM_CLIPS) reasons.push('studio.minClips')
+  if (album.clips.length > MAX_ALBUM_CLIPS) reasons.push('studio.maxClips')
   if (!album.titleAr?.trim()) reasons.push('studio.titleArRequired')
   if (!album.titleEn?.trim()) reasons.push('studio.titleEnRequired')
 

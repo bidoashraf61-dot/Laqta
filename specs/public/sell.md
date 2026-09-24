@@ -28,6 +28,7 @@ Read-only — no form, no server action on this page. The application itself hap
 - **Also the creator-funnel entry point** — `/studio` redirects here when a signed-in user has no creator profile, so this page is reached mid-funnel as well as cold.
 
 ## Invariants
+- The album size stated on this page (`sell.whatWeNeed2`, `sell.how1Body`) is **30 to 70 clips around one subject** — the same range the studio submission gate enforces and the landing promises to buyers. Change all three together.
 - Creator-facing copy asks for **rights, not a production method**: «مادة سعودية
   تملك حقوقها كاملة، مع الإفصاح عن طريقة إنتاجها». It previously required footage
   *shot* inside the Kingdom, which excluded the route the product actually

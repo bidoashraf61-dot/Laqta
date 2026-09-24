@@ -36,6 +36,8 @@ const ROUTES = [
   '/checkout/return',
   '/sign-in',
   '/sign-up',
+  '/forgot-password',
+  '/reset-password',
   '/sell',
   '/about',
   '/contact',

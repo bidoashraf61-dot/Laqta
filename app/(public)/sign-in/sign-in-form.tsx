@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field } from '@/components/ui/label'
+import { Link } from '@/components/ui/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { signInWithEmail, requestPhoneCode, signInWithPhone } from './actions'
@@ -81,6 +82,17 @@ function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
           required
         />
       </Field>
+
+      {/* Under the field it rescues, at the inline end. Muted, not gold — the
+          submit button is this form's one gold voice. */}
+      <p className="-mt-2 text-end text-sm">
+        <Link
+          href="/forgot-password"
+          className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        >
+          {t('auth.forgotLink')}
+        </Link>
+      </p>
 
       {needsTotp ? (
         <Field label={t('auth.twoFactor')} htmlFor="totp" hint={t('auth.twoFactorPrompt')} required>

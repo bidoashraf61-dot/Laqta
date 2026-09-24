@@ -8,10 +8,22 @@
  * TOTP and middleware guards are exactly the paths that look fine in a unit
  * test and fail against a live Auth.js route.
  */
+// The reset section queues real outbox rows. Blank the provider first — blank,
+// not delete, because dotenv never overrides a key that already exists — so a
+// deployment's Resend key in .env can never turn a fixture into real mail.
+for (const key of ['MAIL_PROVIDER', 'MAIL_API_KEY', 'MAIL_FROM']) process.env[key] = ''
+
+import bcrypt from 'bcryptjs'
 import { issueOtp } from '../lib/otp'
 import { normalisePhone } from '../lib/auth'
 import { generateToken, generateSecret, verifyToken } from '../lib/totp'
 import { db } from '../lib/db'
+import {
+  requestPasswordReset,
+  resetPassword,
+  RESET_LIMIT_PER_EMAIL,
+  RESET_LIMIT_PER_IP,
+} from '../lib/password-reset'
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
 
@@ -78,6 +90,11 @@ async function probe(jar: Jar, path: string) {
   // touches. See app/(public)/forbidden/page.tsx.
   const body = await response.text()
   if (body.includes('data-page="forbidden"')) return 'forbidden'
+  // The layout lock. When middleware admits a cookie that `auth()` then
+  // refuses (a session older than a password reset), the route-group layout's
+  // `redirect()` fires after the shell has begun streaming — so it arrives as
+  // a 200 whose payload carries the redirect, which the browser follows.
+  if (/NEXT_REDIRECT;[a-z]+;\/sign-in/.test(body)) return 'redirected'
   return response.ok ? 'allowed' : `http ${response.status}`
 }
 
@@ -179,8 +196,154 @@ async function main() {
     }
   }
 
+  await passwordReset()
+
   console.log(failures === 0 ? '\nAll auth checks passed.' : `\n${failures} check(s) failed.`)
   process.exitCode = failures === 0 ? 0 : 1
+}
+
+/** The plaintext token from the newest queued reset message for this address. */
+async function latestToken(address: string) {
+  const row = await db.mailOutbox.findFirst({
+    where: { toEmail: address, template: 'auth.passwordReset' },
+    orderBy: { createdAt: 'desc' },
+    select: { payload: true },
+  })
+  const url = (row?.payload as { resetUrl?: string } | null)?.resetUrl
+  return url ? new URL(url).searchParams.get('token') : null
+}
+
+async function resetPageState(token: string) {
+  const body = await fetch(`${BASE}/reset-password?token=${encodeURIComponent(token)}`).then((r) => r.text())
+  return body.match(/data-reset="(live|dead)"/)?.[1] ?? 'missing'
+}
+
+/**
+ * «نسيت كلمة المرور؟» end to end. The request and the reset run in-process
+ * against the shared database (a server action has no stable URL to POST to);
+ * everything a reader or an attacker would touch — the reset page, sign-in,
+ * an existing session — goes over HTTP to the running server.
+ *
+ * A throwaway account on the reserved `.test` TLD, and throwaway IPs from
+ * TEST-NET-3, so repeated runs never share a rate-limit bucket.
+ */
+async function passwordReset() {
+  console.log('\nPassword reset')
+
+  const run = `${Date.now()}${Math.floor(Math.random() * 1000)}`
+  const address = `reset-${run}@laqta.test`
+  const ip = `203.0.113.${Number(run.slice(-3)) % 255}-${run}`
+  const oldPassword = 'Old-Pass!2026'
+  const newPassword = 'New-Pass!2026'
+  const secret = generateSecret()
+
+  const user = await db.user.create({
+    data: { email: address, name: 'Reset Check', passwordHash: await bcrypt.hash(oldPassword, 10), locale: 'en' },
+  })
+
+  try {
+    // ── Same answer, known or not ──────────────────────────────────────────
+    // What the action returns is { status: 'sent', email, devLink }. Compared
+    // as production renders it, where devLink is always null.
+    const env = process.env as Record<string, string | undefined>
+    const realNodeEnv = env.NODE_ENV
+    env.NODE_ENV = 'production'
+    const unknownAddress = `nobody-${run}@laqta.test`
+    const unknown = await requestPasswordReset({ email: unknownAddress, ip: `${ip}-u`, pageLocale: 'ar' })
+    const known = await requestPasswordReset({ email: address, ip, pageLocale: 'ar' })
+    env.NODE_ENV = realNodeEnv
+    report(
+      'unknown and known address get the same answer',
+      unknown.devLink === null && known.devLink === null,
+      `unknown=${unknown.outcome} known=${known.outcome}`,
+    )
+    const unknownRows = await db.mailOutbox.count({ where: { toEmail: unknownAddress } })
+    report('  …and only the known one queued a message', unknownRows === 0 && known.outcome === 'queued')
+
+    const queued = await db.mailOutbox.findFirst({
+      where: { toEmail: address, template: 'auth.passwordReset' },
+      select: { locale: true, payload: true },
+    })
+    const firstToken = await latestToken(address)
+    report('the message is in the account locale, link included', queued?.locale === 'en' && Boolean(firstToken))
+    report(
+      '  …and the link is to the English page',
+      String((queued?.payload as { resetUrl?: string })?.resetUrl ?? '').includes('/en/reset-password?token='),
+    )
+    const stored = await db.passwordResetToken.findFirst({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } })
+    report(
+      'the token is stored hashed, not in plaintext',
+      Boolean(stored) && stored!.tokenHash !== firstToken && stored!.tokenHash.length === 64,
+    )
+    report('the reset page accepts a live token', (await resetPageState(firstToken ?? '')) === 'live')
+    report('the reset page refuses a made-up token', (await resetPageState('not-a-token')) === 'dead')
+
+    // ── A newer link retires the older one ─────────────────────────────────
+    await requestPasswordReset({ email: address, ip, pageLocale: 'ar' })
+    const secondToken = await latestToken(address)
+    report('a newer request retires the older link', (await resetPageState(firstToken ?? '')) === 'dead')
+    report('  …and the older link cannot reset', !(await resetPassword(firstToken ?? '', newPassword)).ok)
+
+    // ── The reset itself: sessions end, 2FA survives, single use ───────────
+    await db.user.update({ where: { id: user.id }, data: { twoFactorEnabled: true, twoFactorSecret: secret } })
+    const before = await signIn('email', { email: address, password: oldPassword, totp: generateToken(secret) })
+    report('a session exists before the reset', Boolean(before.session.user))
+
+    const short = await resetPassword(secondToken ?? '', 'short')
+    report('a password under 8 characters is refused', !short.ok)
+
+    const done = await resetPassword(secondToken ?? '', newPassword)
+    report('the live token resets the password', done.ok)
+    report('  …and cannot be used twice', !(await resetPassword(secondToken ?? '', 'Another-Pass!1')).ok)
+
+    const after = (await fetch(`${BASE}/api/auth/session`, { headers: { Cookie: cookieHeader(before.jar) } }).then(
+      (r) => r.json(),
+    )) as { user?: unknown } | null
+    report('the session from before the reset is signed out', !after?.user)
+    report('  …and /account turns it away', (await probe(before.jar, '/account')) === 'redirected')
+
+    const oldPw = await signIn('email', { email: address, password: oldPassword, totp: generateToken(secret) })
+    report('the old password stops working', !oldPw.session.user)
+    const noCode = await signIn('email', { email: address, password: newPassword })
+    report('2FA is still required after a reset', !noCode.session.user)
+    const withCode = await signIn('email', { email: address, password: newPassword, totp: generateToken(secret) })
+    report('the new password + code signs in', Boolean(withCode.session.user))
+
+    // ── Expired ───────────────────────────────────────────────────────────
+    await requestPasswordReset({ email: address, ip, pageLocale: 'ar' })
+    const thirdToken = await latestToken(address)
+    await db.passwordResetToken.updateMany({
+      where: { userId: user.id, usedAt: null },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    })
+    report('an expired link shows the dead-link page', (await resetPageState(thirdToken ?? '')) === 'dead')
+    report('an expired link cannot reset', !(await resetPassword(thirdToken ?? '', 'Expired-Pass!1')).ok)
+    const still = await signIn('email', { email: address, password: newPassword, totp: generateToken(secret) })
+    report('  …and the password is unchanged', Boolean(still.session.user))
+
+    // ── Rate limits ───────────────────────────────────────────────────────
+    // Three accepted requests so far for this address (limit 3/hour).
+    const rowsBefore = await db.mailOutbox.count({ where: { toEmail: address } })
+    const limited = await requestPasswordReset({ email: address, ip: `${ip}-other`, pageLocale: 'ar' })
+    const rowsAfter = await db.mailOutbox.count({ where: { toEmail: address } })
+    report(
+      `request ${RESET_LIMIT_PER_EMAIL + 1} for one address in an hour is limited`,
+      limited.outcome === 'rate_limited' && rowsAfter === rowsBefore,
+      limited.outcome,
+    )
+
+    const sweepIp = `${ip}-sweep`
+    let last = ''
+    for (let i = 0; i <= RESET_LIMIT_PER_IP; i++) {
+      last = (await requestPasswordReset({ email: `sweep-${run}-${i}@laqta.test`, ip: sweepIp, pageLocale: 'ar' })).outcome
+    }
+    report(`request ${RESET_LIMIT_PER_IP + 1} from one IP in an hour is limited`, last === 'rate_limited', last)
+  } finally {
+    // Tokens cascade with the user; the queued fixture mail goes too.
+    await db.mailOutbox.deleteMany({ where: { toEmail: { endsWith: `${run}@laqta.test` } } })
+    await db.mailOutbox.deleteMany({ where: { toEmail: address } })
+    await db.user.delete({ where: { id: user.id } })
+  }
 }
 
 main()

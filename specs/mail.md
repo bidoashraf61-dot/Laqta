@@ -17,10 +17,11 @@ refresh a dashboard.
 |---|---|---|
 | Driver + verification tokens | `lib/mail.ts` | `resend` driver (plain `fetch`) + honest local driver; `isMailConfigured()` / `mailConfigured` |
 | Events → messages | `lib/notifications.ts` | `notifyOrderPlaced`, `notifyOrderPaid`, `attachCertificates`, `notifyAlbumDecision`, `notifyContactMessage`, `operatorAddress` |
+| Password reset | `lib/password-reset.ts` | `requestPasswordReset` enqueues `auth.passwordReset` itself (token and message in one transaction) |
 | Outbox (queue, drain, retry) | `lib/outbox.ts` | `enqueue(tx, …)`, `drain()`, `drainSoon()` |
 | Templates | `emails/registry.ts` | Pure `(locale, payload)` → blocks |
 | Layout | `emails/layout.ts` | Blocks → HTML part + text part, one source |
-| Copy | `messages/*.json` → `email.*` | 66 keys, both languages |
+| Copy | `messages/*.json` → `email.*` | 80 keys, both languages |
 | PDF renderer | `lib/documents.ts` | Chrome via Playwright |
 | Licence certificate | `lib/certificate.ts` | Rendered per order item, attached to the receipt |
 | Absolute URLs | `lib/site.ts` | `SITE_ORIGIN`; a sender has no request |
@@ -72,6 +73,7 @@ to the server console and returns `false`; `drain` returns early with a
 | `album.rejected` | `decideReview` reject → `notifyAlbumDecision` | Creator | The reviewer's reason (mandatory), an invitation to reply, button → `/studio/albums/[id]`, where the reason and the failed checks are shown |
 | `album.priced` | Spec B (written, not yet fired) | Creator | — |
 | `review.queued` | `submitForReview` | Operator (`operatorAddress()`) | Album, creator, button → `/admin/review` |
+| `auth.passwordReset` | `/forgot-password` → `requestReset` → `requestPasswordReset`, only for an active account and only inside the rate limits | The account (`User.email`, in `User.locale`) | Two-cut «نسيت كلمة المرور؟ / اختر وحدة جديدة من هنا.», one gold button → `/reset-password?token=…` (recipient's locale), "works once, expires in 30 minutes, a newer link stops this one", "every device is signed out after", "didn't ask? ignore it". Footer `footerAccount`. Not idempotency-keyed — each request is its own event; the rate limit is the brake. |
 | `contact.message` | `sendContactMessage` stores a `ContactMessage` row first, then `notifyContactMessage(input)`; a mail failure never loses the message (it is in `/admin/messages`) and `mailDelivered` records whether it was queued | Operator (`operatorAddress()`) | Name, email, subject, sender's language, the message; **Reply-To is the visitor** |
 
 `reject` used to be deliberately silent. It is now told: a creator whose album
@@ -148,6 +150,12 @@ say different things.
    certificate is *attached* only once `attachCertificates` has set
    `payload.certificateAttached`; otherwise it points at the library.
 6. **The absence of a provider is visible, never simulated.**
+6a. **A credential in a payload does not outlive its message.** `SECRET_KEYS`
+   in `lib/outbox.ts` (today: `resetUrl`) is replaced with `[redacted]` when the
+   row is sent. A row whose `payload.expiresAt` has passed is parked with
+   `failedAt` and `lastError: 'expired before sending'` and scrubbed the same
+   way — a dead reset link is never delivered. Rows without a secret are never
+   rewritten, so `attachCertificates` racing a send is not undone.
 7. **Money is read, never recomputed** — subtotal / VAT / total come off the
    Order as `lib/orders.ts` froze them. Nothing here touches entitlement or
    commission.
@@ -169,6 +177,8 @@ say different things.
   carry `albums` as one bulleted string; the template still renders them.
 - **No bank details configured** — `order.placed` omits the account rows and
   asks the buyer to reply for them.
+- **Expired before sending** — a row with a past `payload.expiresAt` (reset
+  links) is parked, not sent, and its secret scrubbed.
 - **No operator address** — `review.queued` is skipped; `contact.message` is
   logged, not queued.
 
@@ -232,6 +242,10 @@ say different things.
   unpaid order; `notifyContactMessage` → one row to `MAIL_OPERATOR_TO`.
   The gate blanks the `MAIL_*` variables first and uses `.test` addresses, so
   it never sends real mail.
+
+`npm run verify:auth` covers the reset message end to end against the database:
+queued once per accepted request, in the account's locale, none for an unknown
+address or a limited request.
 
 `npm run verify:action-locale` covers `emails/`, `lib/outbox.ts`,
 `lib/certificate.ts` and `lib/notifications.ts`.

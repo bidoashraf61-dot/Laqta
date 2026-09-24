@@ -269,6 +269,7 @@ model User {
   footageRequests FootageRequest[]
   albumReviews    AlbumReview[]
   cmsEntries      CmsEntry[]       @relation("CmsAuthor")
+  comps           CompDownload[]
 
   @@index([role, status])
 }
@@ -480,6 +481,7 @@ model Album {
   stats          AlbumStat[]
   /// Set only on the one house album that carries the free sample.
   sample         SampleAlbum?
+  comps          CompDownload[]
 
   @@index([status, publishedAt])
   @@index([creatorId, status])
@@ -550,6 +552,7 @@ model Clip {
   boardClips   BoardClip[]
   downloads    Download[]
   sampleLinks  SampleClip[]
+  comps        CompDownload[]
 
   @@index([albumId, orderIndex])
   @@index([perceptualHash])
@@ -755,8 +758,8 @@ model Cart {
 }
 
 model CartItem {
-  id          String      @id @default(cuid())
-  cartId      String
+  id        String  @id @default(cuid())
+  cartId    String
   albumId   String
   unitPrice Decimal @db.Decimal(10, 2)
   vatAmount Decimal @db.Decimal(10, 2)
@@ -884,7 +887,7 @@ model OrderItem {
 }
 
 model Entitlement {
-  id          String      @id @default(cuid())
+  id          String @id @default(cuid())
   userId      String
   albumId     String
   orderItemId String @unique
@@ -925,6 +928,36 @@ model Download {
   @@index([userId, createdAt])
 }
 
+/// One watermarked-preview download — a "comp" — by a signed-in visitor.
+///
+/// Separate from `Download` on purpose: that table is the audit trail of a
+/// PAID entitlement and every row carries one. A comp is free, pre-purchase,
+/// and the opposite signal — someone testing an album in their own timeline
+/// before deciding. Mixing the two would make "downloads" mean both.
+///
+/// Two jobs: the per-user rate limit counts these rows (`lib/previews.ts`),
+/// and `/admin/catalogue` reads them per album as buying intent.
+model CompDownload {
+  id         String   @id @default(cuid())
+  userId     String
+  albumId    String
+  /// null = the whole-album ZIP of previews.
+  clipId     String?
+  isAlbumZip Boolean  @default(false)
+  /// How many preview files this download carried (1 for a clip).
+  fileCount  Int      @default(1)
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  clip  Clip? @relation(fields: [clipId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isAlbumZip, createdAt])
+  @@index([albumId, createdAt])
+}
+
 /// Versioned licence text. OrderItem points at the version in force at
 /// purchase; revising the text creates a new row, never an update.
 ///
@@ -932,13 +965,13 @@ model Download {
 /// version is still frozen onto every order, because the text can change and a
 /// buyer owns the wording that was in force when they paid.
 model LicenceVersion {
-  id        String      @id @default(cuid())
-  version   String      @unique // e.g. "commercial-v1"
+  id        String  @id @default(cuid())
+  version   String  @unique // e.g. "commercial-v1"
   titleAr   String
   titleEn   String
   bodyAr    String
   bodyEn    String
-  isCurrent Boolean     @default(false)
+  isCurrent Boolean @default(false)
 
   effectiveFrom DateTime @default(now())
   createdAt     DateTime @default(now())
@@ -1172,15 +1205,15 @@ model ReviewTask {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model PriceBand {
-  id                 String    @id @default(cuid())
-  tier               AlbumTier @unique
-  labelAr            String
-  labelEn            String
-  minClips           Int
-  maxClips           Int?
-  priceStandard      Decimal   @db.Decimal(10, 2)
+  id            String    @id @default(cuid())
+  tier          AlbumTier @unique
+  labelAr       String
+  labelEn       String
+  minClips      Int
+  maxClips      Int?
+  priceStandard Decimal   @db.Decimal(10, 2)
   /// Extended is 3× standard by policy; kept explicit so it can be tuned.
-  currency           String    @default("USD")
+  currency      String    @default("USD")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

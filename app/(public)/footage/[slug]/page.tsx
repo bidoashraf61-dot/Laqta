@@ -18,8 +18,11 @@ import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { mediaUrl } from '@/lib/media'
 import { Sparkles, Video } from 'lucide-react'
 import { PageTitle } from '@/components/ui/typography'
-import { pickLocalised } from '@/lib/locale'
+import { currentLocale, localePath, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
+import { auth } from '@/lib/auth'
+import { previewDeliverable } from '@/lib/previews'
+import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -123,7 +126,13 @@ export async function generateMetadata({
   }
 }
 
-export default async function ClipPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ClipPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ comp?: string }>
+}) {
   // Resolve the locale before rendering anything.
   //
   // Not inherited from the root layout: a route segment sits inside a Suspense
@@ -137,6 +146,11 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const clip = await getClip(slug)
   if (!clip) notFound()
+
+  // The comp download: only when this clip's own preview can actually be
+  // delivered, so the control never ends on a 404.
+  const [session, { comp }] = await Promise.all([auth(), searchParams])
+  const compable = previewDeliverable(clip.previewKey)
 
   const albumUrl = `/albums/${clip.album.creator.handle}/${clip.album.slug}`
   const siblings = clip.album.clips.filter((sibling) => sibling.id !== clip.id)
@@ -356,6 +370,19 @@ export default async function ClipPage({ params }: { params: Promise<{ slug: str
                   <Link href={`/account/boards?add=${clip.id}`}>{t('commerce.addToBoard')}</Link>
                 </Button>
               </div>
+
+              {/* Test it in the edit before buying — the watermarked 720p
+                  preview, never the clean proxy. */}
+              {compable ? (
+                <CompDownload
+                  kind="clip"
+                  targetId={clip.id}
+                  back={localePath(currentLocale(), `/footage/${slug}`)}
+                  signedIn={Boolean(session?.user?.id)}
+                  notice={compNotice(comp)}
+                  className="border-t border-border/60 pt-4"
+                />
+              ) : null}
 
               <p className="text-center text-xs text-muted-foreground">
                 {t('catalogue.reassurance')}

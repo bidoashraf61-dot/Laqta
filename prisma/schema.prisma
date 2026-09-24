@@ -249,6 +249,11 @@ model User {
   twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
 
+  /// Set whenever the password is replaced (today: a password reset). A JWT
+  /// minted before this instant is refused by the `jwt` callback in
+  /// `lib/auth.ts`, which is how a reset signs out every other session.
+  passwordChangedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -270,6 +275,7 @@ model User {
   albumReviews    AlbumReview[]
   cmsEntries      CmsEntry[]       @relation("CmsAuthor")
   comps           CompDownload[]
+  passwordResets  PasswordResetToken[]
 
   @@index([role, status])
 }
@@ -321,6 +327,35 @@ model PhoneOtp {
   createdAt  DateTime  @default(now())
 
   @@index([phone, expiresAt])
+}
+
+/// A single-use password-reset link. Only the SHA-256 of the token is stored;
+/// the plaintext exists in the email and nowhere else once it is sent.
+/// `usedAt` burns it; a password change burns every other live one.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+/// Every «نسيت كلمة المرور؟» request, known address or not — the rate limit
+/// counts these. Both fields are SHA-256 hashes: the table is a counter, not a
+/// log of who asked about which address.
+model PasswordResetRequest {
+  id        String   @id @default(cuid())
+  emailHash String
+  ipHash    String
+  createdAt DateTime @default(now())
+
+  @@index([emailHash, createdAt])
+  @@index([ipHash, createdAt])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

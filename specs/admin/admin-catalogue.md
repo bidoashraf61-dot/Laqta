@@ -46,6 +46,10 @@ trailer, and a read-only view of the price bands.
 - **Trailer is a key, not an upload.** The file must already be in the media bucket
   (`npm run media:upload` from `.media/out/trailers/<slug>.mp4` does both steps and sets the
   key itself); this field only points the album at it.
+- **Where a trailer shows** — on the album page, and (for a `live` album whose key resolves)
+  in the landing page's trailer section (`specs/public/index.md`, §4b). The landing is
+  dynamic, so no revalidation is needed for it; setting the first resolvable trailer makes
+  that section appear.
 - **Featured** — a filled gold star beside the status badge.
 - **Pending** — `ActionButton` spinner + disabled, then toast + `router.refresh()`.
 - **Truncation** — hard `take: 100`, no pagination.

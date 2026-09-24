@@ -10,7 +10,8 @@ import { FinalCta } from '@/components/landing/final-cta'
 import { HowItWorks } from '@/components/landing/sections'
 import { ScrollDeck } from '@/components/landing/scroll-deck'
 import { RequestFootage } from '@/components/landing/request-footage'
-import { getFootageWall, getSeasonalShelf } from '@/lib/catalogue'
+import { Trailers } from '@/components/landing/trailers'
+import { getFootageWall, getLandingTrailers, getSeasonalShelf } from '@/lib/catalogue'
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
@@ -82,7 +83,11 @@ export default async function HomePage() {
   // and the considered collection do the selling, and nothing on the page
   // counts albums, creators, or clips out loud. As the catalogue grows the
   // same two queries simply return more.
-  const [shelf, footage] = await Promise.all([getSeasonalShelf(6), getFootageWall(12)])
+  const [shelf, footage, trailers] = await Promise.all([
+    getSeasonalShelf(6),
+    getFootageWall(12),
+    getLandingTrailers(5),
+  ])
 
   return (
     <>
@@ -100,6 +105,10 @@ export default async function HomePage() {
       <ProblemSolution />
       <FootageWall footage={footage} />
       <TheCollection albums={shelf.albums} season={shelf.season} />
+      {/* The posters, then the same albums moving — kept apart from the
+          footage wall's showreel so two large players never sit back to back.
+          Renders nothing until a live album has a trailer that resolves. */}
+      <Trailers trailers={trailers} />
       <LicensingRights />
       {/* One section, three panels, advanced by scrolling — see ScrollDeck
           for the four conditions under which it declines to pin and renders as

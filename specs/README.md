@@ -32,6 +32,15 @@ downloads restates them, and no surface may work around them:
    in January, and a refund reverses at the rate on the order — never the
    creator's current rate.
 
+## Error monitoring
+
+Errors (only) are to be reported to Sentry, inert with no DSN; see
+`docs/sentry.md`. Every rule about what may leave the site — no user, IP,
+cookies, bodies or query strings — lives in `lib/observability.ts` and is
+unit-tested. **As of 2026-09-24 the SDK itself is not yet installed or wired**;
+`app/error.tsx` still only logs to the console. No surface's behaviour changes
+when it is.
+
 ## Index
 
 - [`public/`](./public) — marketing, catalogue and policy surfaces

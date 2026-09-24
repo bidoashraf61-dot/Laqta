@@ -24,6 +24,7 @@ Read-only. There is no data-export or account-deletion request control on this p
 ## Invariants
 - The stated collection and retention must match what the code actually stores — notably `SearchQueryLog` (query text plus `userId`), `AuditLog`, `Order.billingEntitySnapshot`, and the waiting-list `CmsEntry` written by `captureEmail`.
 - Effective date must always render.
+- «من يطّلع على بياناتك» says an error report (page, browser, error message — no email, IP or cookies) may go to an error-monitoring processor (Sentry, `docs/sentry.md`). Added 2026-09-24 and **flagged in-code for counsel** (no vendor or transfer country named). It must stay true to `lib/observability.ts#scrubEvent`: if the scrubber ever sends more, this sentence changes with it.
 
 ## Verified by
 `verify:arabic`, `audit`.

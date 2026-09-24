@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { currentSeason } from '@/lib/season'
+import { mediaUrl } from '@/lib/media'
 import type { AlbumCardData } from '@/components/catalogue/album-card'
 
 /**
@@ -93,6 +94,35 @@ export async function getFeaturedAlbums(take = 8) {
   })
   return toCards(rows as AlbumRow[])
 }
+
+/**
+ * The landing's trailer theatre: live albums whose trailer actually plays.
+ *
+ * Filtered twice. The query takes albums with a `trailerKey`; `mediaUrl()` then
+ * drops any whose key does not resolve right now — a bucket key with no CDN
+ * configured, or a stray URL off our origin. A trailer that cannot play is not
+ * a trailer, and the section hides itself entirely when none is left rather
+ * than showing a theatre of stills. Ordered like the featured shelf.
+ */
+export async function getLandingTrailers(take = 5) {
+  const rows = await db.album.findMany({
+    where: { status: 'live', trailerKey: { not: null } },
+    orderBy: [
+      { isFeatured: 'desc' },
+      { featureRank: 'asc' },
+      { salesCount: 'desc' },
+      { publishedAt: 'desc' },
+    ],
+    // Over-fetch: some keys may not resolve and are dropped below.
+    take: take * 2,
+    select: { ...ALBUM_CARD_SELECT, trailerKey: true },
+  })
+  const playable = rows.filter((row) => mediaUrl(row.trailerKey) !== null).slice(0, take)
+  const cards = await toCards(playable as AlbumRow[])
+  return cards.map((card, i) => ({ ...card, trailerKey: playable[i].trailerKey as string }))
+}
+
+export type LandingTrailer = Awaited<ReturnType<typeof getLandingTrailers>>[number]
 
 /**
  * Albums currently on offer.

@@ -102,6 +102,7 @@ const ROUTES = [
   '/admin/creators',
   '/admin/disputes',
   '/admin/messages',
+  '/admin/users',
   '/admin/catalogue',
   '/admin/taxonomy',
   '/admin/merchandising',

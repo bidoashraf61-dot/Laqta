@@ -76,6 +76,13 @@ const CONTACT: StatusMap = {
   handled: { key: 'dash.messagesHandled', variant: 'neutral' },
 }
 
+/** A person's account, not their creator profile (that is `creator`). */
+const USER: StatusMap = {
+  active: { key: 'dash.userActive', variant: 'neutral' },
+  suspended: { key: 'dash.userSuspended', variant: 'destructive' },
+  pending_verification: { key: 'dash.userPendingVerification', variant: 'warning' },
+}
+
 const MAPS = {
   album: ALBUM,
   review: REVIEW,
@@ -85,6 +92,7 @@ const MAPS = {
   dispute: DISPUTE,
   release: RELEASE,
   contact: CONTACT,
+  user: USER,
 } as const
 
 export type StatusDomain = keyof typeof MAPS

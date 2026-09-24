@@ -20,6 +20,7 @@ path. Each handler is therefore its own gate — the `/api/studio` ones through
 | `/api/studio/uploads/…` | A creator's master, uploaded in parts straight to private storage (S3 presigned multipart, or a local streaming route in development), resumable, then queued for ffprobe + preview ingest. | [studio-uploads.md](studio-uploads.md) |
 | `/api/studio/releases/[id]/document` | Attach, open (60 s signed URL), replace or remove a release's scanned document — private, type sniffed from the bytes. | [release-document.md](release-document.md) |
 | `/api/payments/paymob` | Paymob "transaction processed" callback: HMAC-verified, idempotent, amount-checked, settles through the same `settleOrder()` as the admin. | [payments-paymob.md](payments-paymob.md) |
+| `/api/impersonation/end` | End a view-as-user session: the only non-GET a view may make; closes and audits the row, restores the admin. | [impersonation-end.md](impersonation-end.md) |
 | `/api/auth/[...nextauth]` | Mounts the Auth.js v5 handlers (session, csrf, callbacks, signout) for the email+password and phone-OTP rails, with TOTP as the second factor. | [auth-nextauth.md](auth-nextauth.md) |
 
 Supporting modules: `lib/storage.ts` (HMAC signing; `s3`/`local` drivers; `resolveDownload`),

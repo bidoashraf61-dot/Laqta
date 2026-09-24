@@ -20,6 +20,13 @@ row) or `SettingsForm` (a panel of fields). Every status label and badge colour 
 **Auditing.** Every privileged action writes an `AuditLog` row via `recordAudit`. The tail
 is surfaced on `/admin/settings` and `/admin/reports`.
 
+**View as user.** `/admin/users/[id]` can open a support view of a buyer's account:
+reason required, read-only (refused in `middleware.ts` and again in `lib/db.ts`, not just
+by hidden buttons), 30-minute expiry, audited at start and end/expiry, with a banner on
+every page while it runs. During a view the session's role is the buyer's, so the whole
+admin area is out of reach until it ends. Admins, creators and 2FA-enrolled accounts
+cannot be viewed. See [admin-users-id.md](admin-users-id.md).
+
 **Frozen invariants.** Two rules the whole area is built around and none of it can break:
 entitlement is served from `OrderItem.clipManifestSnapshot`, and commission is frozen on
 the `OrderItem` at purchase. Neither is configurable anywhere in this area.
@@ -32,11 +39,13 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/analytics` | Platform trends, funnel, category split and top albums over 7/30/90 days. | [admin-analytics.md](admin-analytics.md) |
 | `/admin/review` | Albums awaiting a decision, ordered by SLA. | [admin-review.md](admin-review.md) |
 | `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 8-check gated checklist. | [admin-review-id.md](admin-review-id.md) |
+| `/admin/users` | Find any account by email, name or phone; role, status, joined, order count. | [admin-users.md](admin-users.md) |
+| `/admin/users/[id]` | One account: profile, suspend/reactivate, orders, library, preview downloads, contact messages, sample claim, creator link, and read-only audited view-as-user. | [admin-users-id.md](admin-users-id.md) |
 | `/admin/creators` | Creator roster: approve, suspend, reinstate, set tier / commission override. | [admin-creators.md](admin-creators.md) |
 | `/admin/disputes` | DMCA and content complaints: disable content, then close with a written resolution. | [admin-disputes.md](admin-disputes.md) |
 | `/admin/requests` | Footage requests from buyers, in their own words. Read-only by design. | [admin-requests.md](admin-requests.md) |
 | `/admin/messages` | Messages from the public `/contact` form: read in full, reply by mail, mark handled / reopen. | [admin-messages.md](admin-messages.md) |
-| `/admin/catalogue` | Live catalogue: pause, resume, feature, delist, set an album's trailer; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
+| `/admin/catalogue` | Live catalogue: pause, resume, feature, delist, set an album's trailer; edit, add and delete price bands. | [admin-catalogue.md](admin-catalogue.md) |
 | `/admin/taxonomy` | Categories, locations, tags, themes and the search synonym layer. | [admin-taxonomy.md](admin-taxonomy.md) |
 | `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles; link to the free sample. | [admin-merchandising.md](admin-merchandising.md) |
 | `/admin/merchandising/sample` | Curate, title and publish the free sample album. | [admin-merchandising-sample.md](admin-merchandising-sample.md) |
@@ -48,7 +57,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover 14 top-level routes (now including `/admin/messages`).
+- `verify:arabic` and `audit` cover 15 top-level routes (now including `/admin/messages`
+  and `/admin/users`). `/admin/users/[id]` is in neither (it needs an id).
   `/admin/requests` is in neither. **`/admin/review/[id]` is in
   neither** — the surface where the review gate actually lives is unexercised by any gate.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
@@ -62,14 +72,27 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
   webhook/manual source shown on `/admin/orders` (handler level, not the rendered row).
 - `verify:entitlement` covers the order snapshot.
 - `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin.
+- `verify:impersonation` drives a whole view-as-user session in real Chrome: who may be
+  viewed, non-admins never see the control, blank reason refused, start/end/expiry rows
+  and audit entries, the banner, and 403s for a server-action POST, an `/en` POST, a
+  writing GET and a download while the view is active.
+- `verify:flows` searches `/admin/users` and opens the detail page, and round-trips a
+  price band edit on `/admin/catalogue` (refused when invalid, persisted, audited, no album
+  or order moved, restored).
 
 ## Dead ends worth knowing
 
-- `beginImpersonation` / `endImpersonation` exist in `actions.ts` and the `Impersonation`
-  model exists, but **no UI in the area calls them**.
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.
-- `PriceBand` has no editor anywhere.
+- The price band editor changes the price of **new** albums only. The owner's decision
+  that a band edit "reprices live albums and notifies their creators" (2026-08-20) is not
+  built: there is no creator notification for it, and Spec B (creator accepts the price)
+  does not exist yet. All four seeded bands (8–11, 12–19, 20–34, 35+) sit partly or wholly
+  outside the 30–70 clip album and are flagged on the page until re-cut.
+- Suspending an account (`/admin/users/[id]`) refuses new sign-ins only; a JWT already
+  issued keeps working until it expires.
+- The view-as-user write guard in `lib/db.ts` is not exercised by any gate on its own —
+  every writing path a gate can reach is already refused by middleware first.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
   control. Files reach the bucket through `npm run media:upload` (`docs/media-aws.md`).
   `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.

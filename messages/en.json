@@ -703,7 +703,12 @@
     "verifyAlready": "This is already verified.",
     "verifiedEmail": "Your email address is verified.",
     "verifiedFailed": "That verification link is invalid or has expired. Ask for a new one.",
-    "verifyTitle": "Verify your sign-in details"
+    "verifyTitle": "Verify your sign-in details",
+    "impersonatingAs": "Viewing as:",
+    "impersonationReadOnly": "Read-only: no purchases, downloads or edits.",
+    "impersonationEnds": "Ends",
+    "impersonationEnd": "End view",
+    "impersonationRefused": "This action is blocked: you are viewing the site as another user, read-only."
   },
   "email": {
     "orderPlacedSubject": "Order {order} received — how to pay by transfer",

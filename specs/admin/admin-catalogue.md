@@ -5,7 +5,7 @@
 ## Purpose
 Everything that has been through review, with the two escalations that skip the queue —
 pause (reversible) and delist (final) — plus feature toggling, setting each album's
-trailer, and a read-only view of the price bands.
+trailer, and the price band editor.
 
 ## Data in
 - `searchParams.q` — case-insensitive `contains` over `titleAr`, `titleEn`,
@@ -19,7 +19,11 @@ trailer, and a read-only view of the price bands.
   salesCount, clearedForCommercial, `creator` (handle, displayNameAr).
 - `Album.groupBy({ by: ['status'] })` — chip counts.
 - `PriceBand.findMany({ orderBy: { priceStandard: 'asc' } })` — the bands panel
-  (labelAr, minClips, maxClips, priceStandard, currency, extendedMultiplier).
+  (tier, labelAr, labelEn, minClips, maxClips, priceStandard, currency).
+- `Album.groupBy({ by: ['tier'] })` over non-delisted, non-sample albums — the
+  «ألبومات بهذه الفئة» count on each band (context only; those albums do not move).
+- `lib/price-bands.ts#bandFit` — each band against the 30–70 clip album
+  (`MIN_ALBUM_CLIPS` / `MAX_ALBUM_CLIPS` in `lib/studio.ts`).
 
 ## Controls
 
@@ -34,7 +38,10 @@ trailer, and a read-only view of the price bands.
 | «استئناف» (only when `status === 'paused'`) | `setAlbumStatus(id,'live')` | `Album.status='live'`. Audits `album.live` |
 | «تمييز» (hidden when delisted) | `toggleAlbumFeatured(id, !isFeatured)` | sets `isFeatured` and `featureRank` (`0` when featured, `null` when not); revalidates `/admin/merchandising` and `/` |
 | «شطب» (hidden when delisted) | `setAlbumStatus(id,'delisted')`, native confirm | `Album.status='delisted'`, `delistedAt=now`. Audits `album.delisted` |
-| Price bands table | — | **read-only**; there is no editor for `PriceBand` anywhere in the admin area |
+| Band row «تعديل» | opens that band's form (disclosure) | Fields: «اسم الشريحة», «الاسم بالإنجليزية», «أقل عدد لقطات», «أكثر عدد لقطات» (blank = open-ended, hint «اتركه فارغًا لشريحة مفتوحة من الأعلى.»), «السعر بالدولار». The tier is fixed on an existing band |
+| Band form → «حفظ» | `savePriceBand` (`SettingsForm`) | Validates with `lib/price-bands.ts#validateBand` (labels required; counts positive integers; min ≤ max; 0 < price ≤ 100000; one band per tier; no overlapping clip range with another band — «هذا المدى يتداخل مع شريحة «…».»). Writes `PriceBand` only; audits `priceband.update` with before/after. Success: «حُفظت الشريحة. الألبومات الحالية لم يتغير سعرها.» Revalidates `/admin/catalogue` and `/studio/albums/new` |
+| Band form → «حذف» | `deletePriceBand(id)`, native confirm «حذف هذه الشريحة؟ لن يختارها أحد لألبوم جديد، والألبومات الحالية تحتفظ بسعرها.» | Deletes the `PriceBand`; audits `priceband.delete` with the old values. The tier disappears from `/studio/albums/new` |
+| «إضافة شريحة» (only while a tier has no band) | opens the new-band form, with a «الفئة» select of the free tiers | `savePriceBand` without an id → `PriceBand.create` with `currency: 'USD'`; audits `priceband.create`. When all four tiers have bands the button is replaced by «كل الفئات الأربع لها شرائح. عدّل واحدة أو احذفها.» |
 
 ## States
 - **Empty result** — `EmptyState` with `state.empty` / `dash.catalogueHint`.
@@ -51,6 +58,12 @@ trailer, and a read-only view of the price bands.
   dynamic, so no revalidation is needed for it; setting the first resolvable trailer makes
   that section appear.
 - **Featured** — a filled gold star beside the status badge.
+- **Band outside the album range** — a warning «خارج مدى الألبوم» badge on any band whose clip
+  range is not wholly inside 30–70, plus one warning line under the hint: «الألبوم الآن من
+  30 إلى 70 لقطة وبوابة الاستوديو تفرض ذلك، فالشريحة المعلَّمة يقع جزء من مداها أو كله
+  خارج ما يمكن أن يكونه ألبوم جديد.» (The seeded bands are 8–11, 12–19, 20–34 and 35+, so all four are flagged
+  until the owner re-cuts them.)
+- **Band validation error** — inline destructive alert above that band's fields.
 - **Pending** — `ActionButton` spinner + disabled, then toast + `router.refresh()`.
 - **Truncation** — hard `take: 100`, no pagination.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
@@ -59,12 +72,24 @@ trailer, and a read-only view of the price bands.
 - A **«معاينات حُمّلت»** column counts `CompDownload` rows per album over the last 30 days (a ZIP counts once) — people testing the album in their own edit, a buying-intent signal. Read-only.
 - Pausing or delisting an album **cannot break a completed purchase**: entitlement is
   served from `OrderItem.clipManifestSnapshot`, never re-derived from the album.
-- Price bands are shown but not editable — changing a band would reprice live albums; the
-  page states this in `dash.priceBandsHint`.
+- **A band edit reprices nothing that exists.** A band's price is copied onto
+  `Album.priceStandard` only when a creator creates a draft (`createAlbum` in
+  `app/(studio)/studio/actions.ts`); nothing re-reads it. So an edit changes the price of
+  albums created afterwards — live, paused and draft albums keep theirs, and completed
+  orders keep the gross/VAT/commission frozen on each `OrderItem` (lib/orders.ts). The
+  page says so in `dash.priceBandsHint`: «تعديل الشريحة يسري على الألبومات التي تُنشأ
+  بعده فقط. الألبومات الحالية، المعروضة منها والمسودات، تحتفظ بسعرها، والطلبات
+  المكتملة لا تتغير أبدًا.»
+- The owner's 2026-08-20 decision that a band edit "reprices live albums and notifies
+  their creators" is **not implemented** — it needs the creator notification (and Spec B's
+  price acceptance) first. See the README's dead ends.
+- Currency is not editable: USD only at launch (owner, 2026-09-24).
 - Every mutation writes an `AuditLog` row.
 
 ## Verified by
-`verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`).
+`verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
+band editor: min > max refused with nothing written, a price edit persists, no album's
+price and no order total moves, the edit is audited, and the price restores).
 The entitlement snapshot rule is covered by `verify:entitlement`. The trailer key
 validation (`isPublicMediaKey`) is unit-tested in `tests/unit/media.test.ts`; the popover
 and `saveAlbumTrailer` round trip are covered by no gate (the popover is closed by default,

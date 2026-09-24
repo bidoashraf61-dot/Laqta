@@ -1174,7 +1174,9 @@ model Payout {
 model PayoutRun {
   id     String @id @default(cuid())
   label  String
-  status String @default("draft") // draft | approved | exported | closed
+  /// draft (lines editable, files downloadable) → paid (closed with the
+  /// operator's reference) | void (every line excluded). See lib/payouts.ts.
+  status String @default("draft")
 
   periodStart DateTime
   periodEnd   DateTime
@@ -1188,6 +1190,12 @@ model PayoutRun {
   approvedById String?
   approvedAt   DateTime?
   exportedAt   DateTime?
+
+  /// The operator's external reference for the whole run (bank batch id,
+  /// Wise batch id…), copied onto every payout it pays.
+  reference String?
+  paidAt    DateTime?
+  paidById  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

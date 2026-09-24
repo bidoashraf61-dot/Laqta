@@ -20,6 +20,13 @@ with the reason any new request is currently blocked.
 
 The history table is read-only; a creator cannot cancel a request.
 
+**Status the creator sees** (the `StatusBadge` in the history): «معتمد» after admin approval;
+«قيد التنفيذ» (`processing`) while the payout sits in an admin payout run whose files have
+gone to the bank/Wise/Payoneer; back to «معتمد» if the admin excluded it from the run (it
+waits for the next run); «حُوّل» (`paid`) when the run — or the single payout — is marked
+paid. Nothing else about runs (label, reference, other creators) is shown here; the paid row's
+`reference` is the run's external reference.
+
 ## States
 - **Rail incomplete** — warning alert plus the settings link; the request button is not rendered.
 - **Open request** — info alert (`dash.payoutRequested`); button not rendered.
@@ -32,7 +39,7 @@ The history table is read-only; a creator cannot cancel a request.
 ## Invariants
 - **One open request at a time.** A `requested` payout has not moved money and does not reduce `available`, so a second request would double-spend the same balance.
 - The destination is **not** frozen here. `Payout.destinationSnapshot` is written at admin approval, so bank details may legitimately change while a request is queued.
-- The requested amount is always the full computed `available`, derived from `CreatorLedger.availableAt` (30-day hold) minus payouts already `approved|processing|paid`. It is never typed by the creator. Note that `getEarnings` reads only the newest **100** ledger rows (`take: 100`), so on a creator with a longer ledger the requested amount is computed from that window, not from the whole history — see the earnings spec.
+- The requested amount is always the full computed `available`, derived from `CreatorLedger.availableAt` (30-day hold) minus payouts already `approved|processing|paid` — so batching a payout into a run, or excluding it back to `approved`, never changes `available`. It is never typed by the creator. Note that `getEarnings` reads only the newest **100** ledger rows (`take: 100`), so on a creator with a longer ledger the requested amount is computed from that window, not from the whole history — see the earnings spec.
 - Commission on the underlying sales stays frozen at purchase; a payout moves money, it never re-splits it.
 - `MIN_PAYOUT_SAR = 500` is the threshold, compared against a balance the rest of the system denominates in **USD** — the constant's name is stale, the value is not converted.
 

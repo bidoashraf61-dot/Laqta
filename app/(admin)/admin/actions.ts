@@ -9,6 +9,12 @@ import { db } from '@/lib/db'
 import { actionT } from '@/lib/locale-request'
 import type { Checklist } from '@/lib/review-checklist'
 import { isPublicMediaKey, mediaUrl } from '@/lib/media'
+import {
+  createPayoutRun,
+  excludeFromRun,
+  markPayoutPaid as postSinglePayout,
+  markRunPaid,
+} from '@/lib/payouts'
 
 export async function submitReview(input: {
   taskId: string
@@ -569,8 +575,8 @@ export async function approvePayout(payoutId: string): Promise<Result> {
     creator.payoutMethod === 'iban'
       ? { method: 'iban', iban: creator.iban, bankName: creator.bankName, beneficiary: creator.beneficiaryName }
       : creator.payoutMethod === 'payoneer'
-        ? { method: 'payoneer', email: creator.payoneerEmail }
-        : { method: 'wise', email: creator.wiseEmail }
+        ? { method: 'payoneer', email: creator.payoneerEmail, beneficiary: creator.beneficiaryName ?? creator.displayNameEn }
+        : { method: 'wise', email: creator.wiseEmail, beneficiary: creator.beneficiaryName ?? creator.displayNameEn }
 
   await db.payout.update({
     where: { id: payoutId },
@@ -597,41 +603,20 @@ export async function approvePayout(payoutId: string): Promise<Result> {
 /**
  * Mark a payout paid.
  *
- * Writes the matching `payout` ledger entry in the same transaction, so the
- * creator's balance and the payout record can never disagree about whether
- * the money left.
+ * The posting itself is `lib/payouts#postPayoutPaid` — the same function a
+ * whole run uses — so there is one accounting path. It writes the payout row
+ * and its `payout` ledger entry in one transaction, and refuses a payout that
+ * is already paid or that belongs to a run (the run is paid as a whole).
  */
 export async function markPayoutPaid(payoutId: string, reference: string): Promise<Result> {
   const tr = await actionT()
   const admin = await requireAdmin()
 
-  const payout = await db.payout.findUnique({ where: { id: payoutId } })
+  const payout = await db.payout.findUnique({ where: { id: payoutId }, select: { id: true } })
   if (!payout) return { ok: false, message: tr('state.notFound') }
-  if (payout.status === 'paid') return { ok: false, message: tr('state.error') }
 
-  await db.$transaction(async (tx) => {
-    await tx.payout.update({
-      where: { id: payoutId },
-      data: { status: 'paid', paidAt: new Date(), reference: reference || null },
-    })
-
-    const previous = await tx.creatorLedger.findFirst({
-      where: { creatorId: payout.creatorId },
-      orderBy: { createdAt: 'desc' },
-      select: { balanceAfter: true },
-    })
-
-    await tx.creatorLedger.create({
-      data: {
-        creatorId: payout.creatorId,
-        entryType: 'payout',
-        amount: -Number(payout.amount),
-        balanceAfter: Number(previous?.balanceAfter ?? 0) - Number(payout.amount),
-        payoutId,
-        memo: reference || null,
-      },
-    })
-  })
+  const paid = await postSinglePayout(payoutId, reference)
+  if (!paid) return { ok: false, message: tr('state.error') }
 
   await recordAudit({
     actorId: admin.id,
@@ -643,6 +628,72 @@ export async function markPayoutPaid(payoutId: string, reference: string): Promi
 
   revalidatePath('/admin/payouts')
   return { ok: true, message: tr('actions.confirm') }
+}
+
+/** Batch every approved payout into a new draft run. */
+export async function createRun(): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  const run = await createPayoutRun(admin.id)
+  if (!run) return { ok: false, message: tr('payoutRun.nothingToBatch') }
+
+  await recordAudit({
+    actorId: admin.id,
+    action: 'payout_run.create',
+    entity: 'PayoutRun',
+    entityId: run.id,
+    detail: { label: run.label, count: run.count },
+  })
+
+  revalidatePath('/admin/payouts')
+  return { ok: true, message: tr('payoutRun.created', { count: String(run.count) }) }
+}
+
+/** Take a line out of a draft run; it returns to the queue as approved. */
+export async function excludeRunLine(runId: string, payoutId: string, reason: string): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  const result = await excludeFromRun(runId, payoutId, reason)
+  if (!result.ok) return { ok: false, message: tr('state.error') }
+
+  await recordAudit({
+    actorId: admin.id,
+    action: 'payout_run.exclude',
+    entity: 'Payout',
+    entityId: payoutId,
+    detail: { runId, reason },
+  })
+
+  revalidatePath('/admin/payouts')
+  return { ok: true, message: tr('payoutRun.excluded') }
+}
+
+/** Close a draft run as paid. A second submit is a no-op, not an error. */
+export async function payRun(runId: string, reference: string): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  const result = await markRunPaid(runId, reference, admin.id)
+  if (!result.ok) {
+    return {
+      ok: false,
+      message: result.reason === 'no-reference' ? tr('payoutRun.referenceRequired') : tr('state.error'),
+    }
+  }
+  if (result.alreadyPaid) return { ok: true, message: tr('payoutRun.alreadyPaid') }
+
+  await recordAudit({
+    actorId: admin.id,
+    action: 'payout_run.paid',
+    entity: 'PayoutRun',
+    entityId: runId,
+    detail: { reference: reference.trim(), paid: result.paid },
+  })
+
+  revalidatePath('/admin/payouts')
+  return { ok: true, message: tr('payoutRun.paid', { count: String(result.paid) }) }
 }
 
 // ── Disputes ────────────────────────────────────────────────────────────────

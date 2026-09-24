@@ -21,6 +21,9 @@ import { auth } from '@/lib/auth'
 import { requestLocale } from '@/lib/locale-request'
 import { pickLocalised } from '@/lib/locale'
 import { mediaUrl } from '@/lib/media'
+import { currentLocale, localePath } from '@/lib/locale'
+import { previewDeliverable } from '@/lib/previews'
+import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -103,8 +106,10 @@ export async function generateMetadata({
 
 export default async function AlbumPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ creator: string; slug: string }>
+  searchParams: Promise<{ comp?: string }>
 }) {
   // Resolve the locale before rendering anything.
   //
@@ -161,6 +166,8 @@ export default async function AlbumPage({
   const coverById = new Map(covers.map((clip) => [clip.id, clip.thumbnailKeys[0] ?? null]))
 
   const priceStandard = Number(album.priceStandard)
+  const { comp } = await searchParams
+  const compCount = album.clips.filter((clip) => previewDeliverable(clip.previewKey)).length
   // The album's own cover frame — the operator-chosen cover clip, else the
   // first shot. Resolved through the one media resolver; null means no frame.
   const coverClip = album.clips.find((clip) => clip.id === album.coverClipId) ?? album.clips[0]
@@ -419,6 +426,20 @@ export default async function AlbumPage({
               {t('commerce.taxInvoice')}
             </li>
           </ul>
+
+          {/* Every preview as one ZIP, to test in the edit before buying.
+              Counted from the previews that can actually be delivered. */}
+          {compCount > 0 ? (
+            <CompDownload
+              kind="album"
+              targetId={album.id}
+              back={localePath(currentLocale(), `/albums/${creatorHandle}/${slug}`)}
+              signedIn={session?.user?.id != null}
+              notice={compNotice(comp)}
+              fileCount={compCount}
+              className="mt-5 border-t border-border/60 pt-5"
+            />
+          ) : null}
         </aside>
       </div>
 

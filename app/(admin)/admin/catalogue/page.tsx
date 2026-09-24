@@ -103,6 +103,20 @@ export default async function AdminCataloguePage({
 
   const byStatus = new Map(counts.map((row) => [row.status, row._count.status]))
 
+  // Watermarked-preview downloads over the last 30 days — someone cutting the
+  // album into their own timeline before buying. A ZIP counts once.
+  const comps = albums.length
+    ? await db.compDownload.groupBy({
+        by: ['albumId'],
+        where: {
+          albumId: { in: albums.map((album) => album.id) },
+          createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+        },
+        _count: { _all: true },
+      })
+    : []
+  const compsByAlbum = new Map(comps.map((row) => [row.albumId, row._count._all]))
+
   return (
     <>
       <DashboardHeader title={t('dash.catalogueTitle')} description={t('dash.catalogueHint')} />
@@ -132,6 +146,9 @@ export default async function AdminCataloguePage({
                     <TableHead>{t('dash.colStatus')}</TableHead>
                     <TableHead className="text-end">{t('dash.colClips')}</TableHead>
                     <TableHead className="text-end">{t('dash.colSales')}</TableHead>
+                    <TableHead className="text-end" title={t('dash.colCompsHint')}>
+                      {t('dash.colComps')}
+                    </TableHead>
                     <TableHead className="text-end">{t('dash.colPrice')}</TableHead>
                     <TableHead />
                   </TableRow>
@@ -176,6 +193,9 @@ export default async function AdminCataloguePage({
                       </TableCell>
                       <TableCell className="numeric text-end text-muted-foreground">
                         {formatNumber(album.salesCount)}
+                      </TableCell>
+                      <TableCell className="numeric text-end text-muted-foreground">
+                        {formatNumber(compsByAlbum.get(album.id) ?? 0)}
                       </TableCell>
                       <TableCell className="numeric text-end text-gold">
                         {formatMoney(Number(album.priceStandard), album.currency)}

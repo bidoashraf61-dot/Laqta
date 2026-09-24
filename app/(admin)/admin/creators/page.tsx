@@ -58,6 +58,9 @@ export default async function AdminCreatorsPage({
   const { q, status } = await searchParams
 
   const where: Prisma.CreatorWhereInput = {
+    // The platform's own house account (licensor of the free sample) is not a
+    // creator an operator can approve, suspend or pay.
+    isHouse: false,
     ...(status && statusValues('creator').includes(status)
       ? { status: status as Prisma.EnumCreatorStatusFilter['equals'] }
       : {}),
@@ -82,7 +85,7 @@ export default async function AdminCreatorsPage({
         _count: { select: { albums: true } },
       },
     }),
-    db.creator.groupBy({ by: ['status'], _count: { status: true } }),
+    db.creator.groupBy({ by: ['status'], where: { isHouse: false }, _count: { status: true } }),
   ])
 
   const byStatus = new Map(counts.map((row) => [row.status, row._count.status]))

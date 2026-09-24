@@ -62,6 +62,9 @@ export default async function AdminCataloguePage({
   const { q, status } = await searchParams
 
   const where: Prisma.AlbumWhereInput = {
+    // The free sample's house album is curated on /admin/merchandising/sample,
+    // never paused or delisted from here.
+    sample: { is: null },
     ...(status && statusValues('album').includes(status)
       ? { status: status as Prisma.EnumAlbumStatusFilter['equals'] }
       : { status: { in: ['live', 'paused', 'delisted'] } }),
@@ -97,7 +100,7 @@ export default async function AdminCataloguePage({
         creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
       },
     }),
-    db.album.groupBy({ by: ['status'], _count: { status: true } }),
+    db.album.groupBy({ by: ['status'], where: { sample: { is: null } }, _count: { status: true } }),
     db.priceBand.findMany({ orderBy: { priceStandard: 'asc' } }),
   ])
 

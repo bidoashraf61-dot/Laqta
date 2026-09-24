@@ -52,6 +52,7 @@ trailer, and a read-only view of the price bands.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- A **«معاينات حُمّلت»** column counts `CompDownload` rows per album over the last 30 days (a ZIP counts once) — people testing the album in their own edit, a buying-intent signal. Read-only.
 - Pausing or delisting an album **cannot break a completed purchase**: entitlement is
   served from `OrderItem.clipManifestSnapshot`, never re-derived from the album.
 - Price bands are shown but not editable — changing a band would reprice live albums; the

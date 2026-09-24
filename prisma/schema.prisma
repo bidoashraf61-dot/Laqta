@@ -269,6 +269,7 @@ model User {
   footageRequests FootageRequest[]
   albumReviews    AlbumReview[]
   cmsEntries      CmsEntry[]       @relation("CmsAuthor")
+  comps           CompDownload[]
 
   @@index([role, status])
 }
@@ -471,6 +472,7 @@ model Album {
   entitlements   Entitlement[]
   disputes       Dispute[]
   stats          AlbumStat[]
+  comps          CompDownload[]
 
   @@index([status, publishedAt])
   @@index([creatorId, status])
@@ -540,6 +542,7 @@ model Clip {
   releaseLinks ReleaseClip[]
   boardClips   BoardClip[]
   downloads    Download[]
+  comps        CompDownload[]
 
   @@index([albumId, orderIndex])
   @@index([perceptualHash])
@@ -913,6 +916,36 @@ model Download {
 
   @@index([entitlementId, createdAt])
   @@index([userId, createdAt])
+}
+
+/// One watermarked-preview download — a "comp" — by a signed-in visitor.
+///
+/// Separate from `Download` on purpose: that table is the audit trail of a
+/// PAID entitlement and every row carries one. A comp is free, pre-purchase,
+/// and the opposite signal — someone testing an album in their own timeline
+/// before deciding. Mixing the two would make "downloads" mean both.
+///
+/// Two jobs: the per-user rate limit counts these rows (`lib/previews.ts`),
+/// and `/admin/catalogue` reads them per album as buying intent.
+model CompDownload {
+  id         String   @id @default(cuid())
+  userId     String
+  albumId    String
+  /// null = the whole-album ZIP of previews.
+  clipId     String?
+  isAlbumZip Boolean  @default(false)
+  /// How many preview files this download carried (1 for a clip).
+  fileCount  Int      @default(1)
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  clip  Clip? @relation(fields: [clipId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isAlbumZip, createdAt])
+  @@index([albumId, createdAt])
 }
 
 /// Versioned licence text. OrderItem points at the version in force at

@@ -41,6 +41,7 @@ The conversion page: show every clip in the album, both licence prices, and the 
 - **Sole album by this creator** — the "other albums" section is hidden.
 
 ## Invariants
+- **«حمّل كل المعاينات (ZIP)»** in the buy panel (outline, under the licence list): every deliverable preview in the album as one ZIP, signed-in only (signed-out → sign in and return). The note states the count, watermark and 720p, and that the licence comes with purchase. Hidden when no preview is deliverable. Contract: [`../api/preview-download.md`](../api/preview-download.md).
 - The page leads with the album **trailer** (`Album.trailerKey`), because a buyer judges an album by how it cuts, not by one frame. Where no trailer exists the album's own cover still stands in — an empty player reads as broken rather than as "not made yet", and someone else's footage would misrepresent the album.
 - Trailers are set by the operator (`/admin/catalogue` → «التريلر») or by `npm run media:upload` from `.media/out/trailers/<slug>.mp4`; see `docs/media-aws.md`.
 - No public surface ever renders `proxyKey` (the buyer's clean editing copy) — previews come from `Clip.previewKey` only.

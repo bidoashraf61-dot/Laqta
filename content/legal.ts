@@ -222,6 +222,7 @@ export const LICENCES: DocumentSection[] = [
       'Any use that reflects badly on a person appearing in the clip, or implies their endorsement of a product or opinion.',
       'Any use that touches religious or national symbols, or holy places.',
       'Using a clip marked \u201ceditorial use only\u201d in a commercial context.',
+      'Publishing a watermarked preview. A preview you download is for testing a clip in your own edit before you buy; the licence covers only the files delivered after purchase.',
     ],
     body: [],
     list: [
@@ -229,6 +230,7 @@ export const LICENCES: DocumentSection[] = [
       'الاستخدام الذي يسيء إلى شخص ظاهر في اللقطة أو يوحي بتأييده لمنتج أو رأي.',
       'الاستخدام الذي يمسّ الرموز الدينية أو الوطنية أو الأماكن المقدّسة.',
       'استخدام لقطة موسومة «للاستخدام التحريري فقط» في سياق تجاري.',
+      'نشر معاينة عليها علامة مائية. المعاينة التي تحمّلها لتجربة اللقطة في مونتاجك قبل الشراء، والترخيص يشمل فقط الملفات التي تصلك بعد الشراء.',
     ],
   },
   {
@@ -322,10 +324,12 @@ export const CONTENT_POLICY: DocumentSection[] = [
     bodyEn: [
       'Every clip uploaded to Laqta is shown publicly with an automatic watermark — on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview shows what the clip is without handing over a usable copy.',
       "The original file, at full resolution and without a watermark, is delivered only to the buyer once payment completes. This protects the creator's rights and makes previews safe to show anywhere.",
+      'A signed-in visitor may download a watermarked 720p preview, of one clip or of a whole album, to test it in their own edit. The watermark stays burnt into that file, and it is not licensed for published work.',
     ],
     body: [
       'كل لقطة تُرفع إلى المنصّة تُعرض للجمهور بعلامة مائية تلقائياً — على كل مصغّرة وكل معاينة وكل مشغّل، دون استثناء ودون خطوة إضافية من الصانع. المعاينة تُعرّف باللقطة دون أن تسلّم نسخة صالحة للاستخدام.',
       'الملف الأصلي بالدقة الكاملة وبلا علامة مائية لا يُسلَّم إلا للمشتري بعد إتمام الدفع. هذا يحمي حق الصانع ويجعل المعاينة آمنة للعرض في كل مكان.',
+      'يقدر المستخدم المسجّل أن يحمّل معاينة بدقة 720p عليها علامة مائية، للقطة واحدة أو لألبوم كامل، ليجرّبها في مونتاجه. العلامة المائية ثابتة في الملف، والمعاينة غير مرخّصة للنشر.',
     ],
   },
   {

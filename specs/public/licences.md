@@ -23,6 +23,7 @@ Read-only. Linked from the landing page's licensing band (`landing.licenseCta`).
 - Flagged in-code as pending review by Saudi counsel.
 
 ## Invariants
+- «ما يمنعه الترخيص» includes **publishing a watermarked preview**: a downloaded preview is for testing in the edit; the licence covers only files delivered after purchase (added 2026-09-24 with preview downloads — **pending the owner's counsel**).
 - The grants described here must match what `LicencePicker` states and what `checkout()` freezes as `licenceVersionId` on the `OrderItem`.
 - There is exactly one licence. No surface may imply a tier, an upgrade, or a view cap.
 - Effective date must always render.

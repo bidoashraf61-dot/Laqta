@@ -11,7 +11,7 @@ import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { HoverPreview } from '@/components/catalogue/hover-preview'
 
 import { Anchor } from '@/components/ui/link'
-import { revealDelay } from '@/lib/motion'
+import { REVEAL, revealDelay } from '@/lib/motion'
 import { useMoney, usePick, useT } from '@/lib/i18n-client'
 
 /**
@@ -59,7 +59,7 @@ export function ClipCard({
 
   return (
     <article
-      data-reveal
+      {...REVEAL}
       style={index === undefined ? undefined : revealDelay(index)}
       className={cn(
         'group overflow-hidden rounded-lg border bg-card transition-[border-color,box-shadow] duration-hover ease-lens hover:border-foreground/25 hover:shadow-lift',

@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { REVEAL } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 /**
@@ -312,7 +313,7 @@ export function Section({
         it reads the way a cut does: the frame is already there, the subject
         arrives in it.
       */}
-      <div className="container-tight py-20" data-reveal={reveal ? '' : undefined}>
+      <div className="container-tight py-20" {...(reveal ? REVEAL : {})}>
         {children}
       </div>
     </section>

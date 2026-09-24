@@ -29,12 +29,25 @@ module proxy rather than a function.
 
 ## How a surface opts in
 
-Server components add a bare attribute and ship no JavaScript:
+Server components spread one constant and ship no JavaScript:
 
 ```tsx
-<div data-reveal>…</div>
+import { REVEAL } from '@/lib/motion'
+
+<div className="…" {...REVEAL}>…</div>
 {albums.map((album, i) => <AlbumCard key={album.slug} album={album} index={i} />)}
 ```
+
+`REVEAL` is `{ 'data-reveal': '', suppressHydrationWarning: true }`. A bare
+`data-reveal` is a lint error (`no-restricted-syntax` in `.eslintrc.json`).
+The reason: `RevealScope`'s effect runs once the root hydrates, but a streamed
+Suspense boundary hydrates later, so an on-screen element can have its
+attribute flipped to `"shown"` while React still expects the server's value.
+React 19 reports that as a hydration mismatch, and it reports an *extra*
+attribute or class the same way, so moving the state elsewhere on the element
+does not avoid it. The difference is intended, so it is declared. The
+suppression covers that one element's own attributes, not its children, and
+React never rewrites `data-reveal` afterwards because the prop never changes.
 
 `RevealScope` finds them with one document-wide `IntersectionObserver`, plus a
 `MutationObserver` for content that streams in from a Suspense boundary or
@@ -86,6 +99,8 @@ arrives on a client-side navigation.
 5. A reveal is one-way. Nothing re-hides on scroll-out.
 6. Reduced motion is handled once, globally — never per component.
 7. Nothing overshoots. No bounce, no elastic, no `back.out`.
+8. Every revealed element comes from `{...REVEAL}` — never a hand-written
+   `data-reveal`. Revealing must never produce a hydration mismatch.
 
 ## Deliberately not animated
 
@@ -100,6 +115,10 @@ arrives on a client-side navigation.
 ## Verified by
 
 `npm run audit` (real Chrome, every route, desktop + phone) and
-`npm run verify:arabic` both pass. `npm run build` and `npm run lint` are clean.
+`npm run verify:arabic` both pass. The audit's console check is also the
+hydration gate: before `REVEAL` it reported 27 `data-reveal` mismatches
+(server `""`/`"true"`, client `"shown"`), and `verify:flows` failed "no errors
+on the settings flow" intermittently on the same one. `npm run lint` fails on a
+bare `data-reveal`. `npm run build` and `npm run lint` are clean.
 The reveal engine's failure modes are not yet machine-checked — a gate asserting
 "no `[data-reveal]` left hidden after load" would be the natural next step.

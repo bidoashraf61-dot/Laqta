@@ -9,6 +9,7 @@ import { Stars } from '@/components/ui/stars'
 import { t, formatNumber, formatDate } from '@/lib/i18n'
 import { PageTitle, SubHeadline } from '@/components/ui/typography'
 import { pickLocalised } from '@/lib/locale'
+import { REVEAL } from '@/lib/motion'
 import { requestLocale } from '@/lib/locale-request'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
@@ -264,7 +265,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
       */}
       <dl className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-lg border bg-card p-5" data-reveal>
+          <div key={stat.label} className="rounded-lg border bg-card p-5" {...REVEAL}>
             <div className="flex items-center justify-between gap-2">
               <dt className="text-xs leading-snug text-muted-foreground">{stat.label}</dt>
               <span

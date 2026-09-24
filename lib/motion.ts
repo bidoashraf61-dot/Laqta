@@ -32,3 +32,26 @@ export function revealDelay(index: number): CSSProperties {
   // grid in the portal.
   return { '--reveal-delay': `calc(${steps} * var(--stagger-step))` } as CSSProperties
 }
+
+/**
+ * The only way a server component should opt into the entrance:
+ *
+ *     <div className="…" {...REVEAL}>…</div>
+ *
+ * `RevealScope` flips `data-reveal` to `"shown"` from an effect, and that
+ * effect runs as soon as the *root* hydrates. Streamed Suspense boundaries
+ * hydrate later, so an element that is already on screen gets its attribute
+ * rewritten while React still believes it holds the server's `""`. React 19
+ * reports that as a hydration mismatch — and it reports an *extra* attribute or
+ * class the same way, so moving the state to another attribute does not help.
+ *
+ * The difference is intended, so it is declared: `suppressHydrationWarning`
+ * silences the attribute diff on this one element and nothing below it. React
+ * keeps the DOM's value during hydration and only writes `data-reveal` again
+ * if the prop itself changes — it never does — so a revealed element stays
+ * revealed.
+ *
+ * Written bare, `data-reveal` renders as `"true"` and carries no suppression;
+ * the lint rule in .eslintrc.json sends every call site through here.
+ */
+export const REVEAL = { 'data-reveal': '', suppressHydrationWarning: true } as const

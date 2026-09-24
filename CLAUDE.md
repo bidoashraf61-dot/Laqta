@@ -78,6 +78,9 @@ directions**.
 
 `npm run verify` runs all of these; keep them passing on every change:
 
+- `verify:migrations` — replaying `prisma/migrations` into a throwaway database
+  produces `schema.prisma` exactly. Schema changes ship as a migration
+  (`prisma migrate diff … --script`), never as `db push` alone.
 - `verify:i18n` — Arabic copy, formatting, search folding
 - `verify:search` — Arabic stemming, transliteration, filters
 - `verify:entitlement` — buy → mutate album → library unchanged

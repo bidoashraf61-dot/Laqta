@@ -29,6 +29,32 @@ type Client = PrismaClient | Prisma.TransactionClient
 /** Exported so the admin panel counts failures by the same rule drain uses. */
 export const MAX_ATTEMPTS = 5
 
+/**
+ * Payload keys that are credentials, not content — a password-reset link.
+ * Scrubbed from the row once the message is sent or has expired, so the table
+ * does not hold a working link after it has done its job.
+ */
+const SECRET_KEYS = ['resetUrl'] as const
+
+/**
+ * The payload with its secrets replaced — or `undefined` (leave the column
+ * alone) when it carries none. Only rewriting rows that need it matters:
+ * `attachCertificates` may update a receipt's payload while it is being sent,
+ * and writing back the copy read before the send would undo that.
+ */
+function scrubbed(payload: Record<string, unknown>) {
+  if (!SECRET_KEYS.some((key) => key in payload)) return undefined
+  const copy = { ...payload }
+  for (const key of SECRET_KEYS) if (key in copy) copy[key] = '[redacted]'
+  return copy as Prisma.InputJsonValue
+}
+
+/** A payload may carry `expiresAt` (ISO): past it, the message is not worth sending. */
+function hasExpired(payload: Record<string, unknown>) {
+  const at = typeof payload.expiresAt === 'string' ? Date.parse(payload.expiresAt) : NaN
+  return Number.isFinite(at) && at <= Date.now()
+}
+
 export type EnqueueInput = {
   template: TemplateName
   toEmail: string
@@ -98,6 +124,17 @@ export async function drain(limit = 25) {
     })
     if (claimed.count === 0) continue
 
+    const payload = row.payload as Record<string, unknown>
+    // A reset link that sat in the queue past its expiry would only arrive
+    // dead. Park it, and take the link out of the row.
+    if (hasExpired(payload)) {
+      await db.mailOutbox.update({
+        where: { id: row.id },
+        data: { failedAt: new Date(), lastError: 'expired before sending', payload: scrubbed(payload) },
+      })
+      continue
+    }
+
     try {
       const locale = isLocale(row.locale) ? row.locale : DEFAULT_LOCALE
       const rendered = renderTemplate(
@@ -116,7 +153,10 @@ export async function drain(limit = 25) {
       })
 
       if (delivered) {
-        await db.mailOutbox.update({ where: { id: row.id }, data: { sentAt: new Date(), lastError: null } })
+        await db.mailOutbox.update({
+          where: { id: row.id },
+          data: { sentAt: new Date(), lastError: null, payload: scrubbed(payload) },
+        })
         sent++
       } else {
         // Not an error: no provider is configured and the driver said so. The

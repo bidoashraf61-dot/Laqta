@@ -129,6 +129,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role ?? 'buyer'
         token.locale = user.locale ?? 'ar'
         token.creatorId = user.creatorId ?? null
+        // When this session began — compared with `passwordChangedAt` below.
+        token.signedInAt = Date.now()
+      } else if (token.uid) {
+        /*
+         * A password reset signs out every existing session. Sessions are
+         * JWTs, so there is no row to delete: instead a token minted before
+         * the account's `passwordChangedAt` is refused here, and Auth.js
+         * treats `null` as signed out. One indexed read per `auth()` call.
+         *
+         * Middleware runs the edge half of the config and cannot make this
+         * read, so a stale cookie still passes the gate — and then meets the
+         * route-group layout's `auth()`, which is the lock.
+         */
+        const account = await db.user.findUnique({
+          where: { id: token.uid as string },
+          select: { passwordChangedAt: true, status: true },
+        })
+        if (!account) return null
+        const issued = typeof token.signedInAt === 'number' ? token.signedInAt : ((token.iat as number) ?? 0) * 1000
+        if (account.passwordChangedAt && account.passwordChangedAt.getTime() > issued) return null
       }
 
       // Role or creator status can change mid-session (a creator gets

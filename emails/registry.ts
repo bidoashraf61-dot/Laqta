@@ -38,6 +38,7 @@ export const TEMPLATES = [
   'album.priced',
   'review.queued',
   'contact.message',
+  'auth.passwordReset',
 ] as const
 
 export type TemplateName = (typeof TEMPLATES)[number]
@@ -88,7 +89,7 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
 
   const message = (
     parts: Pick<Message, 'subject' | 'lead' | 'heading' | 'blocks'> & {
-      footer: 'footerBuyer' | 'footerCreator' | 'footerOperator'
+      footer: 'footerBuyer' | 'footerCreator' | 'footerOperator' | 'footerAccount'
       replyTo?: string
     },
   ): Rendered =>
@@ -286,6 +287,29 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
         footer: 'footerOperator',
         // Replying answers the visitor, not the platform's own address.
         replyTo: raw(payload, 'email') || undefined,
+      })
+    }
+
+    /*
+     * «نسيت كلمة المرور؟». The link is the only thing in the message that
+     * matters, so it is the one button; the rest says how long it lives and
+     * what to do if the reader never asked. The URL is a credential — the
+     * drain scrubs it from the outbox row once sent (`SECRET_KEYS`).
+     */
+    case 'auth.passwordReset': {
+      const minutes = iso(new Intl.NumberFormat(BCP47[locale]).format(Number(raw(payload, 'minutes')) || 30))
+      return message({
+        subject: tr('email.passwordResetSubject'),
+        lead: tr('email.passwordResetLead'),
+        heading: tr('email.passwordResetHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.passwordResetBody') },
+          { kind: 'button', label: tr('email.passwordResetCta'), url: raw(payload, 'resetUrl') },
+          { kind: 'note', text: tr('email.passwordResetExpiry', { minutes }) },
+          { kind: 'p', text: tr('email.passwordResetSignOut') },
+          { kind: 'note', text: tr('email.passwordResetIgnore') },
+        ],
+        footer: 'footerAccount',
       })
     }
 

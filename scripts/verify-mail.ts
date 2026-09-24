@@ -84,6 +84,9 @@ const PAYLOAD = {
   orderUrl: 'https://laqta.sa/account/purchases',
   albumUrl: 'https://laqta.sa/albums/x/y',
   reviewUrl: 'https://laqta.sa/admin/review',
+  resetUrl: 'https://laqta.sa/reset-password?token=fixture',
+  minutes: 30,
+  expiresAt: '2099-01-01T00:00:00.000Z',
   certificateAttached: true,
 }
 
@@ -212,7 +215,7 @@ for (const [name, dict] of [
 
 console.log('\nCopy lives in messages/*.json, not in the template')
 
-for (const file of ['emails/registry.ts', 'emails/layout.ts', 'lib/notifications.ts']) {
+for (const file of ['emails/registry.ts', 'emails/layout.ts', 'lib/notifications.ts', 'lib/password-reset.ts']) {
   const source = readFileSync(file, 'utf8')
   // A quoted Arabic string means a sentence was written inline, which puts it
   // beyond verify:arabic and every editorial pass.
@@ -233,7 +236,7 @@ if (!missingEn.length && !missingAr.length) pass(`${arKeys.length} keys, both la
 
 console.log('\nEvery template a caller enqueues actually exists')
 
-const callers = ['lib/orders.ts', 'lib/admin.ts', 'lib/studio.ts', 'lib/notifications.ts']
+const callers = ['lib/orders.ts', 'lib/admin.ts', 'lib/studio.ts', 'lib/notifications.ts', 'lib/password-reset.ts']
   .map((file) => readFileSync(file, 'utf8'))
   .join('\n')
 /*
@@ -244,7 +247,7 @@ const callers = ['lib/orders.ts', 'lib/admin.ts', 'lib/studio.ts', 'lib/notifica
  */
 let named = 0
 for (const match of callers.matchAll(/template(?::|\s*=)\s*([^\n]+(?:\n\s+[?:][^\n]+)*)/g)) {
-  for (const quoted of match[1].matchAll(/'([a-z]+\.[a-z]+)'/g)) {
+  for (const quoted of match[1].matchAll(/'([a-z]+\.[a-zA-Z]+)'/g)) {
     named++
     if (!(TEMPLATES as readonly string[]).includes(quoted[1])) {
       fail(`a caller enqueues unknown template '${quoted[1]}'`)

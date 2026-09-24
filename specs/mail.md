@@ -68,7 +68,7 @@ to the server console and returns `false`; `drain` returns early with a
 | `order.confirmed` | `settleOrder()` → `notifyOrderPaid(orderId, { client: tx })` inside the settlement transaction — the admin «تأكيد الدفع» path and any future gateway webhook that calls `settleOrder` | Buyer | Album titles, order number, subtotal / VAT / total as frozen on the Order, button → `/account/library`, licence certificate(s) attached once rendered |
 | `album.approved` | `decideReview` approve → `notifyAlbumDecision(albumId)` | Creator | Button → the live album page |
 | `album.changes` | `decideReview` request changes → `notifyAlbumDecision` | Creator | The reviewer's note, button → `/studio/albums/[id]` |
-| `album.rejected` | `decideReview` reject → `notifyAlbumDecision` | Creator | The reviewer's reason (mandatory), an invitation to reply, button → `/studio/albums` |
+| `album.rejected` | `decideReview` reject → `notifyAlbumDecision` | Creator | The reviewer's reason (mandatory), an invitation to reply, button → `/studio/albums/[id]`, where the reason and the failed checks are shown |
 | `album.priced` | Spec B (written, not yet fired) | Creator | — |
 | `review.queued` | `submitForReview` | Operator (`operatorAddress()`) | Album, creator, button → `/admin/review` |
 | `contact.message` | `sendContactMessage` stores a `ContactMessage` row first, then `notifyContactMessage(input)`; a mail failure never loses the message (it is in `/admin/messages`) and `mailDelivered` records whether it was queued | Operator (`operatorAddress()`) | Name, email, subject, sender's language, the message; **Reply-To is the visitor** |

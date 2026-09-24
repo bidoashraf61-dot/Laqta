@@ -103,7 +103,7 @@ export const CHECK_DEFINITIONS: CheckDefinition[] = [
     blocking: false,
     prompts: [
       'Single clear theme, location or subject',
-      'Minimum 8 clips met',
+      'Between 30 and 70 clips, all around one subject',
       'No filler or near-identical repeats padding the count',
       'Cover clip represents the album',
     ],

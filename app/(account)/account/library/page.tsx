@@ -90,7 +90,13 @@ export default async function LibraryPage() {
                   <Link href={`/account/library/${entry.id}`}>{t('library.downloadAll')}</Link>
                 </Button>
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/albums/${entry.album.creator.handle}/${entry.album.slug}`}>
+                  <Link
+                    href={
+                      entry.isSample
+                        ? '/sample'
+                        : `/albums/${entry.album.creator.handle}/${entry.album.slug}`
+                    }
+                  >
                     {t('commerce.album')}
                   </Link>
                 </Button>

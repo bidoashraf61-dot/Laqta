@@ -32,7 +32,8 @@ requested ──approve──▶ approved ──create run──▶ processing �
   (`requested, approved, processing, paid, failed`); unknown → no filter. Absent →
   `requested, approved, processing`.
 - `searchParams.run` — a `PayoutRun.id` among the 20 newest runs to show in the run panel;
-  absent or unknown → the newest `draft` run, else no run is shown.
+  absent or unknown → the newest `draft` run, else the newest run of any status (so a run
+  just paid stays in view with its reference), else no run is shown.
 - `Payout.findMany` — `orderBy [status asc, createdAt asc]`, `take: 100`, includes
   `creator` (displayNameAr, handle, country) and `run.label`.
 - `Payout.groupBy({ by: ['status'] })` — chip counts.
@@ -50,7 +51,7 @@ requested ──approve──▶ approved ──create run──▶ processing �
 2. **Run panel** «الدفعة الجارية» — a line saying how many approved payouts are ready (or
    that none are), and the create button in the panel header. When a run is selected:
    label (LTR), run status badge, line count · total; **files** — three rail cells, each with
-   count, net total and «تنزيل الملف» (plain `<a download>`), or «لا تحويلات على هذه القناة»;
+   «البنود» count, net total and «تنزيل الملف» (plain `<a download>`), or «لا تحويلات على هذه القناة»;
    **lines** table — creator, rail + destination hint (`•••• last-4` of the IBAN, or the
    email), net amount, payout status, and the exclude control while `draft`; **pay** block
    (reference field + «تأكيد تحويل الدفعة كاملة») while `draft`, otherwise the closed note with
@@ -97,7 +98,7 @@ for email rails, so the export falls back to the creator's current `beneficiaryN
 - **Empty queue** — `EmptyState` with `dash.noPayoutRequests`.
 - **Nothing eligible** — run panel says «لا طلبات معتمدة بعد…», no create button. The action
   still refuses with `payoutRun.nothingToBatch` if called.
-- **No run selected** — the run panel shows only the ready line.
+- **No runs yet** — the run panel shows only the ready line; history says «لم تُنشأ أي دفعة بعد».
 - **Rail with no lines in the run** — the cell shows «لا تحويلات على هذه القناة», no link.
 - **Paid run** — read-only: no exclude, no pay form; files still downloadable for
   reconciliation; closed note with reference and date.

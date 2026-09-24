@@ -49,7 +49,7 @@ export function PayoutControls({
   if (status === 'processing' && runLabel) {
     return (
       <span className="text-xs text-muted-foreground">
-        {t('payoutRun.inRun', { label: '' })}
+        {t('payoutRun.inRun')}{' '}
         <span className="ltr-island">{runLabel}</span>
       </span>
     )

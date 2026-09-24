@@ -117,8 +117,13 @@ export default async function AdminPayoutsPage({
     db.payoutRun.findMany({ orderBy: { createdAt: 'desc' }, take: 20 }),
   ])
 
-  // The run on screen: the one asked for, else the newest still awaiting payment.
-  const selectedId = runs.find((run) => run.id === runParam)?.id ?? runs.find((run) => run.status === 'draft')?.id
+  // The run on screen: the one asked for, else the newest still awaiting
+  // payment, else the newest run — so the run just paid stays in view with its
+  // reference instead of the panel emptying under the operator's hand.
+  const selectedId =
+    runs.find((run) => run.id === runParam)?.id ??
+    runs.find((run) => run.status === 'draft')?.id ??
+    runs[0]?.id
   const selected = selectedId
     ? await db.payoutRun.findUnique({
         where: { id: selectedId },
@@ -200,7 +205,9 @@ export default async function AdminPayoutsPage({
                     <li key={rail} className="flex flex-col gap-3 rounded-md border border-border/70 p-4">
                       <div className="flex items-baseline justify-between gap-3">
                         <span className="font-medium">{t(METHOD_LABEL[rail])}</span>
-                        <span className="numeric text-sm text-muted-foreground">{formatNumber(count)}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {t('payoutRun.colLines')} <span className="numeric">{formatNumber(count)}</span>
+                        </span>
                       </div>
                       <span className="numeric text-lg">{formatMoney(total, runCurrency)}</span>
                       {count > 0 && selected.status !== 'void' ? (
@@ -358,7 +365,7 @@ export default async function AdminPayoutsPage({
                         <StatusBadge domain="payout" value={payout.status} />
                         {payout.status === 'approved' && payout.failureReason ? (
                           <span className="mt-1 block max-w-48 text-2xs text-warning">
-                            {t('payoutRun.returnedNote', { reason: payout.failureReason })}
+                            {t('payoutRun.returnedNote')} <bdi>{payout.failureReason}</bdi>
                           </span>
                         ) : null}
                       </TableCell>

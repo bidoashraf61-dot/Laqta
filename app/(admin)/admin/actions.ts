@@ -1,7 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { requireAdmin } from '@/lib/auth'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { requireAdmin, unstable_update } from '@/lib/auth'
+import { closeImpersonation, openImpersonation } from '@/lib/impersonation'
 import { decideReview, refundOrderItem } from '@/lib/admin'
 import { settleOrder } from '@/lib/orders'
 import { recordAudit } from '@/lib/audit'
@@ -9,6 +12,7 @@ import { db } from '@/lib/db'
 import { actionT } from '@/lib/locale-request'
 import type { Checklist } from '@/lib/review-checklist'
 import { isPublicMediaKey, mediaUrl } from '@/lib/media'
+import { ALBUM_TIERS, parseBandForm, validateBand } from '@/lib/price-bands'
 
 export async function submitReview(input: {
   taskId: string
@@ -75,43 +79,83 @@ export async function approveCreator(creatorId: string) {
 }
 
 /**
- * Start a support impersonation.
+ * View the site as a user, for support — `/admin/users/[id]`.
  *
- * Always audited, always with a stated reason. An impersonation that cannot be
- * traced back to a ticket is indistinguishable from an admin reading a
- * customer's library for fun.
+ * Always audited, always with a stated reason, always read-only and always
+ * expiring (lib/impersonation.ts). A view that cannot be traced back to a
+ * reason is indistinguishable from an admin reading a customer's library for
+ * fun. On success the session IS the user until the banner's "end" or the
+ * 30-minute clock, so this redirects straight into their account.
  */
-export async function beginImpersonation(targetUserId: string, reason: string, ticketRef?: string) {
+export async function startViewAsUser(
+  _state: Result | null,
+  formData: FormData,
+): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
-  if (!reason.trim()) return { ok: false, messageKey: 'admin.impersonateReason' }
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
 
-  const session = await db.impersonation.create({
-    data: { adminId: admin.id, targetUserId, reason, ticketRef: ticketRef ?? null },
-  })
-  await recordAudit({
-    actorId: admin.id,
-    action: 'user.impersonate.start',
-    entity: 'User',
-    entityId: targetUserId,
-    detail: { reason, ticketRef, impersonationId: session.id },
-  })
+  const targetUserId = String(formData.get('userId') ?? '')
+  let ip: string | null = null
+  try {
+    ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? null
+  } catch {
+    ip = null
+  }
 
-  return { ok: true, messageKey: 'actions.confirm' }
+  const opened = await openImpersonation({
+    adminId: admin.id,
+    targetUserId,
+    reason: String(formData.get('reason') ?? ''),
+    ticketRef: String(formData.get('ticketRef') ?? ''),
+    ip,
+  })
+  if (!opened.ok) return { ok: false, message: tr(opened.messageKey) }
+
+  const session = await unstable_update({ impersonation: { start: opened.id } } as never)
+  if (session?.user?.impersonation?.id !== opened.id) {
+    // The token refused the swap (lib/impersonation.ts re-verifies it). Close
+    // the row so the history never shows a view that did not happen as open.
+    await closeImpersonation(opened.id, 'ended')
+    return { ok: false, message: tr('state.error') }
+  }
+
+  redirect('/account')
 }
 
-export async function endImpersonation(impersonationId: string) {
+/**
+ * Suspend or reactivate an ACCOUNT (not a creator profile — that is
+ * `setCreatorStatus`). Suspension refuses every new sign-in on both rails
+ * (lib/auth.ts); a session already open lives until its JWT expires.
+ */
+export async function setUserStatus(
+  userId: string,
+  status: 'active' | 'suspended',
+): Promise<Result> {
+  const tr = await actionT()
   const admin = await requireAdmin()
-  await db.impersonation.update({
-    where: { id: impersonationId },
-    data: { endedAt: new Date() },
-  })
+
+  const user = await db.user.findUnique({ where: { id: userId }, select: { role: true, status: true } })
+  if (!user) return { ok: false, message: tr('state.notFound') }
+  if (user.role === 'admin' || userId === admin.id) {
+    return { ok: false, message: tr('dash.cannotSuspendAdmin') }
+  }
+  if (user.status === status) return { ok: true }
+
+  await db.user.update({ where: { id: userId }, data: { status } })
   await recordAudit({
     actorId: admin.id,
-    action: 'user.impersonate.end',
-    entity: 'Impersonation',
-    entityId: impersonationId,
+    action: status === 'suspended' ? 'user.suspended' : 'user.reactivated',
+    entity: 'User',
+    entityId: userId,
+    detail: { from: user.status, to: status },
   })
-  return { ok: true, messageKey: 'actions.confirm' }
+  revalidatePath('/admin/users')
+  revalidatePath(`/admin/users/${userId}`)
+  return {
+    ok: true,
+    message: tr(status === 'suspended' ? 'dash.userSuspendedDone' : 'dash.userReactivatedDone'),
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -739,4 +783,107 @@ export async function setContactMessageStatus(
 
   revalidatePath('/admin/messages')
   return { ok: true, message: tr('actions.confirm') }
+}
+
+// ── Price bands ─────────────────────────────────────────────────────────────
+
+/**
+ * Create or edit a price band — `/admin/catalogue`.
+ *
+ * Writes `PriceBand` and nothing else. A band's price is copied onto an album
+ * only when the album is created (lib/price-bands.ts), so this never reprices
+ * an existing album, and completed orders carry their own frozen amounts
+ * (lib/orders.ts). Currency is USD at launch (owner, 2026-09-24) and is not an
+ * input.
+ */
+export async function savePriceBand(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  const input = parseBandForm(formData)
+  const others = await db.priceBand.findMany({
+    select: { id: true, tier: true, labelAr: true, minClips: true, maxClips: true },
+  })
+  const error = validateBand(input, others)
+  if (error) return { ok: false, message: tr(error.key, 'vars' in error ? error.vars : undefined) }
+
+  const data = {
+    tier: input.tier as (typeof ALBUM_TIERS)[number],
+    labelAr: input.labelAr,
+    labelEn: input.labelEn,
+    minClips: input.minClips,
+    maxClips: input.maxClips,
+    priceStandard: input.priceStandard,
+  }
+
+  if (input.id) {
+    const before = await db.priceBand.findUnique({ where: { id: input.id } })
+    if (!before) return { ok: false, message: tr('state.notFound') }
+    await db.priceBand.update({ where: { id: input.id }, data })
+    await recordAudit({
+      actorId: admin.id,
+      action: 'priceband.update',
+      entity: 'PriceBand',
+      entityId: input.id,
+      detail: {
+        before: {
+          tier: before.tier,
+          labelAr: before.labelAr,
+          labelEn: before.labelEn,
+          minClips: before.minClips,
+          maxClips: before.maxClips,
+          priceStandard: Number(before.priceStandard),
+        },
+        after: data,
+      },
+    })
+  } else {
+    const created = await db.priceBand.create({
+      data: { ...data, currency: 'USD' },
+      select: { id: true },
+    })
+    await recordAudit({
+      actorId: admin.id,
+      action: 'priceband.create',
+      entity: 'PriceBand',
+      entityId: created.id,
+      detail: { after: data },
+    })
+  }
+
+  revalidatePath('/admin/catalogue')
+  revalidatePath('/studio/albums/new')
+  return { ok: true, message: tr('dash.bandSaved') }
+}
+
+/**
+ * Delete a band. Albums keep their price (it was copied at creation); the
+ * tier simply stops being offered to new albums in the studio.
+ */
+export async function deletePriceBand(bandId: string): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+
+  const band = await db.priceBand.findUnique({ where: { id: bandId } })
+  if (!band) return { ok: false, message: tr('state.notFound') }
+  await db.priceBand.delete({ where: { id: bandId } })
+  await recordAudit({
+    actorId: admin.id,
+    action: 'priceband.delete',
+    entity: 'PriceBand',
+    entityId: bandId,
+    detail: {
+      before: {
+        tier: band.tier,
+        labelAr: band.labelAr,
+        minClips: band.minClips,
+        maxClips: band.maxClips,
+        priceStandard: Number(band.priceStandard),
+      },
+    },
+  })
+
+  revalidatePath('/admin/catalogue')
+  revalidatePath('/studio/albums/new')
+  return { ok: true, message: tr('dash.bandDeleted') }
 }

@@ -14,7 +14,7 @@ hole cannot leak a guarded page.
   edge-safe half — `session: { strategy: 'jwt' }`, `providers: []`, no Prisma,
   no bcrypt. **Zero database reads in middleware.**
 - **Layouts**: `auth()` from `lib/auth.ts`, again JWT-only. The session shape is
-  `{ id, role, locale, creatorId, impersonatedBy?, name, email, image }`.
+  `{ id, role, locale, creatorId, impersonatedBy?, impersonation?, name, email, image }`.
 - **Token refresh**: `jwt` callback re-reads `User` (with `creator: { select: { id } }`)
   only on `trigger === 'update'` — role and `creatorId` changes are otherwise
   invisible until the token is refreshed.
@@ -91,9 +91,14 @@ they throw rather than redirect, so they pair with — not replace — the layou
 - **Suspended user** → blocked at `authorize` time (no new session), *not* by
   the guard. An already-issued JWT for a user suspended afterwards keeps working
   until it expires.
-- **Impersonation** → `session.user.impersonatedBy` is carried through the `jwt`
-  and `session` callbacks; the guard itself ignores it and enforces the
-  impersonated role.
+- **Impersonation (view-as-user)** → the token's identity IS the customer's for the
+  view, so the guard enforces the customer's role (an admin viewing a buyer cannot
+  reach `/admin`). Middleware additionally refuses, with a 403, every non-GET request
+  and the writing GETs listed in `lib/impersonation-shared.ts` while
+  `impersonatedBy` is set, except `POST /api/impersonation/end`, and stamps
+  `x-laqta-impersonation` on the forwarded request (stripped otherwise) for
+  `lib/db.ts`'s write guard. Still no database read in middleware: expiry is checked
+  on the token alone. See `specs/admin/admin-users-id.md`.
 - **Matcher exclusions** — `api/auth`, `_next/static`, `_next/image`,
   `favicon.ico`, `robots.txt`, `sitemap.xml`, and **any path containing a dot**
   are not seen by middleware at all. A guarded route with a dot in its path

@@ -2,6 +2,11 @@ import NextAuth from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authConfig } from '@/lib/auth.config'
 import { LOCALE_HEADER } from '@/lib/locale'
+import {
+  IMPERSONATION_BLOCKED_GET,
+  IMPERSONATION_END_PATH,
+  IMPERSONATION_HEADER,
+} from '@/lib/impersonation-shared'
 
 const { auth } = NextAuth(authConfig)
 
@@ -44,6 +49,16 @@ export default auth((request) => {
 
   // ── 3. Guards, on the routed path ─────────────────────────────────────────
   const user = request.auth?.user
+
+  // ── 3a. View-as-user is read-only ─────────────────────────────────────────
+  // Every server action is a POST, so refusing every non-GET here refuses
+  // every mutation in the app, whatever button a page forgot to hide. The GET
+  // routes that write or hand out files are refused by name. `lib/db.ts`
+  // refuses writes again below this, keyed on the header set further down.
+  const viewing = Boolean(user?.impersonatedBy)
+  if (viewing && routed !== IMPERSONATION_END_PATH && isWrite(request.method, routed)) {
+    return readOnlyRefusal(locale)
+  }
   const required = requiredAccess(routed)
 
   if (required) {
@@ -61,32 +76,63 @@ export default auth((request) => {
       url.search = ''
       // Rewrite, not redirect: the URL the user typed stays in the address bar
       // so they can hand it to someone who does have the role.
-      return rewriteWithLocale(request, url, locale)
+      return rewriteWithLocale(request, url, locale, viewing)
     }
   }
 
   if (english) {
     const url = request.nextUrl.clone()
     url.pathname = routed
-    return rewriteWithLocale(request, url, locale)
+    return rewriteWithLocale(request, url, locale, viewing)
   }
 
-  return NextResponse.next({ request: { headers: withLocale(request.headers, locale) } })
+  return NextResponse.next({ request: { headers: withLocale(request.headers, locale, viewing) } })
 })
 
 /**
  * The locale travels as a REQUEST header, not a response header — the layout
  * reads it during render, and a response header would arrive far too late.
  */
-function withLocale(source: Headers, locale: string): Headers {
+function withLocale(source: Headers, locale: string, viewing: boolean): Headers {
   const headers = new Headers(source)
   headers.set(LOCALE_HEADER, locale)
+  // Always overwritten, never passed through: a client cannot send its own.
+  if (viewing) headers.set(IMPERSONATION_HEADER, '1')
+  else headers.delete(IMPERSONATION_HEADER)
   return headers
 }
 
-function rewriteWithLocale(request: { headers: Headers }, url: URL, locale: string) {
+function rewriteWithLocale(
+  request: { headers: Headers },
+  url: URL,
+  locale: string,
+  viewing: boolean,
+) {
   return NextResponse.rewrite(url, {
-    request: { headers: withLocale(request.headers, locale) },
+    request: { headers: withLocale(request.headers, locale, viewing) },
+  })
+}
+
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
+
+function isWrite(method: string, path: string) {
+  if (!SAFE_METHODS.has(method.toUpperCase())) return true
+  return IMPERSONATION_BLOCKED_GET.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))
+}
+
+/**
+ * The refusal. Plain text in the reader's language — it has to make sense as
+ * a whole page (a no-JS form post, a download link) as well as to a server
+ * action's fetch, and a 403 is what both should see.
+ */
+function readOnlyRefusal(locale: string) {
+  const body =
+    locale === 'en'
+      ? 'This action is blocked: you are viewing the site as another user, read-only.'
+      : 'هذا الإجراء موقوف: أنت تعرض الموقع كمستخدم آخر للقراءة فقط.'
+  return new NextResponse(body, {
+    status: 403,
+    headers: { 'content-type': 'text/plain; charset=utf-8', 'x-laqta-read-only': '1' },
   })
 }
 

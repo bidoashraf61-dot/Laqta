@@ -22,6 +22,8 @@ import { TrailerEditor } from '@/components/admin/trailer-editor'
 import { setAlbumStatus, toggleAlbumFeatured } from '@/app/(admin)/admin/actions'
 import { formatMoney, formatNumber, t } from '@/lib/i18n'
 import type { Metadata } from 'next'
+import { BandEditor, type EditableBand } from '@/components/admin/band-editor'
+import { ALBUM_TIERS, bandFit } from '@/lib/price-bands'
 import { requestLocale } from '@/lib/locale-request'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -105,6 +107,28 @@ export default async function AdminCataloguePage({
   ])
 
   const byStatus = new Map(counts.map((row) => [row.status, row._count.status]))
+
+  // Albums per tier — context for an edit, not a promise that they move: an
+  // album's price was copied from its band when it was created.
+  const tierCounts = await db.album.groupBy({
+    by: ['tier'],
+    where: { sample: { is: null }, status: { not: 'delisted' } },
+    _count: { tier: true },
+  })
+  const albumsByTier = new Map(tierCounts.map((row) => [row.tier, row._count.tier]))
+  const bandRows: EditableBand[] = bands.map((band) => ({
+    id: band.id,
+    tier: band.tier,
+    labelAr: band.labelAr,
+    labelEn: band.labelEn,
+    minClips: band.minClips,
+    maxClips: band.maxClips,
+    price: Number(band.priceStandard),
+    currency: band.currency,
+    fit: bandFit(band),
+    albumCount: albumsByTier.get(band.tier) ?? 0,
+  }))
+  const freeTiers = ALBUM_TIERS.filter((tier) => !bands.some((band) => band.tier === tier))
 
   // Watermarked-preview downloads over the last 30 days — someone cutting the
   // album into their own timeline before buying. A ZIP counts once.
@@ -250,35 +274,17 @@ export default async function AdminCataloguePage({
           )}
         </div>
 
-        {/* The bands are the pricing policy in one place — read-only here,
-            because changing a band mid-flight would reprice live albums. */}
+        {/* The bands are the pricing policy in one place. Editing one changes
+            the price new albums are created at — nothing else; the hint says
+            so in words (lib/price-bands.ts). */}
         <Panel title={t('dash.priceBands')} className="overflow-hidden">
-          <p className="mb-4 text-xs text-muted-foreground">{t('dash.priceBandsHint')}</p>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('dash.albumTier')}</TableHead>
-                <TableHead className="text-end">{t('dash.bandRange')}</TableHead>
-                <TableHead className="text-end">{t('dash.bandPrice')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {bands.map((band) => (
-                <TableRow key={band.id}>
-                  {/* The Arabic label names the tier; the Latin enum key beside
-                      it was noise the studio never shows. One language per row. */}
-                  <TableCell className="font-medium">{band.labelAr}</TableCell>
-                  <TableCell className="numeric text-end text-muted-foreground">
-                    {formatNumber(band.minClips)}
-                    {band.maxClips ? `–${formatNumber(band.maxClips)}` : '+'}
-                  </TableCell>
-                  <TableCell className="numeric text-end text-gold">
-                    {formatMoney(Number(band.priceStandard), band.currency)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <p className="mb-2 text-xs text-muted-foreground">{t('dash.priceBandsHint')}</p>
+          {bandRows.some((band) => band.fit !== 'inside') ? (
+            <p className="mb-4 text-xs text-warning">{t('dash.bandOutsideHint')}</p>
+          ) : (
+            <div className="mb-4" />
+          )}
+          <BandEditor bands={bandRows} freeTiers={freeTiers} />
         </Panel>
       </div>
     </>

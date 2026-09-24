@@ -276,6 +276,7 @@ async function main() {
       ['/admin/disputes', 'admin'],
       ['/admin/payouts', 'admin'],
       ['/admin/taxonomy', 'admin'],
+      ['/admin/users', 'admin'],
     ]
     for (const [route, who] of pages) {
       const page = await (who === 'admin' ? adminContext : creatorContext).newPage()
@@ -298,6 +299,112 @@ async function main() {
       )
       await page.close()
     }
+  }
+
+  // ── Admin: find a user by email and open their account ───────────────────
+  {
+    const page = await adminContext.newPage()
+    const errors = watchErrors(page)
+    await page.goto(`${BASE}/admin/users?q=${encodeURIComponent('buyer@agency')}`, {
+      waitUntil: 'domcontentloaded',
+    })
+    await page.waitForTimeout(800)
+    const rows = page.locator('[data-user-row]')
+    report('user search finds the buyer by email', (await rows.count()) === 1, `${await rows.count()} row(s)`)
+    if ((await rows.count()) > 0) {
+      await rows.first().click()
+      await page
+        .waitForURL((url) => /^\/admin\/users\/[^/]+$/.test(url.pathname), { timeout: 15_000 })
+        .catch(() => {})
+      const text = await page.locator('main').innerText().catch(() => '')
+      report('the user row opens the account page', /\/admin\/users\/[^/?]+$/.test(page.url()), page.url().replace(BASE, ''))
+      report(
+        'the account page renders its sections',
+        ['الحساب', 'الطلبات', 'المكتبة', 'رسائل التواصل', 'عرض الموقع كهذا المستخدم'].every((s) =>
+          text.includes(s),
+        ),
+      )
+      report('the view-as form is offered for a buyer', (await page.locator('textarea[name="reason"]').count()) === 1)
+    }
+    report('no errors on the users flow', errors.length === 0, errors.slice(0, 2).join(' | '))
+    await page.close()
+  }
+
+  // ── Admin: a price band edit persists, reprices nothing, and restores ────
+  {
+    const db = new PrismaClient()
+    const band = await db.priceBand.findFirst({ orderBy: { priceStandard: 'asc' } })
+    if (!band) {
+      report('price band edit (no bands seeded)', true, 'skipped')
+    } else {
+      const original = Number(band.priceStandard)
+      // The albums that exist NOW, by id: the database is shared, and another
+      // session creating an album mid-run is not a reprice.
+      const existing = (await db.album.findMany({ select: { id: true } })).map((row) => row.id)
+      const albumPrices = async () =>
+        JSON.stringify(
+          await db.album.findMany({
+            where: { id: { in: existing } },
+            orderBy: { id: 'asc' },
+            select: { id: true, priceStandard: true },
+          }),
+        )
+      const items = (await db.orderItem.findMany({ select: { id: true } })).map((row) => row.id)
+      const orderTotals = async () =>
+        JSON.stringify(
+          await db.orderItem.findMany({
+            where: { id: { in: items } },
+            orderBy: { id: 'asc' },
+            select: { id: true, grossAmount: true, commissionRate: true, commissionAmount: true },
+          }),
+        )
+      const albumsBefore = await albumPrices()
+      const ordersBefore = await orderTotals()
+      const started = new Date()
+
+      const page = await adminContext.newPage()
+      const errors = watchErrors(page)
+      const setPrice = async (price: number, extra?: { minClips?: string; maxClips?: string }) => {
+        await page.goto(`${BASE}/admin/catalogue`, { waitUntil: 'domcontentloaded' })
+        await page.waitForTimeout(900)
+        const row = page.locator(`[data-band-row="${band.tier}"]`)
+        await row.getByRole('button', { name: 'تعديل' }).click()
+        await row.locator('input[name="priceStandard"]').fill(String(price))
+        if (extra?.minClips) await row.locator('input[name="minClips"]').fill(extra.minClips)
+        if (extra?.maxClips) await row.locator('input[name="maxClips"]').fill(extra.maxClips)
+        await row.locator('form button[type="submit"]').click()
+        await page.waitForTimeout(1800)
+        return row
+      }
+
+      // Invalid first: min above max is refused and nothing is written.
+      const invalid = await setPrice(original + 7, { minClips: '90', maxClips: '40' })
+      const unchanged = await db.priceBand.findUnique({ where: { id: band.id } })
+      report(
+        'band validation refuses min > max',
+        Number(unchanged?.priceStandard) === original &&
+          (await invalid.getByText('أقل عدد لقطات يجب ألا يتجاوز الأكثر').count()) > 0,
+      )
+
+      await setPrice(original + 1)
+      const edited = await db.priceBand.findUnique({ where: { id: band.id } })
+      report('band price edit persists', Number(edited?.priceStandard) === original + 1, `${original} → ${Number(edited?.priceStandard)}`)
+      report('band edit reprices no existing album', (await albumPrices()) === albumsBefore)
+      report('band edit touches no completed order', (await orderTotals()) === ordersBefore)
+      report(
+        'band edit is audited',
+        (await db.auditLog.count({
+          where: { action: 'priceband.update', entityId: band.id, createdAt: { gte: started } },
+        })) > 0,
+      )
+
+      await setPrice(original)
+      const restored = await db.priceBand.findUnique({ where: { id: band.id } })
+      report('band price restores', Number(restored?.priceStandard) === original)
+      report('no errors on the band flow', errors.length === 0, errors.slice(0, 2).join(' | '))
+      await page.close()
+    }
+    await db.$disconnect()
   }
 
   await browser.close()

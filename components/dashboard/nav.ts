@@ -5,6 +5,7 @@ import {
   Inbox,
   Receipt,
   Sparkles,
+  Users,
 } from 'lucide-react'
 import * as Laqta from '@/components/ui/icons'
 
@@ -88,6 +89,7 @@ export const ADMIN_NAV: DashboardSection[] = [
     titleKey: 'dash.sectionOperations',
     links: [
       { href: '/admin/review', labelKey: 'admin.reviewQueue', icon: Laqta.Cleared },
+      { href: '/admin/users', labelKey: 'dash.usersTitle', icon: Users },
       { href: '/admin/creators', labelKey: 'admin.creators', icon: Laqta.Creator },
       { href: '/admin/disputes', labelKey: 'admin.disputes', icon: Laqta.Dispute },
       { href: '/admin/requests', labelKey: 'request.adminTitle', icon: Laqta.Search },

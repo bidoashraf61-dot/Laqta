@@ -28,6 +28,7 @@ Nothing else — clips are added later, on the album's own page.
 
 ## Invariants
 - The creator never types a price. `priceStandard` is copied from the chosen `PriceBand`; `priceExtended = priceStandard × band.extendedMultiplier`; `currency` comes from the band. One price per size of album, no undercutting.
+- The bands are edited on `/admin/catalogue` (add, edit, delete; audited). A band edit changes only what this page offers and copies from then on — an album already created keeps its price. A deleted band's tier disappears from the radios.
 - New albums are always created `status: 'draft'` — this route cannot publish.
 - The action re-resolves the creator from the session; `creatorId` is never taken from the form.
 

@@ -1398,7 +1398,13 @@ model Impersonation {
   reason       String
   ticketRef    String?
   startedAt    DateTime  @default(now())
+  /// Hard stop, set at start (30 minutes — lib/impersonation.ts). The session
+  /// cookie carries the same instant, so an expired view ends even if nothing
+  /// ever writes `endedAt`; the row is closed lazily by `closeExpired…`.
+  expiresAt    DateTime?
   endedAt      DateTime?
+  /// "ended" (the admin pressed end) or "expired" (the clock ran out).
+  endReason    String?
   ip           String?
 
   admin  User @relation("ImpersonationAdmin", fields: [adminId], references: [id])

@@ -16,6 +16,7 @@ path. Each handler is therefore its own gate.
 | `/api/download` | Redeem a signed, short-lived token for a clip master, a proxy, or an album ZIP — re-checking the entitlement at redemption and logging the hit. | [download.md](download.md) |
 | `/api/preview/[clipId]`, `/api/preview/album/[albumId]` | Signed-in download of a clip's watermarked 720p preview, or an album's as a streamed ZIP — `previewKey` only, per-user limits, logged. | [preview-download.md](preview-download.md) |
 | `/api/payments/paymob` | Paymob "transaction processed" callback: HMAC-verified, idempotent, amount-checked, settles through the same `settleOrder()` as the admin. | [payments-paymob.md](payments-paymob.md) |
+| `/api/impersonation/end` | End a view-as-user session: the only non-GET a view may make; closes and audits the row, restores the admin. | [impersonation-end.md](impersonation-end.md) |
 | `/api/auth/[...nextauth]` | Mounts the Auth.js v5 handlers (session, csrf, callbacks, signout) for the email+password and phone-OTP rails, with TOTP as the second factor. | [auth-nextauth.md](auth-nextauth.md) |
 
 Supporting modules: `lib/storage.ts` (HMAC signing; `s3`/`local` drivers; `resolveDownload`),

@@ -3,7 +3,8 @@ import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import type { Role } from '@prisma/client'
-import { authConfig } from '@/lib/auth.config'
+import { applyImpersonationToSession, authConfig, type SessionImpersonation } from '@/lib/auth.config'
+import { expireIfDue } from '@/lib/impersonation-shared'
 import { db } from '@/lib/db'
 import { consumeOtp } from '@/lib/otp'
 import { verifyToken } from '@/lib/totp'
@@ -15,8 +16,10 @@ declare module 'next-auth' {
       role: Role
       locale: string
       creatorId: string | null
-      /** Set only while an admin is impersonating a buyer for support. */
+      /** Set only while an admin is viewing the site as this user — the admin's id. */
       impersonatedBy?: string
+      /** The active view-as-user session, for the banner. */
+      impersonation?: SessionImpersonation
     } & DefaultSession['user']
   }
 
@@ -55,7 +58,7 @@ export class TwoFactorRequiredError extends CredentialsSignin {
  * `phone` — OTP. Not optional: phone-first sign-in is the norm in KSA and
  *           Egypt, and a meaningful share of buyers have no email habit.
  */
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -124,6 +127,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig.callbacks,
 
     async jwt({ token, user, trigger, session }) {
+      // A view whose clock ran out is over, whatever else this call is for.
+      if (token.imp && Date.now() >= (token.imp as { expiresAt: number }).expiresAt) {
+        const { closeImpersonation } = await import('@/lib/impersonation')
+        await closeImpersonation((token.imp as { id: string }).id, 'expired').catch(() => {})
+        expireIfDue(token)
+      }
+
+      // View-as-user start / end. Only these two shapes are honoured, and the
+      // start is re-verified against the database (lib/impersonation.ts), so a
+      // browser calling `update()` itself cannot become anyone.
+      if (trigger === 'update' && session && typeof session === 'object') {
+        const request = (session as { impersonation?: { start?: string; end?: boolean } })
+          .impersonation
+        if (request) {
+          const { applyImpersonationEnd, applyImpersonationStart } = await import(
+            '@/lib/impersonation'
+          )
+          if (request.end) return applyImpersonationEnd(token)
+          if (typeof request.start === 'string') {
+            return applyImpersonationStart(token, request.start)
+          }
+          return token
+        }
+      }
+
       if (user) {
         token.uid = user.id
         token.role = user.role ?? 'buyer'
@@ -145,10 +173,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
 
-      if (trigger === 'update' && session?.impersonatedBy !== undefined) {
-        token.impersonatedBy = session.impersonatedBy
-      }
-
       return token
     },
 
@@ -157,9 +181,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.role = (token.role as Role) ?? 'buyer'
       session.user.locale = (token.locale as string) ?? 'ar'
       session.user.creatorId = (token.creatorId as string | null) ?? null
-      if (token.impersonatedBy) {
-        session.user.impersonatedBy = token.impersonatedBy as string
-      }
+      applyImpersonationToSession(session.user, token)
       return session
     },
   },

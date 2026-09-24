@@ -6,6 +6,7 @@ import { drainSoon } from '@/lib/outbox'
 import { attachCertificates, notifyOrderPaid, notifyOrderPlaced } from '@/lib/notifications'
 import { generateCertificate } from '@/lib/certificate'
 import { DEFAULT_LOCALE, isLocale } from '@/lib/locale'
+import { getPublicSample, sampleManifest, type SampleManifestClip } from '@/lib/sample'
 
 /**
  * Checkout.
@@ -30,6 +31,11 @@ import { DEFAULT_LOCALE, isLocale } from '@/lib/locale'
  *
  * Nothing downstream may recompute either. Refunds read `commissionRate` off
  * the OrderItem; the library reads `clipIdsSnapshot` off the Entitlement.
+ *
+ * The one other writer of an OrderItem is `claimSample`, below, and it lives in
+ * this file for the same reason: a free sample claim takes the SAME two
+ * snapshots — a frozen manifest and the licence in force — as a $0 order, and
+ * is settled by the same `settleOrder`.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -259,7 +265,19 @@ export async function checkout({
  * Split out because bank transfer settles later, by hand, from the admin — the
  * accounting has to be identical whichever rail got there.
  */
-export async function settleOrder(orderId: string, reference: string) {
+export async function settleOrder(
+  orderId: string,
+  reference: string,
+  options: {
+    /**
+     * Render certificates and drain mail AFTER returning, instead of before.
+     * For a request a person is waiting on (the free sample claim): the order
+     * is already paid and downloadable when this returns; only the PDF, which
+     * launches Chrome, follows a few seconds later.
+     */
+    deferDocuments?: boolean
+  } = {},
+) {
   const order = await db.order.findUnique({
     where: { id: orderId },
     include: {
@@ -292,6 +310,22 @@ export async function settleOrder(orderId: string, reference: string) {
     if (flipped.count === 0) return false
 
     for (const item of order.items) {
+      /*
+       * A zero-value line posts nothing to the creator ledger.
+       *
+       * The free sample is the case: commission on 0 is 0, and a `sale` row of
+       * 0.00 would show on /studio/earnings as a sale that earned nothing —
+       * noise that reads as a bug. Nothing was sold, so nothing is recorded;
+       * the claim is still counted on the (house) album.
+       */
+      if (Number(item.grossAmount) === 0 && Number(item.creatorNetAmount) === 0) {
+        await tx.album.update({
+          where: { id: item.albumId },
+          data: { salesCount: { increment: 1 } },
+        })
+        continue
+      }
+
       const creator = await tx.creator.findUnique({
         where: { id: item.creatorId },
         select: { balanceHeld: true, lifetimeGmv: true },
@@ -333,13 +367,21 @@ export async function settleOrder(orderId: string, reference: string) {
       })
     }
 
-    await tx.invoice.create({
-      data: {
-        orderId,
-        invoiceNumber: `INV-${order.orderNumber}`,
-        uuid: crypto.randomUUID(),
-      },
-    })
+    /*
+     * No tax invoice for a zero-value order. Nothing was supplied for a
+     * consideration, so there is nothing to invoice or report to ZATCA; the
+     * order number and the licence certificate are the record. Only the free
+     * sample produces one today.
+     */
+    if (Number(order.total) > 0) {
+      await tx.invoice.create({
+        data: {
+          orderId,
+          invoiceNumber: `INV-${order.orderNumber}`,
+          uuid: crypto.randomUUID(),
+        },
+      })
+    }
 
     /*
      * The receipt is QUEUED here, in the same transaction that marks the order
@@ -359,35 +401,188 @@ export async function settleOrder(orderId: string, reference: string) {
   // Another caller settled it between our read and our lock. Nothing to do.
   if (!settled) return
 
-  /*
-   * Documents and delivery, after the money is safely committed.
-   *
-   * Every failure here is logged and swallowed. The order is paid, the
-   * entitlement exists, and the buyer can already download from their library
-   * — none of that may be undone because a PDF or an SMTP server misbehaved.
-   */
-  const locale = isLocale(order.user?.locale) ? order.user.locale : DEFAULT_LOCALE
+  const documents = async () => {
+    /*
+     * Documents and delivery, after the money is safely committed.
+     *
+     * Every failure here is logged and swallowed. The order is paid, the
+     * entitlement exists, and the buyer can already download from their library
+     * — none of that may be undone because a PDF or an SMTP server misbehaved.
+     */
+    const locale = isLocale(order.user?.locale) ? order.user.locale : DEFAULT_LOCALE
 
-  /*
-   * Sequential, NOT Promise.all.
-   *
-   * Each render launches its own Chrome, so mapping concurrently over the
-   * items starts one browser per album at the same instant — three for a
-   * typical order, ten for a big one, each a few hundred megabytes. On a small
-   * box the later launches fail, and the buyer silently gets no certificate.
-   * A purchase is not a latency-critical path; one at a time is correct.
-   */
-  const keys: string[] = []
-  for (const item of order.items) {
-    const key = await generateCertificate(item.id, locale)
-    if (key) keys.push(key)
+    /*
+     * Sequential, NOT Promise.all.
+     *
+     * Each render launches its own Chrome, so mapping concurrently over the
+     * items starts one browser per album at the same instant — three for a
+     * typical order, ten for a big one, each a few hundred megabytes. On a small
+     * box the later launches fail, and the buyer silently gets no certificate.
+     * A purchase is not a latency-critical path; one at a time is correct.
+     */
+    const keys: string[] = []
+    for (const item of order.items) {
+      const key = await generateCertificate(item.id, locale)
+      if (key) keys.push(key)
+    }
+
+    // By id, captured from the enqueue above. Matching on the payload instead
+    // would couple attachment to the payload's shape. Never throws.
+    if (outboxId) await attachCertificates(outboxId, keys)
+
+    drainSoon()
   }
 
-  // By id, captured from the enqueue above. Matching on the payload instead
-  // would couple attachment to the payload's shape. Never throws.
-  if (outboxId) await attachCertificates(outboxId, keys)
+  if (options.deferDocuments) {
+    void documents().catch((error) => console.error('[orders] documents after settle:', error))
+  } else {
+    await documents()
+  }
+}
 
-  drainSoon()
+/**
+ * Claim the free sample — owner decision 2026-09-24.
+ *
+ * A zero-value order through the same frozen path as a purchase: one Order,
+ * one OrderItem carrying `clipManifestSnapshot` (the chosen clips as they are
+ * NOW, with the album each is sold in) and the licence in force, one
+ * Entitlement, one LicenceCertificate — then `settleOrder`, which marks it
+ * paid, posts no ledger row and raises no tax invoice for a zero-value line,
+ * and queues the `sample.claimed` message with the certificate.
+ *
+ * Never touches the cart or a payment gateway: there is nothing to pay, and a
+ * Paymob intention for 0 would be refused by the gateway anyway.
+ *
+ * ── One claim per user, idempotent ──────────────────────────────────────────
+ * `Entitlement` is unique on (userId, albumId), and the sample is one album.
+ * A second claim — a double click, a refresh, the sign-in callback firing
+ * twice — finds the first entitlement and returns it. Two concurrent claims
+ * race to that unique index; the loser's whole transaction rolls back and it
+ * returns the winner's entitlement.
+ */
+export type SampleClaimResult =
+  { ok: true; entitlementId: string; alreadyClaimed: boolean } | { ok: false; messageKey: string }
+
+export async function claimSample(
+  userId: string,
+  options: { deferDocuments?: boolean } = {},
+): Promise<SampleClaimResult> {
+  const sample = await getPublicSample()
+  if (!sample) return { ok: false, messageKey: 'sample.unavailable' }
+
+  const existing = await db.entitlement.findUnique({
+    where: { userId_albumId: { userId, albumId: sample.albumId } },
+    select: { id: true, revokedAt: true },
+  })
+  if (existing) {
+    // Revoked by an operator: not re-granted by claiming again.
+    if (existing.revokedAt) return { ok: false, messageKey: 'sample.unavailable' }
+    return { ok: true, entitlementId: existing.id, alreadyClaimed: true }
+  }
+
+  const manifest = await sampleManifest(sample.id)
+  if (manifest.length === 0) return { ok: false, messageKey: 'sample.unavailable' }
+
+  const [user, licence, album] = await Promise.all([
+    db.user.findUnique({
+      where: { id: userId },
+      select: {
+        billingEntityType: true,
+        legalName: true,
+        crNumber: true,
+        vatNumber: true,
+        billingAddress: true,
+      },
+    }),
+    // The licence IN FORCE now — the same one every album is sold under.
+    db.licenceVersion.findFirst({ where: { isCurrent: true }, select: { id: true } }),
+    db.album.findUnique({
+      where: { id: sample.albumId },
+      select: { id: true, slug: true, creatorId: true, licenceVersionId: true },
+    }),
+  ])
+  if (!user || !album) return { ok: false, messageKey: 'sample.unavailable' }
+
+  const attempt = async () => {
+    const orderNumber = await nextOrderNumber()
+    return db.$transaction(async (tx) => {
+      const order = await tx.order.create({
+        data: {
+          userId,
+          orderNumber,
+          status: 'pending',
+          subtotal: 0,
+          vatRate: VAT_RATE,
+          vatAmount: 0,
+          total: 0,
+          // Marks the order as a sample claim everywhere it is read: the
+          // receipt template, /admin/orders, /account/purchases.
+          paymentMethod: 'sample',
+          billingEntitySnapshot: {
+            billingEntityType: user.billingEntityType,
+            legalName: user.legalName ?? null,
+            crNumber: user.crNumber ?? null,
+            vatNumber: user.vatNumber ?? null,
+            billingAddress: user.billingAddress ?? null,
+          } as Prisma.InputJsonValue,
+        },
+      })
+
+      const item = await tx.orderItem.create({
+        data: {
+          orderId: order.id,
+          albumId: album.id,
+          creatorId: album.creatorId,
+          licenceVersionId: licence?.id ?? album.licenceVersionId,
+          grossAmount: 0,
+          vatAmount: 0,
+          // Commission on nothing is nothing. Stated, not computed: no rate
+          // is resolved for a house album that is never sold.
+          commissionRate: 0,
+          commissionAmount: 0,
+          creatorNetAmount: 0,
+          commissionBasis: { kind: 'free_sample', effectiveRate: 0 } as Prisma.InputJsonValue,
+          // ── FROZEN ──────────────────────────────────────────────────────
+          clipManifestSnapshot: manifest as unknown as Prisma.InputJsonValue,
+        },
+      })
+
+      // `create`, never `upsert`: the unique index is the one-claim rule.
+      const entitlement = await tx.entitlement.create({
+        data: {
+          userId,
+          albumId: album.id,
+          orderItemId: item.id,
+          clipIdsSnapshot: manifest.map((clip) => clip.id),
+        },
+        select: { id: true },
+      })
+
+      await tx.licenceCertificate.create({
+        data: { orderItemId: item.id, certificateNumber: `LIC-${orderNumber}-sample` },
+      })
+
+      return { orderId: order.id, entitlementId: entitlement.id }
+    })
+  }
+
+  let created: { orderId: string; entitlementId: string }
+  try {
+    created = await attempt()
+  } catch (error) {
+    if ((error as { code?: string }).code !== 'P2002') throw error
+    // Either a concurrent claim by the same user won the entitlement, or a
+    // concurrent checkout took the same order number. Nothing was written.
+    const winner = await db.entitlement.findUnique({
+      where: { userId_albumId: { userId, albumId: album.id } },
+      select: { id: true },
+    })
+    if (winner) return { ok: true, entitlementId: winner.id, alreadyClaimed: true }
+    created = await attempt()
+  }
+
+  await settleOrder(created.orderId, 'SAMPLE', { deferDocuments: options.deferDocuments })
+  return { ok: true, entitlementId: created.entitlementId, alreadyClaimed: false }
 }
 
 /**
@@ -407,6 +602,7 @@ export async function getLibrary(userId: string) {
           titleAr: true,
           titleEn: true,
           creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
+          sample: { select: { id: true } },
         },
       },
       orderItem: {
@@ -425,6 +621,8 @@ export async function getLibrary(userId: string) {
     album: entitlement.album,
     orderNumber: entitlement.orderItem.order.orderNumber,
     paid: entitlement.orderItem.order.status === 'paid',
+    /** The free sample: its public page is /sample, not an album page. */
+    isSample: entitlement.album.sample != null,
     // The manifest, not the album.
     clips: (entitlement.orderItem.clipManifestSnapshot ?? []) as Array<{
       id: string
@@ -433,6 +631,8 @@ export async function getLibrary(userId: string) {
       titleEn: string
       masterKey: string | null
       proxyKey: string | null
+      /** Present on sample manifests only: the album the clip is sold in. */
+      sourceAlbum?: SampleManifestClip['sourceAlbum']
     }>,
   }))
 }

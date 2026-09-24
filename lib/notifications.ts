@@ -141,16 +141,49 @@ export async function notifyOrderPaid(
         vatAmount: true,
         total: true,
         currency: true,
+        paymentMethod: true,
         user: { select: { name: true, email: true, locale: true } },
-        items: { select: { album: { select: { titleAr: true, titleEn: true } } } },
+        items: {
+          select: {
+            clipManifestSnapshot: true,
+            album: { select: { titleAr: true, titleEn: true } },
+          },
+        },
       },
     })
     if (!order?.user?.email || order.status !== 'paid') return null
 
+    const locale = localeOf(order.user.locale)
+
+    /*
+     * The free sample gets its own message. A receipt reading «المجموع ٠» for
+     * something nobody bought is confusing, and it would call a gift a
+     * purchase. Same idempotency, same certificate attachment, same library
+     * button — keyed on the order number under its own template name.
+     */
+    if (order.paymentMethod === 'sample') {
+      const queued = await alreadyQueued(client, 'sample.claimed', 'orderNumber', order.orderNumber)
+      if (queued) return queued.id
+      const manifest = order.items[0]?.clipManifestSnapshot
+      const row = await enqueue(client, {
+        template: 'sample.claimed',
+        toEmail: order.user.email,
+        locale,
+        payload: {
+          name: order.user.name ?? order.user.email,
+          orderNumber: order.orderNumber,
+          clipCount: Array.isArray(manifest) ? manifest.length : 0,
+          libraryUrl: siteUrl('/account/library', locale),
+          certificateAttached: false,
+        },
+      })
+      if (options.drain !== false) drainSoon()
+      return row.id
+    }
+
     const existing = await alreadyQueued(client, 'order.confirmed', 'orderNumber', order.orderNumber)
     if (existing) return existing.id
 
-    const locale = localeOf(order.user.locale)
     const row = await enqueue(client, {
       template: 'order.confirmed',
       toEmail: order.user.email,

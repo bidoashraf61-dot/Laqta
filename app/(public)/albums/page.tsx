@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
+import { getPublicSample } from '@/lib/sample'
+import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { EmptyState } from '@/components/ui/state'
-import { formatNumber, t } from '@/lib/i18n'
+import { clipCount, formatNumber, t } from '@/lib/i18n'
 import { PageTitle, Prose } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
@@ -90,6 +92,8 @@ export default async function AlbumsPage({
     coverKey: row.coverClipId ? (coverById.get(row.coverClipId) ?? null) : null,
   }))
 
+  const sample = await getPublicSample()
+
   return (
     <div className="container-tight py-16">
       <header className="mb-8">
@@ -99,6 +103,16 @@ export default async function AlbumsPage({
           <span className="numeric">{formatNumber(albums.length)}</span>
         </Prose>
       </header>
+
+      {/* The free sample, when published: the lowest-commitment way in. */}
+      {sample ? (
+        <p className="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-card px-4 py-3 text-sm">
+          <span>{t('sample.banner', { clips: clipCount(sample.clips.length) })}</span>
+          <Link href="/sample" className="font-medium underline underline-offset-4 hover:text-gold">
+            {t('sample.bannerCta')}
+          </Link>
+        </p>
+      ) : null}
 
       {albums.length === 0 ? (
         <EmptyState title={t('state.empty')} />

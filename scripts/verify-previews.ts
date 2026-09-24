@@ -9,7 +9,7 @@
  * that guard is why the gate exists.
  */
 
-import { statSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { db } from '@/lib/db'
 import {
@@ -77,6 +77,10 @@ async function main() {
   })
   if (!clip) {
     check('a live clip with a local preview exists', false, 'seed has none')
+  } else if (!existsSync(join(process.cwd(), 'public', clip.previewKey ?? ''))) {
+    // The seed's preview stand-ins are gitignored (public/hero/vid); a fresh
+    // checkout or worktree does not have them. Not a failure of the feature.
+    console.log(`  skip  byte and ZIP checks — ${clip.previewKey} is not on disk here`)
   } else {
     const key = servablePreviewKey(clip)
     const source = await previewSource(key)

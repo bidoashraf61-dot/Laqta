@@ -19,6 +19,8 @@ type ManifestClip = {
   titleEn: string
   masterKey: string | null
   proxyKey: string | null
+  /** Sample manifests only: the album the clip is sold in. */
+  sourceAlbum?: { slug: string; titleAr: string; titleEn: string; creatorHandle: string }
 }
 
 /**
@@ -133,8 +135,19 @@ export default async function LibraryAlbumPage({ params }: { params: Promise<{ i
       <ul className="divide-y rounded-lg border">
         {clips.map((clip) => (
           <li key={clip.id} className="flex flex-wrap items-center gap-3 p-3">
-            <span className="min-w-0 flex-1 truncate text-sm">
-              <Bilingual ar={clip.titleAr} en={clip.titleEn} />
+            <span className="min-w-0 flex-1 text-sm">
+              <span className="block truncate">
+                <Bilingual ar={clip.titleAr} en={clip.titleEn} />
+              </span>
+              {/* A sample clip names the album it is sold in — sample → purchase. */}
+              {clip.sourceAlbum ? (
+                <Link
+                  href={`/albums/${clip.sourceAlbum.creatorHandle}/${clip.sourceAlbum.slug}`}
+                  className="text-xs text-muted-foreground underline underline-offset-4 hover:text-gold"
+                >
+                  <Bilingual ar={clip.sourceAlbum.titleAr} en={clip.sourceAlbum.titleEn} />
+                </Link>
+              ) : null}
             </span>
 
             {paid && clip.masterKey ? (

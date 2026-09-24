@@ -24,6 +24,7 @@ import { mediaUrl } from '@/lib/media'
 import { currentLocale, localePath } from '@/lib/locale'
 import { previewDeliverable } from '@/lib/previews'
 import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
+import { getPublicSample } from '@/lib/sample'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -167,6 +168,7 @@ export default async function AlbumPage({
 
   const priceStandard = Number(album.priceStandard)
   const { comp } = await searchParams
+  const sample = await getPublicSample()
   const compCount = album.clips.filter((clip) => previewDeliverable(clip.previewKey)).length
   // The album's own cover frame — the operator-chosen cover clip, else the
   // first shot. Resolved through the one media resolver; null means no frame.
@@ -439,6 +441,15 @@ export default async function AlbumPage({
               fileCount={compCount}
               className="mt-5 border-t border-border/60 pt-5"
             />
+          ) : null}
+
+          {sample ? (
+            <Link
+              href="/sample"
+              className="mt-4 inline-block text-sm underline underline-offset-4 hover:text-gold"
+            >
+              {t('sample.tryFirst')}
+            </Link>
           ) : null}
         </aside>
       </div>

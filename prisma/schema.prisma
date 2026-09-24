@@ -350,6 +350,13 @@ model Creator {
 
   isExclusive Boolean @default(false)
 
+  /// The platform's own account — the licensor of record on the free sample
+  /// album (`SampleAlbum`). Never a seller: it is created `suspended` so every
+  /// public creator query (all of which filter `approved`) leaves it out, and
+  /// `/admin/creators` filters it out by this flag. It earns nothing — a
+  /// sample claim is a zero-value order and posts no ledger row.
+  isHouse Boolean @default(false)
+
   // Payout rail. Foreign creators use payoneer/wise; KSA creators use IBAN.
   payoutMethod    PayoutMethod @default(iban)
   iban            String?
@@ -472,6 +479,8 @@ model Album {
   entitlements   Entitlement[]
   disputes       Dispute[]
   stats          AlbumStat[]
+  /// Set only on the one house album that carries the free sample.
+  sample         SampleAlbum?
   comps          CompDownload[]
 
   @@index([status, publishedAt])
@@ -542,6 +551,7 @@ model Clip {
   releaseLinks ReleaseClip[]
   boardClips   BoardClip[]
   downloads    Download[]
+  sampleLinks  SampleClip[]
   comps        CompDownload[]
 
   @@index([albumId, orderIndex])
@@ -748,8 +758,8 @@ model Cart {
 }
 
 model CartItem {
-  id          String      @id @default(cuid())
-  cartId      String
+  id        String  @id @default(cuid())
+  cartId    String
   albumId   String
   unitPrice Decimal @db.Decimal(10, 2)
   vatAmount Decimal @db.Decimal(10, 2)
@@ -877,7 +887,7 @@ model OrderItem {
 }
 
 model Entitlement {
-  id          String      @id @default(cuid())
+  id          String @id @default(cuid())
   userId      String
   albumId     String
   orderItemId String @unique
@@ -955,13 +965,13 @@ model CompDownload {
 /// version is still frozen onto every order, because the text can change and a
 /// buyer owns the wording that was in force when they paid.
 model LicenceVersion {
-  id        String      @id @default(cuid())
-  version   String      @unique // e.g. "commercial-v1"
+  id        String  @id @default(cuid())
+  version   String  @unique // e.g. "commercial-v1"
   titleAr   String
   titleEn   String
   bodyAr    String
   bodyEn    String
-  isCurrent Boolean     @default(false)
+  isCurrent Boolean @default(false)
 
   effectiveFrom DateTime @default(now())
   createdAt     DateTime @default(now())
@@ -1195,15 +1205,15 @@ model ReviewTask {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model PriceBand {
-  id                 String    @id @default(cuid())
-  tier               AlbumTier @unique
-  labelAr            String
-  labelEn            String
-  minClips           Int
-  maxClips           Int?
-  priceStandard      Decimal   @db.Decimal(10, 2)
+  id            String    @id @default(cuid())
+  tier          AlbumTier @unique
+  labelAr       String
+  labelEn       String
+  minClips      Int
+  maxClips      Int?
+  priceStandard Decimal   @db.Decimal(10, 2)
   /// Extended is 3× standard by policy; kept explicit so it can be tuned.
-  currency           String    @default("USD")
+  currency      String    @default("USD")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1574,4 +1584,48 @@ model ContactMessage {
 enum ContactMessageStatus {
   open
   handled
+}
+
+/// The free sample album — owner decision 2026-09-24. Signed-in users only,
+/// one claim each, made of clips the operator picks from live albums.
+///
+/// ── Why it hangs off a real Album row ──────────────────────────────────────
+/// Orders, entitlements, certificates and the library are all keyed on an
+/// album. Giving the sample its own house `Album` (creator = the house
+/// `Creator`, status held at `draft` forever so no `status: 'live'` query can
+/// ever list it) lets a claim travel the same frozen path as a purchase:
+/// OrderItem + clipManifestSnapshot + Entitlement + LicenceCertificate,
+/// settled by `settleOrder`. The unique `Entitlement(userId, albumId)` is the
+/// one-claim-per-user rule.
+///
+/// Publication lives HERE, not in `Album.status` — see above.
+model SampleAlbum {
+  id          String    @id @default(cuid())
+  albumId     String    @unique
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  album Album        @relation(fields: [albumId], references: [id])
+  clips SampleClip[]
+}
+
+/// A clip chosen for the sample, from any live album. The clip stays in its
+/// own album (`Clip.albumId`); this only points at it. What a claimant owns is
+/// the manifest snapshotted at claim time, so removing a row here never takes
+/// a clip back from anyone who already claimed.
+model SampleClip {
+  id         String   @id @default(cuid())
+  sampleId   String
+  clipId     String
+  orderIndex Int      @default(0)
+  addedAt    DateTime @default(now())
+
+  sample SampleAlbum @relation(fields: [sampleId], references: [id], onDelete: Cascade)
+  clip   Clip        @relation(fields: [clipId], references: [id], onDelete: Cascade)
+
+  @@unique([sampleId, clipId])
+  @@index([sampleId, orderIndex])
 }

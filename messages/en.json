@@ -739,7 +739,12 @@
     "languageEn": "English",
     "footerBuyer": "You are receiving this because you placed an order on Laqta.",
     "footerCreator": "You are receiving this because you publish albums on Laqta.",
-    "footerOperator": "Sent to the Laqta operator address."
+    "footerOperator": "Sent to the Laqta operator address.",
+    "sampleClaimedSubject": "The free sample is in your library — {order}",
+    "sampleClaimedLead": "The Laqta sample,",
+    "sampleClaimedHeading": "now in your library.",
+    "sampleClaimedBody": "Hi {name}, we have added the Laqta free sample to your library: {count} clips as original files under a full commercial licence. Every clip links to the album it comes from.",
+    "sampleClaimedCta": "Open your library"
   },
   "contact": {
     "lead": "Write to us,",
@@ -783,5 +788,30 @@
     "companyName": "Company name",
     "address": "Address",
     "crNumber": "Commercial registration"
+  },
+  "sample": {
+    "lead": "Try before you buy,",
+    "body": "{clips} picked from Laqta albums, as original files under a full commercial licence. Free, once per account.",
+    "claim": "Get the sample free",
+    "signIn": "Sign in to get it",
+    "signInNote": "The sample is for signed-in accounts. You come back to this page after signing in.",
+    "claimed": "The sample is in your library.",
+    "openLibrary": "Open your library",
+    "clipsTitle": "Clips in the sample",
+    "fromAlbum": "From the album {album}",
+    "fromAlbumCta": "See the full album",
+    "unavailable": "The sample is not available right now.",
+    "draftNotice": "Admin preview: the sample is not published, and visitors cannot see it.",
+    "banner": "Try before you buy: {clips} free from Laqta albums.",
+    "bannerCta": "See the sample",
+    "tryFirst": "Try free clips from the sample",
+    "seoTitle": "The Laqta free sample",
+    "seoDescription": "Clips picked from Laqta albums, as original files under a full commercial licence, free for every signed-in account."
+  },
+  "count": {
+    "clipOne": "1 clip",
+    "clipTwo": "2 clips",
+    "clipFew": "{count} clips",
+    "clipMany": "{count} clips"
   }
 }

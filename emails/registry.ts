@@ -31,6 +31,7 @@ export type { Rendered } from '@/emails/layout'
 export const TEMPLATES = [
   'order.placed',
   'order.confirmed',
+  'sample.claimed',
   'album.approved',
   'album.changes',
   'album.rejected',
@@ -164,6 +165,36 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
         footer: 'footerBuyer',
       })
     }
+
+    /*
+     * The free sample was claimed. Not a receipt: nothing was bought, so no
+     * totals and no invoice — the order number and the certificate are the
+     * record. Says what is in the library, under which licence, and points at
+     * it.
+     */
+    case 'sample.claimed':
+      return message({
+        subject: tr('email.sampleClaimedSubject', { order }),
+        lead: tr('email.sampleClaimedLead'),
+        heading: tr('email.sampleClaimedHeading'),
+        blocks: [
+          {
+            kind: 'p',
+            text: tr('email.sampleClaimedBody', {
+              name: str(payload, 'name'),
+              order,
+              count: iso(raw(payload, 'clipCount') || '0'),
+            }),
+          },
+          { kind: 'details', rows: [{ label: tr('email.labelOrder'), value: raw(payload, 'orderNumber') }] },
+          { kind: 'button', label: tr('email.sampleClaimedCta'), url: raw(payload, 'libraryUrl') },
+          {
+            kind: 'note',
+            text: tr(payload.certificateAttached ? 'email.certificateAttached' : 'email.certificateInLibrary'),
+          },
+        ],
+        footer: 'footerBuyer',
+      })
 
     case 'album.approved':
       return message({

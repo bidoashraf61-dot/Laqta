@@ -79,6 +79,7 @@ textarea (required, 500 chars).
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- **Zero-value lines and orders** (today only free-sample claims, `paymentMethod: 'sample'`): `settleOrder` posts no `CreatorLedger` row for a line whose gross and creator net are 0 (it still counts the claim on the album's `salesCount`), and raises no tax `Invoice` for an order whose total is 0. The receipt is replaced by the `sample.claimed` message. See [`../public/sample.md`](../public/sample.md).
 - **Commission is frozen.** A refund reverses commission using
   `Number(item.commissionRate)` read off the `OrderItem` — never a freshly resolved rate.
   A creator promoted after the sale must not have the new rate applied retroactively, or

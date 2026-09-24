@@ -66,6 +66,21 @@ export default async function AdminMerchandisingPage() {
       />
 
       <div className="space-y-6">
+        <Panel>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-medium">{t('dash.sampleNav')}</h2>
+              <p className="text-sm text-muted-foreground">{t('dash.sampleNavHint')}</p>
+            </div>
+            <a
+              href="/admin/merchandising/sample"
+              className="text-sm font-medium underline underline-offset-4 hover:text-gold"
+            >
+              {t('dash.sampleNav')}
+            </a>
+          </div>
+        </Panel>
+
         <div>
           <h2 className="mb-3 text-sm font-medium text-muted-foreground">{t('dash.slots')}</h2>
           {slots.length === 0 ? (

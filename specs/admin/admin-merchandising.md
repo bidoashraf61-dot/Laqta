@@ -15,6 +15,8 @@ window, plus publish/feature toggles on collections.
 
 Takes no `searchParams`; there is no search or filter on this route.
 
+- A top panel «العيّنة المجانية» links (plain `<a>`) to [`/admin/merchandising/sample`](admin-merchandising-sample.md).
+
 ## Controls
 
 | Control | Action | Effect |

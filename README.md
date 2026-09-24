@@ -31,6 +31,7 @@ the same `DATABASE_URL`** so you are all developing against one catalogue.
 | `npm run db:migrate` / `db:seed` / `db:studio` | Prisma |
 | `npm run lint` / `typecheck` | ESLint / tsc |
 | `npm run verify` | **everything below, in order** |
+| `npm run verify:migrations` | replaying `prisma/migrations` produces `schema.prisma` exactly |
 | `npm run verify:i18n` | Arabic copy, formatting, search folding |
 | `npm run verify:search` | Arabic stemming, transliteration, filters, zero-result logging |
 | `npm run verify:entitlement` | buy → mutate the album → library unchanged |

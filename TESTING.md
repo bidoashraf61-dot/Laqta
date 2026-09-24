@@ -36,6 +36,7 @@ others, which is why they all exist.
 | Command | Question it answers | Needs a server? |
 |---|---|---|
 | `npm run test:unit` | Is the pure logic right? | no |
+| `npm run verify:migrations` | Does a fresh `migrate deploy` build the schema the app uses? | no (db only; creates and drops a throwaway database) |
 | `npm run verify:i18n` | Is the copy complete and correctly formatted? | no |
 | `npm run verify:search` | Does Arabic search fold and match? | no (db only) |
 | `npm run verify:entitlement` | Does "buy once, own forever" hold? | no (db only) |

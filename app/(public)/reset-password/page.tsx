@@ -35,7 +35,8 @@ export default async function ResetPasswordPage({
 
   return (
     <div className="container flex min-h-[70vh] items-center justify-center py-12">
-      <Card className="w-full max-w-md">
+      {/* `data-reset` is the gate's marker — never match on copy. */}
+      <Card className="w-full max-w-md" data-reset={live ? 'live' : 'dead'}>
         <CardHeader>
           <CardTitle as="h1" className="font-display text-2xl">
             {t(live ? 'auth.resetTitle' : 'auth.resetInvalidTitle')}

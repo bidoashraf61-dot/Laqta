@@ -56,6 +56,8 @@ const ROUTES = [
   '/',
   '/sign-in',
   '/sign-up',
+  '/forgot-password',
+  '/reset-password',
   '/forbidden',
   '/footage',
   '/albums',

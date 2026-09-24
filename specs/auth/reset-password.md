@@ -65,6 +65,10 @@ characters (`PASSWORD_MIN`). No new rules were invented here.
   this change carry no `signedInAt` and fall back to `iat`. Middleware (edge,
   no DB) still admits a stale cookie; the route-group layout's `auth()` then
   refuses it — the gate/lock split in [`guard-model.md`](./guard-model.md).
+  Because the layout redirects after the shell has started streaming, that
+  refusal arrives as HTTP 200 carrying `NEXT_REDIRECT;…;/sign-in` in the
+  payload (the browser follows it), not as a 307. `verify:auth`'s `probe`
+  counts it as `redirected`.
 - **2FA is untouched.** `twoFactorEnabled` / `twoFactorSecret` are not written;
   the next sign-in still raises `two_factor_required`.
 - **The old password stops working** the moment the transaction commits.

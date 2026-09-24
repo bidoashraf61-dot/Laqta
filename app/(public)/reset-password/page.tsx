@@ -7,10 +7,16 @@ import { requestLocale } from '@/lib/locale-request'
 import { BCP47, localePath } from '@/lib/locale'
 import { isResetTokenLive, PASSWORD_MIN, RESET_TTL_MINUTES } from '@/lib/password-reset'
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>
+}): Promise<Metadata> {
   await requestLocale()
+  const { token = '' } = await searchParams
   return {
-    title: t('auth.resetTitle'),
+    // The tab says what the card says — a dead link is not "choose a password".
+    title: t((await isResetTokenLive(token)) ? 'auth.resetTitle' : 'auth.resetInvalidTitle'),
     robots: { index: false, follow: false },
     // The token is in this page's URL. No outbound request may carry it in a
     // Referer header.

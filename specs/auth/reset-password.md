@@ -10,7 +10,8 @@ link on `/forgot-password`).
 ## Data in
 
 - `searchParams.token` — the plaintext token from the email.
-- Render: `isResetTokenLive(token)` — `PasswordResetToken.findUnique({ where:
+- Render and `generateMetadata` (the tab title follows the card: «اختر كلمة مرور
+  جديدة» or «هذا الرابط ما عاد يشتغل»): `isResetTokenLive(token)` — `PasswordResetToken.findUnique({ where:
   { tokenHash: sha256(token) } })` with the user's `status`. Read-only; the page
   never consumes the token.
 - Server action `completeReset(formData)` (`app/(public)/forgot-password/actions.ts`)

@@ -13,6 +13,11 @@ import { formatDuration } from '@/lib/utils'
 import { specLabel } from '@/lib/spec-labels'
 import { requestLocale } from '@/lib/locale-request'
 import { CHECK_KEYS, normaliseChecklist } from '@/lib/review-checklist'
+import { mediaUrl } from '@/lib/media'
+import { storageDriver } from '@/lib/storage'
+import { EDITABLE_STATUSES, maxClipBytes } from '@/lib/uploads'
+import { ingestSoon } from '@/lib/ingest'
+import { AlbumClips, type StudioClip } from '@/components/studio/album-clips'
 
 export default async function StudioAlbumPage({ params }: { params: Promise<{ id: string }> }) {
   // Resolve the locale before rendering anything.
@@ -50,7 +55,33 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
   })
   if (!album) notFound()
 
-  const consistency = analyseConsistency(album.clips)
+  // Only ready clips have specs; an upload in flight is 0×0 at 0 fps and
+  // would read as a "mixed resolution" warning that is not true.
+  const readyClips = album.clips.filter((clip) => clip.ingestStatus === 'ready')
+  const consistency = analyseConsistency(readyClips)
+  const editable = (EDITABLE_STATUSES as readonly string[]).includes(album.status)
+  // A clip left `uploaded` (the server restarted between upload and encode)
+  // is picked up again the next time its album is looked at.
+  if (album.clips.some((clip) => clip.ingestStatus === 'uploaded')) ingestSoon()
+
+  const studioClips: StudioClip[] = album.clips.map((clip) => ({
+    id: clip.id,
+    titleAr: clip.titleAr,
+    titleEn: clip.titleEn,
+    status: clip.ingestStatus,
+    error: clip.ingestError,
+    width: clip.width,
+    height: clip.height,
+    fps: Number(clip.fps),
+    codec: clip.codec,
+    colourProfile: clip.colourProfile,
+    duration: formatDuration(Number(clip.durationS)),
+    sizeBytes: clip.sizeBytes === null ? null : Number(clip.sizeBytes),
+    posterUrl: mediaUrl(clip.thumbnailKeys[0]),
+    originalFilename: clip.originalFilename,
+    identifiableFaces: clip.identifiableFaces,
+    movement: specLabel('movement', clip.cameraMovement) ?? null,
+  }))
   const gate = await canSubmit(album.id)
   const latestReview = album.reviewTasks[0]
   // A rejection leaves the album `delisted`; the review task, not the album
@@ -213,34 +244,14 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
         </section>
       ) : null}
 
-      <section>
-        <h2 className="mb-3 text-xl font-bold">{t('studio.clips')}</h2>
-        <ul className="divide-y rounded-lg border">
-          {album.clips.map((clip) => (
-            <li key={clip.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
-              <span className="min-w-0 flex-1 truncate">
-                <Bilingual ar={clip.titleAr} en={clip.titleEn} />
-              </span>
-              <span className="numeric text-muted-foreground">
-                {clip.width}×{clip.height}
-              </span>
-              <span className="numeric text-muted-foreground">{Number(clip.fps)}</span>
-              {clip.colourProfile ? (
-                <span className="ltr-island text-muted-foreground">{clip.colourProfile}</span>
-              ) : null}
-              <span className="text-muted-foreground">
-                {specLabel('movement', clip.cameraMovement) ?? '—'}
-              </span>
-              <span className="numeric text-muted-foreground">
-                {formatDuration(Number(clip.durationS))}
-              </span>
-              {clip.identifiableFaces ? (
-                <Badge variant="warning">{t('catalogue.identifiableFaces')}</Badge>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      </section>
+      <AlbumClips
+        albumId={album.id}
+        editable={editable}
+        devDriver={storageDriver() === 'local'}
+        maxBytes={maxClipBytes()}
+        coverClipId={album.coverClipId}
+        clips={studioClips}
+      />
     </div>
   )
 }

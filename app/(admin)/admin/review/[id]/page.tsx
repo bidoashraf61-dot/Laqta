@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, FileText } from 'lucide-react'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { findDuplicates } from '@/lib/admin'
@@ -14,6 +14,7 @@ import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { requestLocale } from '@/lib/locale-request'
 import { mediaUrl } from '@/lib/media'
+import { hasDocument } from '@/lib/uploads'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   // Resolve the locale before rendering anything.
@@ -42,7 +43,11 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                 include: {
                   release: {
                     select: {
+                      id: true,
                       type: true,
+                      fileKey: true,
+                      fileName: true,
+                      fileUploadedAt: true,
                       authority: true,
                       referenceNumber: true,
                       verification: true,
@@ -64,9 +69,9 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   const checklist = normaliseChecklist(task.checklist)
 
   const releases = task.album.clips.flatMap((clip) => clip.releaseLinks.map((link) => link.release))
-  const uniqueReleases = [
-    ...new Map(releases.map((r) => [`${r.type}-${r.referenceNumber}`, r])).values(),
-  ]
+  // One row per release. Keyed by id: two permits with no reference number
+  // are two documents, and keying by type+reference merged them.
+  const uniqueReleases = [...new Map(releases.map((r) => [r.id, r])).values()]
 
   return (
     <div className="space-y-6">
@@ -127,10 +132,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         ) : (
           <ul className="divide-y rounded-lg border">
             {uniqueReleases.map((release) => (
-              <li
-                key={`${release.type}-${release.referenceNumber}`}
-                className="flex flex-wrap items-center gap-3 p-3 text-sm"
-              >
+              <li key={release.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
                 <span className="flex-1">{release.type}</span>
                 {release.authority ? (
                   <span className="ltr-island text-muted-foreground">{release.authority}</span>
@@ -138,6 +140,27 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                 {release.referenceNumber ? (
                   <span className="numeric text-muted-foreground">{release.referenceNumber}</span>
                 ) : null}
+                {/* The scan opens through the authenticated route, which answers
+                    with a URL that lives a minute — never a public key. A plain
+                    anchor in a new tab: it is a document, not a navigation. */}
+                {hasDocument(release) ? (
+                  <a
+                    href={`/api/studio/releases/${release.id}/document`}
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
+                  >
+                    <FileText className="size-4 text-muted-foreground" aria-hidden />
+                    {t('admin.releaseDocument')}
+                    {release.fileName ? (
+                      <span className="ltr-island max-w-40 truncate text-xs text-muted-foreground">
+                        {release.fileName}
+                      </span>
+                    ) : null}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground">{t('admin.releaseNoDocument')}</span>
+                )}
                 <Badge variant={release.verification === 'verified' ? 'success' : 'warning'}>
                   {release.verification}
                 </Badge>

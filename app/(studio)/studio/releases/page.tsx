@@ -8,6 +8,8 @@ import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { SettingsForm } from '@/components/dashboard/form'
 import { StatusBadge } from '@/components/dashboard/status'
 import { ReleaseLinker, type LinkableClip } from '@/components/studio/release-linker'
+import { ReleaseDocument } from '@/components/studio/release-document'
+import { hasDocument, maxDocumentBytes } from '@/lib/uploads'
 import { createRelease } from '@/app/(studio)/studio/actions'
 import { formatDate, t } from '@/lib/i18n'
 import { UserText } from '@/components/ui/bilingual'
@@ -141,6 +143,18 @@ export default async function StudioReleasesPage() {
                   </Alert>
                 ) : null}
 
+                <ReleaseDocument
+                  releaseId={release.id}
+                  document={
+                    hasDocument(release)
+                      ? { name: release.fileName ?? '—', sizeBytes: release.fileSizeBytes ?? 0 }
+                      : null
+                  }
+                  locked={release.verification === 'verified'}
+                  rejected={release.verification === 'rejected'}
+                  maxBytes={maxDocumentBytes()}
+                />
+
                 <ReleaseLinker
                   releaseId={release.id}
                   clips={linkable}
@@ -152,9 +166,7 @@ export default async function StudioReleasesPage() {
         </div>
 
         <Panel title={t('dash.addRelease')} className="lg:sticky lg:top-20">
-          <Alert variant="info" className="mb-4">
-            <AlertDescription>{t('dash.releaseFileNote')}</AlertDescription>
-          </Alert>
+          <p className="mb-4 text-sm text-muted-foreground">{t('dash.releaseDocAfterCreate')}</p>
 
           <SettingsForm action={createRelease} submitLabel={t('dash.addRelease')}>
             <Field label={t('dash.releaseType')} htmlFor="type" required>

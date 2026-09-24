@@ -19,8 +19,8 @@ or entitlement directly: it requests, and an admin settles.
 | `/studio/analytics` | 7/30/90-day performance of the creator's catalogue, with a views → cart → purchase funnel | [studio-analytics.md](./studio-analytics.md) |
 | `/studio/albums` | The album working list, with search, status filters and pause/resume | [studio-albums.md](./studio-albums.md) |
 | `/studio/albums/new` | Create a draft album from a title and a price band | [studio-albums-new.md](./studio-albums-new.md) |
-| `/studio/albums/[id]` | One album's clips, its spec-consistency check, and the submit-for-review gate | [studio-albums-id.md](./studio-albums-id.md) |
-| `/studio/releases` | Declare model/property/permit releases and link them to the clips they cover | [studio-releases.md](./studio-releases.md) |
+| `/studio/albums/[id]` | Upload, name, order and delete an album's clips, pick the cover, see per-clip processing state and spec consistency, and submit for review | [studio-albums-id.md](./studio-albums-id.md) |
+| `/studio/releases` | Declare model/property/permit releases, attach the scanned document, and link them to the clips they cover | [studio-releases.md](./studio-releases.md) |
 | `/studio/earnings` | The creator ledger: available, held with its release date, lifetime | [studio-earnings.md](./studio-earnings.md) |
 | `/studio/payouts` | Request a transfer of the available balance; past requests | [studio-payouts.md](./studio-payouts.md) |
 | `/studio/settings` | Public profile, payout rail, and the current revenue share | [studio-settings.md](./studio-settings.md) |
@@ -37,12 +37,20 @@ or entitlement directly: it requests, and an admin settles.
   recomputes it, and the settings page's share figure is informational only.
 - **Entitlement is frozen at purchase** in `OrderItem.clipManifestSnapshot`;
   pausing, editing or resubmitting an album never changes what a buyer owns.
+- **Clip specs come from the file, never the browser.** Uploads go straight to
+  private storage ([`/api/studio/uploads`](../api/studio-uploads.md)); ffprobe fills
+  the technical columns and the ingest job (`lib/ingest.ts`) makes the watermarked
+  preview and poster. Clips are only editable while the album is `draft` or
+  `changes_requested`.
 - **Nothing here self-approves.** Album publication needs the review queue,
   release verification needs a reviewer, and a payout needs admin approval.
 
 ## Not wired
 
-- No studio surface creates or edits a `Clip`. `/studio/albums/[id]` lists clips
-  read-only; upload, reorder and cover selection do not exist.
-- Release documents cannot be attached: cloud storage is not switched on, so
-  `Release.fileKey` is written as the literal prefix `pending/{creatorId}`.
+- No clip metadata beyond the two titles is editable in the studio: camera,
+  lens, movement, shot size, location, people/faces flags and taxonomy still
+  arrive from the seed or an operator. `identifiableFaces` therefore stays
+  `false` on uploaded clips unless an admin sets it.
+- A release itself cannot be edited or deleted — only its scan.
+- The S3 upload path (presigned multipart PUTs) is built and documented but not
+  exercised by a gate; `verify:uploads` runs on the local driver.

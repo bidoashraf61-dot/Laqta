@@ -83,6 +83,7 @@ export async function canSubmit(albumId: string): Promise<SubmitCheck> {
           id: true,
           identifiableFaces: true,
           hasPeople: true,
+          ingestStatus: true,
           releaseLinks: {
             select: { release: { select: { type: true, verification: true } } },
           },
@@ -94,8 +95,17 @@ export async function canSubmit(albumId: string): Promise<SubmitCheck> {
   const reasons: string[] = []
   if (!album) return { ok: false, reasons: ['studio.albumMissing'] }
 
-  if (album.clips.length < MIN_ALBUM_CLIPS) reasons.push('studio.minClips')
+  // Only a READY clip counts toward the minimum: an upload still in flight
+  // has no specs and no preview, and a reviewer cannot judge it. Every clip
+  // counts toward the maximum, so uploads cannot overshoot and be trimmed
+  // later by whichever happened to fail.
+  const ready = album.clips.filter((clip) => clip.ingestStatus === 'ready')
+  if (ready.length < MIN_ALBUM_CLIPS) reasons.push('studio.minClips')
   if (album.clips.length > MAX_ALBUM_CLIPS) reasons.push('studio.maxClips')
+  if (album.clips.some((clip) => clip.ingestStatus === 'failed')) reasons.push('studio.clipsFailed')
+  if (album.clips.some((clip) => !['ready', 'failed'].includes(clip.ingestStatus))) {
+    reasons.push('studio.clipsProcessing')
+  }
   if (!album.titleAr?.trim()) reasons.push('studio.titleArRequired')
   if (!album.titleEn?.trim()) reasons.push('studio.titleEnRequired')
 

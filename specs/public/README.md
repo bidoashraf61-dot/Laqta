@@ -48,6 +48,7 @@ editing copy) is never selected on a public surface.
 | `/checkout` | Billing entity, payment method, and the order freeze | [checkout.md](checkout.md) |
 | `/checkout/return` | Read-only payment status after Paymob's hosted checkout | [checkout-return.md](checkout-return.md) |
 | `/boards/[token]` | Account-free shared shortlist for agency clients | [boards-token.md](boards-token.md) |
+| `/sample` | The free sample album: claim once, signed in; every clip links to its album | [sample.md](sample.md) |
 | `/sell` | Creator recruitment and the revenue-share pitch | [sell.md](sell.md) |
 | `/about` | What Laqta is | [about.md](about.md) |
 | `/contact` | Contact form (stored + mailed to the operator), plus WhatsApp, support email and company details once the owner sets them | [contact.md](contact.md) |

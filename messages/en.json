@@ -791,7 +791,7 @@
   },
   "sample": {
     "lead": "Try before you buy,",
-    "body": "{count} clips picked from Laqta albums, as original files under a full commercial licence. Free, once per account.",
+    "body": "{clips} picked from Laqta albums, as original files under a full commercial licence. Free, once per account.",
     "claim": "Get the sample free",
     "signIn": "Sign in to get it",
     "signInNote": "The sample is for signed-in accounts. You come back to this page after signing in.",
@@ -802,10 +802,16 @@
     "fromAlbumCta": "See the full album",
     "unavailable": "The sample is not available right now.",
     "draftNotice": "Admin preview: the sample is not published, and visitors cannot see it.",
-    "banner": "Try before you buy: {count} free clips from Laqta albums.",
+    "banner": "Try before you buy: {clips} free from Laqta albums.",
     "bannerCta": "See the sample",
     "tryFirst": "Try free clips from the sample",
     "seoTitle": "The Laqta free sample",
     "seoDescription": "Clips picked from Laqta albums, as original files under a full commercial licence, free for every signed-in account."
+  },
+  "count": {
+    "clipOne": "1 clip",
+    "clipTwo": "2 clips",
+    "clipFew": "{count} clips",
+    "clipMany": "{count} clips"
   }
 }

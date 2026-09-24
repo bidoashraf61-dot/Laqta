@@ -53,6 +53,7 @@ row written by the API route.
   repo.
 
 ## Invariants
+- For the free sample, each clip row also links its **source album** (from `sourceAlbum` in the frozen manifest) — sample → purchase. Downloads are the ordinary entitlement downloads.
 - **Frozen entitlement.** Clips are read from `OrderItem.clipManifestSnapshot`
   only. A clip the creator has since deleted is still listed and still
   downloadable.

@@ -244,6 +244,27 @@ async function main() {
     }
   }
 
+  // ── Admin: the sample curation page renders and its album picker works ──
+  {
+    const page = await adminContext.newPage()
+    const errors = watchErrors(page)
+    await page.goto(`${BASE}/admin/merchandising/sample`, { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(900)
+    report('sample curation page renders', (await page.getByText('العيّنة المجانية').count()) > 0)
+    const chip = page.locator('a[href^="/admin/merchandising/sample?album="]').first()
+    if ((await chip.count()) > 0) {
+      await chip.click()
+      await page.waitForTimeout(1500)
+      const rows = await page.getByRole('button', { name: /^(أضف)$/ }).count()
+      const added = await page.getByText('مضافة').count()
+      report('album picker lists clips to add', rows + added > 0, `${rows} addable, ${added} added`)
+    } else {
+      report('album picker lists live albums', false, 'no album chip')
+    }
+    report('no errors on the sample curation page', errors.length === 0, errors.slice(0, 2).join(' | '))
+    await page.close()
+  }
+
   // Every route that carries filter chips, because the bug this replaced was
   // live on two pages while five others worked — testing one proves nothing.
   {

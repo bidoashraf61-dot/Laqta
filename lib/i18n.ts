@@ -135,6 +135,21 @@ export function formatMoneyIn(
   )
 }
 
+/**
+ * «٦ لقطات», «١٢ لقطة» — a clip count with Arabic number agreement.
+ *
+ * 1 and 2 have their own forms, 3–10 take the plural, 11 and up the singular
+ * (tamyīz). Most of the site never needs this because albums are 30–70 clips;
+ * the free sample can be any size. English only distinguishes one.
+ */
+export function clipCount(n: number): string {
+  const count = formatNumber(n)
+  if (n === 1) return t('count.clipOne')
+  if (n === 2) return t('count.clipTwo')
+  const tens = n % 100
+  return tens >= 3 && tens <= 10 ? t('count.clipFew', { count }) : t('count.clipMany', { count })
+}
+
 export function formatNumber(value: number) {
   return new Intl.NumberFormat(`${activeBcp47()}-u-nu-latn`).format(value)
 }

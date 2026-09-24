@@ -4,7 +4,7 @@ import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { EmptyState } from '@/components/ui/state'
-import { formatNumber, t } from '@/lib/i18n'
+import { clipCount, formatNumber, t } from '@/lib/i18n'
 import { PageTitle, Prose } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
@@ -107,7 +107,7 @@ export default async function AlbumsPage({
       {/* The free sample, when published: the lowest-commitment way in. */}
       {sample ? (
         <p className="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-card px-4 py-3 text-sm">
-          <span>{t('sample.banner', { count: formatNumber(sample.clips.length) })}</span>
+          <span>{t('sample.banner', { clips: clipCount(sample.clips.length) })}</span>
           <Link href="/sample" className="font-medium underline underline-offset-4 hover:text-gold">
             {t('sample.bannerCta')}
           </Link>

@@ -38,7 +38,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/messages` | Messages from the public `/contact` form: read in full, reply by mail, mark handled / reopen. | [admin-messages.md](admin-messages.md) |
 | `/admin/catalogue` | Live catalogue: pause, resume, feature, delist, set an album's trailer; read-only price bands. | [admin-catalogue.md](admin-catalogue.md) |
 | `/admin/taxonomy` | Categories, locations, tags, themes and the search synonym layer. | [admin-taxonomy.md](admin-taxonomy.md) |
-| `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles. | [admin-merchandising.md](admin-merchandising.md) |
+| `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles; link to the free sample. | [admin-merchandising.md](admin-merchandising.md) |
+| `/admin/merchandising/sample` | Curate, title and publish the free sample album. | [admin-merchandising-sample.md](admin-merchandising-sample.md) |
 | `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination) and mark them paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |

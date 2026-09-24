@@ -10,7 +10,8 @@ the clip contact sheet, and the eight-check checklist that gates approval.
 - `ReviewTask.findUnique({ where: { id } })` with `album` →
   `creator` (handle, displayNameAr, country, status) and
   `clips` (`orderBy orderIndex asc`) → `releaseLinks.release`
-  (type, authority, referenceNumber, verification, validTo).
+  (id, type, fileKey, fileName, fileUploadedAt, authority, referenceNumber,
+  verification, validTo).
 - `lib/admin.findDuplicates(albumId)` — reads `Clip.perceptualHash` for this album, then
   finds `Clip` rows in **other** albums sharing a hash, with their album slug/title and
   creator handle. Perceptual-hash equality, not checksum; matches are surfaced, never
@@ -19,13 +20,17 @@ the clip contact sheet, and the eight-check checklist that gates approval.
   width×height; flags `mixedFrameRate`, `mixedProfile`, `mixedResolution`.
 - `lib/review-checklist.normaliseChecklist(task.checklist)` — the stored JSON, backfilled
   to the canonical 8 keys so old rows stay readable.
-- Releases are de-duplicated in the page by `${type}-${referenceNumber}`.
+- Releases are de-duplicated in the page by `Release.id` (it used to be
+  `${type}-${referenceNumber}`, which merged two permits with no reference number
+  into one row and hid the second document).
+- `lib/uploads.ts#hasDocument(release)` — whether a scan is attached.
 
 ## Controls
 
 | Control | Action | Effect |
 | --- | --- | --- |
 | `BackLink` | link | → `/admin/review` |
+| «عرض المستند» per release (plain `<a target="_blank">`, with the file name) | `GET /api/studio/releases/[id]/document` ([spec](../api/release-document.md)) | Re-checks the admin role, writes `AuditLog release.document_view`, then a 302 to a 60-second signed S3 URL, or the file streamed `private, no-store` on the local driver. «بلا مستند» when none is attached |
 | Per-check state chips (pass / fail / not_applicable) × 8 checks | local `setState` in `ReviewChecklist` | client-only until a decision is submitted; nothing is persisted per check |
 | «ملاحظة للصانع» textarea | local state | becomes `ReviewTask.decisionNote` |
 | «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve`. Emails the creator `album.approved` (link to the live album page). Redirects to `/admin` |
@@ -49,8 +54,12 @@ authorisation boundary.
 - **Consistency warnings** — a second warning `Alert` for mixed frame rate, colour
   profile or resolution.
 - **No releases on file** — the clearance section renders `state.empty`.
-- **Clip with no thumbnail key** — the tile renders an empty muted box; `Clip.thumbnailKeys[0]`
-  is used verbatim as an `<img src>`.
+- **Release without a scan** — «بلا مستند» in place of the link; the reviewer can see
+  the paperwork is missing before passing the `releases` check.
+- **Clip with no thumbnail key** — the tile renders an empty muted box; the poster is
+  `mediaUrl(Clip.thumbnailKeys[0])`. Clips uploaded in the studio get their poster from
+  the ingest job, and an album can only reach review once every clip is `ready`
+  (`canSubmit`), so a reviewed upload always has one.
 - **Clip with `identifiableFaces`** — a warning badge on the tile.
 - **Approve blocked** — a warning `Alert` states the reason from `canApprove`: either
   "every check must be decided" or which blocking check is failing.
@@ -86,7 +95,14 @@ authorisation boundary.
   task and a new message. With no provider configured the row stays pending on
   `/admin/settings`.
 
+## Invariants
+- A release scan is only ever reached through the authenticated document route — the
+  page renders no storage key and no public URL.
+
 ## Verified by
+`verify:flows` has an admin open a fixture release's scan through the document route
+(200 locally / 302 on S3); the page itself is still not loaded by a gate.
+
 **The route** is not covered: `/admin/review/[id]` is absent from
 `scripts/verify-arabic.ts`, `scripts/audit-portal.ts` and `scripts/verify-flows.ts`, so
 nothing loads this page automatically.

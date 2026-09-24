@@ -7,6 +7,7 @@ import { db } from '@/lib/db'
 import { getEarnings, submitForReview, MIN_PAYOUT_USD } from '@/lib/studio'
 import { recordAudit } from '@/lib/audit'
 import { actionT } from '@/lib/locale-request'
+import { destroyClip, editableClip, renumberClips } from '@/lib/uploads'
 
 type Result = { ok: boolean; message?: string }
 
@@ -76,6 +77,91 @@ export async function setAlbumVisibility(
   revalidatePath('/studio/albums')
   revalidatePath(`/studio/albums/${album.id}`)
   return { ok: true, message: tr('actions.confirm') }
+}
+
+/**
+ * ── Clip management ─────────────────────────────────────────────────────────
+ * Titles, order, cover and delete — every one re-checks, through
+ * `editableClip` / `editableAlbum`, that the caller owns the album and that it
+ * is still `draft` or `changes_requested`. An album in review is frozen: the
+ * reviewer must decide on what was submitted, not on what it became since.
+ */
+async function clipRefusal(error: string | null) {
+  const tr = await actionT()
+  if (error === 'not_editable') return { ok: false, message: tr('studio.upload.frozen') }
+  return { ok: false, message: tr('state.notFound') }
+}
+
+/** Rename a clip, both languages at once. */
+export async function updateClipTitles(clipId: string, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error, clip } = await editableClip(user, clipId)
+  if (error || !clip) return clipRefusal(error)
+
+  const titleAr = String(formData.get('titleAr') ?? '').trim().slice(0, 160)
+  const titleEn = String(formData.get('titleEn') ?? '').trim().slice(0, 160)
+  if (!titleAr) return { ok: false, message: tr('studio.titleArRequired') }
+  if (!titleEn) return { ok: false, message: tr('studio.titleEnRequired') }
+
+  await db.clip.update({ where: { id: clip.id }, data: { titleAr, titleEn } })
+  await recordAudit({ actorId: user.id, action: 'clip.rename', entity: 'Clip', entityId: clip.id })
+  revalidatePath(`/studio/albums/${clip.albumId}`)
+  return { ok: true, message: tr('dash.saved') }
+}
+
+/** Swap a clip with its neighbour. Order is what the album page and the ZIP follow. */
+export async function moveClip(clipId: string, direction: 'up' | 'down'): Promise<Result> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error, clip } = await editableClip(user, clipId)
+  if (error || !clip) return clipRefusal(error)
+
+  await renumberClips(clip.albumId)
+  const siblings = await db.clip.findMany({
+    where: { albumId: clip.albumId },
+    orderBy: { orderIndex: 'asc' },
+    select: { id: true, orderIndex: true },
+  })
+  const at = siblings.findIndex((row) => row.id === clip.id)
+  const to = direction === 'up' ? at - 1 : at + 1
+  if (at < 0 || to < 0 || to >= siblings.length) return { ok: true }
+
+  await db.$transaction([
+    db.clip.update({ where: { id: siblings[at].id }, data: { orderIndex: siblings[to].orderIndex } }),
+    db.clip.update({ where: { id: siblings[to].id }, data: { orderIndex: siblings[at].orderIndex } }),
+  ])
+  revalidatePath(`/studio/albums/${clip.albumId}`)
+  return { ok: true, message: tr('dash.saved') }
+}
+
+/** The album's cover — only a READY clip, because the cover is its poster. */
+export async function setAlbumCover(clipId: string): Promise<Result> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error, clip } = await editableClip(user, clipId)
+  if (error || !clip) return clipRefusal(error)
+  if (clip.ingestStatus !== 'ready') return { ok: false, message: tr('studio.upload.coverNotReady') }
+
+  await db.album.update({ where: { id: clip.albumId }, data: { coverClipId: clip.id } })
+  await recordAudit({ actorId: user.id, action: 'album.set_cover', entity: 'Album', entityId: clip.albumId })
+  revalidatePath(`/studio/albums/${clip.albumId}`)
+  return { ok: true, message: tr('studio.upload.coverSet') }
+}
+
+/** Delete a clip and, best effort, its master, preview and poster. */
+export async function deleteClip(clipId: string): Promise<Result> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error, clip } = await editableClip(user, clipId)
+  if (error || !clip) return clipRefusal(error)
+
+  const result = await destroyClip(clip)
+  if (result === 'sold') return { ok: false, message: tr('studio.upload.sold') }
+  await recordAudit({ actorId: user.id, action: 'clip.delete', entity: 'Clip', entityId: clip.id })
+  revalidatePath(`/studio/albums/${clip.albumId}`)
+  revalidatePath('/studio/albums')
+  return { ok: true, message: tr('studio.upload.deleted') }
 }
 
 /**
@@ -218,11 +304,12 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
 /**
  * Declare a release.
  *
- * The metadata is recorded now; the scanned document is attached once cloud
- * storage is switched on, which is why `fileKey` carries a `pending/` prefix
- * rather than a fake key. Verification stays `pending` regardless — only a
- * reviewer moves a release to `verified`, and that is the state the submission
- * gate actually reads.
+ * The metadata is recorded here; the scanned document is attached afterwards
+ * from the release's card (`/api/studio/releases/<id>/document` — a server
+ * action body is capped at 1 MB, a scan is not). Until then `fileKey` carries
+ * the `pending/` prefix rather than a fake key. Verification stays `pending`
+ * regardless — only a reviewer moves a release to `verified`, and that is the
+ * state the submission gate actually reads.
  */
 export async function createRelease(_state: Result | null, formData: FormData): Promise<Result> {
   const tr = await actionT()

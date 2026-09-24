@@ -106,8 +106,11 @@ export const config = {
      * callbacks, and static assets. Files with an extension are excluded so
      * /fonts/*.woff2 is untouched. `api/payments` is a server-to-server POST
      * authenticated by its HMAC alone; no session or locale logic belongs in
-     * front of it.
+     * front of it. `api/studio` carries upload bodies (a master part is
+     * 16 MB+, a release scan up to 15 MB) and Next buffers any body the
+     * middleware can see at 10 MB — so those JSON routes check the session
+     * themselves (`lib/route-auth.ts#studioActor`) and sit outside.
      */
-    '/((?!api/auth|api/payments|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
+    '/((?!api/auth|api/payments|api/studio|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
   ],
 }

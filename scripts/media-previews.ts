@@ -1,11 +1,13 @@
 import { MEDIA_OUT, MEDIA_WORKDIR, awsMediaConfig, parseFlags } from './media-env'
-import { spawnSync } from 'node:child_process'
-import { createWriteStream, existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
+import { createWriteStream, existsSync, mkdirSync, statSync } from 'node:fs'
 import { dirname, extname, join } from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import type { Readable } from 'node:stream'
 import { db } from '../lib/db'
 import { MEDIA_KEYS } from '../lib/media'
+// The ffmpeg half lives in lib/ so the studio's ingest job encodes exactly
+// the same preview a creator upload gets as the operator's batch does.
+import { encodePreviewAndPoster, hasBinary as has, probeVideo } from '../lib/media-pipeline'
 
 /**
  * `npm run media:previews` — make each clip's public preview from its master.
@@ -51,105 +53,6 @@ const force = Boolean(flags.force)
 const limit = flags.limit ? Number(flags.limit) : undefined
 const maxSeconds = flags['max-seconds'] ? Number(flags['max-seconds']) : 30
 const mastersDir = process.env.MEDIA_MASTERS_DIR?.trim() || join(MEDIA_WORKDIR, 'masters')
-
-const WATERMARK_TEXT = 'لقطة · معاينة'
-const WATERMARK_FONT = join(
-  process.cwd(),
-  'public/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2',
-)
-
-function has(binary: string) {
-  return spawnSync(binary, ['-version'], { stdio: 'ignore' }).status === 0
-}
-
-function run(binary: string, args: string[]) {
-  const result = spawnSync(binary, args, { encoding: 'utf8' })
-  if (result.status !== 0) {
-    throw new Error(`${binary} failed: ${(result.stderr || '').split('\n').slice(-6).join('\n')}`)
-  }
-  return result.stdout
-}
-
-function probe(file: string) {
-  const out = run('ffprobe', [
-    '-v', 'error',
-    '-select_streams', 'v:0',
-    '-show_streams',
-    '-show_format',
-    '-of', 'json',
-    file,
-  ])
-  const json = JSON.parse(out) as {
-    streams: { width: number; height: number; side_data_list?: { rotation?: number }[] }[]
-    format: { duration?: string }
-  }
-  const stream = json.streams[0]
-  if (!stream) throw new Error('no video stream')
-  const rotation = Math.abs(stream.side_data_list?.[0]?.rotation ?? 0)
-  // A phone master stored landscape with a 90° flag plays portrait; ffmpeg
-  // auto-rotates on decode, so size the output for what actually plays.
-  const [width, height] = rotation === 90 || rotation === 270
-    ? [stream.height, stream.width]
-    : [stream.width, stream.height]
-  return { width, height, duration: Number(json.format.duration ?? 0) }
-}
-
-/** Short side 720 (never upscaled), both sides even — H.264 needs that. */
-function previewSize(width: number, height: number) {
-  const short = Math.min(width, height)
-  const scale = Math.min(1, 720 / short)
-  const even = (n: number) => Math.max(2, Math.round((n * scale) / 2) * 2)
-  return { width: even(width), height: even(height) }
-}
-
-/**
- * The site's watermark, rendered by Chrome to a transparent PNG.
- *
- * Laid out in a CSS box 800px wide — about the width of the album page's
- * player, where the site's overlay was tuned — and scaled up to the preview's
- * pixel size, so the mark reads at the same proportion in the file as it does
- * on the page.
- */
-async function renderWatermark(width: number, height: number): Promise<string> {
-  const file = join(MEDIA_WORKDIR, 'watermark', `${width}x${height}.png`)
-  if (existsSync(file)) return file
-  mkdirSync(dirname(file), { recursive: true })
-
-  const cssWidth = 800
-  const cssHeight = Math.round((cssWidth * height) / width)
-  const font = readFileSync(WATERMARK_FONT).toString('base64')
-  // 48 marks, not the page's 12. The page cut to 12 purely for DOM cost
-  // (1,392 spans stalled Safari — see watermark.tsx); a PNG has no DOM, and
-  // 12 marks in a file make one diagonal band that a crop removes. 48 is the
-  // mark's original density: the same field, blanketed.
-  const marks = Array.from({ length: 48 }, () => `<span>${WATERMARK_TEXT}</span>`).join('')
-
-  const html = `<!doctype html><html dir="rtl"><head><style>
-    @font-face { font-family: 'Thmanyah Serif Display'; src: url(data:font/woff2;base64,${font}) format('woff2'); font-weight: 700; }
-    html, body { margin: 0; background: transparent; }
-    .frame { position: relative; width: ${cssWidth}px; height: ${cssHeight}px; overflow: hidden; }
-    .field { position: absolute; inset: -25%; display: flex; flex-wrap: wrap; align-content: center;
-      align-items: center; justify-content: center; column-gap: 2rem; row-gap: 1.5rem;
-      transform: rotate(-24deg); opacity: 0.16; }
-    span { white-space: nowrap; font-family: 'Thmanyah Serif Display'; font-weight: 700; font-size: 0.75rem;
-      letter-spacing: 0.2em; color: #fff; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
-  </style></head><body><div class="frame"><div class="field">${marks}</div></div></body></html>`
-
-  const { chromium } = await import('playwright')
-  const browser = await chromium.launch({ channel: 'chrome', headless: true })
-  try {
-    const page = await browser.newPage({
-      viewport: { width: cssWidth, height: cssHeight },
-      deviceScaleFactor: width / cssWidth,
-    })
-    await page.setContent(html)
-    await page.evaluate(() => document.fonts.ready)
-    await page.locator('.frame').screenshot({ path: file, omitBackground: true })
-  } finally {
-    await browser.close()
-  }
-  return file
-}
 
 async function fetchMaster(key: string, into: string) {
   const { GetObjectCommand } = await import('@aws-sdk/client-s3')
@@ -233,46 +136,14 @@ async function main() {
         await fetchMaster(masterKey, source.path)
       }
 
-      const { width, height, duration } = probe(source.path)
-      const size = previewSize(width, height)
-      const watermark = await renderWatermark(size.width, size.height)
-      mkdirSync(dirname(previewOut), { recursive: true })
-      mkdirSync(dirname(posterOut), { recursive: true })
-
-      run('ffmpeg', [
-        '-hide_banner', '-loglevel', 'error', '-y',
-        '-i', source.path,
-        '-i', watermark,
-        '-filter_complex',
-        `[0:v]scale=${size.width}:${size.height}:flags=lanczos,setsar=1[v];` +
-          // A fractional device scale can leave the PNG a pixel off; pin it.
-          `[1:v]scale=${size.width}:${size.height}[wm];` +
-          `[v][wm]overlay=0:0:format=auto,format=yuv420p[out]`,
-        '-map', '[out]',
-        '-an',
-        '-t', String(maxSeconds),
-        '-fpsmax', '30',
-        '-c:v', 'libx264', '-preset', 'slow', '-crf', '23',
-        '-profile:v', 'high', '-level:v', '4.1', '-pix_fmt', 'yuv420p',
-        '-movflags', '+faststart',
+      const specs = await probeVideo(source.path)
+      const size = await encodePreviewAndPoster({
+        source: source.path,
         previewOut,
-      ])
-
-      // A frame a third of the way in (at most 2s): the first frame of a
-      // shot is often a fade or a slate.
-      const at = Math.min(2, Math.max(0, duration / 3))
-      const long = Math.max(width, height) > 1280
-      run('ffmpeg', [
-        '-hide_banner', '-loglevel', 'error', '-y',
-        '-ss', at.toFixed(2),
-        '-i', source.path,
-        '-frames:v', '1',
-        ...(long
-          ? ['-vf', width >= height ? 'scale=1280:-2:flags=lanczos' : 'scale=-2:1280:flags=lanczos']
-          : []),
-        '-q:v', '3',
         posterOut,
-      ])
+        specs,
+        maxSeconds,
+      })
 
       const kb = Math.round(statSync(previewOut).size / 1024)
       console.log(`  ✓ ${clip.slug}: ${size.width}×${size.height}, ${kb} KB (${extname(source.path) || 'file'} from ${source.kind})`)

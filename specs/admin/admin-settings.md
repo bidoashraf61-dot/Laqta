@@ -42,7 +42,10 @@ no settings table and no editor anywhere in the admin area for these values.
   warning otherwise. It reflects only whether env vars are set; nothing here uploads,
   probes the bucket, or verifies the credentials. It says nothing about the public media
   CDN (`NEXT_PUBLIC_MEDIA_CDN_URL`) — see `docs/media-aws.md`. Local development runs on the honest
-  local storage driver, so this badge is normally a warning.
+  local storage driver, so this badge is normally a warning. The line beside it
+  (`studio.uploadHint`) reads «بدون التخزين السحابي تبقى ملفات المبدعين ومستنداتهم على
+  هذا الخادم وحده، ولا تصلح للنشر.» — creator uploads and release scans work on the local
+  driver, but only on this machine.
 - **Audit entry with no actor** — em dash.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 

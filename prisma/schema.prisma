@@ -107,6 +107,8 @@ enum ReleaseVerification {
 }
 
 enum IngestStatus {
+  /// The browser is still sending the master (studio upload). No specs yet.
+  uploading
   uploaded
   probing
   transcoding
@@ -576,6 +578,20 @@ model Clip {
   /// detection in the admin review queue.
   perceptualHash String?
   ingestStatus   IngestStatus @default(uploaded)
+  /// Why ingest failed, as a short code the studio maps to copy
+  /// (`codec`, `container`, `probe`, `preview`, `missing`, `size`). NULL
+  /// unless `ingestStatus = failed`. Never free text: it renders on an Arabic
+  /// page and must not carry an ffmpeg stack trace.
+  ingestError      String?
+  /// Bytes of the master. While `uploading`, the size the browser DECLARED
+  /// (only used to re-derive the part size on resume); on completion, the size
+  /// read back from storage. Summed into `Album.totalSizeBytes` for ready clips.
+  sizeBytes        BigInt?
+  /// The creator's own filename, shown in the studio while it uploads.
+  originalFilename String?
+  /// S3 multipart upload id while `ingestStatus = uploading` on the S3
+  /// driver; NULL otherwise. Lets an interrupted upload resume or be aborted.
+  uploadId         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -599,7 +615,16 @@ model Release {
   creatorId String
   type      ReleaseType
 
+  /// `documents/releases/<releaseId>/<uuid>.<ext>` in PRIVATE storage once a
+  /// scan is attached; the literal `pending/<creatorId>` until then. Never a
+  /// public key — `lib/media.ts` refuses `documents/` by name.
   fileKey         String
+  /// Set with the scan, cleared with it. `fileUploadedAt` is the "a document
+  /// is attached" flag — `fileKey` alone is not, because of the legacy prefix.
+  fileName        String?
+  fileMime        String?
+  fileSizeBytes   Int?
+  fileUploadedAt  DateTime?
   subjectName     String? // model / property owner
   /// Issuing authority for permits — RCU (AlUla), Diriyah Gate, NEOM,
   /// Red Sea Global, GCAM, municipality, airport authority…

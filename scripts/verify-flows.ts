@@ -13,6 +13,9 @@
 
 import { chromium, type Browser, type Page } from 'playwright'
 import { PrismaClient } from '@prisma/client'
+import { spawnSync } from 'node:child_process'
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
 
@@ -242,6 +245,92 @@ async function main() {
         await db.$disconnect()
       }
     }
+  }
+
+  // ── Creator: upload a clip, watch it become ready, rename it; attach a scan
+  //
+  // Through the real page: the file input, the multipart upload, the ingest
+  // job, the polling refresh, and the rename server action. Then a release
+  // scan through its card, opened by an admin through the private route.
+  {
+    const db = new PrismaClient()
+    const creator = await db.creator.findFirst({ where: { user: { email: 'creator@laqta.sa' } } })
+    const dir = join(process.cwd(), '.media', 'verify-flows')
+    mkdirSync(dir, { recursive: true })
+    const master = join(dir, 'flow-master.mp4')
+    const scan = join(dir, 'flow-permit.pdf')
+    const made = spawnSync('ffmpeg', [
+      '-hide_banner', '-loglevel', 'error', '-y',
+      '-f', 'lavfi', '-i', 'testsrc2=size=1280x720:rate=25', '-t', '2',
+      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', master,
+    ])
+    writeFileSync(scan, '%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n')
+    if (!creator || made.status !== 0) {
+      report('studio upload flow', false, !creator ? 'seed creator missing' : 'ffmpeg missing')
+    } else {
+      const album = await db.album.create({
+        data: {
+          slug: `verify-upload-${Date.now()}`,
+          creatorId: creator.id,
+          titleAr: 'ألبوم اختبار الرفع',
+          titleEn: 'Upload test album',
+          priceStandard: 100,
+          status: 'draft',
+        },
+      })
+      const release = await db.release.create({
+        data: { creatorId: creator.id, type: 'permit', fileKey: `pending/${creator.id}`, subjectName: 'تصريح اختبار الرفع' },
+      })
+      try {
+        const page = await creatorContext.newPage()
+        const errors = watchErrors(page)
+        // networkidle: the file input's onChange only exists once React has
+        // hydrated, and a file set before that is silently ignored.
+        await page.goto(`${BASE}/studio/albums/${album.id}`, { waitUntil: 'networkidle' })
+        await page.locator('input[type="file"][multiple]').setInputFiles(master)
+        const ready = await page
+          .getByText('جاهزة', { exact: true })
+          .first()
+          .waitFor({ timeout: 90_000 })
+          .then(() => true)
+          .catch(() => false)
+        report('an uploaded clip reaches «جاهزة» on the page', ready)
+        const clip = await db.clip.findFirst({ where: { albumId: album.id } })
+        report('its specs came from the file', clip?.width === 1280 && Number(clip?.fps) === 25, `${clip?.width}×${clip?.height}@${clip?.fps}`)
+
+        await page.getByRole('button', { name: 'المزيد' }).first().click()
+        await page.getByRole('menuitem', { name: 'تعديل العنوان' }).click()
+        await page.fill('input[name="titleAr"]', 'كثبان عند الغروب')
+        await page.getByRole('button', { name: 'حفظ' }).click()
+        await page.getByText('كثبان عند الغروب').first().waitFor({ timeout: 10_000 }).catch(() => {})
+        const renamed = await db.clip.findFirst({ where: { albumId: album.id }, select: { titleAr: true } })
+        report('renaming a clip lands', renamed?.titleAr === 'كثبان عند الغروب')
+        report('no errors on the upload flow', errors.length === 0, errors.slice(0, 2).join(' | '))
+
+        await page.goto(`${BASE}/studio/releases`, { waitUntil: 'networkidle' })
+        const card = page.locator('section', { hasText: 'تصريح اختبار الرفع' })
+        await card.locator('input[type="file"]').setInputFiles(scan)
+        await card.getByText('flow-permit.pdf').waitFor({ timeout: 15_000 }).catch(() => {})
+        const withDoc = await db.release.findUnique({ where: { id: release.id } })
+        report('a release scan attaches from its card', Boolean(withDoc?.fileUploadedAt) && withDoc!.fileKey.startsWith('documents/'))
+        await page.close()
+
+        const adminOpen = await adminContext.request.get(`${BASE}/api/studio/releases/${release.id}/document`, { maxRedirects: 0 })
+        report('an admin opens the scan through the private route', [200, 302].includes(adminOpen.status()), String(adminOpen.status()))
+      } finally {
+        const clips = await db.clip.findMany({ where: { albumId: album.id } })
+        const page = await creatorContext.newPage()
+        for (const clip of clips) {
+          await page.request.delete(`${BASE}/api/studio/uploads/${clip.id}`).catch(() => {})
+        }
+        await page.request.delete(`${BASE}/api/studio/releases/${release.id}/document`).catch(() => {})
+        await page.close()
+        await db.release.delete({ where: { id: release.id } }).catch(() => {})
+        await db.album.delete({ where: { id: album.id } }).catch(() => {})
+      }
+    }
+    rmSync(dir, { recursive: true, force: true })
+    await db.$disconnect()
   }
 
   // ── Admin: the sample curation page renders and its album picker works ──

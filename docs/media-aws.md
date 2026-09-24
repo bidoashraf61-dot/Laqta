@@ -9,7 +9,7 @@ masters), `lib/media.ts` (public media URLs) and `scripts/media-*.ts`.
 
 | Bucket | Holds | Public? | Reached by |
 | --- | --- | --- | --- |
-| `S3_MASTERS_BUCKET` (e.g. `laqta-masters`) | masters `masters/…`, clean editing proxies `proxies/…`, album ZIPs `albums/…` | **Never.** Block all public access. | `/api/download` only — after the entitlement is re-checked it 302s to a URL that expires in `S3_SIGNED_URL_TTL_SECONDS` (default 900s) |
+| `S3_MASTERS_BUCKET` (e.g. `laqta-masters`) | masters `masters/…`, clean editing proxies `proxies/…`, album ZIPs `albums/…`, release scans `documents/…` | **Never.** Block all public access. | `/api/download` only — after the entitlement is re-checked it 302s to a URL that expires in `S3_SIGNED_URL_TTL_SECONDS` (default 900s). Scans: `/api/studio/releases/<id>/document`, a 60 s URL. Creator uploads arrive by presigned multipart PUT from the browser |
 | `S3_MEDIA_BUCKET` (e.g. `laqta-media`) | `hero/`, `previews/`, `posters/`, `trailers/` | Through CloudFront only (the bucket itself stays private, OAC) | `NEXT_PUBLIC_MEDIA_CDN_URL` + key |
 
 A master is the product. Nothing public ever points into the masters bucket,
@@ -49,16 +49,65 @@ and `lib/media.ts` refuses to build a public URL for a `masters/`, `proxies/`,
 5. **An IAM identity for the app** — an instance/task role on the server, or
    an IAM user whose keys go in `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`.
    Least privilege:
-   - `s3:GetObject` on `arn:aws:s3:::laqta-masters/*` (download signing and
-     `media:previews` fetching masters)
+   - `s3:GetObject` on `arn:aws:s3:::laqta-masters/*` (download signing,
+     `media:previews` and the studio ingest job fetching masters, opening scans)
+   - `s3:PutObject`, `s3:DeleteObject`, `s3:AbortMultipartUpload`,
+     `s3:ListMultipartUploadParts` on `arn:aws:s3:::laqta-masters/*` (studio
+     uploads — the presigned `UploadPart` URLs are signed with the app's
+     identity, so it needs the permission the browser borrows; release scans;
+     deleting a clip or a scan)
+   - `s3:DeleteObject` on `arn:aws:s3:::laqta-media/*` (deleting a clip removes
+     its preview and poster)
    - `s3:PutObject`, `s3:GetObject` on `arn:aws:s3:::laqta-media/*` and
      `s3:ListBucket` on `arn:aws:s3:::laqta-media` (`media:upload`; List makes
      the "already uploaded" check answer 404 instead of 403)
    The uploading machine (your Mac) can use a separate user with just the
    media permissions plus `GetObject` on masters.
-6. **Set the variables** (see `.env.example`) on the server **before**
+6. **CORS on the masters bucket** — the studio uploads masters from the
+   browser straight to S3 with presigned `UploadPart` URLs, so the bucket must
+   accept a cross-origin `PUT` from the site and let the page read each part's
+   `ETag` (without `ExposeHeaders: ETag` the upload completes nothing). S3 →
+   the masters bucket → *Permissions* → *Cross-origin resource sharing (CORS)*:
+
+   ```json
+   [
+     {
+       "AllowedOrigins": ["https://laqta.example"],
+       "AllowedMethods": ["PUT"],
+       "AllowedHeaders": ["*"],
+       "ExposeHeaders": ["ETag"],
+       "MaxAgeSeconds": 3600
+     }
+   ]
+   ```
+
+   Use the site's real origin(s) — never `*`. Add `http://localhost:3000` only on
+   a development bucket. Also add a lifecycle rule on the masters bucket:
+   *Delete expired object delete markers or incomplete multipart uploads* →
+   **abort incomplete multipart uploads after 7 days**, so an upload a creator
+   abandoned without pressing «إلغاء» does not bill forever.
+7. **Set the variables** (see `.env.example`) on the server **before**
    `npm run build` — `NEXT_PUBLIC_MEDIA_CDN_URL` is inlined at build time.
    `/admin/settings` shows the storage badge green once masters are on S3.
+
+## Creator uploads (studio)
+
+`/studio/albums/<id>` uploads masters in 16 MB+ parts (four in flight per
+file, two files at a time, resumable) to `masters/<albumId>/<clipId>.<ext>`.
+On completion the app measures the stored object, and the ingest job
+(`lib/ingest.ts`, same encoder as `media:previews`, so it needs **ffmpeg with
+libx264 and Chrome on the server**) reads the specs with ffprobe, then
+publishes `previews/<clip>.mp4` and `posters/<clip>.jpg` to the media bucket
+(or `public/uploads/` when `S3_MEDIA_BUCKET` is not set). It runs inside the web
+process after each upload; `npm run media:ingest` drains the same queue from a
+cron or after a restart. Limits: `UPLOAD_MAX_CLIP_BYTES` (default 20 GiB),
+`UPLOAD_MAX_DOCUMENT_BYTES` (default 15 MiB).
+
+Without `S3_MASTERS_BUCKET` + `AWS_REGION` the studio uses the **local
+driver**: parts stream through the app into `.media/uploads/`, masters are
+assembled under `MEDIA_MASTERS_DIR` (default `.media/masters`), scans go to
+`DOCUMENT_ROOT` (default `.documents/`) — all outside `public/` and gitignored.
+The studio says so on the page. It is for development only.
 
 ## Day to day (solo operator)
 
@@ -87,6 +136,6 @@ npm run media:upload                                     # hero + previews + pos
 
 - **HLS / adaptive streaming.** Previews are single progressive MP4s.
   `Clip.previewHlsKey` exists and nothing writes or reads it.
-- **Creator uploads** do not land in S3 yet — there is no upload flow in the
-  studio. Masters reach the bucket by hand (console, `aws s3 cp`) for now.
+- **Editing proxies** for uploaded clips: ingest makes the public preview and
+  poster, not `proxies/…` — `Clip.proxyKey` stays NULL on studio uploads.
 - **Album ZIPs** (`albums/<id>.zip`) are signed but nothing builds them.

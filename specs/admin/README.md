@@ -41,7 +41,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/merchandising` | Homepage slot copy, media and scheduling; collection publish/feature toggles; link to the free sample. | [admin-merchandising.md](admin-merchandising.md) |
 | `/admin/merchandising/sample` | Curate, title and publish the free sample album. | [admin-merchandising-sample.md](admin-merchandising-sample.md) |
 | `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
-| `/admin/payouts` | Approve payout requests (freezing the destination) and mark them paid. | [admin-payouts.md](admin-payouts.md) |
+| `/admin/payouts` | Approve payout requests (freezing the destination), batch approved ones into a payout run with one export file per rail, and mark a run (or a single payout) paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
 | `/admin/reports` | Zero-result search report plus the last 50 audit entries. Read-only. | [admin-reports.md](admin-reports.md) |
 | `/admin/settings` | Operating constants, licence version, storage status. Read-only by design. | [admin-settings.md](admin-settings.md) |
@@ -54,6 +54,10 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
   `/admin/review`, `/admin/disputes`, `/admin/payouts`, `/admin/taxonomy`.
 - `verify:money` covers the refund path (`lib/admin.refundOrderItem`).
+- `verify:payouts` covers `lib/payouts` behind `/admin/payouts`: run eligibility, the three
+  per-rail CSV formats and their totals, mark-run-paid posting the same ledger row as the
+  single mark-paid, sequential and concurrent double submit, and exclusion back to the queue
+  (library level — the rendered run panel and the download route are not driven by a gate).
 - `verify:payments` covers the Paymob callback into `settleOrder` and the derived
   webhook/manual source shown on `/admin/orders` (handler level, not the rendered row).
 - `verify:entitlement` covers the order snapshot.
@@ -63,8 +67,6 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 - `beginImpersonation` / `endImpersonation` exist in `actions.ts` and the `Impersonation`
   model exists, but **no UI in the area calls them**.
-- `PayoutRun` is never read or written by any admin route, despite `/admin/payouts` being
-  titled "دفعات التحويل" (payout runs). There is no batching or export.
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.
 - `PriceBand` has no editor anywhere.

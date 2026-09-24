@@ -16,8 +16,20 @@ import { useT } from '@/lib/i18n-client'
  * because a transfer with no reference cannot be reconciled against a
  * statement later and is the single most common cause of "you never paid me"
  * disputes.
+ *
+ * A payout inside a run shows the run instead: it is paid with the run, from
+ * the run panel, so the files and the ledger cannot disagree.
  */
-export function PayoutControls({ payoutId, status }: { payoutId: string; status: string }) {
+export function PayoutControls({
+  payoutId,
+  status,
+  runLabel = null,
+}: {
+  payoutId: string
+  status: string
+  /** Set when the payout sits in a run — the run is paid as a whole, not here. */
+  runLabel?: string | null
+}) {
   const t = useT()
 
   const router = useRouter()
@@ -31,6 +43,15 @@ export function PayoutControls({ payoutId, status }: { payoutId: string; status:
         label={t('dash.approvePayout')}
         variant="default"
       />
+    )
+  }
+
+  if (status === 'processing' && runLabel) {
+    return (
+      <span className="text-xs text-muted-foreground">
+        {t('payoutRun.inRun', { label: '' })}
+        <span className="ltr-island">{runLabel}</span>
+      </span>
     )
   }
 

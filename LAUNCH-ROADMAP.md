@@ -5,6 +5,15 @@ Written 2026-09-26 from a full audit of the code, specs and docs.
 
 **How to use this file**
 
+- **Daily view:** the owner picks and ticks tasks on the Launch Path page
+  (https://claude.ai/artifact/1MPK7uQK6q1oxtpWk9ZcSU). Its ticks live in the
+  page database, collection `status` (one doc per task, e.g. `P0-1`, with
+  `state` todo | today | done). **At the start of a session, read that
+  collection (ArtifactData `list`) and copy any owner ticks into this file.**
+  When a Claude session finishes a task, tick it here *and* write
+  `{task, state: "done", at}` to that collection. Milestone dates are
+  targets the owner can move.
+
 - Work top to bottom. Phases 0 → 5 are in order; inside a phase, tasks can run
   in parallel unless a task says *needs*.
 - **Who:** 🧑 = the owner (accounts, money, legal, content, decisions) ·
@@ -18,7 +27,7 @@ Written 2026-09-26 from a full audit of the code, specs and docs.
 
 ---
 
-## Phase 0 — Safety net (this week, before anything else)
+## M1 — Safe & backed up · target 3 Oct (Phase 0)
 
 - [ ] **P0.1 🤖 Close the phone sign-in hole.** With no SMS provider, the
   one-time code is sent back to the browser and shown on the form
@@ -42,7 +51,7 @@ Written 2026-09-26 from a full audit of the code, specs and docs.
   `docs/business/build-steps.md` (Saudi CR / Moyasar / ZATCA — superseded by
   Egypt company + Paymob).
 
-## Phase 1 — Owner accounts & decisions (start now — they take weeks)
+## M2 — Accounts & answers in · target 24 Oct (Phase 1 — start now, they take weeks)
 
 Nothing here is code. Each one unblocks a later 🤖 task.
 
@@ -89,7 +98,7 @@ Nothing here is code. Each one unblocks a later 🤖 task.
 - [ ] **P1.12 🧑 Contact details:** WhatsApp, support email, company legal name,
   Egyptian address, commercial registration number (`content/contact.ts`).
 
-## Phase 2 — Build what launch needs (🤖, as Phase 1 answers arrive)
+## M3 — Launch features built · target 31 Oct (Phase 2)
 
 - [ ] **P2.1 🤖 Wire Sentry** — install `@sentry/nextjs`, connect to the
   privacy scrubber in `lib/observability.ts`, report from `app/error.tsx`.
@@ -118,7 +127,7 @@ Nothing here is code. Each one unblocks a later 🤖 task.
   check, `prisma migrate deploy` on release, env checklist, backup schedule.
   *needs P1.11.*
 
-## Phase 3 — Real footage & catalogue (🧑 produces, 🤖 loads)
+## M4 — Real catalogue ready · target 14 Nov (Phase 3)
 
 - [ ] **P3.1 🧑 Produce the launch albums** — 4–5 albums of 30–70 clips each
   around one subject. Album 1 «فوق الغيم» plan:
@@ -135,7 +144,7 @@ Nothing here is code. Each one unblocks a later 🤖 task.
 - [ ] **P3.6 🧑 (Optional) a real testimonial** — only a real, attributable
   quote; otherwise the section stays out.
 
-## Phase 4 — Staging & go-live checks (🤝)
+## M5 — Rehearsal passed · target 21 Nov (Phase 4)
 
 - [ ] **P4.1 🤖 Staging deploy** on the chosen host with real env (Paymob in
   test mode). Run `npm run verify` against it — every gate green.
@@ -152,7 +161,7 @@ Nothing here is code. Each one unblocks a later 🤖 task.
 - [ ] **P4.6 🤝 Backups proven:** restore last night's database backup into a
   scratch database once.
 
-## Phase 5 — Launch
+## M6 — Live · soft launch 24 Nov, public 8 Dec (Phase 5)
 
 - [ ] **P5.1 🤝 Production deploy**, domain pointed, SSL on, production seed
   run once, albums loaded (P3.4).

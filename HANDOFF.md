@@ -140,5 +140,8 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Wrote this file.
 - Removed the five merged, clean agent worktrees in `.claude/worktrees/`.
 
+- Published the Launch Path page (six milestones, daily picks, ticks saved
+  to its database): https://claude.ai/artifact/1MPK7uQK6q1oxtpWk9ZcSU
+
 **Next:** P0.1 (close the phone sign-in hole) — 🤖, can start immediately.
 Owner: start P0.2 and the Phase 1 accounts today.

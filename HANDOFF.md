@@ -200,6 +200,23 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Noticed: `VAT_RATE` defaults to 0.15 but decision D7 recommends 0% until the
   accountant answers — set when D7 is decided.
 
-**Next:** owner answers D1–D10 and sends BIZ-02/03/04. Claude's remaining M1
+## 12. Session — 2026-09-26 (decisions, ALB-20)
+
+- D1–D10 answered and recorded (see §3 and `checklists/README.md`).
+- **ALB-20 drafted:** `docs/creators/creator-brief-{ar,en}.md` +
+  `qa-log-template.csv` — founding offer (70%, $49–$249, $100 minimum, 30-day
+  hold), one subject / 30–70 clips / one origin (AI or filmed, never mixed —
+  `Album.origin` is per album) / one shape, tech spec from `lib/uploads.ts`
+  (.mov/.mp4, H.264/H.265/ProRes, 20 GB), Saudi-accuracy and AI-fault checks,
+  releases and permits from `lib/review-checklist.ts`, banned list from the
+  content policy. Placeholders: deadline (ALB-23) and contact email.
+  **Waiting for owner approval.**
+- Found: `/content-policy` (content/legal.ts) still says albums of «no fewer
+  than eight clips» — contradicts 30–70. Fix with DEV-20.
+- The 70% founding share needs no new code: the **silver** tier is 30%
+  commission = 70% to the creator. Set founding creators to silver in admin
+  (and note that silver is normally earned at USD 12.5k lifetime).
+
+**Next:** owner approves the creator brief and sends BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

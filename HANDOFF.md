@@ -129,9 +129,9 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 
 - Work on a branch, merge to `main` with `--no-ff`. `main` is the checkout in
   the project folder.
-- **No remote yet** (BIZ-01). ~69 old local branches, all merged (DEV-03).
-- `laqta-worktrees/foundation` is an abandoned August checkout with
-  uncommitted edits — ask the owner before deleting.
+- Remote `origin` on GitHub (public). Only `main` exists — old branches and
+  the abandoned `laqta-worktrees/foundation` checkout were deleted 2026-09-26
+  (DEV-03).
 
 ## 8. Last session — 2026-09-26
 
@@ -183,11 +183,10 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 
 ## 11. Session — 2026-09-26 (DEV-03, DEV-04)
 
-- **DEV-03 (mostly):** deleted the 70 local branches already merged into
-  `main` (only `main` was ever pushed). Left: the abandoned
+- **DEV-03 done:** deleted the 70 local branches already merged into `main`
+  (only `main` was ever pushed), then — with the owner's yes — the abandoned
   `laqta-worktrees/foundation` worktree (1.1 GB, branch `feat/foundation`,
-  fully merged, 15 uncommitted files from 2026-08-04) — waiting on the owner's
-  yes before deleting.
+  fully merged; its 15 uncommitted August edits were discarded).
 - **DEV-04 done:** README rewritten where stale (bilingual site, USD, studio
   uploads built, phone sign-in off, "Foundation owns" section replaced by the
   current change rules); `.env.example` drops unread vars (MEILI_*,
@@ -199,5 +198,6 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Noticed: `VAT_RATE` defaults to 0.15 but decision D7 recommends 0% until the
   accountant answers — set when D7 is decided.
 
-**Next:** owner answers D1–D10 and sends BIZ-02/03/04; owner says yes/no to
-deleting `laqta-worktrees/foundation`.
+**Next:** owner answers D1–D10 and sends BIZ-02/03/04. Claude's remaining M1
+work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
+ALB-20 creator brief draft can start any time).

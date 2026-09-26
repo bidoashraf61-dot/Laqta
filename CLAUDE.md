@@ -66,7 +66,6 @@ When you finish a task: update the spec, tick the checklist, and refresh the
 Git-ignored, local only: `.env`, `.pgdata/` (dev database), `.media/` (upload
 and preview pipeline), `.documents/` (generated certificates/invoices),
 `production/` media, `public/hero/vid/`, `.claude/worktrees/`.
-`laqta-worktrees/foundation` is an abandoned early checkout — do not build in it.
 
 ## ⚠️ Hard rule: all UI goes through Impeccable + the design system
 

@@ -1,6 +1,6 @@
 # Spec C — Solo-operator tools
 
-**Status** approved 2026-08-20, not built · **Order** second of three (A → C → B)
+**Status** approved 2026-08-20 · **partly built** (checked 2026-09-26): 1 view-as-buyer ✓, 2 price band editor ✓, 5 payout runs + bank/Wise/Payoneer files ✓; 3 waitlist reader ✗ (signups still stored as `CmsEntry` `waitlist:<email>`, no screen reads them), 4 accountant CSV exports ✗, 6 download formats — clip page shows the codec only · **Order** second of three (A → C → B)
 
 ## Purpose
 

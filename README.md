@@ -1,14 +1,12 @@
-# Laqta (لقطة) — Foundation
+# Laqta (لقطة)
 
 Arabic-first stock-footage marketplace for Saudi/Arab content. Buyers search at
 the **clip** level and buy at the **album** level; one-time purchase, perpetual
 licence, no subscriptions.
 
 > **New session? Start with `CLAUDE.md` → `HANDOFF.md` → `checklists/`.**
-> Parts of this README predate the bilingual site and USD pricing (the
-> "Arabic" section, commission thresholds in SAR, "upload UI not built").
-> Where it disagrees with `specs/` or the code, those win; the cleanup is
-> checklist task DEV-04.
+> Where this README disagrees with `specs/` or the code, those win — and fix
+> the README in the same change.
 
 This README is the developer reference: setup, data model, auth, domain
 helpers. The original build briefs are in `docs/archive/briefs/`.
@@ -23,7 +21,7 @@ cp .env.example .env          # then set AUTH_SECRET: openssl rand -base64 32
 npm run db:start              # embedded Postgres on :5433 — no Docker needed
 npm run db:migrate
 npm run db:seed
-npm run dev                   # → http://localhost:3000/ar
+npm run dev                   # → http://localhost:3000 (Arabic), /en for English
 ```
 
 `npm run db:start` downloads a real Postgres binary into `node_modules` and runs
@@ -43,8 +41,8 @@ the same `DATABASE_URL`** so you are all developing against one catalogue.
 | `npm run verify:entitlement` | buy → mutate the album → library unchanged |
 | `npm run verify:money` | commission frozen; refund reverses at the frozen rate |
 | `npm run verify:payments` | Paymob callback: HMAC, idempotency, amount match, same result as a manual settle |
-| `npm run verify:auth` | both sign-in rails, 2FA, and the full role-guard matrix |
-| `npm run verify:arabic` | no English leaking into any route (needs the server running) |
+| `npm run verify:auth` | email sign-in, phone rail shut, 2FA, password reset, and the full role-guard matrix |
+| `npm run verify:arabic` | no English leaking into an Arabic route and no Arabic into an English one (needs the server running) |
 
 ### Seeded accounts
 
@@ -60,29 +58,24 @@ Password for all three: `Laqta!2026`
 The seed also puts in the full bilingual Saudi taxonomy, one live album with 22
 clips, a draft, one album in review, five orders at different ages so the
 30-day payout hold is visible in the ledger, and ten search queries — seven of
-them zero-result, which is the content-acquisition signal Brief 06 reports on.
+them zero-result, which is the content-acquisition signal `/admin/reports` shows.
 
 The seed is idempotent. Re-run it whenever you like.
 
 ---
 
-## What Foundation owns — do not edit these
+## Change rules
 
-```
-prisma/schema.prisma      lib/auth.ts  lib/auth.config.ts  lib/db.ts
-lib/i18n.ts  lib/utils.ts  lib/otp.ts  lib/totp.ts
-lib/commission.ts  lib/audit.ts  lib/review-checklist.ts
-app/layout.tsx  app/[locale]/layout.tsx
-components/ui/*  components/layout/*
-styles/globals.css  tailwind.config.ts  middleware.ts
-```
+The build-era "Foundation owns these files" split is over — the owner works
+alone now. What still binds (full list in `CLAUDE.md`):
 
-Need a schema change? **Do not edit `schema.prisma`.** Write it in your brief's
-*Schema requests* section and flag it. Two sessions adding columns in parallel
-is how the merge becomes a rewrite.
-
-Everything else is yours: your route folder, your components, your server
-actions, your queries.
+- **Schema changes ship as a migration** (`prisma migrate diff … --script`),
+  never `db push` alone. `verify:migrations` fails otherwise.
+- **The two frozen invariants in `lib/orders.ts`** — entitlement from
+  `OrderItem.clipManifestSnapshot`, commission frozen at purchase — are never
+  recomputed.
+- **Every UI change goes through Impeccable + `DESIGN.md`**, and every surface
+  change updates its spec in `specs/` in the same commit.
 
 ---
 
@@ -139,7 +132,7 @@ Auth.js v5, JWT sessions, two credential providers.
 | Provider id | Credentials |
 |---|---|
 | `email` | `email`, `password`, `totp` (only when the account has 2FA) |
-| `phone` | `phone`, `code` — OTP; sign-in doubles as sign-up |
+| `phone` | `phone`, `code` — OTP; sign-in doubles as sign-up. **Shut** until an SMS provider exists |
 
 ```ts
 import { auth, getCurrentUser, requireUser, requireRole,
@@ -172,15 +165,16 @@ reachable without ever rendering the page that guards it.
 | `/studio/*` | creator or admin |
 | `/account/*` | any authenticated |
 
-Unauthenticated → redirect to `/{locale}/sign-in?callbackUrl=…`.
-Wrong role → **rewrite** to `/{locale}/forbidden`, so the URL survives.
+Unauthenticated → redirect to `/sign-in?callbackUrl=…` (`/en/sign-in` on the
+English site). Wrong role → **rewrite** to `/forbidden`, so the URL survives.
 
 ### Phone OTP
 
 `lib/otp.ts` — `issueOtp(phone)` / `consumeOtp(phone, code)`. Codes are bcrypt
-hashed at rest, 5-minute TTL, 5 attempts, one live challenge per number. With
-no `SMS_PROVIDER` configured the code is returned as `devCode` and printed to
-the server console; the sign-in form surfaces it in development.
+hashed at rest, 5-minute TTL, 5 attempts, one live challenge per number.
+**Phone sign-in is off** until an SMS provider is built: `phoneSignInEnabled()`
+is false, the `phone` provider refuses every code, and `/sign-in` shows the
+email form only. No action ever returns a code to the browser (DEV-01).
 
 ### 2FA
 
@@ -192,32 +186,36 @@ form shows the authenticator step.
 
 ---
 
-## Arabic
+## Arabic and English
 
-The portal ships in Arabic only. There is no locale segment, no language
-switcher and no second dictionary — `laqta.sa/albums`, not `/ar/albums`.
-`/ar/*` and `/en/*` 308-redirect, so nothing already linked breaks.
+Arabic is the default and owns the bare path (`/albums`). English is served
+under `/en/albums` by a middleware **rewrite** onto the same route tree — there
+is no `app/[locale]` segment and no route file exists twice. `/ar/*`
+308-redirects to the bare path. **`specs/localisation.md` is the contract**;
+read it before touching anything that renders copy.
 
-The **data** stays bilingual on purpose: `titleEn` and the taxonomy's English
-synonyms carry the transliterations that let an Arabic query match
-English-tagged footage, and creators are worldwide.
+- Every page, layout, `loading.tsx` and `generateMetadata` starts with
+  `await requestLocale()` — the locale is not inherited from the root layout.
+- Server code uses `t()`; client components use `useT()` / `useLocale()`.
+- Database copy goes through `<Bilingual ar en />`, or `pickLocalised(ar, en)`
+  in attributes, metadata and JSON-LD.
+- Strings live in `messages/ar.json` (source of truth) and `messages/en.json`.
+  Fallback is always towards Arabic.
 
 ```ts
 import { t, formatMoney, formatDate, formatHijri, normaliseArabic } from '@/lib/i18n'
 
-t('commerce.fromAlbum', { album: 'العلا' })   // → "من ألبوم: العلا"
-formatMoney(1499)                             // → "1,499 ر.س."
-formatHijri(new Date())                       // → "21 صفر 1448 هـ"
+formatMoney(149)          // → "149 US$" on an Arabic page, "$149" on English
+formatHijri(new Date())   // → "21 صفر 1448 هـ"
 ```
 
-Strings live in `messages/ar.json`. `t()` is a plain function over one
-dictionary, so client components import it directly — no label-threading.
+Prices, orders and payouts are in **USD**.
 
 ### Arabic is not negotiable — and it is enforced
 
 `npm run verify:arabic` crawls every route as a signed-in admin and fails
 on any visible Latin text that is not deliberately marked as an isolated
-foreign run. **Run it before you merge.** Add your new routes to `ROUTES` in
+foreign run — and, on `/en`, on any Arabic that leaks the other way. **Run it before you merge.** Add your new routes to `ROUTES` in
 `scripts/verify-arabic.ts`.
 
 The rule it enforces: on an Arabic page, Latin is allowed only inside
@@ -235,9 +233,9 @@ render but never look at.
 Legitimately-Latin proper nouns (SAR, ZATCA, mada, NEOM, IBAN…) are
 allowlisted in the script — extend the list rather than working around it.
 
-`getTranslator` runs on the server. Pass the finished strings into client
-components as props rather than shipping the dictionaries to the browser — see
-`components/layout/site-header.tsx`.
+Client components translate with `useT()` (`lib/i18n-client`), never `t()` —
+server-rendering a client component is a second React render and does not
+share the RSC `cache()` scope that `t()` reads.
 
 ### The RTL rules
 
@@ -337,7 +335,7 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
          addBusinessDays } from '@/lib/utils'
 ```
 
-- Commission: 35% → 30% (SAR 50k) → 25% (SAR 200k), −5 points if the **album**
+- Commission: 35% → 30% (USD 12.5k lifetime) → 25% (USD 50k), −5 points if the **album**
   is exclusive. Resolve once, at purchase.
 - Review: eight checks; `releases` and `cultural` are blocking — an album
   cannot be approved while either fails.
@@ -351,12 +349,12 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
 
 | Brief | Status |
 |---|---|
-| 01 Foundation | schema, auth, 2FA, design system, Arabic shell |
+| 01 Foundation | schema, auth, 2FA, design system, Arabic + English shell |
 | 02 Landing | scroll cinematic (stills; clips drop in via `components/landing/scenes.ts`) |
 | 05 Catalogue | /footage, /albums, album PDP, clip detail, hubs, Arabic search |
 | 04 Client | cart, checkout, library, signed downloads, shared boards |
-| 03 Creator | studio, spec-consistency gate, submission gate, earnings |
-| 06 Admin | review queue with enforced checklist, refunds, zero-result report |
+| 03 Creator | studio, clip uploads (ffprobe), release scans, spec-consistency gate, submission gate, earnings, payouts |
+| 06 Admin | review queue with enforced checklist, catalogue, orders, refunds, payout runs, users + read-only view-as-user, price bands, taxonomy, reports |
 
 ## Known gaps — deliberate, not forgotten
 
@@ -370,9 +368,11 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
   driver (masters via S3-presigned or CloudFront-signed URLs) and
   `lib/media.ts` resolves public media against the CloudFront domain; both
   fall back to honest local behaviour until the AWS env is set — see
-  [docs/tech/media-aws.md](docs/tech/media-aws.md). Upload UI is not built; the
-  pipeline is `npm run media:previews` + `npm run media:upload`.
+  [docs/tech/media-aws.md](docs/tech/media-aws.md). Creators upload through the
+  studio; previews are cut by `npm run media:previews` + `npm run media:upload`.
 - **No Meilisearch.** Search runs on Postgres behind `SearchDriver`.
+- **No SMS provider.** Phone sign-in is switched off; sign-in is email only.
+- **No hosting yet.** No Dockerfile, CI or server — BIZ-07 / DEV-14.
 - **No ETA e-invoicing.** Invoice rows are created; the certified-provider
   integration is not built. Do not build e-invoicing by hand.
 - **Album trailers** are not auto-cut. An operator sets one per album

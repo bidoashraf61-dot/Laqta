@@ -8,7 +8,7 @@ Recruit creators: lead with their revenue share, then answer the two objections 
 ## Data in
 - `Clip.count()` where `album.status='live'`.
 - `Creator.count()` where `status='approved'`.
-- Constants from `lib/commission.ts`: `TIER_RATES` (standard/silver/gold platform rate; the page shows `1 - rate` as the creator share), `TIER_THRESHOLDS_SAR`, `EXCLUSIVE_BONUS_POINTS` (0.05).
+- Constants from `lib/commission.ts`: `TIER_RATES` (standard/silver/gold platform rate; the page shows `1 - rate` as the creator share), `TIER_THRESHOLDS_USD` (silver 12,500 · gold 50,000), `EXCLUSIVE_BONUS_POINTS` (0.05).
 - All copy from `messages/ar.json` under `sell.*`.
 
 ## Controls
@@ -24,7 +24,7 @@ Read-only — no form, no server action on this page. The application itself hap
 ## States
 - **Empty catalogue** — the counts render as `0`; there is no conditional hiding of the trust line.
 - **Tier threshold display** — `standard` (threshold 0) shows the tier label instead of a threshold figure.
-- **Currency mismatch (bug)** — thresholds come from `TIER_THRESHOLDS_SAR` (SAR figures) but are rendered with `formatMoney(tier.threshold)`, and `formatMoney` defaults to `'USD'`. The tier thresholds are therefore labelled in the wrong currency since the move to USD pricing.
+- **Currency** — thresholds come from `TIER_THRESHOLDS_USD` and render with `formatMoney` in USD, the same currency as prices and payouts.
 - **Also the creator-funnel entry point** — `/studio` redirects here when a signed-in user has no creator profile, so this page is reached mid-funnel as well as cold.
 
 ## Invariants

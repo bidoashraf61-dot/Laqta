@@ -1,6 +1,6 @@
 # Spec A — Transactional email
 
-**Status** approved 2026-08-20, not built · **Order** first of three (A → C → B)
+**Status** approved 2026-08-20 · **built** — outbox, templates in `emails/registry.ts`, certificate attachment, Resend driver (chosen 2026-09-24; dormant until `MAIL_*` is set, BIZ-13). Checked 2026-09-26 · **Order** first of three (A → C → B)
 
 ## Purpose
 

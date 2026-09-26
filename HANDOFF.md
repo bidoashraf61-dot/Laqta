@@ -181,5 +181,23 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   `gh` CLI or HTTPS credential). Checked first: repo private, no `.env` or keys
   ever committed.
 
-**Next:** owner answers D1–D10 and sends BIZ-02/03/04; Claude can do DEV-03
-(delete merged branches) or DEV-04 (stale docs).
+## 11. Session — 2026-09-26 (DEV-03, DEV-04)
+
+- **DEV-03 (mostly):** deleted the 70 local branches already merged into
+  `main` (only `main` was ever pushed). Left: the abandoned
+  `laqta-worktrees/foundation` worktree (1.1 GB, branch `feat/foundation`,
+  fully merged, 15 uncommitted files from 2026-08-04) — waiting on the owner's
+  yes before deleting.
+- **DEV-04 done:** README rewritten where stale (bilingual site, USD, studio
+  uploads built, phone sign-in off, "Foundation owns" section replaced by the
+  current change rules); `.env.example` drops unread vars (MEILI_*,
+  DEFAULT_CURRENCY, MIN_PAYOUT_SAR, SMS_SENDER_ID) and says Sentry is not yet
+  installed; the four `docs/decisions/` status lines now say what is built;
+  `docs/business/build-steps.md` marked superseded with what changed. Specs
+  `studio-payouts`, `admin-settings`, `sell` still said SAR 500 / SAR tiers —
+  fixed to the code (USD 100, USD 12.5k / 50k).
+- Noticed: `VAT_RATE` defaults to 0.15 but decision D7 recommends 0% until the
+  accountant answers — set when D7 is decided.
+
+**Next:** owner answers D1–D10 and sends BIZ-02/03/04; owner says yes/no to
+deleting `laqta-worktrees/foundation`.

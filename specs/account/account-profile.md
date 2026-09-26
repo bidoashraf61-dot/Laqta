@@ -18,8 +18,8 @@ channels that are also login credentials.
 | --- | --- | --- |
 | Name, email, mobile, country + «حفظ» | `updateProfile` | Validates with zod, rejects an email or mobile already on another account, writes the row. **Changing the email clears `emailVerified`; changing the mobile clears `phoneVerified`.** Then `revalidatePath('/account')` and `redirect('/account')`. |
 | «أرسل رابط التوثيق» | `sendEmailVerification` | Issues a single-use token (sha256-hashed, 30-minute TTL) and mails it. Acts on the SAVED address, not on what is typed in the field. |
-| «أرسل رمز التوثيق» | `sendPhoneCode` | Issues an OTP through `lib/otp.ts` (bcrypt-hashed, one live challenge per number). |
-| Code field + «تأكيد» | `confirmPhoneCode` | Redeems the OTP, stamps `phoneVerified`, redirects to `/account`. |
+| «أرسل رمز التوثيق» | `sendPhoneCode` | **Not rendered today** — the whole mobile row is hidden while `phoneSignInEnabled()` is false (no SMS provider). When open: issues an OTP through `lib/otp.ts` (bcrypt-hashed, one live challenge per number), sent by SMS only. Both actions also refuse with `auth.phoneUnavailable` while the rail is shut. |
+| Code field + «تأكيد» | `confirmPhoneCode` | Same gate. Redeems the OTP, stamps `phoneVerified`, redirects to `/account`. |
 
 The verification block sits **below** the form, not inside it, because it acts
 on the stored value rather than the edited one. A verify button beside an input
@@ -31,8 +31,11 @@ never seen.
 - **Unverified channel** — a `warning` badge and its verify control.
 - **Empty channel** — the row is not rendered at all. Offering to verify a blank
   mobile is a dead end; the form above is where you add one.
-- **No provider configured** — neither SMS nor mail has a driver. Both say so
-  and hand back the code or the link, which the UI shows. A screen that claims
+- **Email only at launch** — the verification block shows the email row alone;
+  the mobile row appears once an SMS provider exists (DEV-01). The mobile number
+  itself can still be saved in the form above.
+- **No mail provider configured** — the mail driver says so and hands back the
+  link, which the UI shows. (The phone code is never handed back.) A screen that claims
   "check your inbox" for a message that was never sent is a support ticket
   nobody can reproduce. When a provider is wired the fallback stops arriving and
   the UI is unchanged.

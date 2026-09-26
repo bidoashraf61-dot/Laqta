@@ -3,7 +3,7 @@
 import { AuthError } from 'next-auth'
 import { z } from 'zod'
 import { signIn, normalisePhone, hashPassword } from '@/lib/auth'
-import { issueOtp } from '@/lib/otp'
+import { issueOtp, phoneSignInEnabled } from '@/lib/otp'
 import { db } from '@/lib/db'
 
 /**
@@ -21,7 +21,7 @@ export type AuthActionResult =
   | { status: 'ok'; redirectTo: string }
   | { status: 'error'; messageKey: string }
   | { status: 'two_factor' }
-  | { status: 'code_sent'; phone: string; devCode: string | null }
+  | { status: 'code_sent'; phone: string }
 
 /** Same-origin paths only — an open redirect here would be a phishing hole. */
 function safeRedirect(callbackUrl: string | null) {
@@ -65,16 +65,18 @@ export async function signInWithEmail(formData: FormData): Promise<AuthActionRes
   return { status: 'ok', redirectTo }
 }
 
-/** Issue a phone OTP. In development the code comes back so the form can show it. */
+/** Issue a phone OTP. The code goes out by SMS only — never in this response. */
 export async function requestPhoneCode(formData: FormData): Promise<AuthActionResult> {
+  if (!phoneSignInEnabled()) return { status: 'error', messageKey: 'auth.phoneUnavailable' }
+
   const raw = String(formData.get('phone') ?? '')
   if (raw.replace(/\D/g, '').length < 6) {
     return { status: 'error', messageKey: 'auth.invalidCredentials' }
   }
 
   const phone = normalisePhone(raw)
-  const { devCode } = await issueOtp(phone)
-  return { status: 'code_sent', phone, devCode }
+  await issueOtp(phone)
+  return { status: 'code_sent', phone }
 }
 
 export async function signInWithPhone(formData: FormData): Promise<AuthActionResult> {

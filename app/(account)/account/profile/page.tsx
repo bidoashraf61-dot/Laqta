@@ -14,6 +14,7 @@ import { updateProfile, sendEmailVerification, sendPhoneCode, confirmPhoneCode }
 import { VerifyEmail, VerifyPhone } from '@/components/account/verify-channel'
 import { Badge } from '@/components/ui/badge'
 import { COUNTRIES, countryName } from '@/lib/countries'
+import { phoneSignInEnabled } from '@/lib/otp'
 
 export async function generateMetadata(): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
@@ -164,13 +165,17 @@ export default async function ProfilePage() {
             <VerifyEmail send={sendEmailVerification} />
           </ChannelRow>
 
-          <ChannelRow
-            label={t('account.profilePhone')}
-            value={user.phone}
-            verified={Boolean(user.phoneVerified)}
-          >
-            <VerifyPhone send={sendPhoneCode} confirm={confirmPhoneCode} />
-          </ChannelRow>
+          {/* Email only until an SMS provider exists (lib/otp.ts) — no row
+              offering a mobile check that cannot be done. */}
+          {phoneSignInEnabled() ? (
+            <ChannelRow
+              label={t('account.profilePhone')}
+              value={user.phone}
+              verified={Boolean(user.phoneVerified)}
+            >
+              <VerifyPhone send={sendPhoneCode} confirm={confirmPhoneCode} />
+            </ChannelRow>
+          ) : null}
         </div>
       </section>
     </div>

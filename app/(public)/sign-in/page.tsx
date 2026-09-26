@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth'
 import { t } from '@/lib/i18n'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SignInForm } from './sign-in-form'
+import { phoneSignInEnabled } from '@/lib/otp'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -47,7 +48,7 @@ export default async function SignInPage({
           <CardDescription>{t('brand.promise')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <SignInForm callbackUrl={callbackUrl} />
+          <SignInForm callbackUrl={callbackUrl} phoneEnabled={phoneSignInEnabled()} />
           <p className="text-center text-sm text-muted-foreground">
             {t('auth.noAccount')}{' '}
             <Link href="/sign-up" className="font-medium text-gold hover:underline">

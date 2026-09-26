@@ -6,7 +6,7 @@ import type { Role } from '@prisma/client'
 import { applyImpersonationToSession, authConfig, type SessionImpersonation } from '@/lib/auth.config'
 import { expireIfDue } from '@/lib/impersonation-shared'
 import { db } from '@/lib/db'
-import { consumeOtp } from '@/lib/otp'
+import { consumeOtp, phoneSignInEnabled } from '@/lib/otp'
 import { verifyToken } from '@/lib/totp'
 
 declare module 'next-auth' {
@@ -55,8 +55,9 @@ export class TwoFactorRequiredError extends CredentialsSignin {
  * Two credential providers.
  *
  * `email` — classic email + password.
- * `phone` — OTP. Not optional: phone-first sign-in is the norm in KSA and
- *           Egypt, and a meaningful share of buyers have no email habit.
+ * `phone` — OTP. Phone-first sign-in is the norm in KSA and Egypt, but the
+ *           rail stays shut until an SMS provider delivers the code — see
+ *           `phoneSignInEnabled()` in `lib/otp.ts`.
  */
 export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   ...authConfig,
@@ -102,6 +103,9 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         code: { label: 'Code', type: 'text' },
       },
       async authorize(raw) {
+        // Refused outright while no SMS provider exists, whatever code is sent.
+        if (!phoneSignInEnabled()) return null
+
         const parsed = phoneSchema.safeParse(raw)
         if (!parsed.success) return null
 

@@ -14,12 +14,22 @@ import { useT } from '@/lib/i18n-client'
 /**
  * Sign-in.
  *
- * Two rails, both first-class. Phone-OTP is not a fallback — a large share of
- * buyers in KSA and Egypt have no email habit, and a form that hides the phone
- * option behind "other methods" loses them.
+ * Two rails, both first-class once SMS is wired. Phone-OTP is not a fallback —
+ * a large share of buyers in KSA and Egypt have no email habit, and a form that
+ * hides the phone option behind "other methods" loses them. Until a provider
+ * delivers the code (`phoneEnabled` false) the phone tab is not rendered at
+ * all: a tab that can only fail is worse than no tab.
  */
-export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
+export function SignInForm({
+  callbackUrl,
+  phoneEnabled,
+}: {
+  callbackUrl?: string
+  phoneEnabled: boolean
+}) {
   const t = useT()
+
+  if (!phoneEnabled) return <EmailForm callbackUrl={callbackUrl} />
 
   return (
     <Tabs defaultValue="email" className="w-full">
@@ -130,7 +140,6 @@ function PhoneForm({ callbackUrl }: { callbackUrl?: string }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [sentTo, setSentTo] = useState<string | null>(null)
-  const [devCode, setDevCode] = useState<string | null>(null)
 
   function sendCode(formData: FormData) {
     setError(null)
@@ -138,7 +147,6 @@ function PhoneForm({ callbackUrl }: { callbackUrl?: string }) {
       const result = await requestPhoneCode(formData)
       if (result.status === 'code_sent') {
         setSentTo(result.phone)
-        setDevCode(result.devCode)
         return
       }
       if (result.status === 'error') setError(t(result.messageKey))
@@ -193,16 +201,6 @@ function PhoneForm({ callbackUrl }: { callbackUrl?: string }) {
 
       <p className="text-sm text-muted-foreground">{t('auth.codeSent', { phone: sentTo })}</p>
 
-      {/* No SMS provider is wired in development, so the code is surfaced here
-          rather than silently logged where nobody will look for it. */}
-      {devCode ? (
-        <Alert variant="warning">
-          <AlertDescription className="numeric">
-            {t('auth.devCodeNotice', { code: devCode })}
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
       <Field label={t('auth.codeLabel')} htmlFor="code" required>
         <Input
           id="code"
@@ -230,10 +228,7 @@ function PhoneForm({ callbackUrl }: { callbackUrl?: string }) {
         type="button"
         variant="ghost"
         className="w-full"
-        onClick={() => {
-          setSentTo(null)
-          setDevCode(null)
-        }}
+        onClick={() => setSentTo(null)}
       >
         {t('auth.changeNumber')}
       </Button>

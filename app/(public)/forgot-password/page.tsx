@@ -1,6 +1,7 @@
 import { t } from '@/lib/i18n'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ForgotPasswordForm } from './forgot-password-form'
+import { phoneSignInEnabled } from '@/lib/otp'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
 import { RESET_TTL_MINUTES } from '@/lib/password-reset'
@@ -31,7 +32,7 @@ export default async function ForgotPasswordPage() {
           <CardDescription>{t('auth.forgotIntro')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <ForgotPasswordForm minutes={RESET_TTL_MINUTES} />
+          <ForgotPasswordForm minutes={RESET_TTL_MINUTES} phoneEnabled={phoneSignInEnabled()} />
         </CardContent>
       </Card>
     </div>

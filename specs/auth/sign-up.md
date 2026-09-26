@@ -28,7 +28,7 @@ in the same round trip.
 | Link «تسجيل الدخول» | navigation to `/sign-in` | Read-only link. |
 
 There is no phone sign-up form here — a phone account is created implicitly by
-the OTP rail on `/sign-in`.
+the OTP rail on `/sign-in`, which is shut until an SMS provider exists (DEV-01).
 
 ## States
 

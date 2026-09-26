@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-26 (checklists)_
+_Last updated: 2026-09-26 (DEV-01)_
 
 ---
 
@@ -50,12 +50,12 @@ English site under `/en`, transactional email outbox.
 | Resend email | code done, mail queues in outbox | account + DNS + key — BIZ-13 |
 | AWS S3 + CloudFront | drivers done, local fallback | AWS setup — BIZ-06, DEV-15 |
 | Sentry | privacy scrubber only; SDK not installed | BIZ-08 + DEV-50 |
-| SMS for phone sign-in | **not built** — see blocker below | DEV-01 |
+| SMS for phone sign-in | **not built** — phone sign-in switched off (DEV-01 done); email only | an SMS provider (post-launch) |
 | Hosting / deploy | **nothing exists** — no Dockerfile, CI or server | BIZ-07 + DEV-14 |
 
 **Launch blockers (details in `checklists/`):**
-1. **Phone sign-in hole** — without an SMS provider the code is returned to
-   the browser; live, anyone could sign in as any phone. DEV-01.
+1. ~~Phone sign-in hole~~ — **closed 2026-09-26 (DEV-01).** Phone sign-in is
+   off until an SMS provider is built; sign-in is email only.
 2. **No backup** — no git remote; the repo exists only on this Mac. BIZ-01.
 3. No real footage — every album is seed/demo data; previews are hero-film
    stand-ins, no trailers. Phase 3.
@@ -156,5 +156,20 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   (https://claude.ai/artifact/1MPK7uQK6q1oxtpWk9ZcSU) uses the old task
   numbers and is superseded by `checklists/`.
 
-**Next:** owner answers decisions D1–D10 (`checklists/README.md`) and sends
-BIZ-02/03/04; Claude starts DEV-01.
+## 10. Session — 2026-09-26 (DEV-01)
+
+- **DEV-01 done.** Phone sign-in is switched off until an SMS provider exists
+  (`phoneSignInEnabled()` in `lib/otp.ts`, checked in the Auth.js `phone`
+  provider, the send-code actions and the pages). `/sign-in` shows the email
+  form only; the forgot-password phone hint and the profile's mobile
+  verification row are hidden. The code is never sent to a browser.
+  Owner confirmed: **email only is enough for launch.**
+- `verify:auth` now checks the rail is shut (a correct code does not sign in).
+  verify:auth, verify:arabic, verify:i18n, verify:flows, audit, build, lint green.
+- Fixed copy: the mobile-code message said "ten minutes"; codes last five.
+- Found, not fixed: email verification on `/account/profile` still returns the
+  link to the browser when no mail provider is set, even in production — lets a
+  user mark an address they don't own as verified. Low risk; small follow-up.
+
+**Next:** owner creates the private GitHub repo (BIZ-01) → Claude pushes
+(DEV-02); owner answers D1–D10 and sends BIZ-02/03/04.

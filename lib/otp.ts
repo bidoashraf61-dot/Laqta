@@ -5,11 +5,33 @@ const OTP_TTL_MS = 5 * 60 * 1000
 const MAX_ATTEMPTS = 5
 
 /**
+ * SMS providers that actually deliver a code. Empty until one is chosen and
+ * built — setting `SMS_PROVIDER` to a name that is not in here does nothing.
+ */
+const SMS_PROVIDERS: Record<string, (phone: string, code: string, apiKey: string) => Promise<void>> = {}
+
+/**
+ * Is the phone rail open?
+ *
+ * Only when a real provider will deliver the code. Before this switch existed,
+ * a missing provider handed the code back to the browser — on a live site that
+ * let anyone sign in as any phone number. So there is no "development" way
+ * round it: no provider, no phone sign-in, in every environment. Every phone
+ * entry point (the `phone` credentials provider, the send-code actions, the
+ * sign-in tab) checks this.
+ */
+export function phoneSignInEnabled() {
+  const provider = process.env.SMS_PROVIDER
+  return Boolean(provider && process.env.SMS_API_KEY && SMS_PROVIDERS[provider])
+}
+
+/**
  * Issue a phone OTP.
  *
  * The code is hashed at rest so a database leak doesn't hand out sessions.
- * With no SMS provider configured (development) the code is returned so the
- * caller can print it to the server console — never to the client response.
+ * Callers check `phoneSignInEnabled()` first. The plain code is returned only
+ * outside production and only for the `verify:auth` gate, which exercises the
+ * challenge store in-process — no action ever sends it to a browser.
  */
 export async function issueOtp(phone: string) {
   const code = String(Math.floor(100_000 + Math.random() * 900_000))
@@ -22,7 +44,8 @@ export async function issueOtp(phone: string) {
   })
 
   const delivered = await sendSms(phone, code)
-  return { delivered, devCode: delivered ? null : code }
+  const devCode = !delivered && process.env.NODE_ENV !== 'production' ? code : null
+  return { delivered, devCode }
 }
 
 /** Verify and burn a code. Returns false for wrong, expired or exhausted. */
@@ -50,11 +73,7 @@ export async function consumeOtp(phone: string, code: string) {
 }
 
 async function sendSms(phone: string, code: string) {
-  if (!process.env.SMS_PROVIDER || !process.env.SMS_API_KEY) {
-    // Development: no provider wired. Log and let the caller surface the code.
-    console.info(`[otp] ${phone} → ${code} (no SMS provider configured)`)
-    return false
-  }
-  // Provider integration lands with the payments/SMS vendor selection.
-  throw new Error(`SMS provider "${process.env.SMS_PROVIDER}" is not implemented yet`)
+  if (!phoneSignInEnabled()) return false
+  await SMS_PROVIDERS[process.env.SMS_PROVIDER!](phone, code, process.env.SMS_API_KEY!)
+  return true
 }

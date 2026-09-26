@@ -16,7 +16,7 @@ arrives later. Key and milestones: [README](README.md).
 - [ ] **BIZ-08** Sentry account (free) — 🧑 · 15 min
 - [ ] **BIZ-11** ⛔ USD bank account for the company; ask the bank about receiving international wires and sending USD abroad — 🧑 · weeks
 - [ ] **BIZ-12** Privacy decisions: account deletion / data export (email or a button), cookie banner, hosting region — 🧑 · 30 min
-- [ ] Make decisions **D1–D10** in the [README](README.md) — 🧑 · 2 hrs
+- [x] Make decisions **D1–D10** in the [README](README.md) — 🧑 · 2 hrs — done 2026-09-26
 
 ## M2 — Before creators sign · by 17 Oct
 
@@ -25,7 +25,7 @@ arrives later. Key and milestones: [README](README.md).
 - [ ] **BIZ-13** Resend: account, add the domain, publish the DNS records, create the API key (put it in `.env` yourself — never paste it in chat) — 🧑 · 1 hr + wait · *needs BIZ-05*
 - [ ] **BIZ-14** ⛔ Creator payout rail from Egypt: Payoneer mass payouts (Wise likely won't accept an Egyptian company — check) — 🧑 · 1 week
 - [ ] **BIZ-15** Creator tax documents to collect (national ID + tax card for residents, declaration for non-residents) — 🤝 · 2 hrs · *needs BIZ-03*
-- [ ] **BIZ-16** Release templates (model / property) in Arabic and English — only if D1 allows filmed footage — 🧑 + lawyer
+- [ ] **BIZ-16** Release templates (model / property) in Arabic and English — **needed: D1 allows filmed footage** — 🧑 + lawyer
 
 ## M5 — Support and operations · by 21 Nov
 

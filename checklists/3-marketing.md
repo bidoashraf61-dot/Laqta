@@ -4,8 +4,9 @@ Social, waitlist, SEO writing, blog articles and the launch itself. The blog
 and hub *pages* are built in the portal list (DEV-41 – DEV-45); this list is
 what goes on them. Key and milestones: [README](README.md).
 
-**Copy rules for everything here:** the footage is AI-generated — never
-«تصوير» or any ص-و-ر form; never "first", "largest", «الأرخص»; no refund copy;
+**Copy rules for everything here:** the catalogue is AI-generated **and**
+filmed (D1) — never call generated footage filmed; «تصوير» only where it is
+true; never "first", "largest", «الأرخص»; no refund copy;
 plain claims over metaphor (`docs/content/brand-voice-ar.md`). Label posts as
 AI-generated where Meta / TikTok require it.
 

@@ -13,6 +13,7 @@
 
 import { chromium, type Browser, type Page } from 'playwright'
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -494,6 +495,114 @@ async function main() {
       await page.close()
     }
     await db.$disconnect()
+  }
+
+  // ── Admin: make a user a creator; after signing in they reach the studio ─
+  // DEV-05. Middleware reads the role from the session cookie (edge, no
+  // database), so a session opened BEFORE the promotion stays a buyer until
+  // the user signs in again — the success message says so. The studio is
+  // checked by its content, not its URL: a wrong role is a REWRITE to
+  // /forbidden, which keeps /studio in the address bar.
+  {
+    const db = new PrismaClient()
+    const run = Date.now()
+    const email = `flows-maker-${run}@laqta.test`
+    const handle = `flows-${run}`.slice(0, 30)
+    const target = await db.user.create({
+      data: { email, name: 'Flows Maker', passwordHash: await bcrypt.hash('Laqta!2026', 10), locale: 'ar' },
+    })
+    let targetContext: Awaited<ReturnType<typeof signIn>> | null = null
+    try {
+      const page = await adminContext.newPage()
+      const errors = watchErrors(page)
+      await page.goto(`${BASE}/admin/users/${target.id}`, { waitUntil: 'networkidle' })
+      report('a buyer account offers «اجعله صانع محتوى»', (await page.locator('input[name="handle"]').count()) === 1)
+      await page.fill('input[name="handle"]', handle)
+      await page.fill('input[name="displayNameAr"]', 'صانع تجريبي')
+      await page.fill('input[name="displayNameEn"]', 'Test Maker')
+      await page.getByRole('button', { name: 'أنشئ حساب الصانع' }).click()
+      await page.waitForTimeout(2500)
+
+      const creator = await db.creator.findUnique({ where: { userId: target.id } })
+      const role = (await db.user.findUnique({ where: { id: target.id }, select: { role: true } }))?.role
+      report('the creator profile is created approved', creator?.status === 'approved', creator?.status ?? 'none')
+      report('founding (the default) puts them on silver — 70%', creator?.tier === 'silver', creator?.tier ?? 'none')
+      report('the account role becomes creator', role === 'creator', role ?? 'none')
+      report(
+        'the promotion is audited',
+        (await db.auditLog.count({ where: { action: 'creator.create', entityId: creator?.id ?? '-' } })) === 1,
+      )
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      report('the form gives way to the creator panel', (await page.locator('input[name="handle"]').count()) === 0)
+      report('no errors on the make-creator flow', errors.length === 0, errors.slice(0, 2).join(' | '))
+      await page.close()
+
+      targetContext = await signIn(browser, email)
+      const studio = await targetContext.newPage()
+      await studio.goto(`${BASE}/studio`, { waitUntil: 'domcontentloaded' })
+      const body = await studio.locator('main').innerText().catch(() => '')
+      report(
+        'after signing in they reach the studio itself',
+        new URL(studio.url()).pathname.startsWith('/studio') && !body.includes('الوصول غير مسموح') && body.length > 0,
+        new URL(studio.url()).pathname,
+      )
+      await studio.close()
+    } finally {
+      await targetContext?.close()
+      await db.auditLog.deleteMany({ where: { action: 'creator.create', detail: { path: ['userId'], equals: target.id } } })
+      await db.user.delete({ where: { id: target.id } })
+      await db.$disconnect()
+    }
+  }
+
+  // ── Admin: an admin made a creator reaches the studio without re-login ──
+  // The owner's own case. The admin role already passes middleware; the
+  // creator profile reaches the session through the jwt callback's per-request
+  // read (lib/auth.ts), so /studio no longer bounces to /sell.
+  {
+    const db = new PrismaClient()
+    const run = Date.now()
+    const email = `flows-admin-maker-${run}@laqta.test`
+    const other = await db.user.create({
+      data: { email, name: 'Flows Admin', role: 'admin', passwordHash: await bcrypt.hash('Laqta!2026', 10), locale: 'ar' },
+    })
+    const otherContext = await signIn(browser, email)
+    try {
+      const page = await adminContext.newPage()
+      await page.goto(`${BASE}/admin/users/${other.id}`, { waitUntil: 'networkidle' })
+      await page.fill('input[name="handle"]', `flows-a-${run}`.slice(0, 30))
+      await page.fill('input[name="displayNameAr"]', 'مدير صانع')
+      await page.fill('input[name="displayNameEn"]', 'Admin Maker')
+      await page.getByRole('button', { name: 'أنشئ حساب الصانع' }).click()
+      await page.waitForTimeout(2500)
+      await page.close()
+      const role = (await db.user.findUnique({ where: { id: other.id }, select: { role: true } }))?.role
+      report('an admin made a creator keeps the admin role', role === 'admin', role ?? 'none')
+      const studio = await otherContext.newPage()
+      await studio.goto(`${BASE}/studio`, { waitUntil: 'domcontentloaded' })
+      const path = new URL(studio.url()).pathname
+      report('…and their open session reaches the studio, not /sell', path === '/studio', path)
+      await studio.close()
+    } finally {
+      await otherContext.close()
+      const creator = await db.creator.findUnique({ where: { userId: other.id }, select: { id: true } })
+      if (creator) await db.auditLog.deleteMany({ where: { entityId: creator.id } })
+      await db.user.delete({ where: { id: other.id } })
+      await db.$disconnect()
+    }
+  }
+
+  // ── Public: «قدّم كصانع محتوى» opens the contact form on «البيع على لقطة» ──
+  {
+    const page = await (await browser.newContext()).newPage()
+    await page.goto(`${BASE}/sell`, { waitUntil: 'domcontentloaded' })
+    const apply = page.getByRole('link', { name: 'قدّم كصانع محتوى' }).first()
+    report('/sell Apply points at the contact form', (await apply.getAttribute('href')) === '/contact?topic=selling')
+    await page.goto(`${BASE}/contact?topic=selling`, { waitUntil: 'networkidle' })
+    report('the contact topic arrives preselected', (await page.locator('select[name="topic"]').inputValue()) === 'selling')
+    await page.goto(`${BASE}/contact?topic=nonsense`, { waitUntil: 'networkidle' })
+    report('an unknown topic leaves the select blank', (await page.locator('select[name="topic"]').inputValue()) === '')
+    await page.context().close()
   }
 
   await browser.close()

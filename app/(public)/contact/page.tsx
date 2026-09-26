@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ContactForm } from '@/components/contact/contact-form'
 import { Headline, Prose } from '@/components/ui/typography'
 import { CONTACT } from '@/content/legal'
-import { contactChannels, displayWhatsapp } from '@/content/contact'
+import { CONTACT_TOPICS, contactChannels, displayWhatsapp } from '@/content/contact'
 import { t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates, pickLocalised } from '@/lib/locale'
@@ -36,7 +36,11 @@ export async function generateMetadata(): Promise<Metadata> {
  * the form, not three screens below it. The guidance is the old document copy
  * (CONTACT in content/legal.ts), now read beside the form it describes.
  */
-export default async function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ topic?: string }>
+}) {
   // Resolve the locale before rendering anything.
   //
   // Not inherited from the root layout: a route segment sits inside a Suspense
@@ -46,6 +50,10 @@ export default async function ContactPage() {
   // out English and the body Arabic. Each segment resolves it itself, and the
   // call is a cached header read plus an idempotent write.
   await requestLocale()
+
+  // Only a known topic preselects; anything else leaves the select blank.
+  const { topic } = await searchParams
+  const initialTopic = (CONTACT_TOPICS as readonly string[]).includes(topic ?? '') ? topic! : ''
 
   const { whatsapp, email, company } = contactChannels()
   const companyName = pickLocalised(company.nameAr, company.nameEn || null)
@@ -105,7 +113,7 @@ export default async function ContactPage() {
       </header>
 
       <div className="mt-14 grid items-start gap-14 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:gap-20">
-        <ContactForm />
+        <ContactForm initialTopic={initialTopic} />
 
         <aside aria-labelledby="contact-guide" className="lg:pt-10">
           <h2 id="contact-guide" className="font-subhead text-xl font-bold">

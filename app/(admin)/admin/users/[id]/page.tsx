@@ -9,7 +9,8 @@ import { Badge } from '@/components/ui/badge'
 import { UserText } from '@/components/ui/bilingual'
 import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { StatusBadge } from '@/components/dashboard/status'
-import { UserStatusControl, ViewAsForm } from '@/components/admin/user-controls'
+import { MakeCreatorForm, UserStatusControl, ViewAsForm } from '@/components/admin/user-controls'
+import { COUNTRIES, countryName } from '@/lib/countries'
 import { formatDate, formatDateTime, formatMoney, formatNumber, t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -327,7 +328,14 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
                 {t('dash.openCreator')}
               </a>
             </Panel>
-          ) : null}
+          ) : (
+            <Panel title={t('dash.makeCreator')}>
+              <MakeCreatorForm
+                userId={user.id}
+                countries={COUNTRIES.map((code) => ({ code, name: countryName(code) }))}
+              />
+            </Panel>
+          )}
         </aside>
       </div>
     </>

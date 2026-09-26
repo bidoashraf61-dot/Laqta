@@ -232,8 +232,20 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Album production moved to the `Laqta Albums` folder; this project covers the
   portal only. ALB-01 decided (AI, 50 × 10 s, 1080p, 24 fps).
 
-**Next:** DEV-05 (make-creator button + Apply → contact), DEV-09 (price
-control, $49–$249), DEV-08 (album details form). Owner: approve the creator
+## 14. Session — 2026-09-27 (DEV-05)
+
+- **DEV-05 done.** `/admin/users/[id]` has «اجعله صانع محتوى»: handle, AR/EN
+  display names, country, «صانع مؤسس» (default on → silver tier = 70%).
+  Creates an approved `Creator`, sets role `creator` (admins keep `admin`),
+  audits `creator.create`. `/sell` «قدّم كصانع محتوى» → `/contact?topic=selling`
+  (topic preselected). The `jwt` callback now applies role + `creatorId` from
+  its existing per-request read, so the owner can make their own admin account
+  a creator and open `/studio` at once. **A buyer promoted while signed in must
+  sign in again** — middleware reads the cookie role; the success message says
+  so. `verify:flows` covers both cases on throwaway accounts.
+- To use it yourself: `/admin/users` → find your account → «اجعله صانع محتوى».
+
+**Next:** DEV-09 (price control, $49–$249), DEV-08 (album details form). Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

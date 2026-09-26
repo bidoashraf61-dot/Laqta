@@ -15,7 +15,7 @@ Recruit creators: lead with their revenue share, then answer the two objections 
 
 | Control | Action | Effect |
 | --- | --- | --- |
-| «قدّم كصانع محتوى» (`sell.apply`, ×2, hero and closing band) | Link | `/sign-up?role=creator` |
+| «قدّم كصانع محتوى» (`sell.apply`, ×2, hero and closing band) | Link | `/contact?topic=selling` — the contact form opens with «البيع على لقطة» preselected. There is no self-serve creator sign-up: the owner recruits, then opens the studio from `/admin/users/[id]` (DEV-05) |
 | «تصفّح المكتبة أولاً» (`sell.browseFirst`) | Link | `/albums` |
 | Content-policy link | Link | `/content-policy` |
 

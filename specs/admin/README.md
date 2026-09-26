@@ -89,6 +89,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
   built: there is no creator notification for it, and Spec B (creator accepts the price)
   does not exist yet. All four seeded bands (8–11, 12–19, 20–34, 35+) sit partly or wholly
   outside the 30–70 clip album and are flagged on the page until re-cut.
+- Making a buyer a creator (`/admin/users/[id]`) takes effect at their next sign-in: an
+  open session is still a buyer at the `/studio` gate (the success message says so).
 - Suspending an account (`/admin/users/[id]`) refuses new sign-ins only; a JWT already
   issued keeps working until it expires.
 - The view-as-user write guard in `lib/db.ts` is not exercised by any gate on its own —

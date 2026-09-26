@@ -19,6 +19,7 @@ import {
   markRunPaid,
 } from '@/lib/payouts'
 import { ALBUM_TIERS, parseBandForm, validateBand } from '@/lib/price-bands'
+import { COUNTRIES } from '@/lib/countries'
 
 export async function submitReview(input: {
   taskId: string
@@ -162,6 +163,84 @@ export async function setUserStatus(
     ok: true,
     message: tr(status === 'suspended' ? 'dash.userSuspendedDone' : 'dash.userReactivatedDone'),
   }
+}
+
+/**
+ * Make an account a creator — `/admin/users/[id]` (DEV-05).
+ *
+ * There is no public application flow: creators are recruited and signed off
+ * the site, then the operator opens the studio to them here. The profile is
+ * created already `approved`. «صانع مؤسس» puts them on the silver tier — 30%
+ * commission, 70% to the creator — which is the founding deal (decision D8);
+ * otherwise they start on standard (65%). An admin keeps the admin role and
+ * gains a profile, so the owner can upload their own albums.
+ */
+export async function makeCreator(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+
+  const userId = String(formData.get('userId') ?? '')
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { role: true, status: true, creator: { select: { id: true } } },
+  })
+  if (!user) return { ok: false, message: tr('state.notFound') }
+  if (user.creator) return { ok: false, message: tr('dash.makeCreatorExists') }
+  if (user.status === 'suspended') return { ok: false, message: tr('dash.makeCreatorSuspended') }
+
+  const handle = String(formData.get('handle') ?? '').trim().toLowerCase()
+  if (!/^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])$/.test(handle)) {
+    return { ok: false, message: tr('dash.makeCreatorHandleInvalid') }
+  }
+  const displayNameAr = String(formData.get('displayNameAr') ?? '').trim()
+  const displayNameEn = String(formData.get('displayNameEn') ?? '').trim()
+  if (displayNameAr.length < 2 || displayNameEn.length < 2) {
+    return { ok: false, message: tr('dash.makeCreatorNamesRequired') }
+  }
+  const countryRaw = String(formData.get('country') ?? '')
+  const country = (COUNTRIES as readonly string[]).includes(countryRaw) ? countryRaw : 'EG'
+  const founding = formData.get('founding') === 'on'
+
+  if (await db.creator.findUnique({ where: { handle }, select: { id: true } })) {
+    return { ok: false, message: tr('dash.makeCreatorHandleTaken') }
+  }
+
+  const now = new Date()
+  const [creator] = await db.$transaction([
+    db.creator.create({
+      data: {
+        userId,
+        handle,
+        displayNameAr: displayNameAr.slice(0, 80),
+        displayNameEn: displayNameEn.slice(0, 80),
+        country,
+        status: 'approved',
+        tier: founding ? 'silver' : 'standard',
+        appliedAt: now,
+        approvedAt: now,
+        notes: founding ? 'Founding creator — 70% share (D8).' : null,
+      },
+      select: { id: true },
+    }),
+    // The studio gate is the role. An admin already passes it and keeps admin.
+    db.user.update({
+      where: { id: userId },
+      data: { role: user.role === 'admin' ? 'admin' : 'creator' },
+    }),
+  ])
+
+  await recordAudit({
+    actorId: admin.id,
+    action: 'creator.create',
+    entity: 'Creator',
+    entityId: creator.id,
+    detail: { userId, handle, tier: founding ? 'silver' : 'standard', founding },
+  })
+  revalidatePath(`/admin/users/${userId}`)
+  revalidatePath('/admin/users')
+  revalidatePath('/admin/creators')
+  return { ok: true, message: tr('dash.makeCreatorDone') }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

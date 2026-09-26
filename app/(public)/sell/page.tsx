@@ -102,7 +102,7 @@ export default async function SellPage() {
         <Prose className="mt-6 max-w-xl">{t('sell.intro')}</Prose>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild variant="gold" size="lg">
-            <Link href="/sign-up?role=creator">{t('sell.apply')}</Link>
+            <Link href="/contact?topic=selling">{t('sell.apply')}</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
             <Link href="/albums">{t('sell.browseFirst')}</Link>
@@ -263,7 +263,7 @@ export default async function SellPage() {
             className="max-w-xl"
           />
           <Button asChild variant="gold" size="lg">
-            <Link href="/sign-up?role=creator">{t('sell.apply')}</Link>
+            <Link href="/contact?topic=selling">{t('sell.apply')}</Link>
           </Button>
         </div>
       </Section>

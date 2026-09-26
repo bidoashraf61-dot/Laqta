@@ -32,9 +32,10 @@ const EMPTY: Values = { name: '', email: '', topic: '', message: '' }
 
 const MESSAGE_MAX = 5000
 
-export function ContactForm() {
+export function ContactForm({ initialTopic = '' }: { initialTopic?: string }) {
   const t = useT()
-  const [values, setValues] = React.useState<Values>(EMPTY)
+  // `/sell`'s «قدّم كصانع محتوى» arrives as `?topic=selling` (DEV-05).
+  const [values, setValues] = React.useState<Values>({ ...EMPTY, topic: initialTopic })
   const [result, setResult] = React.useState<ContactResult | null>(null)
   const [sentTo, setSentTo] = React.useState<string | null>(null)
   const [pending, startTransition] = React.useTransition()

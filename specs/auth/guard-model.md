@@ -15,9 +15,12 @@ hole cannot leak a guarded page.
   no bcrypt. **Zero database reads in middleware.**
 - **Layouts**: `auth()` from `lib/auth.ts`, again JWT-only. The session shape is
   `{ id, role, locale, creatorId, impersonatedBy?, impersonation?, name, email, image }`.
-- **Token refresh**: `jwt` callback re-reads `User` (with `creator: { select: { id } }`)
-  only on `trigger === 'update'` — role and `creatorId` changes are otherwise
-  invisible until the token is refreshed.
+- **Token refresh**: the node `jwt` callback reads `User` (role, status,
+  `passwordChangedAt`, `creator.id`) on every `auth()` call and applies role and
+  `creatorId` to the session (DEV-05), so layouts and actions see a promotion or
+  demotion at once. Middleware reads the **cookie**, which only changes on sign-in or
+  `update()` — a buyer promoted mid-session is still refused at `/studio` until they
+  sign in again.
 - Prisma models referenced: `User` (`role`, `locale`, `status`), `Creator` (`id`,
   as `session.user.creatorId`), enum `Role { buyer | creator | admin }`, enum
   `UserStatus { active | suspended | pending_verification }`.

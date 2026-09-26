@@ -17,7 +17,7 @@
  * not say what is being deleted — and the importer strips everything after
  * that mark, so a writer who leaves it in costs nothing.
  *
- * Output: docs/gemini/00-brief.md plus part-NN.md files. The return is applied
+ * Output: docs/content/gemini/00-brief.md plus part-NN.md files. The return is applied
  * with `npm run content:import -- <file> [--apply]` (scripts/import-content.ts).
  *
  *     npx tsx scripts/export-content.ts
@@ -182,7 +182,7 @@ for (const block of blocks) {
 if (current.length) parts.push(current)
 
 // ── Write ─────────────────────────────────────────────────────────────────
-const out = 'docs/gemini'
+const out = 'docs/content/gemini'
 rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 
@@ -210,12 +210,12 @@ parts.forEach((part, i) => {
   writeFileSync(path.join(out, `part-${n}.md`), body)
 })
 
-// The brief is authored by hand in docs/content-brief-gemini.md — it carries
+// The brief is authored by hand in docs/content/content-brief-gemini.md — it carries
 // judgement, not data — and copied in as part zero so the folder is complete.
 // `{{PARTS}}` is filled with the real count, in Arabic-Indic digits, so the
 // brief never promises a number of parts the export did not produce.
 const partsArabic = new Intl.NumberFormat('ar-SA-u-nu-arab').format(total)
-const brief = readFileSync('docs/content-brief-gemini.md', 'utf8').replaceAll('{{PARTS}}', partsArabic)
+const brief = readFileSync('docs/content/content-brief-gemini.md', 'utf8').replaceAll('{{PARTS}}', partsArabic)
 writeFileSync(path.join(out, '00-brief.md'), brief)
 
 writeFileSync(

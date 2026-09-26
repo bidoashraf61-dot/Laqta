@@ -96,8 +96,8 @@ If sessions run before this exists, each will invent its own schema and auth, an
 
 ## Reference material already in this repo
 
-- `docs/saudi-stock-footage-portal-plan.md` — full platform plan, data model, taxonomy, legal
-- `docs/build-steps.md` — phased build sequence
+- `docs/business/saudi-stock-footage-portal-plan.md` — full platform plan, data model, taxonomy, legal
+- `docs/business/build-steps.md` — phased build sequence
 - `landing/` — working Arabic RTL scroll-cinematic prototype (vanilla JS)
-- `final_stills_4K/` — 12 approved 4K hero stills for the landing cinematic
-- `02_FINAL_STORYBOARD.pdf` — hero film running order
+- `production/hero-film/stills/final_stills_4K/` — 12 approved 4K hero stills for the landing cinematic
+- `production/hero-film/02_FINAL_STORYBOARD.pdf` — hero film running order

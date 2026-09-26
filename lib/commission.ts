@@ -3,7 +3,7 @@ import { CreatorTier } from '@prisma/client'
 /**
  * Commission engine.
  *
- * Published rates (docs/saudi-stock-footage-portal-plan.md §9):
+ * Published rates (docs/business/saudi-stock-footage-portal-plan.md §9):
  *
  *   Standard  default              35% platform take
  *   Silver    USD 12.5k lifetime   30%

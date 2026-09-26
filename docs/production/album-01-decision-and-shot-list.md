@@ -125,10 +125,10 @@ selling on price alone in the one category where the global stock libraries are 
 
 **Recommendation: 50 clips at 10 seconds each.**
 
-Fifty is the number `docs/website-content.md` is already written around — «٥٠ لقطة»
+Fifty is the number `docs/content/website-content.md` is already written around — «٥٠ لقطة»
 appears on the album card, the album page and the clip page — and it lands in the Pro
 tier (35–69 clips) in the plan's price table. Ten seconds is what an editor actually
-uses; it also matches the existing 10s multi-frame Seedance prompts in `clip_prompts/`.
+uses; it also matches the existing 10s multi-frame Seedance prompts in `production/hero-film/clip_prompts/`.
 
 ### Costed from the measured log, not from list prices
 
@@ -169,7 +169,7 @@ At 8s clips instead: ≈ 6,460 cr ≈ **$291**. I would spend the extra $57 for 
 
 ### Two spec inconsistencies to resolve before the album page ships
 
-- `docs/website-content.md` B6 states «المدة الإجمالية | ١٢ دقيقة». Fifty 10s clips is
+- `docs/content/website-content.md` B6 states «المدة الإجمالية | ١٢ دقيقة». Fifty 10s clips is
   **8 minutes 20 seconds**. Update the copy to «٨ دقائق» or change the clip length.
 - Confirm `seedance_2_0` offers a 10s duration in the live catalogue — the cost log has
   measured 5s and 15s rows only. If 10s is unavailable, use 8s and re-cost at $291.
@@ -186,7 +186,7 @@ The remaining risks and their controls:
 
 | # | Risk | Control |
 |---|---|---|
-| 1 | **Religious sites** | `final_stills_4K/04-makkah-NIGHT-4K.png`, `references/06-makkah/` (8 files) and `references/07-madinah/` (7 files) are **quarantined**. Never a start frame, end frame, or reference image. Move them out of the working set before generation so they cannot be picked up by accident. |
+| 1 | **Religious sites** | `production/hero-film/stills/final_stills_4K/04-makkah-NIGHT-4K.png`, `production/references/06-makkah/` (8 files) and `production/references/07-madinah/` (7 files) are **quarantined**. Never a start frame, end frame, or reference image. Move them out of the working set before generation so they cannot be picked up by accident. |
 | 2 | **Hallucinated religious architecture** | Explicit negatives on every prompt: no minaret, no dome, no clock tower, no mosque, no Kaaba, no Haram. The Makkah Royal Clock Tower is instantly recognisable and sits over the Haram — ban it by name. |
 | 3 | **⚠️ Hallucinated flag** | Explicit negative: `no flag, no banner, no Arabic script, no calligraphy`. Any clip in which anything reads as a flag or as script is **rejected outright, not fixed**. The Saudi flag bears the shahada; a malformed one is not a defect, it is an offence. |
 | 4 | **Text and signage** | Riyadh and Jeddah tower clusters will attract hallucinated signage. All shots are high-altitude and back-lit so signage is sub-resolution. Prompt negatives: `no text, no letters, no logos, no signage, no watermark` — already present in the existing prompt grammar; keep it. |
@@ -202,15 +202,15 @@ The remaining risks and their controls:
 
 | ID | File | Role |
 |---|---|---|
-| `A1` | `final_stills_4K/06-alula-4K.png` | AlUla · Elephant Rock |
-| `H1` | `final_stills_4K/07-qasr-al-farid-4K.png` | الحِجر · Qasr al-Farid |
-| `Q1` | `final_stills_4K/08-empty-quarter-4K.png` | الربع الخالي |
-| `E1` | `final_stills_4K/09-edge-of-the-world-4K.png` | حافة العالم |
-| `S1` | `final_stills_4K/10-red-sea-4K.png` | البحر الأحمر |
-| `J1` | `final_stills_4K/11-jeddah-4K.png` | جدة |
-| `D1` | `final_stills_4K/12-diriyah-4K.png` | الدرعية |
-| `W1` | `final_stills_4K/13-window-MORNING-4K.png` | Aircraft window |
-| `C1` | `final_stills_4K/05-cloud-DAWN-4K.png` | Dawn cloud plate |
+| `A1` | `production/hero-film/stills/final_stills_4K/06-alula-4K.png` | AlUla · Elephant Rock |
+| `H1` | `production/hero-film/stills/final_stills_4K/07-qasr-al-farid-4K.png` | الحِجر · Qasr al-Farid |
+| `Q1` | `production/hero-film/stills/final_stills_4K/08-empty-quarter-4K.png` | الربع الخالي |
+| `E1` | `production/hero-film/stills/final_stills_4K/09-edge-of-the-world-4K.png` | حافة العالم |
+| `S1` | `production/hero-film/stills/final_stills_4K/10-red-sea-4K.png` | البحر الأحمر |
+| `J1` | `production/hero-film/stills/final_stills_4K/11-jeddah-4K.png` | جدة |
+| `D1` | `production/hero-film/stills/final_stills_4K/12-diriyah-4K.png` | الدرعية |
+| `W1` | `production/hero-film/stills/final_stills_4K/13-window-MORNING-4K.png` | Aircraft window |
+| `C1` | `production/hero-film/stills/final_stills_4K/05-cloud-DAWN-4K.png` | Dawn cloud plate |
 
 ### Not reused, and why
 
@@ -226,21 +226,21 @@ new Riyadh stills are the first thing to generate.
 
 | Set | IDs | Place | Reference folder |
 |---|---|---|---|
-| Riyadh | `R1`–`R5` | Riyadh tower cluster above cloud, golden | `references/10-riyadh/` (7 files) |
-| AlUla | `A2`–`A4` | Elephant Rock, new angles | `references/01-alula/` (5 files) |
-| Hegra | `H2`–`H4` | Qasr al-Farid, new angles | `references/11-qasr-al-farid/` (2 files) |
-| Diriyah | `D2`–`D4` | At-Turaif mud-brick mass | `references/08-diriyah/` (4 files) |
-| Jeddah | `J2`–`J4` | Waterfront cluster | `references/09-jeddah/` (1 file) |
-| Empty Quarter | `Q2`–`Q4` | Dune crests, salt pan | `references/02-empty-quarter/` (1 file) |
-| Edge of the World | `E2`–`E4` | Escarpment, new angles | `references/03-edge-of-the-world/` (4 files) |
-| Red Sea | `S2`–`S4` | Reef, sandbar, atoll ring | `references/05-red-sea/` (3 files) |
-| Asir / Sarawat | `V1`–`V4` | Green terraced peaks above fog | `references/04-asir-albaha/` (2 files) |
-| Window | `W2`–`W3` | Wing, cabin edge | `references/00-plane-window/` is **empty** — build refs first |
+| Riyadh | `R1`–`R5` | Riyadh tower cluster above cloud, golden | `production/references/10-riyadh/` (7 files) |
+| AlUla | `A2`–`A4` | Elephant Rock, new angles | `production/references/01-alula/` (5 files) |
+| Hegra | `H2`–`H4` | Qasr al-Farid, new angles | `production/references/11-qasr-al-farid/` (2 files) |
+| Diriyah | `D2`–`D4` | At-Turaif mud-brick mass | `production/references/08-diriyah/` (4 files) |
+| Jeddah | `J2`–`J4` | Waterfront cluster | `production/references/09-jeddah/` (1 file) |
+| Empty Quarter | `Q2`–`Q4` | Dune crests, salt pan | `production/references/02-empty-quarter/` (1 file) |
+| Edge of the World | `E2`–`E4` | Escarpment, new angles | `production/references/03-edge-of-the-world/` (4 files) |
+| Red Sea | `S2`–`S4` | Reef, sandbar, atoll ring | `production/references/05-red-sea/` (3 files) |
+| Asir / Sarawat | `V1`–`V4` | Green terraced peaks above fog | `production/references/04-asir-albaha/` (2 files) |
+| Window | `W2`–`W3` | Wing, cabin edge | `production/references/00-plane-window/` is **empty** — build refs first |
 | Cloud plates | `C2`–`C4` | Pure cloud, no landform | none needed |
 
 **Use the `leera` skill to write every new still prompt.** Feed it the reference folder,
 `A1`/`H1`/`Q1` etc. as the look anchor, and the Style & Mood paragraph from
-`clip_prompts/clip07-SEEDANCE-alula-to-qasr-al-farid.txt` — that paragraph is the album's
+`production/hero-film/clip_prompts/clip07-SEEDANCE-alula-to-qasr-al-farid.txt` — that paragraph is the album's
 grade, written down and already proven. Keep it byte-identical across all 35 prompts.
 
 **Asir is the one place with no anchor still.** It is also the only location in the album
@@ -441,7 +441,7 @@ hero film and do not need the FPV framing.
 >
 > ما فيها أشخاص ولا نصوص ولا شعارات. لقطة نظيفة تحط عليها شعارك وخطك اللي تبيه.
 
-### Voice check against `docs/brand-voice-ar.md`
+### Voice check against `docs/content/brand-voice-ar.md`
 
 ✅ Saudi register throughout — `تقدر` · `ما فيه` · `هذي` · `تبيه` · `تنصوّر` · `بلا`
 ✅ No Egyptian forms · ✅ No corporate Arabic · ✅ No hedging

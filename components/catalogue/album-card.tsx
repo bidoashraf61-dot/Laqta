@@ -22,7 +22,7 @@ import { mediaUrl } from '@/lib/media'
  * because there is no real cover art yet, only a tinted placeholder; a clean
  * poster is honest about that and drops straight into a real cover when one is
  * uploaded. It deliberately keeps the 5:7 portrait crop (closing the 16:9 open
- * item in docs/design-language.md) so the object still reads as something you
+ * item in docs/design/design-language.md) so the object still reads as something you
  * own rather than something you stream past.
  *
  * Two sibling links, never nested: a stretched anchor over the whole poster
@@ -264,7 +264,7 @@ export function AlbumCard({
 }
 
 /**
- * §A4 of docs/website-content.md: never empty, never `image1.jpg`, never
+ * §A4 of docs/content/website-content.md: never empty, never `image1.jpg`, never
  * stuffed. This shipped as `alt=""`, which is invisible to a screen reader and
  * to image search alike.
  */

@@ -2,7 +2,7 @@
  * Error reporting — the privacy half, which does not depend on the SDK.
  *
  * Sentry (`@sentry/nextjs`) is the chosen error-monitoring processor; see
- * docs/sentry.md. Everything here is written so the SDK files are thin: they
+ * docs/tech/sentry.md. Everything here is written so the SDK files are thin: they
  * pass `scrubEvent` as `beforeSend` and take their options from
  * `sentryOptions()`, and every rule about what may leave the site lives here,
  * where it is unit-tested (tests/unit/observability.test.ts).
@@ -74,7 +74,7 @@ export function stripQuery(url: string): string {
 export function scrubEvent<E extends ScrubbableEvent>(event: E): E {
   // The user, entirely. Sentry fills `ip_address` from the connection when the
   // SDK sends `{{auto}}`; an empty object with no key stops that at ingest when
-  // "Prevent storing of IP addresses" is on too (docs/sentry.md, step 3).
+  // "Prevent storing of IP addresses" is on too (docs/tech/sentry.md, step 3).
   if (event.user) event.user = {}
 
   if (event.request) {

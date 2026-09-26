@@ -20,7 +20,7 @@ import { MAX_ALBUM_CLIPS } from '@/lib/studio'
  *   · `s3`    (`S3_MASTERS_BUCKET` + `AWS_REGION`) — an S3 presigned
  *             `UploadPart` URL. The bytes go browser → S3 directly and never
  *             touch this server, which is the only way a multi-GB master is
- *             sane. Needs CORS on the masters bucket (docs/media-aws.md).
+ *             sane. Needs CORS on the masters bucket (docs/tech/media-aws.md).
  *   · `local` (nothing configured) — `/api/studio/uploads/<clip>/part?n=N`,
  *             streamed to `.media/uploads/<clip>/` and assembled into
  *             `MEDIA_MASTERS_DIR` (default `.media/masters`) on completion —

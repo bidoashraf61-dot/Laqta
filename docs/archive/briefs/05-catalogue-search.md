@@ -9,7 +9,7 @@
 
 **Laqta (لقطة)** — Arabic-first stock-footage marketplace. Buyers purchase **albums** once and own them forever, no subscription.
 
-Read `briefs/00-README-START-HERE.md` first.
+Read `docs/archive/briefs/00-README-START-HERE.md` first.
 
 ---
 

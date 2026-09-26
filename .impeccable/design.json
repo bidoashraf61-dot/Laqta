@@ -257,6 +257,6 @@
       "Let a status colour become a brand accent",
       "Ship a headline in Sans or a data-table label in Serif Display"
     ],
-    "paletteNote": "The earth palette is activated per docs/design-language.md §2.2: sand as a warm neutral ground (alternating sections, empty states, the dashboard rail), oasis for cleared/verified, clay for attention, mixed-hue icon chips across feature grids. Gold stays rationed to money/action/active. Headlines are Black (900) two-weight; prose is 1.2rem (1.35rem lead)."
+    "paletteNote": "The earth palette is activated per docs/design/design-language.md §2.2: sand as a warm neutral ground (alternating sections, empty states, the dashboard rail), oasis for cleared/verified, clay for attention, mixed-hue icon chips across feature grids. Gold stays rationed to money/action/active. Headlines are Black (900) two-weight; prose is 1.2rem (1.35rem lead)."
   }
 }

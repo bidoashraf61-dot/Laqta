@@ -315,7 +315,7 @@ Pack colour is derived from the album SLUG, never the grid index, so an album
 is the same colour on the landing page, in search and on a creator profile.
 
 This gives up the 16:9 crop deliberately, closing an open item in
-docs/design-language.md.
+docs/design/design-language.md.
 
 ### Kashida — كشيدة (retired)
 

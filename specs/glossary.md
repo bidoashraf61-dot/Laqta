@@ -49,7 +49,7 @@ used but the claim is not. A third was resolved by changing the product:
    album. Sizes are read from `Album.clipCount`, never asserted in copy.
 3. **«أرخص بـ 16 مرة من أي منافس».** Unverifiable, and the house rule is that no
    competitor figure ships. Real competitor figures live in
-   `docs/website-content.md` §B19 and stay there.
+   `docs/content/website-content.md` §B19 and stay there.
 
 ### Both of these had shipped anyway
 

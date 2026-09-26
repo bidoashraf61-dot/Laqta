@@ -9,7 +9,7 @@
 
 **Laqta (لقطة)** — Arabic-first stock-footage marketplace. Buyers search clips but buy **albums** (one-time purchase, perpetual licence, **no subscription**). Egypt-registered, Saudi/Arab audience.
 
-Read `briefs/00-README-START-HERE.md` first.
+Read `docs/archive/briefs/00-README-START-HERE.md` first.
 
 **The landing page has one job:** in the first 10 seconds, make a visitor *feel* that this library is deep in premium Saudi footage — then route them to browse albums or leave an email.
 
@@ -22,10 +22,10 @@ This is the centrepiece and it already exists as a working prototype.
 **How it works:** it is **not** 3D or WebGL. It's a pre-rendered video whose playhead is driven by scroll position (`video.currentTime`), the same technique as Apple's product pages. Scroll down = camera flies forward. Stop = camera freezes. Scroll up = flies backward.
 
 **What already exists in this repo — reuse it, don't rebuild:**
-- `landing/scrub-engine.js` — working vanilla-JS scroll-scrub engine (blob loading, seam crossfades, lazy prefetch, reduced-motion, mobile hardening). Framework-agnostic; port it into React.
-- `landing/index.html` — working Arabic RTL implementation with all copy
-- `final_stills_4K/` — **12 approved 4K hero stills** in running order
-- `02_FINAL_STORYBOARD.pdf` — the film's running order and transitions
+- `production/prototypes/landing-scroll/scrub-engine.js` — working vanilla-JS scroll-scrub engine (blob loading, seam crossfades, lazy prefetch, reduced-motion, mobile hardening). Framework-agnostic; port it into React.
+- `production/prototypes/landing-scroll/index.html` — working Arabic RTL implementation with all copy
+- `production/hero-film/stills/final_stills_4K/` — **12 approved 4K hero stills** in running order
+- `production/hero-film/02_FINAL_STORYBOARD.pdf` — the film's running order and transitions
 
 **The film (an overnight arrival):**
 

@@ -19,7 +19,7 @@
  *
  * Dry-run by default; pass `--apply` to write.
  *
- *     npx tsx scripts/import-content.ts docs/gemini/return-01.md [--apply] [--locale en]
+ *     npx tsx scripts/import-content.ts docs/content/gemini/return-01.md [--apply] [--locale en]
  *
  * `--locale en` applies to `messages/en.json` and the English side of the
  * documents (`headingEn` / `bodyEn` / `listEn`) instead.

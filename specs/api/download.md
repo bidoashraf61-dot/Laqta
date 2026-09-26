@@ -31,7 +31,7 @@ Read-only endpoint — no forms, no body, no mutation of catalogue or money. The
   - **`s3` driver** (`S3_MASTERS_BUCKET` + `AWS_REGION` set): a URL that expires in `S3_SIGNED_URL_TTL_SECONDS` — a **CloudFront signed URL** (`@aws-sdk/cloudfront-signer`) when `MASTERS_CDN_URL`, `CLOUDFRONT_KEY_PAIR_ID` and `CLOUDFRONT_PRIVATE_KEY` are all set, otherwise an **S3 presigned GET** (`@aws-sdk/s3-request-presigner`) with `Content-Disposition: attachment`. Credentials come from the AWS SDK default chain.
   - **`local` driver** (nothing set): `/media/<key>` on the same origin. There is no `/media` route, rewrite or `public/media` directory, so a local redemption ends on a 404 — honestly, rather than pretending a file was served.
   - A "/"-rooted key (dev-seed stand-in under `public/`) redirects to that path under either driver.
-- The public media bucket (previews, posters, trailers, hero) never passes through this route — see `lib/media.ts` and `docs/media-aws.md`.
+- The public media bucket (previews, posters, trailers, hero) never passes through this route — see `lib/media.ts` and `docs/tech/media-aws.md`.
 - **Stub:** `Download.bytes` defaults to `0` and is never written by this handler or anywhere else, despite the header comment describing a byte count. Abuse detection currently has hit counts, IPs and user agents — not volume.
 - No rate limit, no per-entitlement download cap, no concurrency guard.
 - Middleware does not guard this path (`requiredAccess` returns `null` for `/api/*`); the handler is the only gate.

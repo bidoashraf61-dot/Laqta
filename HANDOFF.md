@@ -56,9 +56,12 @@ English site under `/en`, transactional email outbox.
 **Launch blockers (details in `checklists/`):**
 1. ~~Phone sign-in hole~~ — **closed 2026-09-26 (DEV-01).** Phone sign-in is
    off until an SMS provider is built; sign-in is email only.
-2. ~~No backup~~ — **closed 2026-09-26 (BIZ-01, DEV-02).** Private repo
+2. ~~No backup~~ — **closed 2026-09-26 (BIZ-01, DEV-02).** Repo
    `git@github.com:bidoashraf61-dot/Laqta.git` (remote `origin`, SSH). Only
-   `main` is pushed; push `main` after every merge.
+   `main` is pushed; push `main` after every merge. **The repo is PUBLIC** —
+   the owner's choice for now (2026-09-26), after being told it exposes the
+   business docs, the Thmanyah font files, the seed password and the known
+   weak spots listed here. Recommended: make it private before launch.
 3. No real footage — every album is seed/demo data; previews are hero-film
    stand-ins, no trailers. Phase 3.
 4. Legal text unreviewed; accountant answers missing; contact details empty.

@@ -47,6 +47,7 @@ When you finish a task: update the spec, tick the checklist, and refresh the
 │   ├── content/       brand voice, copy briefs, content reviews, website copy, gemini/
 │   ├── design/        design-language.md (rationale behind DESIGN.md)
 │   ├── tech/          media-aws.md (S3/CloudFront), sentry.md
+│   ├── creators/      creator brief + spec sheet (AR/EN) and QA log template — sent to outside creators
 │   ├── decisions/     dated design decisions (email, album intake, operator tools, content control)
 │   ├── production/    album-01 shot list
 │   └── archive/       build-era briefs + SESSIONS.md — historical, may be stale

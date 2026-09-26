@@ -3,8 +3,10 @@
 **Route** `/sign-in` · **Access** anonymous (signed-in users are redirected away) · **Rendering** server, dynamic (calls `auth()`, reads `searchParams`)
 
 ## Purpose
-Start a session on one of two equal rails — email + password, or phone OTP — and
-hand the user back to wherever the guard interrupted them.
+Start a session and hand the user back to wherever the guard interrupted them.
+**Email + password is the only open rail at launch.** The phone-OTP rail is
+built but shut until an SMS provider exists (`phoneSignInEnabled()` in
+`lib/otp.ts`, DEV-01); the page then renders the email form alone, with no tabs.
 
 ## Data in
 
@@ -22,12 +24,12 @@ hand the user back to wherever the guard interrupted them.
 
 | Control | Action | Effect |
 |---|---|---|
-| Tab «البريد الإلكتروني» / «رمز الجوال» | client `Tabs` state | Switches rail. Email is the default tab; phone is not hidden behind "other methods". |
+| Tab «البريد الإلكتروني» / «رمز الجوال» | client `Tabs` state | **Rendered only when `phoneEnabled`** (the page passes `phoneSignInEnabled()`). Otherwise the email form renders on its own. When shown, email is the default tab; phone is not hidden behind "other methods". |
 | Email form → «تسجيل الدخول» | `signInWithEmail(formData)` (`app/(public)/sign-in/actions.ts`) | Zod-validates `{ email, password, totp? }`, lowercases the email, calls Auth.js `signIn('email', { redirect: false })`. On success the client does `router.push(redirectTo)` + `router.refresh()`. |
 | TOTP field «التحقق بخطوتين» | same `signInWithEmail`, resubmitted with `totp` | Rendered only after the action returns `status: 'two_factor'`. 6 digits, `dir="ltr"`, `.numeric`, `autoFocus`. |
-| Phone form → «إرسال الرمز» | `requestPhoneCode(formData)` | Requires ≥6 digits, normalises via `normalisePhone`, calls `issueOtp(phone)`. Returns `{ phone, devCode }`. |
-| Code form → «تحقق» | `signInWithPhone(formData)` | Calls Auth.js `signIn('phone', { phone, code, redirect: false })`. |
-| «تغيير الرقم» | client state reset | Clears `sentTo`/`devCode`, returns to the number step. Does not invalidate the issued OTP. |
+| Phone form → «إرسال الرمز» | `requestPhoneCode(formData)` | Phone tab only. Returns `auth.phoneUnavailable` «الدخول برمز الجوال غير متاح حالياً. ادخل ببريدك الإلكتروني.» while the rail is shut. Otherwise requires ≥6 digits, normalises via `normalisePhone`, calls `issueOtp(phone)` (code goes out by SMS). Returns `{ phone }` — never the code. |
+| Code form → «تحقق» | `signInWithPhone(formData)` | Calls Auth.js `signIn('phone', { phone, code, redirect: false })`. The provider's `authorize` returns `null` while the rail is shut, whatever the code. |
+| «تغيير الرقم» | client state reset | Clears `sentTo`, returns to the number step. Does not invalidate the issued OTP. |
 | Link «نسيت كلمة المرور؟» | `Link` → `/forgot-password` | Under the password field, inline-end, muted (not gold — the submit button is the form's one gold voice). Email tab only; the phone rail has no password. See [`forgot-password.md`](./forgot-password.md). |
 | Link «إنشاء حساب» | navigation to `/sign-up` | Read-only link. |
 
@@ -51,12 +53,8 @@ step, not on the send-code step.
   learns the account carries 2FA.
 - **Error (phone rail)** — bad/expired/exhausted/replayed code returns
   `auth.invalidCode` → «الرمز غير صحيح أو منتهي الصلاحية».
-- **Dev OTP notice** — with no `SMS_PROVIDER`/`SMS_API_KEY` env, `sendSms`
-  logs the code, returns `delivered: false`, and the code is rendered in a
-  warning alert: «وضع التطوير: الرمز هو {code}». **SMS delivery is not wired.**
-  The dev path is taken whenever **either** var is missing; only with **both**
-  `SMS_PROVIDER` and `SMS_API_KEY` set does `sendSms` reach the unimplemented
-  branch and throw.
+- **Phone rail shut** (today) — no tabs, email form only. There is no dev-code
+  notice any more: the code is never shown in the browser in any environment.
 - **Empty** — n/a, the form always renders.
 - Password reset lives on its own routes (`/forgot-password` →
   `/reset-password`), linked from the email tab. No "resend code" control (`auth.resendCode` exists in the
@@ -76,6 +74,9 @@ step, not on the send-code step.
   — a first-time verified number silently creates a `User` with `role: 'buyer'`
   (schema default), no name and no email.
 - `status: 'suspended'` users are rejected on both rails.
+- **No phone session without SMS.** `phoneSignInEnabled()` is checked in the
+  `phone` provider's `authorize` (the lock), in `requestPhoneCode`, and on the
+  page (the tab). No action returns an OTP to the client.
 - **A password reset ends every session.** The `jwt` callback stamps
   `token.signedInAt` at sign-in and, on every later call, reads
   `User.passwordChangedAt` (one indexed read per `auth()`); a session that began
@@ -84,7 +85,9 @@ step, not on the send-code step.
 
 ## Verified by
 
-`verify:auth` (both rails end-to-end over HTTP, OTP replay/expiry, TOTP
+`verify:auth` (email rail end-to-end over HTTP; phone rail refused with a
+correct code, no plain code in production, no phone tab in the HTML; OTP store
+replay/wrong-code in-process; TOTP
 accept/reject, the full guard matrix), `verify:arabic` (`/sign-in` is in the
 route list, plus the `/en/sign-in → /sign-in` redirect case), `audit`
 (real Chrome pass at desktop + phone), `verify:flows` and `audit` both use

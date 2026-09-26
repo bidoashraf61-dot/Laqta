@@ -16,9 +16,11 @@ import type { ActionResult } from '@/components/dashboard/form'
  * warning. These two controls are that way.
  *
  * ── Why the development fallback is shown, loudly ───────────────────────────
- * Neither an SMS nor a mail provider is wired yet. Both drivers say so
- * honestly (lib/otp.ts, lib/mail.ts) and hand back the code or the link
- * instead of pretending to have sent one. This surfaces that rather than
+ * No mail provider is wired yet. The mail driver says so honestly
+ * (lib/mail.ts) and hands back the link instead of pretending to have sent
+ * one. The phone code never comes back this way: with no SMS provider the
+ * profile page does not render `VerifyPhone` at all (lib/otp.ts
+ * `phoneSignInEnabled`). This surfaces that rather than
  * hiding it: a screen that says "check your inbox" for a message that was
  * never sent is a support ticket nobody can reproduce.
  *
@@ -70,11 +72,11 @@ export function VerifyPhone({
   send,
   confirm,
 }: {
-  send: () => Promise<ActionResult & { devCode?: string }>
+  send: () => Promise<ActionResult>
   confirm: (previous: ActionResult | null, formData: FormData) => Promise<ActionResult>
 }) {
   const t = useT()
-  const [sent, setSent] = React.useState<(ActionResult & { devCode?: string }) | null>(null)
+  const [sent, setSent] = React.useState<ActionResult | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [pending, start] = React.useTransition()
 
@@ -122,9 +124,6 @@ export function VerifyPhone({
       {sent ? (
         <Alert variant="info" className="space-y-1 text-sm">
           <p>{sent.message}</p>
-          {sent.devCode ? (
-            <p className="numeric text-lg font-bold tracking-[0.3em]">{sent.devCode}</p>
-          ) : null}
         </Alert>
       ) : null}
 

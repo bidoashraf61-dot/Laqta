@@ -3,10 +3,11 @@
  *
  *   npm start &  →  npm run verify:auth
  *
- * Exercises both sign-in rails, the second factor, and the full role-guard
- * matrix for real, over HTTP, rather than asserting against mocks. Phone-OTP,
- * TOTP and middleware guards are exactly the paths that look fine in a unit
- * test and fail against a live Auth.js route.
+ * Exercises the email rail, the second factor, and the full role-guard
+ * matrix for real, over HTTP, rather than asserting against mocks. TOTP and
+ * middleware guards are exactly the paths that look fine in a unit test and
+ * fail against a live Auth.js route. The phone rail is checked to be SHUT:
+ * with no SMS provider, a correct code must still not start a session.
  */
 // The reset section queues real outbox rows. Blank the provider first — blank,
 // not delete, because dotenv never overrides a key that already exists — so a
@@ -14,7 +15,7 @@
 for (const key of ['MAIL_PROVIDER', 'MAIL_API_KEY', 'MAIL_FROM']) process.env[key] = ''
 
 import bcrypt from 'bcryptjs'
-import { issueOtp } from '../lib/otp'
+import { issueOtp, consumeOtp, phoneSignInEnabled } from '../lib/otp'
 import { normalisePhone } from '../lib/auth'
 import { generateToken, generateSecret, verifyToken } from '../lib/totp'
 import { db } from '../lib/db'
@@ -108,25 +109,37 @@ async function main() {
   const wrong = await signIn('email', { email: 'buyer@agency.sa', password: 'not-the-password' })
   report('wrong password is rejected', !wrong.session.user)
 
-  // ── Phone OTP ─────────────────────────────────────────────────────────────
+  // ── Phone OTP: shut until an SMS provider exists ──────────────────────────
+  // Before DEV-01 a missing provider handed the code to the browser, so on a
+  // live site anyone could sign in as any phone. The rail is now refused on
+  // the server, and the code store itself is still checked in-process.
   const phone = normalisePhone('0500000003')
   report('KSA number normalises to E.164', phone === '+966500000003', phone)
 
+  report('phone rail is off with no SMS provider', !phoneSignInEnabled())
+
+  const nodeEnv = process.env as Record<string, string | undefined>
+  const realEnv = nodeEnv.NODE_ENV
+  nodeEnv.NODE_ENV = 'production'
+  const prodIssue = await issueOtp(phone)
+  nodeEnv.NODE_ENV = realEnv
+  report('production never returns the plain code', prodIssue.devCode === null)
+
   const { devCode } = await issueOtp(phone)
-  report('OTP issued with a dev code', Boolean(devCode))
+  const refused = await signIn('phone', { phone, code: devCode ?? '' })
+  report('a correct code does not sign in while the rail is off', !refused.session.user)
 
-  const otp = await signIn('phone', { phone, code: devCode ?? '' })
-  report('phone OTP signs in', Boolean(otp.session.user))
+  const signInPage = await fetch(`${BASE}/sign-in`).then((r) => r.text())
+  report(
+    'sign-in page shows no phone tab',
+    !signInPage.includes('type="tel"') && !signInPage.includes('رمز الجوال'),
+  )
 
-  const replay = await signIn('phone', { phone, code: devCode ?? '' })
-  report('a consumed OTP cannot be replayed', !replay.session.user)
-
+  // The code store, ready for when SMS lands.
+  report('OTP store accepts the right code', await consumeOtp(phone, devCode ?? ''))
+  report('a consumed OTP cannot be replayed', !(await consumeOtp(phone, devCode ?? '')))
   const fresh = await issueOtp(phone)
-  const wrongOtp = await signIn('phone', {
-    phone,
-    code: fresh.devCode === '000000' ? '111111' : '000000',
-  })
-  report('wrong OTP is rejected', !wrongOtp.session.user)
+  report('wrong OTP is rejected', !(await consumeOtp(phone, fresh.devCode === '000000' ? '111111' : '000000')))
 
   // ── TOTP second factor ────────────────────────────────────────────────────
   const secret = generateSecret()

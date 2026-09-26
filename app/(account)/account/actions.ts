@@ -9,7 +9,7 @@ import { actionT } from '@/lib/locale-request'
 import type { ActionResult } from '@/components/dashboard/form'
 import { headers } from 'next/headers'
 import { issueEmailVerification } from '@/lib/mail'
-import { issueOtp, consumeOtp } from '@/lib/otp'
+import { issueOtp, consumeOtp, phoneSignInEnabled } from '@/lib/otp'
 
 /**
  * Edit the account's own details.
@@ -179,9 +179,13 @@ export async function sendEmailVerification(): Promise<ActionResult & { devLink?
     : { ok: true, message: tr('account.verifyEmailNotConfigured'), devLink: devLink ?? undefined }
 }
 
-/** Send a one-time code to the mobile on the account. */
-export async function sendPhoneCode(): Promise<ActionResult & { devCode?: string }> {
+/**
+ * Send a one-time code to the mobile on the account. Refused while no SMS
+ * provider exists — the code is never handed back to the browser instead.
+ */
+export async function sendPhoneCode(): Promise<ActionResult> {
   const tr = await actionT()
+  if (!phoneSignInEnabled()) return { ok: false, message: tr('auth.phoneUnavailable') }
 
   const session = await auth()
   if (!session?.user?.id) return { ok: false, message: tr('auth.signIn') }
@@ -193,10 +197,8 @@ export async function sendPhoneCode(): Promise<ActionResult & { devCode?: string
   if (!user?.phone) return { ok: false, message: tr('account.verifyNoPhone') }
   if (user.phoneVerified) return { ok: true, message: tr('account.verifyAlready') }
 
-  const { delivered, devCode } = await issueOtp(user.phone)
-  return delivered
-    ? { ok: true, message: tr('account.verifyCodeSent') }
-    : { ok: true, message: tr('account.verifyCodeNotConfigured'), devCode: devCode ?? undefined }
+  await issueOtp(user.phone)
+  return { ok: true, message: tr('account.verifyCodeSent') }
 }
 
 /** Redeem the code and stamp the mobile as verified. */
@@ -205,6 +207,7 @@ export async function confirmPhoneCode(
   formData: FormData,
 ): Promise<ActionResult> {
   const tr = await actionT()
+  if (!phoneSignInEnabled()) return { ok: false, message: tr('auth.phoneUnavailable') }
 
   const session = await auth()
   if (!session?.user?.id) return { ok: false, message: tr('auth.signIn') }

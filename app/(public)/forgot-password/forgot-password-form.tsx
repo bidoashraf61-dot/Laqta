@@ -14,7 +14,7 @@ import { requestReset } from './actions'
  * One field, then one answer. The answer is identical whether or not the
  * address has an account — the page must not be a way to find out.
  */
-export function ForgotPasswordForm({ minutes }: { minutes: number }) {
+export function ForgotPasswordForm({ minutes, phoneEnabled }: { minutes: number; phoneEnabled: boolean }) {
   const t = useT()
   const locale = useLocale()
   const [pending, startTransition] = useTransition()
@@ -95,7 +95,10 @@ export function ForgotPasswordForm({ minutes }: { minutes: number }) {
         {pending ? t('state.loading') : t('auth.forgotSubmit')}
       </Button>
 
-      <p className="text-sm leading-relaxed text-muted-foreground">{t('auth.forgotPhoneHint')}</p>
+      {/* Points at the phone tab, so it goes when that tab does. */}
+      {phoneEnabled ? (
+        <p className="text-sm leading-relaxed text-muted-foreground">{t('auth.forgotPhoneHint')}</p>
+      ) : null}
       {backLink}
     </form>
   )

@@ -34,14 +34,14 @@ whether the address has an account.
 | Control | Action | Effect |
 |---|---|---|
 | Field «البريد الإلكتروني» (`#email`, `dir="ltr"`, `autoFocus`) + «أرسل الرابط» (gold) | `requestReset(formData)` | Zod `email().max(320)`. Malformed → `auth.invalidEmail` «اكتب بريداً إلكترونياً صحيحاً.». Well-formed → always `{ status: 'sent', email, devLink }`. |
-| Phone hint (muted text) | — | «سجّلت برقم جوالك؟ ما تحتاج كلمة مرور. ادخل برمز الجوال.» — the phone rail has no password to reset. |
+| Phone hint (muted text) | — | «سجّلت برقم جوالك؟ ما تحتاج كلمة مرور. ادخل برمز الجوال.» — **rendered only when `phoneSignInEnabled()`** (page passes `phoneEnabled`). Hidden today: it points at a phone tab that is not shown. |
 | «رجوع لتسجيل الدخول» | `Link` → `/sign-in` | Muted link, in both states. |
 | «استخدم بريداً ثانياً» (outline) | client state reset | Sent state only; back to the empty form. |
 | «افتح رابط التعيين» | plain `<a>` to the reset link | Dev-link alert only (see States). |
 
-No SMS / "reset by code" option: `lib/otp.ts` has no SMS provider wired
-(`sendSms` logs in development and throws with a provider set), so offering one
-would be a control that cannot work.
+No SMS / "reset by code" option: the phone rail is shut until an SMS provider
+exists (`lib/otp.ts` `phoneSignInEnabled()`), so offering one would be a control
+that cannot work.
 
 ## States
 
@@ -56,7 +56,7 @@ would be a control that cannot work.
 - **Dev link** — only when `NODE_ENV !== 'production'` **and** no mail provider
   is configured (`isMailConfigured()` false) **and** a token was actually
   issued: a warning alert «وضع التطوير: ما فيه مزوّد بريد، فالرابط هنا بدل
-  البريد.» with the link. Mirrors the phone rail's dev OTP notice. In
+  البريد.» with the link. In
   development this does reveal that the address exists; production never
   renders it, with or without a provider.
 

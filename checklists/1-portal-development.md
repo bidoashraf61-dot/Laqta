@@ -6,7 +6,7 @@ Impeccable, `npm run verify` green. Key and milestones: [README](README.md).
 
 ## M1 — Safe · by 3 Oct
 
-- [ ] **DEV-01** ⛔ Turn off phone sign-in until an SMS provider exists — today the login code is shown in the browser, so anyone could sign in as any phone number. Add a check to `verify:auth`. — 🤖 · ½ day
+- [x] **DEV-01** ⛔ Turn off phone sign-in until an SMS provider exists — today the login code is shown in the browser, so anyone could sign in as any phone number. Add a check to `verify:auth`. — 🤖 · ½ day — done 2026-09-26 (email only at launch, owner confirmed)
 - [ ] **DEV-02** Push the code to the private GitHub repo — 🤖 · 15 min · *needs BIZ-01*
 - [ ] **DEV-03** Tidy git: delete the ~69 merged branches; ask before deleting `laqta-worktrees/foundation` — 🤖 · 1 hr
 - [ ] **DEV-04** Fix stale docs: README (Arabic-only, SAR, "upload not built"), `.env.example` (SAR, unused MEILI), `docs/decisions/` status lines, `docs/business/build-steps.md` — 🤖 · ½ day

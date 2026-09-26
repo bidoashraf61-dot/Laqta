@@ -10,7 +10,9 @@ copy-paste blocks.
 
 1. **`HANDOFF.md`** — current state of the project: what is live, what is
    dormant, what broke last, what the owner still owes. Read it first.
-2. **`LAUNCH-ROADMAP.md`** — the ordered pipeline of tasks to launch. Pick the
+2. **`LAUNCH-ROADMAP.md`** — the ordered pipeline of tasks to launch, in six
+   milestones (M1–M6). The owner ticks tasks on the Launch Path page; sync its
+   ticks first (instructions at the top of the roadmap). Pick the
    next unchecked task in the current phase unless the owner says otherwise,
    and tick it (with date + commit) in the same change that finishes it.
 3. **`specs/`** — the truth for every route. Read the route's spec before

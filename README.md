@@ -4,11 +4,11 @@ Arabic-first stock-footage marketplace for Saudi/Arab content. Buyers search at
 the **clip** level and buy at the **album** level; one-time purchase, perpetual
 licence, no subscriptions.
 
-> **New session? Start with `CLAUDE.md` → `HANDOFF.md` → `LAUNCH-ROADMAP.md`.**
+> **New session? Start with `CLAUDE.md` → `HANDOFF.md` → `checklists/`.**
 > Parts of this README predate the bilingual site and USD pricing (the
 > "Arabic" section, commission thresholds in SAR, "upload UI not built").
 > Where it disagrees with `specs/` or the code, those win; the cleanup is
-> roadmap task P0.4.
+> checklist task DEV-04.
 
 This README is the developer reference: setup, data model, auth, domain
 helpers. The original build briefs are in `docs/archive/briefs/`.

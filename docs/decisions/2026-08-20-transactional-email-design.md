@@ -88,7 +88,7 @@ from the row. The gate is extended to cover the mail templates directory.
 
 Two PDFs are needed eventually: the licence certificate (this spec) and the tax
 invoice (deferred, pending the accountant — see
-`docs/tax-questions-for-accountant-ar.md`). They share a renderer, so building
+`docs/business/tax-questions-for-accountant-ar.md`). They share a renderer, so building
 one now makes the other mostly done.
 
 **Rendered with Playwright, not a PDF library.** This is the load-bearing

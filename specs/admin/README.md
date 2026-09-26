@@ -94,7 +94,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The view-as-user write guard in `lib/db.ts` is not exercised by any gate on its own —
   every writing path a gate can reach is already refused by middleware first.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
-  control. Files reach the bucket through `npm run media:upload` (`docs/media-aws.md`).
+  control. Files reach the bucket through `npm run media:upload` (`docs/tech/media-aws.md`).
   `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.
 - A refund or void done in the Paymob dashboard is only *flagged* on `/admin/orders`
   (`reversed_at_gateway`); nothing reverses the Laqta ledger automatically.

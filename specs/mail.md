@@ -1,7 +1,7 @@
 # Transactional email — cross-cutting
 
 **Applies to every surface that owes someone a message.** Built from
-`docs/superpowers/specs/2026-08-20-transactional-email-design.md`; the provider
+`docs/decisions/2026-08-20-transactional-email-design.md`; the provider
 is **Resend** (owner decision, 2026-09).
 
 ## Purpose

@@ -9,7 +9,7 @@
 
 **Laqta (لقطة)** — Arabic-first stock-footage marketplace. Buyers purchase **albums** once and own them forever — no subscription. Company registered in **Egypt**; buyers mainly Saudi.
 
-Read `briefs/00-README-START-HERE.md` first.
+Read `docs/archive/briefs/00-README-START-HERE.md` first.
 
 **You own the money.** This brief is where revenue is collected and where the ownership promise is kept.
 

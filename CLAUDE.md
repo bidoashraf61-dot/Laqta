@@ -1,5 +1,68 @@
 # Laqta — project rules
 
+Laqta (لقطة) is an Arabic-first marketplace for AI-generated Saudi stock
+footage: buyers find clips, buy whole **albums** (30–70 clips, USD, one-time
+purchase, perpetual licence). The owner runs it alone and is **not a
+developer** — explain in plain language, one clear recommendation, commands in
+copy-paste blocks.
+
+## Start here (every session)
+
+1. **`HANDOFF.md`** — current state of the project: what is live, what is
+   dormant, what broke last, what the owner still owes. Read it first.
+2. **`LAUNCH-ROADMAP.md`** — the ordered pipeline of tasks to launch. Pick the
+   next unchecked task in the current phase unless the owner says otherwise,
+   and tick it (with date + commit) in the same change that finishes it.
+3. **`specs/`** — the truth for every route. Read the route's spec before
+   touching the route (rules below).
+
+When you finish a task: update the spec, tick the roadmap, and refresh the
+"Current state" section of `HANDOFF.md`.
+
+## Folder map
+
+```
+/                      ← the website (Next.js needs these at the root)
+├── app/               routes: (public) (account) (studio) (admin) + api/
+├── components/        UI — ui/ primitives, layout/, landing/, catalogue/, studio/, admin/, dashboard/
+├── lib/               business logic — orders, payments, paymob, mail, storage, media, auth, i18n …
+├── messages/          UI copy: ar.json (source of truth) + en.json
+├── content/           long-form page copy (legal.ts …)
+├── emails/            transactional email templates + registry
+├── prisma/            schema.prisma, migrations/, seed.ts
+├── public/            static files served as-is (fonts, hero posters, brand logos)
+├── styles/            globals.css — the design tokens
+├── scripts/           verify-*.ts gates, media pipeline, db helpers
+├── tests/             vitest unit tests
+├── middleware.ts      locale rewrite + role guards
+│
+├── specs/             functional spec per route — the shared memory (see rules)
+├── docs/
+│   ├── business/      plan, build steps, simple flow, tax questions, company activities
+│   ├── content/       brand voice, copy briefs, content reviews, website copy, gemini/
+│   ├── design/        design-language.md (rationale behind DESIGN.md)
+│   ├── tech/          media-aws.md (S3/CloudFront), sentry.md
+│   ├── decisions/     dated design decisions (email, album intake, operator tools, content control)
+│   ├── production/    album-01 shot list
+│   └── archive/       build-era briefs + SESSIONS.md — historical, may be stale
+├── brand/             logo studies, guidelines, legal PDFs, Thmanyah typeface, logo references
+├── production/        making the footage (NOT the website): hero-film stills, storyboards,
+│                      clip prompts, rendered clips, location references, old prototypes
+├── tools/skills/      third-party skill sources kept for reference
+│
+├── CLAUDE.md          this file — rules
+├── HANDOFF.md         current state for the next session
+├── LAUNCH-ROADMAP.md  ordered launch pipeline
+├── DESIGN.md          normative design system (Impeccable reads it from the root)
+├── README.md          developer setup, data model, auth, domain helpers
+└── TESTING.md         how the verification gates run
+```
+
+Git-ignored, local only: `.env`, `.pgdata/` (dev database), `.media/` (upload
+and preview pipeline), `.documents/` (generated certificates/invoices),
+`production/` media, `public/hero/vid/`, `.claude/worktrees/`.
+`laqta-worktrees/foundation` is an abandoned early checkout — do not build in it.
+
 ## ⚠️ Hard rule: all UI goes through Impeccable + the design system
 
 **Every build, revamp, or visual change to any portal surface MUST go through
@@ -12,7 +75,7 @@ Concretely, before writing or changing any user-facing UI:
    playbook for the task (`shape`/`craft`/`polish`/`audit`/etc). Do not hand-build
    a screen without it.
 2. **Obey the design system.** `DESIGN.md` (repo root) + `.impeccable/design.json`
-   are the normative tokens and rules; `docs/design-language.md` is the fuller
+   are the normative tokens and rules; `docs/design/design-language.md` is the fuller
    rationale. The palette, the gold ration (One Voice Rule), the two-cut
    headline, the Thmanyah three-cut typography, the letterbox motif and the RTL
    rules are binding, not suggestions.
@@ -124,7 +187,8 @@ a regression fails the suite rather than reaching an operator.
 
 ## Architecture facts a session needs
 
-- Next.js App Router, Arabic-only (no locale segment; `/ar` and `/en` 308-redirect).
+- Next.js App Router, no `[locale]` segment: Arabic on the bare path, English via
+  the `/en` middleware rewrite; `/ar/*` 308-redirects to the bare path.
 - Postgres via Prisma. `npm run db:start` boots embedded Postgres on :5433.
 - Auth.js v5, email + phone-OTP, TOTP 2FA for creator/admin. Guards in
   `middleware.ts`, repeated in route-group layouts.
@@ -136,7 +200,7 @@ a regression fails the suite rather than reaching an operator.
   `PAYMOB_*` env is set; the signed webhook settles through the same
   `settleOrder` as the admin). Mail: Resend, dormant until `MAIL_*` is set.
   Storage: honest local driver plus an S3 driver (masters via S3-presigned or
-  CloudFront-signed URLs), switched on by env — see `docs/media-aws.md`.
+  CloudFront-signed URLs), switched on by env — see `docs/tech/media-aws.md`.
 - **Every poster, preview, trailer and the hero film goes through
   `lib/media.ts#mediaUrl`** — never a raw key in `src`. "/"-rooted keys serve
   from `public/`; bucket keys resolve against `NEXT_PUBLIC_MEDIA_CDN_URL`, else

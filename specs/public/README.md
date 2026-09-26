@@ -86,7 +86,7 @@ specified there.
   (`Clip.previewKey`, made by `npm run media:previews`); `previewHlsKey` is selected in
   places and rendered nowhere.
 - Media is wired to AWS S3 + CloudFront but only switched on by env
-  (`docs/media-aws.md`). Until `NEXT_PUBLIC_MEDIA_CDN_URL` is set, bucket keys resolve
+  (`docs/tech/media-aws.md`). Until `NEXT_PUBLIC_MEDIA_CDN_URL` is set, bucket keys resolve
   to nothing and pages show posters; the hero plays only where `public/hero/vid/` exists.
 - The launch catalogue's previews are still the seed's hero-segment stand-ins (dev
   database) until real masters are run through `media:previews` + `media:upload`.

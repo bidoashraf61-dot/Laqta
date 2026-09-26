@@ -43,7 +43,7 @@ function putPart(url: string, blob: Blob, onProgress: (loaded: number) => void, 
     xhr.upload.onprogress = (event) => onProgress(event.loaded)
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
-        // S3 exposes ETag only when the bucket's CORS lists it (docs/media-aws.md).
+        // S3 exposes ETag only when the bucket's CORS lists it (docs/tech/media-aws.md).
         resolve(xhr.getResponseHeader('ETag') ?? '')
       } else {
         reject(new UploadError(xhr.status === 413 ? 'size' : 'generic'))

@@ -9,7 +9,7 @@
 
 **Laqta (لقطة)** — Arabic-first stock-footage marketplace. Creators upload **albums**; buyers purchase them once and own them forever. Platform takes a commission. Egypt-registered company, Saudi buyers, Egyptian creators at launch.
 
-Read `briefs/00-README-START-HERE.md` first.
+Read `docs/archive/briefs/00-README-START-HERE.md` first.
 
 **This is the operational heart of the business.** Every album passes through here before it reaches a buyer. Admin is internal-only — it can be English-first, but Arabic content must display correctly (RTL text blocks inside an LTR shell).
 

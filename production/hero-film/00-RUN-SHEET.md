@@ -27,7 +27,7 @@
 
 ## The 14 stills — running order
 
-All in `final_stills_4K/`.
+All in `production/hero-film/stills/final_stills_4K/`.
 
 | # | File | |
 |---|---|---|
@@ -81,7 +81,7 @@ The night→morning change happens inside that shot, while the frame is complete
 
 ## Notes
 
-**Clip 4 from the old plan (Riyadh → Makkah, 8s) is already rendered** and sits in `clips_v1/`. It's superseded by clip B above, which covers the same ground at 10s with the night cloud added in front. Keep the old file as a backup until clip B is approved.
+**Clip 4 from the old plan (Riyadh → Makkah, 8s) is already rendered** and sits in `production/hero-film/clips_v1/`. It's superseded by clip B above, which covers the same ground at 10s with the night cloud added in front. Keep the old file as a backup until clip B is approved.
 
 **Clips A and G are bookends** — out through the window at the start, back in through it at the end.
 
@@ -114,6 +114,6 @@ The night→morning change happens inside that shot, while the frame is complete
 
 ## Superseded files
 
-`final_stills_4K/_superseded/` holds the previous AlUla still and an alternate take. Nothing was deleted.
+`production/hero-film/stills/final_stills_4K/_superseded/` holds the previous AlUla still and an alternate take. Nothing was deleted.
 
-The ten single-join 8-second prompts in `clip_prompts/` (`clip01`…`clip11`) are from the earlier one-join-per-clip plan. They still work if you ever want to render a join on its own, but the seven clips above are the current film.
+The ten single-join 8-second prompts in `production/hero-film/clip_prompts/` (`clip01`…`clip11`) are from the earlier one-join-per-clip plan. They still work if you ever want to render a join on its own, but the seven clips above are the current film.

@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   /*
-   * The media CDN (`NEXT_PUBLIC_MEDIA_CDN_URL`, see docs/media-aws.md) is
+   * The media CDN (`NEXT_PUBLIC_MEDIA_CDN_URL`, see docs/tech/media-aws.md) is
    * already covered by the https wildcard; posters render as plain <img> and
    * previews as <video>, so neither goes through the image optimiser anyway.
    *

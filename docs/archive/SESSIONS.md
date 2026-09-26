@@ -67,7 +67,7 @@ Same git history, same remote, zero collisions. Delete a worktree when its work 
 Open a Claude Code session **in that folder** and paste:
 
 ```
-Read briefs/00-README-START-HERE.md and briefs/01-foundation.md, then build the foundation.
+Read docs/archive/briefs/00-README-START-HERE.md and docs/archive/briefs/01-foundation.md, then build the foundation.
 ```
 
 **Do not start any other session until this is merged.** It defines the schema, auth and design tokens that all five others build against. Skip this and you get five incompatible schemas.
@@ -105,11 +105,11 @@ Open a Claude Code session in each folder and paste its prompt:
 
 | Folder | Prompt to paste |
 |---|---|
-| `landing/` | `Read briefs/00-README-START-HERE.md and briefs/02-landing-page.md, then build it.` |
-| `studio/` | `Read briefs/00-README-START-HERE.md and briefs/03-creator-portal.md, then build it.` |
-| `client/` | `Read briefs/00-README-START-HERE.md and briefs/04-client-portal.md, then build it.` |
-| `catalogue/` | `Read briefs/00-README-START-HERE.md and briefs/05-catalogue-search.md, then build it.` |
-| `admin/` | `Read briefs/00-README-START-HERE.md and briefs/06-admin-dashboard.md, then build it.` |
+| `landing/` | `Read docs/archive/briefs/00-README-START-HERE.md and docs/archive/briefs/02-landing-page.md, then build it.` |
+| `studio/` | `Read docs/archive/briefs/00-README-START-HERE.md and docs/archive/briefs/03-creator-portal.md, then build it.` |
+| `client/` | `Read docs/archive/briefs/00-README-START-HERE.md and docs/archive/briefs/04-client-portal.md, then build it.` |
+| `catalogue/` | `Read docs/archive/briefs/00-README-START-HERE.md and docs/archive/briefs/05-catalogue-search.md, then build it.` |
+| `admin/` | `Read docs/archive/briefs/00-README-START-HERE.md and docs/archive/briefs/06-admin-dashboard.md, then build it.` |
 
 **Optional — use spec-kit for a more rigorous run.** In any session:
 

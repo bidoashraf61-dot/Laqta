@@ -9,7 +9,7 @@
 
 **Laqta (لقطة)** — Arabic-first stock-footage marketplace for Saudi/Arab content. Buyers search clips, buy **albums** (one-time, perpetual licence, no subscription). Creators sell albums; platform takes commission. Egypt-registered company, Saudi buyers, Egyptian creators at launch.
 
-Read `briefs/00-README-START-HERE.md` first.
+Read `docs/archive/briefs/00-README-START-HERE.md` first.
 
 ---
 
@@ -61,7 +61,7 @@ Typography scale, spacing scale, radius, shadows. Dark-first (the cinematic is d
 
 ### 4. Database schema (Prisma)
 
-Implement these entities — full field lists in `docs/saudi-stock-footage-portal-plan.md` §6:
+Implement these entities — full field lists in `docs/business/saudi-stock-footage-portal-plan.md` §6:
 
 `User` · `Creator` · `Album` · `Clip` · `Release` · `Category` · `Location` · `Tag` · `Collection` · `Board` · `Cart` · `CartItem` · `Order` · `OrderItem` · `Entitlement` · `Download` · `LicenceCertificate` · `Invoice` · `CreatorLedger` · `Payout` · `ReviewTask`
 

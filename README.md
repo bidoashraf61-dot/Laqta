@@ -4,8 +4,14 @@ Arabic-first stock-footage marketplace for Saudi/Arab content. Buyers search at
 the **clip** level and buy at the **album** level; one-time purchase, perpetual
 licence, no subscriptions.
 
-This README is the contract the other five sessions build against. Read
-`briefs/00-README-START-HERE.md` for the product, then this for the plumbing.
+> **New session? Start with `CLAUDE.md` → `HANDOFF.md` → `LAUNCH-ROADMAP.md`.**
+> Parts of this README predate the bilingual site and USD pricing (the
+> "Arabic" section, commission thresholds in SAR, "upload UI not built").
+> Where it disagrees with `specs/` or the code, those win; the cleanup is
+> roadmap task P0.4.
+
+This README is the developer reference: setup, data model, auth, domain
+helpers. The original build briefs are in `docs/archive/briefs/`.
 
 ---
 
@@ -364,7 +370,7 @@ import { cn, serialise, slugify, formatBytes, formatDuration,
   driver (masters via S3-presigned or CloudFront-signed URLs) and
   `lib/media.ts` resolves public media against the CloudFront domain; both
   fall back to honest local behaviour until the AWS env is set — see
-  [docs/media-aws.md](docs/media-aws.md). Upload UI is not built; the
+  [docs/tech/media-aws.md](docs/tech/media-aws.md). Upload UI is not built; the
   pipeline is `npm run media:previews` + `npm run media:upload`.
 - **No Meilisearch.** Search runs on Postgres behind `SearchDriver`.
 - **No ETA e-invoicing.** Invoice rows are created; the certified-provider

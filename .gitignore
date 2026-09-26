@@ -1,17 +1,17 @@
 # Large media — keep out of git
-final_stills_4K/
-final_stills/
-final_stills_v2/
-references/
-Examples/
-landing/assets/vid/
+/production/hero-film/stills/
+/production/hero-film/clips_v1/
+/production/references/
+/production/prototypes/Examples/
+/production/prototypes/landing-scroll/assets/vid/
+/brand/references/
 *.mp4
 *.mov
 *.png
 *.jpg
 *.jpeg
 *.webp
-!landing/assets/logo*.png
+!/production/prototypes/landing-scroll/assets/logo*.png
 
 # OS / editor
 .DS_Store
@@ -41,7 +41,7 @@ build/
 # checkout, node_modules and .pgdata; none of it belongs to this tree.
 /laqta-worktrees/
 
-# Web-optimised hero posters (generated from final_stills_4K by sips).
+# Web-optimised hero posters (generated from production/hero-film/stills/final_stills_4K by sips).
 # ~3.8MB total; the 200MB 4K originals stay out.
 !/public/hero/
 !/public/hero/*.jpg

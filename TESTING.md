@@ -116,7 +116,7 @@ Honest list — these are **not** covered:
   `/media/<key>`, which nothing serves. Download signing and entitlement checks
   are real, the byte source is not. No ZIP builder exists. Public media keys
   without `NEXT_PUBLIC_MEDIA_CDN_URL` resolve to null, so pages show posters.
-  `media:upload` is a dry run without AWS env. See `docs/media-aws.md`.
+  `media:upload` is a dry run without AWS env. See `docs/tech/media-aws.md`.
 - **No clip upload.** Nothing in the creator portal creates a `Clip`; they
   arrive via seed only. `canSubmit` requires ≥8 clips.
 - **Release documents are stubs** — `fileKey` is written as `pending/<id>`.

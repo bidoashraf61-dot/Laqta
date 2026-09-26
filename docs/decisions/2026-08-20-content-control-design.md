@@ -1,6 +1,6 @@
 # Spec D — Content control (admin as CMS)
 
-**Status** approved 2026-08-20, not built · **Order** fourth (A → C → B → D) · **Largest of the four**
+**Status** approved 2026-08-20, not built (checked 2026-09-26 — copy still lives in `messages/*.json` and `content/`) · **Order** fourth (A → C → B → D) · **Largest of the four**
 
 ## Purpose
 

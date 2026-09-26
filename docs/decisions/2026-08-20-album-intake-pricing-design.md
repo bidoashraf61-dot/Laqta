@@ -1,6 +1,6 @@
 # Spec B — Album intake and pricing
 
-**Status** approved 2026-08-20, not built · **Order** third of three (A → C → B)
+**Status** approved 2026-08-20, not built — **post-launch** (HANDOFF §3). Note the 2026-09-24 decisions (USD, albums of 30–70 clips) postdate this spec · **Order** third of three (A → C → B)
 
 ## Purpose
 

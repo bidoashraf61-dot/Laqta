@@ -1,5 +1,24 @@
 # How to Build the Portal — Step-by-Step (Bullet Form)
 
+> **Superseded — historical plan, do not work from it.** The live task list is
+> [`checklists/`](../../checklists/README.md) (from 2026-09-26), and current
+> state is in [`HANDOFF.md`](../../HANDOFF.md). What changed since this was
+> written (checked 2026-09-26):
+>
+> - The company is registered in **Egypt**, not Saudi Arabia — no Saudi CR,
+>   Maroof or ZATCA registration is planned; tax questions go to the accountant
+>   (BIZ-03).
+> - Payments are **Paymob** (card + Apple Pay) plus bank transfer — not
+>   Moyasar / HyperPay / PayTabs / Tap. mada is not wired.
+> - Prices, orders and payouts are in **USD**, not SAR; minimum payout is
+>   USD 100.
+> - Search runs on **Postgres**, not Meilisearch.
+> - The site is **Arabic + English** (`/en`).
+> - Albums only, 30–70 clips; no bundles, packs or credit packs at launch.
+> - Sign-in is **email only** at launch; phone sign-in waits for SMS.
+> - No refund copy anywhere public (2026-09-23), so "no refund after download"
+>   is not stated on the site.
+
 Companion to `saudi-stock-footage-portal-plan.md`. This is the *sequence of doing*, start to launch to scale.
 Creators Phase 1: **mainly Egypt**, then Saudi + other Arab. Buyers: Saudi (agencies/gov + solo).
 Scope assumption: **Saudi-core catalogue, Arab-expandable**.

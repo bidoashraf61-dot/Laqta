@@ -13,8 +13,8 @@ rate does a Silver creator get" without reading TypeScript.
 - `AuditLog.findMany` — `orderBy createdAt desc`, `take: 15`, includes
   `actor` (name, email).
 - Constants, not database rows:
-  - `lib/commission.TIER_RATES`, `TIER_THRESHOLDS_SAR`, `EXCLUSIVE_BONUS_POINTS`
-  - `lib/studio.MIN_PAYOUT_SAR` (`500`)
+  - `lib/commission.TIER_RATES`, `TIER_THRESHOLDS_USD`, `EXCLUSIVE_BONUS_POINTS`
+  - `lib/studio.MIN_PAYOUT_USD` (`100`)
   - `lib/storage.storageConfigured` — `true` when the `s3` driver is active, i.e.
     `S3_MASTERS_BUCKET` and `AWS_REGION` are both set (credentials come from the AWS SDK
     default chain, so their presence is not part of the test)
@@ -56,7 +56,7 @@ no settings table and no editor anywhere in the admin area for these values.
   (`lib/orders.ts`, `lib/commission.ts`).
 - The tier table displays the **creator's** share (`1 − TIER_RATES[tier]`), matching the
   figure shown on `/admin/creators`.
-- `TIER_THRESHOLDS_SAR` are SAR figures rendered through `formatMoney`, which formats in
+- `TIER_THRESHOLDS_USD` are SAR figures rendered through `formatMoney`, which formats in
   the portal's USD default — the numbers are correct, the currency symbol beside them is
   not the currency they are denominated in.
 - Read-only: nothing on this route mutates anything.

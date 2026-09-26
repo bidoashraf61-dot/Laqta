@@ -3,6 +3,10 @@
 Part A is **your first album: Ramadan**. Part B is **~6 albums from outside
 creators**, uploaded by them through the studio. Key and milestones: [README](README.md).
 
+> **Album production is tracked in the separate `Laqta Albums` folder**
+> (owner, 2026-09-26). Portal sessions here do not plan or suggest album
+> tasks; this list stays as the record of what the portal must support.
+
 > **Change of plan (2026-09-26):** the first album is now **Ramadan**, not
 > «فوق الغيم». The old plan in `docs/production/album-01-decision-and-shot-list.md`
 > is parked as a later album; its cost figures, generation lessons and
@@ -27,7 +31,7 @@ Ramadan campaigns in December–January, so this album must be live at launch
 ## Part A — Ramadan album (you)
 
 ### M1 — Plan · by 3 Oct
-- [ ] **ALB-01** Decide the album: 30–70 clips, one subject ("Ramadan in Saudi Arabia"), landscape 16:9 only (D6), master quality (D5), 24 fps, no audio track — 🤝 · 1 hr
+- [x] **ALB-01** Decide the album: 30–70 clips, one subject ("Ramadan in Saudi Arabia"), landscape 16:9 only (D6), master quality (D5), 24 fps, no audio track — 🤝 · 1 hr — done 2026-09-26: **AI-generated, 50 × 10 s, 1080p native, 24 fps**, across Saudi, people + places, «رمضان في السعودية»; further detail in `Laqta Albums`
 - [ ] **ALB-02** Shot list: ~50 shots + 20 spares, grouped by scene — e.g. iftar table and dates/qahwa, luqaimat and sambosa, suhoor, street décor in Riyadh / Jeddah Al-Balad at night, souq crowds (no faces), mosque exteriors at maghrib (generic, not the Harams), taraweeh lights, crescent moon, charity iftar tents, Eid preparations, aerial city at maghrib — 🤝 · ½ day
 - [ ] **ALB-03** Reference board per scene (real Saudi photos for accuracy) in `production/ramadan/references/` — 🧑 · ½ day
 - [ ] **ALB-04** Check that your Higgsfield / Seedance plan allows **selling** the outputs as stock; save a copy of the terms with the date — 🧑 · 1 hr

@@ -104,9 +104,14 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           <span className="numeric">{album.clipCount}</span> {t('commerce.clip')} ·{' '}
-          <span className="numeric">
-            {formatMoney(Number(album.priceStandard), album.currency)}
-          </span>
+          {/* Unpriced (0) until Laqta approves it — DEV-09. */}
+          {Number(album.priceStandard) > 0 ? (
+            <span className="numeric">
+              {formatMoney(Number(album.priceStandard), album.currency)}
+            </span>
+          ) : (
+            t('dash.priceAtApproval')
+          )}
         </p>
       </div>
 

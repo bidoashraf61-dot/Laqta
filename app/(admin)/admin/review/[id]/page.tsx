@@ -13,8 +13,10 @@ import { BackLink } from '@/components/dashboard/primitives'
 import { formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { requestLocale } from '@/lib/locale-request'
+import { pickLocalised } from '@/lib/locale'
 import { mediaUrl } from '@/lib/media'
 import { hasDocument } from '@/lib/uploads'
+import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount } from '@/lib/price-bands'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   // Resolve the locale before rendering anything.
@@ -64,6 +66,19 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   })
   if (!task) notFound()
 
+  // The price field's starting value: the album's own price if it has one
+  // (a re-review), else the band for its clip count (DEV-09). Only a guide.
+  const bands = await db.priceBand.findMany({
+    select: { labelAr: true, labelEn: true, minClips: true, maxClips: true, priceStandard: true },
+  })
+  const band = bandForCount(task.album.clipCount, bands)
+  const suggestedPrice =
+    Number(task.album.priceStandard) > 0
+      ? Number(task.album.priceStandard)
+      : band
+        ? Number(band.priceStandard)
+        : null
+
   const duplicates = await findDuplicates(task.albumId)
   const consistency = analyseConsistency(task.album.clips)
   const checklist = normaliseChecklist(task.checklist)
@@ -85,10 +100,15 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
             {t('commerce.byCreator', { creator: task.album.creator.displayNameAr })}
           </UserText>{' '}
           · <span className="ltr-island">{task.album.creator.country}</span> ·{' '}
-          <span className="numeric">{task.album.clipCount}</span> {t('commerce.clip')} ·{' '}
-          <span className="numeric">
-            {formatMoney(Number(task.album.priceStandard), task.album.currency)}
-          </span>
+          <span className="numeric">{task.album.clipCount}</span> {t('commerce.clip')}
+          {Number(task.album.priceStandard) > 0 ? (
+            <>
+              {' · '}
+              <span className="numeric">
+                {formatMoney(Number(task.album.priceStandard), task.album.currency)}
+              </span>
+            </>
+          ) : null}
         </p>
       </div>
 
@@ -202,7 +222,16 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         </div>
       </section>
 
-      <ReviewChecklist taskId={task.id} initial={checklist} />
+      <ReviewChecklist
+        taskId={task.id}
+        initial={checklist}
+        price={{
+          suggested: suggestedPrice,
+          min: PRICE_MIN_USD,
+          max: PRICE_MAX_USD,
+          bandLabel: band ? pickLocalised(band.labelAr, band.labelEn) : null,
+        }}
+      />
     </div>
   )
 }

@@ -2,14 +2,18 @@ import type { AlbumTier } from '@prisma/client'
 import { MAX_ALBUM_CLIPS, MIN_ALBUM_CLIPS } from '@/lib/studio'
 
 /**
- * Price bands — the rules the editor on `/admin/catalogue` enforces.
+ * Price bands — a GUIDE, not a rule (DEV-09, decision D4).
  *
- * ── What a band price reaches ───────────────────────────────────────────────
- * A band is read at exactly one moment: when a creator creates a draft album
- * (`app/(studio)/studio/actions.ts#createAlbum`), which COPIES the band's price
- * onto `Album.priceStandard`. Nothing re-reads it afterwards. So editing a band
- * changes the price of albums created from then on, and nothing else:
- *   - live, paused and draft albums keep the price they were created with;
+ * ── Who sets an album's price ───────────────────────────────────────────────
+ * The operator, at approval (`lib/admin.decideReview`), anywhere from
+ * `PRICE_MIN_USD` to `PRICE_MAX_USD`. A creator never chooses a price or a
+ * band: a new album is created UNPRICED (`priceStandard = 0`), and checkout
+ * refuses an unpriced album. The band whose clip range holds the album's
+ * count is only the SUGGESTION pre-filled on the review page.
+ *
+ * ── What a band edit reaches ────────────────────────────────────────────────
+ * The suggestion shown on the next review, and nothing else:
+ *   - albums keep the price the operator approved them at;
  *   - completed orders are further away still — each `OrderItem` froze its
  *     gross, VAT and commission at purchase (lib/orders.ts) and no code path
  *     from here reaches it.
@@ -22,6 +26,31 @@ import { MAX_ALBUM_CLIPS, MIN_ALBUM_CLIPS } from '@/lib/studio'
  */
 
 export const ALBUM_TIERS: AlbumTier[] = ['mini', 'standard', 'pro', 'signature']
+
+/** The album price range the owner set (decision D4, 2026-09-26). */
+export const PRICE_MIN_USD = 49
+export const PRICE_MAX_USD = 249
+
+/** A price the operator may approve at: in range, whole cents. Else null. */
+export function parseAlbumPrice(raw: unknown): number | null {
+  const value = typeof raw === 'number' ? raw : Number(String(raw ?? '').trim())
+  if (!Number.isFinite(value)) return null
+  if (value < PRICE_MIN_USD || value > PRICE_MAX_USD) return null
+  if (Math.round(value * 100) !== value * 100) return null
+  return value
+}
+
+/** The band whose clip range holds `clipCount`, if any. */
+export function bandForCount<T extends { minClips: number; maxClips: number | null }>(
+  clipCount: number,
+  bands: T[],
+): T | null {
+  return (
+    bands.find(
+      (band) => clipCount >= band.minClips && clipCount <= (band.maxClips ?? Number.POSITIVE_INFINITY),
+    ) ?? null
+  )
+}
 
 export type BandInput = {
   id?: string
@@ -45,7 +74,7 @@ export type BandError =
   | { key: 'dash.bandLabelRequired' }
   | { key: 'dash.bandCountsInvalid' }
   | { key: 'dash.bandMinMax' }
-  | { key: 'dash.bandPricePositive' }
+  | { key: 'dash.bandPriceRange' }
   | { key: 'dash.bandTierTaken' }
   | { key: 'state.error' }
   | { key: 'dash.bandOverlap'; vars: { label: string } }
@@ -69,8 +98,9 @@ export function validateBand(input: BandInput, others: BandRow[]): BandError | n
     return { key: 'dash.bandCountsInvalid' }
   }
   if (input.maxClips !== null && input.minClips > input.maxClips) return { key: 'dash.bandMinMax' }
-  if (!Number.isFinite(input.priceStandard) || input.priceStandard <= 0 || input.priceStandard > 100_000) {
-    return { key: 'dash.bandPricePositive' }
+  // A band is the suggestion for an album price, so it lives in the same range.
+  if (parseAlbumPrice(input.priceStandard) === null) {
+    return { key: 'dash.bandPriceRange' }
   }
 
   const rest = others.filter((band) => band.id !== input.id)

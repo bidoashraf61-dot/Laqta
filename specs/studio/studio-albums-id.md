@@ -41,6 +41,7 @@ upload protocol is `components/studio/upload-engine.ts` against
 Every clip action re-checks ownership and editability server-side (`lib/uploads.ts#editableClip`); an album in review, live, paused or delisted returns «اللقطات لا تُعدَّل والألبوم قيد المراجعة أو منشور.». There is still no album title/price edit and no album delete on this page.
 
 ## States
+- **Unpriced** — the header line reads «{n} لقطة · يُحدَّد السعر عند الاعتماد» until the operator approves the album at a price (DEV-09).
 - **Not found / not owned** — `notFound()` (404). A creator with `creatorId == null` matches nothing and also gets 404 here (this route does **not** redirect to `/sell`).
 - **In review** — an info `Alert`: submitted on `{date}`, and the decision arrives by email (`studio.review.inReviewBody`). No SLA date is promised to the creator.
 - **Changes requested** — a warning `Alert` with the reviewer's note (`studio.review.reviewerNote`), the names of every checklist check marked `fail` (`studio.review.failedChecks`, labels from `studio.review.check.*`), and «عدّل ما طلبه المراجع، ثم أرسل الألبوم من جديد.»

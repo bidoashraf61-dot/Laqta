@@ -11,6 +11,9 @@ Recruit creators: lead with their revenue share, then answer the two objections 
 - Constants from `lib/commission.ts`: `TIER_RATES` (standard/silver/gold platform rate; the page shows `1 - rate` as the creator share), `TIER_THRESHOLDS_USD` (silver 12,500 · gold 50,000), `EXCLUSIVE_BONUS_POINTS` (0.05).
 - All copy from `messages/ar.json` under `sell.*`.
 
+## Pricing copy
+The FAQ «مين يحدد السعر؟» answers «تحدّده لقطة عند المراجعة، بين ٤٩ و٢٤٩ دولاراً، مسترشدةً بعدد لقطات الألبوم وجودتها.» (`sell.faq3A`; EN "Laqta sets it at review, between $49 and $249, guided by the album's clip count and quality."). It must match `lib/price-bands.PRICE_MIN_USD` / `PRICE_MAX_USD` and the review page (DEV-09).
+
 ## Controls
 
 | Control | Action | Effect |

@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
+import { bandForCount, parseAlbumPrice } from '@/lib/price-bands'
 import { recordAudit } from '@/lib/audit'
 import { notifyAlbumDecision } from '@/lib/notifications'
 import { reverseCommission } from '@/lib/commission'
@@ -64,6 +65,8 @@ export type ReviewDecisionInput = {
   checklist: Checklist
   decision: 'approve' | 'request_changes' | 'reject'
   note: string
+  /** USD. Required to approve — the operator sets every album's price (DEV-09). */
+  price?: number | string | null
 }
 
 /**
@@ -81,6 +84,7 @@ export async function decideReview(input: ReviewDecisionInput) {
     select: {
       id: true,
       albumId: true,
+      album: { select: { clipCount: true } },
     },
   })
   if (!task) return { ok: false as const, messageKey: 'state.notFound' }
@@ -90,7 +94,15 @@ export async function decideReview(input: ReviewDecisionInput) {
   // An approved album goes on sale, so it must carry the licence it is sold
   // under — set here as well as at creation, for albums made before DEV-06.
   let licenceVersionId: string | null = null
+  let price: number | null = null
+  let tier: 'mini' | 'standard' | 'pro' | 'signature' | undefined
   if (input.decision === 'approve') {
+    // The operator's price, $49–$249, re-checked here — the page is not the
+    // boundary. The tier is only a record of which band the count fell in.
+    price = parseAlbumPrice(input.price)
+    if (price === null) return { ok: false as const, messageKey: 'admin.priceRequired' }
+    const bands = await db.priceBand.findMany({ select: { tier: true, minClips: true, maxClips: true } })
+    tier = bandForCount(task.album.clipCount, bands)?.tier
     const gate = canApprove(checklist)
     if (!gate.ok)
       return { ok: false as const, messageKey: 'admin.cannotApprove', detail: gate.reason }
@@ -135,6 +147,9 @@ export async function decideReview(input: ReviewDecisionInput) {
               status: 'live',
               publishedAt: new Date(),
               licenceVersionId,
+              priceStandard: price!,
+              currency: 'USD',
+              ...(tier ? { tier } : {}),
               clearedForCommercial: cleared,
               clearanceStatus: cleared ? 'full' : 'editorial_only',
             }
@@ -163,7 +178,7 @@ export async function decideReview(input: ReviewDecisionInput) {
     action: `album.review.${input.decision}`,
     entity: 'Album',
     entityId: task.albumId,
-    detail: { note: input.note, cleared },
+    detail: { note: input.note, cleared, ...(price !== null ? { price } : {}) },
   })
 
   return {

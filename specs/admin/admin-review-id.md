@@ -33,7 +33,8 @@ the clip contact sheet, and the eight-check checklist that gates approval.
 | «عرض المستند» per release (plain `<a target="_blank">`, with the file name) | `GET /api/studio/releases/[id]/document` ([spec](../api/release-document.md)) | Re-checks the admin role, writes `AuditLog release.document_view`, then a 302 to a 60-second signed S3 URL, or the file streamed `private, no-store` on the local driver. «بلا مستند» when none is attached |
 | Per-check state chips (pass / fail / not_applicable) × 8 checks | local `setState` in `ReviewChecklist` | client-only until a decision is submitted; nothing is persisted per check |
 | «ملاحظة للصانع» textarea | local state | becomes `ReviewTask.decisionNote` |
-| «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `licenceVersionId` = the current licence, `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve`. Emails the creator `album.approved` (link to the live album page). Redirects to `/admin` |
+| «سعر الألبوم» (number, USD, `dir=ltr`, step 0.01, min 49, max 249) | client state, sent with the decision | **Required to approve** (DEV-09). Pre-filled with the album's own price when it has one (a re-review), else the price of the `PriceBand` whose clip range holds `clipCount` (`lib/price-bands.bandForCount`); blank when no band fits. Hint «مطلوب للاعتماد: من 49 إلى 249 دولار. تحدّده أنت، لا الصانع.» + «المقترح من شريحة «…» حسب عدد اللقطات.» when a band matched. Ignored for request-changes and reject |
+| «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | Refused with «اكتب سعر الألبوم بين ٤٩ و٢٤٩ دولاراً قبل الاعتماد.» unless `lib/price-bands.parseAlbumPrice` accepts the price (49–249, whole cents). Then `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `licenceVersionId` = the current licence, `priceStandard` = the operator's price, `currency='USD'`, `tier` = the band for the clip count (a record, not a price source), `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve` (detail includes `price`). Emails the creator `album.approved` (link to the live album page). Redirects to `/admin` |
 | «طلب تعديلات» (request changes) | `submitReview` | `ReviewTask.status='changes_requested'`; `Album.status='changes_requested'` (reopened for editing). Requires a note. Emails the creator `album.changes` quoting the note, linking `/studio/albums/[id]` |
 | «رفض» (reject) | `submitReview` | `ReviewTask.status='rejected'`; `Album.status='delisted'`. Requires a note. Emails the creator `album.rejected` quoting the reason and inviting a reply, linking `/studio/albums` |
 
@@ -71,6 +72,7 @@ authorisation boundary.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- **The operator sets every album's price, here, inside $49–$249** (decision D4). A creator never chooses a price or band; albums reach review unpriced (`priceStandard = 0`) and the header shows no price until one is set.
 - **Approval refuses without a current licence** (`admin.cannotApprove`, detail «No licence is marked current.») — an album goes live carrying the licence it is sold under (DEV-06).
 - `releases` and `cultural` are **blocking** checks: approval is refused while either is
   `fail`, and refused while any check is still `pending`. Enforced in
@@ -101,7 +103,7 @@ authorisation boundary.
   page renders no storage key and no public URL.
 
 ## Verified by
-`verify:flows` has an admin open a fixture release's scan through the document route
+`verify:pricing` (approval refused without a price, below 49 and above 249; an in-range price lands with the band tier, live, USD, audited; checkout refuses an unpriced live album). `verify:flows` has an admin open a fixture release's scan through the document route
 (200 locally / 302 on S3); the page itself is still not loaded by a gate.
 
 **The route** is not covered: `/admin/review/[id]` is absent from

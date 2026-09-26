@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Textarea } from '@/components/ui/input'
+import { Input, Textarea } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
@@ -38,8 +38,18 @@ const STATE_LABEL: Record<CheckState, string> = {
  * both are exactly the checks a reviewer under SLA pressure would wave
  * through, which is why they are enforced rather than advised.
  */
-export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: Checklist }) {
+export function ReviewChecklist({
+  taskId,
+  initial,
+  price: priceRange,
+}: {
+  taskId: string
+  initial: Checklist
+  /** The album price the operator sets on approval (DEV-09). */
+  price: { suggested: number | null; min: number; max: number; bandLabel: string | null }
+}) {
   const t = useT()
+  const [price, setPrice] = useState(priceRange.suggested === null ? '' : String(priceRange.suggested))
 
   const router = useRouter()
   const [checklist, setChecklist] = useState<Checklist>(initial)
@@ -55,7 +65,7 @@ export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: 
   const decide = (decision: 'approve' | 'request_changes' | 'reject') =>
     startTransition(async () => {
       setError(null)
-      const result = await submitReview({ taskId, checklist, decision, note })
+      const result = await submitReview({ taskId, checklist, decision, note, price })
       if (!result.ok) {
         setError(result.detail ?? t(result.messageKey))
         return
@@ -125,6 +135,34 @@ export function ReviewChecklist({ taskId, initial }: { taskId: string; initial: 
             onChange={(event) => setNote(event.target.value)}
             placeholder={t('admin.decisionNote')}
           />
+        </div>
+
+        {/* The price is set here, not by the creator. Required to approve only;
+            the server re-checks the range. */}
+        <div className="space-y-2">
+          <label htmlFor="album-price" className="text-sm font-medium">
+            {t('admin.albumPrice')}
+          </label>
+          <div className="flex items-center gap-2">
+            <Input
+              id="album-price"
+              type="number"
+              inputMode="decimal"
+              min={priceRange.min}
+              max={priceRange.max}
+              step="0.01"
+              dir="ltr"
+              className="numeric w-32"
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
+              aria-describedby="album-price-hint"
+            />
+            <span className="ltr-island text-sm text-muted-foreground">USD</span>
+          </div>
+          <p id="album-price-hint" className="text-xs text-muted-foreground">
+            {t('admin.albumPriceHint', { min: priceRange.min, max: priceRange.max })}
+            {priceRange.bandLabel ? ` ${t('admin.albumPriceBand', { band: priceRange.bandLabel })}` : ''}
+          </p>
         </div>
 
         {!gate.ok ? (

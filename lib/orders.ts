@@ -95,7 +95,8 @@ export async function checkout({
   }
 
   const albums = await db.album.findMany({
-    where: { id: { in: lines.map((line) => line.albumId) }, status: 'live' },
+    // Never an unpriced album (priceStandard 0 until approval, DEV-09).
+    where: { id: { in: lines.map((line) => line.albumId) }, status: 'live', priceStandard: { gt: 0 } },
     include: {
       creator: { select: { id: true, tier: true, commissionRateOverride: true } },
       clips: {

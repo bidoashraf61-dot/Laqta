@@ -6,7 +6,7 @@ arrives later. Key and milestones: [README](README.md).
 
 ## M1 — Send everything out · by 3 Oct
 
-- [ ] **BIZ-01** ⛔ Create a **private** GitHub repository (Claude pushes the code: DEV-02) — 🧑 · 15 min
+- [x] **BIZ-01** ⛔ Create a **private** GitHub repository (Claude pushes the code: DEV-02) — 🧑 · 15 min — done 2026-09-26
 - [ ] **BIZ-02** ⛔ Lawyer: review Terms, Privacy, Licences, Content policy (both languages) + questions: copyright in AI-generated footage, trademarked buildings in AI footage, AI disclosure wording, Egypt vs Saudi governing law, consumer-law disclosure vs the "no refund copy" decision — 🧑 · 1 hr + wait
 - [ ] **BIZ-03** ⛔ Accountant: `docs/business/tax-questions-for-accountant-ar.md` — VAT on USD sales to Saudi buyers, invoices / e-receipts, invoice currency, credit notes, withholding tax on creator payouts — 🧑 · 1 hr + wait
 - [ ] **BIZ-04** ⛔ Paymob: written yes to **USD charges to Saudi cards** (and mada?), **payout currency (USD or EGP) and FX margin**, fees, holds, chargebacks; then the `PAYMOB_*` keys — 🧑 · 1 hr + wait

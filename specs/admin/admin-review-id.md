@@ -33,7 +33,7 @@ the clip contact sheet, and the eight-check checklist that gates approval.
 | «عرض المستند» per release (plain `<a target="_blank">`, with the file name) | `GET /api/studio/releases/[id]/document` ([spec](../api/release-document.md)) | Re-checks the admin role, writes `AuditLog release.document_view`, then a 302 to a 60-second signed S3 URL, or the file streamed `private, no-store` on the local driver. «بلا مستند» when none is attached |
 | Per-check state chips (pass / fail / not_applicable) × 8 checks | local `setState` in `ReviewChecklist` | client-only until a decision is submitted; nothing is persisted per check |
 | «ملاحظة للصانع» textarea | local state | becomes `ReviewTask.decisionNote` |
-| «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve`. Emails the creator `album.approved` (link to the live album page). Redirects to `/admin` |
+| «اعتماد» (approve) | `submitReview` → `lib/admin.decideReview` | `ReviewTask.status='approved'`, `decision='approve'`, checklist + `decidedAt` written; `Album.status='live'`, `publishedAt=now`, `licenceVersionId` = the current licence, `clearedForCommercial` and `clearanceStatus` set from the checklist. Audits `album.review.approve`. Emails the creator `album.approved` (link to the live album page). Redirects to `/admin` |
 | «طلب تعديلات» (request changes) | `submitReview` | `ReviewTask.status='changes_requested'`; `Album.status='changes_requested'` (reopened for editing). Requires a note. Emails the creator `album.changes` quoting the note, linking `/studio/albums/[id]` |
 | «رفض» (reject) | `submitReview` | `ReviewTask.status='rejected'`; `Album.status='delisted'`. Requires a note. Emails the creator `album.rejected` quoting the reason and inviting a reply, linking `/studio/albums` |
 
@@ -71,6 +71,7 @@ authorisation boundary.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- **Approval refuses without a current licence** (`admin.cannotApprove`, detail «No licence is marked current.») — an album goes live carrying the licence it is sold under (DEV-06).
 - `releases` and `cultural` are **blocking** checks: approval is refused while either is
   `fail`, and refused while any check is still `pending`. Enforced in
   `lib/review-checklist.canApprove`, re-run server-side.

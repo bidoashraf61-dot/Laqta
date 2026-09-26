@@ -31,7 +31,7 @@ Page head is the site standard two-cut composition: `Headline` h1 (Sans Light le
 | Support email (only if set) | Plain `<a>` | `mailto:` |
 | Name | Text, `autocomplete=name`, max 120 | Required, 2–120 chars |
 | Email | `type=email`, `dir=ltr`, max 254 | Required, valid address; the hint says the reply goes here |
-| Topic | Native `<select>`, optional | Blank, or one of `buying`, `selling`, `custom`, `rights`, `other` (labels `contact.topic.*`) |
+| Topic | Native `<select>`, optional | Blank, or one of `buying`, `selling`, `custom`, `rights`, `other` (labels `contact.topic.*`). `?topic=<one of these>` preselects it (`/sell`'s Apply sends `selling`); any other value leaves it blank |
 | Message | Textarea, max 5000 | Required, 10–5000 chars; hint asks for the order number |
 | "أرسل الرسالة" / "Send message" | Submit (gold, `lg`) | `sendContactMessage` server action in `app/(public)/actions.ts` |
 | "اكتب رسالة أخرى" / "Write another message" | Button (success state) | Returns to an empty form |

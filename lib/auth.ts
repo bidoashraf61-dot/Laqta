@@ -176,11 +176,26 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
          */
         const account = await db.user.findUnique({
           where: { id: token.uid as string },
-          select: { passwordChangedAt: true, status: true },
+          select: {
+            passwordChangedAt: true,
+            status: true,
+            role: true,
+            creator: { select: { id: true } },
+          },
         })
         if (!account) return null
         const issued = typeof token.signedInAt === 'number' ? token.signedInAt : ((token.iat as number) ?? 0) * 1000
         if (account.passwordChangedAt && account.passwordChangedAt.getTime() > issued) return null
+
+        // Same read, so free: role and creator profile follow the database in
+        // every server render. An admin who makes THEMSELVES a creator on
+        // /admin/users/[id] gets `creatorId` at once (the role already passes
+        // middleware); without this /studio bounced to /sell until a re-login.
+        // A demotion reaches layouts and actions just as fast. Middleware still
+        // reads the cookie's role, so a buyer promoted mid-session must sign in
+        // again to pass the /studio gate.
+        token.role = account.role
+        token.creatorId = account.creator?.id ?? null
       }
 
       // Role or creator status can change mid-session (a creator gets

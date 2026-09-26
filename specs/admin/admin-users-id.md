@@ -5,8 +5,9 @@
 ## Purpose
 One account and everything support asks about it, on one screen: profile, orders,
 library, preview downloads, contact messages, the free-sample claim, the creator link —
-plus the two things an operator does to an account itself: suspend/reactivate, and
-**view the site as this user** (read-only, audited, expiring support impersonation).
+plus the three things an operator does to an account itself: suspend/reactivate,
+**make this user a creator** (DEV-05), and **view the site as this user** (read-only,
+audited, expiring support impersonation).
 
 ## Data in
 - `closeExpiredImpersonations()` runs first (writes): any `Impersonation` row still open
@@ -37,6 +38,7 @@ plus the two things an operator does to an account itself: suspend/reactivate, a
 | «افتح في الطلبات» (each order) | plain `<a>` | → `/admin/orders?q={orderNumber}` — refunds (and so ownership withdrawal) live there |
 | «رسائل التواصل» link (when there are messages) | plain `<a>` | → `/admin/messages` |
 | «افتح في صنّاع المحتوى» (creator accounts) | plain `<a>` | → `/admin/creators?q={handle}` |
+| «اجعله صانع محتوى» panel (accounts with no creator profile; admins included) → «المعرّف» (required, 3–30, `[a-z0-9-]`, `dir=ltr`), «الاسم المعروض بالعربي» / «بالإنجليزي» (required, ≤80), «الدولة» (native select over `COUNTRIES`, default EG), «صانع مؤسس: حصته ٧٠٪» (checkbox, **checked by default**), «أنشئ حساب الصانع» | `makeCreator` (`SettingsForm`) | Creates `Creator` `status='approved'`, `appliedAt`/`approvedAt=now`, tier **silver** when founding (30% commission = 70% to the creator, decision D8; `notes` records it) else **standard** (65%). Sets `User.role='creator'`; an admin keeps `admin`. Audits `creator.create` (detail userId, handle, tier, founding). Refuses: existing profile «هذا الحساب صانع محتوى أصلاً.», suspended account, bad handle, taken handle, missing names. Success «صار صانع محتوى. إذا كان داخلاً الآن، يسجّل خروجه ثم دخوله ليفتح الاستوديو.»; the page revalidates and the creator panel replaces the form |
 | «عرض الموقع كهذا المستخدم» panel → «سبب العرض» (required textarea, ≤500), «مرجع الرسالة أو التذكرة (اختياري)» (≤120), «ابدأ العرض» | `startViewAsUser` (`SettingsForm`) | See **View as user** below. On success redirects to `/account` as the customer; on refusal shows the reason inline |
 
 ## View as user
@@ -96,13 +98,17 @@ plus the two things an operator does to an account itself: suspend/reactivate, a
   open lives until its JWT expires — the page says so.
 - Every view is audited at start and end/expiry, carries a reason, and cannot outlive
   30 minutes.
+- **A promoted buyer must sign in again to open the studio.** Middleware reads the role
+  from the session cookie (edge, no database), so an open session stays `buyer` at the
+  `/studio` gate. An **admin** made a creator reaches the studio at once: the role already
+  passes, and `creatorId` arrives through the `jwt` callback's per-request read.
 
 ## Verified by
 `verify:impersonation` (who may be viewed, non-admin cannot reach the form, blank reason
 opens nothing, start row + audit + banner + session identity, 403 on a server-action POST,
 an `/en` POST, a writing GET and a download, `/admin` unreachable, customer unchanged, end
 row + audit + admin restored, expiry via a re-signed cookie closes the row `expired` with
-its audit). `verify:flows` opens the page from a `/admin/users` search. Not in
+its audit). `verify:flows` opens the page from a `/admin/users` search, and runs make-creator twice on throwaway accounts: a buyer (profile approved, silver, role creator, audited, form replaced, studio content after a fresh sign-in) and an admin (keeps admin, open session reaches `/studio`, not `/sell`). Not in
 `verify:arabic` / `audit` (the route needs an id). The data-layer guard (`lib/db.ts`) is
 exercised only indirectly — no gate issues a writing GET that middleware does not already
 refuse.

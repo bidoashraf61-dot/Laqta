@@ -46,13 +46,13 @@ These change how many tasks are done. Record each answer here.
 
 | # | Decision | Recommendation | Answer |
 |---|---|---|---|
-| D1 | Launch AI-only, or creators may also upload filmed footage? | AI-only | |
-| D2 | "Own it forever" or "permanent licence"? | «ترخيص دائم» — matches the Terms | |
-| D3 | Also rewrite «تصوير» where it means the buyer's own shoot day? | Yes — one rule, no exceptions | |
-| D4 | Album price for 30–70 clips | Decide a range (audit suggests $99–$249) | |
-| D5 | Master quality: 1080p, or upscale to 4K? | If 1080p, change the copy that says 4K | |
-| D6 | Verticals inside an album? | No — dedicated vertical albums | |
-| D7 | VAT at checkout until the accountant answers | 0%, no invoice promise | |
-| D8 | Deal for the founding creators | Higher share (e.g. 75%) for year one | |
-| D9 | Studio in English for non-Arabic creators? | Arabic only at launch | |
-| D10 | Analytics | Cookie-free (Plausible or Umami) | |
+| D1 | Launch AI-only, or creators may also upload filmed footage? | AI-only | **AI + filmed** — creators may upload both (2026-09-26) |
+| D2 | "Own it forever" or "permanent licence"? | «ترخيص دائم» — matches the Terms | **«ترخيص دائم»** |
+| D3 | Also rewrite «تصوير» where it means the buyer's own shoot day? | Yes — one rule, no exceptions | **No** — «تصوير» is allowed, since the catalogue has filmed footage too; use it only where true |
+| D4 | Album price for 30–70 clips | Decide a range (audit suggests $99–$249) | **$49–$249** |
+| D5 | Master quality: 1080p, or upscale to 4K? | If 1080p, change the copy that says 4K | **Mixed** — each album states its real resolution; site-wide «4K» claims go |
+| D6 | Verticals inside an album? | No — dedicated vertical albums | **Dedicated vertical albums** |
+| D7 | VAT at checkout until the accountant answers | 0%, no invoice promise | **Keep 15%** until the accountant answers (owner's choice, risk explained) |
+| D8 | Deal for the founding creators | Higher share (e.g. 75%) for year one | **70% creator share** (commission 30%) |
+| D9 | Studio in English for non-Arabic creators? | Arabic only at launch | **Arabic only** |
+| D10 | Analytics | Cookie-free (Plausible or Umami) | **Google Analytics** — needs a cookie consent banner + privacy-policy update |

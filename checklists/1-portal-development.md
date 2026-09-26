@@ -34,7 +34,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 ## M4 — Content, SEO and blog · by 14 Nov
 
 ### Site copy (🤖 writes, 🧑 approves)
-- [ ] **DEV-20** ⛔ Remove every «تصوير» / ص-و-ر form and "filmed/shot" wording (~25 places: origin badge «تصوير حقيقي», landing, `/sell`, studio, legal pages, meta keywords) — 🤖 · ½ day · *needs D1, D3*
+- [ ] **DEV-20** ⛔ Review every «تصوير» / ص-و-ر form and "filmed/shot" wording (~25 places: origin badge «تصوير حقيقي», landing, `/sell`, studio, legal pages, meta keywords). **D1/D3 answered: AI + filmed**, so keep «تصوير» where it describes filmed footage; fix only places that call generated footage filmed or say the catalogue is AI-only. Remove blanket «4K» claims (D5: resolution stated per album) — 🤖 · ½ day
 - [ ] **DEV-21** ⛔ Replace "own it forever" with "permanent licence" (~12 places incl. the order email) — 🤖 · 2 hrs · *needs D2*
 - [ ] **DEV-22** Clip-count grammar: "22 clip" → "22 clips"; Arabic «١٠ لقطة» → «١٠ لقطات»; «٣ صانع محتوى» — 🤖 · ½ day
 - [ ] **DEV-23** Saudi register fixes («أقدر»، «فاضي»، «ما فيه»، «تقدر») in FAQ, emails, empty states — 🤖 · 2 hrs
@@ -42,7 +42,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [ ] **DEV-25** About page rewrite: AI disclosure, founder, company, founding date — 🤝 · ½ day · *needs BIZ-10 details*
 - [ ] **DEV-26** ⛔ Legal pages rewrite after the lawyer: Terms, Privacy, Licences, Content policy (30–70 clips not "eight", AI section, Egyptian company, holy-sites rule, VAT line) — 🤖 · 1–2 days · *needs BIZ-02, BIZ-03*
 - [ ] **DEV-27** ⛔ Licence certificate: real licence text (today 2 sentences), singular labels, licensor company line, drop "(optional)" — 🤝 · ½ day · *needs BIZ-02*
-- [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
+- [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT; **D7: keep 15% until BIZ-03 answers**); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
 - [ ] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min
 - [ ] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days
 - [ ] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day
@@ -64,7 +64,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [ ] **DEV-43** Blog: `/blog`, article page, categories, RSS, sitemap, Article structured data — through Impeccable — 🤖 · 2 days
 - [ ] **DEV-44** Blog admin: editor with Arabic preview, drafts, scheduling, SEO fields, "embed album" block — 🤖 · 2 days
 - [ ] **DEV-45** Proper waitlist: its own table, consent line, language, source, unsubscribe, export/sync to Resend Audiences — 🤖 · 1–2 days
-- [ ] **DEV-46** Cookie-free analytics + UTM tracking — 🤖 · 3 hrs · *needs D10*
+- [ ] **DEV-46** **Google Analytics** (D10) + UTM tracking, loaded only after consent via a cookie banner; privacy policy updated — 🤖 · ½ day · *needs BIZ-12 (banner decision)*
 
 ## M5 — Rehearsal · by 21 Nov
 

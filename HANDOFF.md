@@ -24,8 +24,9 @@ _Last updated: 2026-09-26 (DEV-01)_
   Saudi look reviewed for accuracy, own-it-not-rent-it, full commercial licence.
 
 ### Copy rules that are easy to break
-- Never «تصوير» or any ص-و-ر form — the footage is generated, not filmed. Never
-  claim "no AI", "first" or "largest", or «الأرخص».
+- «تصوير» only where it is true — the catalogue is **AI-generated + filmed**
+  (D1/D3, 2026-09-26). Never describe generated footage as filmed. Never claim
+  "no AI", "first" or "largest", or «الأرخص».
 - **No refund copy anywhere public** — not a policy, not "no refunds".
 - Plain claims over metaphor (`docs/content/brand-voice-ar.md`).
 
@@ -81,6 +82,7 @@ English site under `/en`, transactional email outbox.
 | 2026-09-24 | USD only; albums only; 30–70 clips; verticals as dedicated vertical albums |
 | 2026-09-24 | Free sample album + watermarked preview downloads for signed-in users |
 | 2026-09-24 | No analytics at launch; team accounts after launch |
+| 2026-09-26 | D1–D10 answered (`checklists/README.md`): **AI + filmed** footage; «ترخيص دائم»; «تصوير» allowed where true; albums **$49–$249**; resolution **per album** (no blanket 4K); dedicated vertical albums; **VAT stays 15%** until the accountant answers; founding creators **70%**; studio Arabic only; **Google Analytics** (replaces "no analytics", so a cookie banner is now required) |
 | open | PDPL deletion/export + cookie banner; hosting region; tax treatment |
 
 Full reasoning: `docs/decisions/`, `docs/business/saudi-stock-footage-portal-plan.md`.

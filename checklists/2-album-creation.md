@@ -60,7 +60,7 @@ themselves on the test site (from ~20 Oct).
 - [ ] **ALB-20** Creator brief + spec sheet (Arabic/English): one subject, 30–70 clips, one frame rate / resolution / colour, codecs (H.264/H.265/ProRes, max 20 GB a file), Saudi accuracy rules, banned subjects, file naming, QA log — 🤖 draft, 🧑 approve · 1 day
 - [ ] **ALB-21** Topics to assign so albums don't overlap and fill search gaps (e.g. Jeddah old town, Riyadh business without faces, desert and camels, coffee culture, AlUla, Red Sea) — 🧑 · 1 hr
 - [ ] **ALB-22** Selection scorecard: portfolio quality, 5-clip test result, Saudi accuracy, reliability — 🤝 · 1 hr
-- [ ] **ALB-23** Founding-creator offer (D8): share, any advance or credits, deadline — 🧑 · 1 hr
+- [ ] **ALB-23** Founding-creator offer (D8: **70% creator share**): any advance or credits, deadline — 🧑 · 1 hr
 
 ### M2 — Recruit and sign · by 17 Oct
 - [ ] **ALB-24** Candidate list of 20–30 AI-video creators (X, Instagram, Behance, Mostaql, Higgsfield / Kling communities) — 🧑 · 3 days

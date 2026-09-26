@@ -1,0 +1,93 @@
+# 1 · Portal development checklist
+
+The website itself. Most tasks are 🤖 — ask Claude to do them on a branch.
+Every change follows `CLAUDE.md`: spec updated in the same commit, UI through
+Impeccable, `npm run verify` green. Key and milestones: [README](README.md).
+
+## M1 — Safe · by 3 Oct
+
+- [ ] **DEV-01** ⛔ Turn off phone sign-in until an SMS provider exists — today the login code is shown in the browser, so anyone could sign in as any phone number. Add a check to `verify:auth`. — 🤖 · ½ day
+- [ ] **DEV-02** Push the code to the private GitHub repo — 🤖 · 15 min · *needs BIZ-01*
+- [ ] **DEV-03** Tidy git: delete the ~69 merged branches; ask before deleting `laqta-worktrees/foundation` — 🤖 · 1 hr
+- [ ] **DEV-04** Fix stale docs: README (Arabic-only, SAR, "upload not built"), `.env.example` (SAR, unused MEILI), `docs/decisions/` status lines, `docs/business/build-steps.md` — 🤖 · ½ day
+
+## M2 — Ready for outside creators · by 20 Oct
+
+Today nobody can become a creator, and creator albums would sell with a blank licence.
+
+- [ ] **DEV-05** ⛔ Admin button "make this user a creator" on `/admin/users/[id]` (use it for your own account too). Point "Apply" on `/sell` to the contact form. — 🤖 · 1 day
+- [ ] **DEV-06** ⛔ Fix the blank licence: set the commercial licence on every album at creation and approval; repair existing ones — 🤖 · 2 hrs
+- [ ] **DEV-07** ⛔ Creator agreement acceptance — versioned, recorded, shown before the studio opens; exclusivity choice recorded — 🤖 · ½ day · *needs BIZ-09 text*
+- [ ] **DEV-08** ⛔ Album details form (creator + admin): AI-generated/filmed, orientation, location, category, time of day, tags, permits declaration. Fix `/sell` copy that promises it. — 🤖 · 2 days · *needs D1*
+- [ ] **DEV-09** ⛔ Price control: admin sets the album price at approval; creators stop choosing a band. Re-cut price bands to 30–70 clips. Fix `/sell` FAQ + studio hint. — 🤖 · 1 day · *needs D4*
+- [ ] **DEV-10** Releases can link to any clip; per-clip "shows people / faces" toggle — 🤖 · ½ day
+- [ ] **DEV-11** 2FA required for creators before they reach the studio — 🤖 · ½ day
+- [ ] **DEV-12** Bulk edit of clip titles (today each defaults to the file name) — 🤖 · 1 day
+- [ ] **DEV-13** Creator guide page: spec sheet, pre-start checklist, example album, linked from the upload area — 🤖 · ½ day · *needs ALB-20*
+- [ ] **DEV-14** ⛔ Hosting: Dockerfile (Node + ffmpeg + Chromium), health check, migrations on deploy, daily database backups — 🤖 · 1 day · *needs BIZ-07*
+- [ ] **DEV-15** ⛔ S3 buckets + CORS + CloudFront wired; Resend switched on — 🤝 · 1 day · *needs BIZ-06, BIZ-13*
+- [ ] **DEV-16** ⛔ **Test site online** + upload one real multi-GB 4K master through S3 → processing → review → approval — 🤝 · 1 day · *needs DEV-14, DEV-15*
+- [ ] **DEV-17** AI-accuracy check added to the review checklist (warped buildings, garbled Arabic text, wrong dress, morphing, flicker) + translate the checklist to Arabic — 🤖 · 3 hrs
+- [ ] **DEV-18** Duplicate detection: compute the perceptual hash during processing — 🤖 · ½ day
+- [ ] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs
+
+## M4 — Content, SEO and blog · by 14 Nov
+
+### Site copy (🤖 writes, 🧑 approves)
+- [ ] **DEV-20** ⛔ Remove every «تصوير» / ص-و-ر form and "filmed/shot" wording (~25 places: origin badge «تصوير حقيقي», landing, `/sell`, studio, legal pages, meta keywords) — 🤖 · ½ day · *needs D1, D3*
+- [ ] **DEV-21** ⛔ Replace "own it forever" with "permanent licence" (~12 places incl. the order email) — 🤖 · 2 hrs · *needs D2*
+- [ ] **DEV-22** Clip-count grammar: "22 clip" → "22 clips"; Arabic «١٠ لقطة» → «١٠ لقطات»; «٣ صانع محتوى» — 🤖 · ½ day
+- [ ] **DEV-23** Saudi register fixes («أقدر»، «فاضي»، «ما فيه»، «تقدر») in FAQ, emails, empty states — 🤖 · 2 hrs
+- [ ] **DEV-24** Landing FAQ additions: "Is it AI-generated?", news use, team use, formats/vertical, custom album — 🤖 · 2 hrs
+- [ ] **DEV-25** About page rewrite: AI disclosure, founder, company, founding date — 🤝 · ½ day · *needs BIZ-10 details*
+- [ ] **DEV-26** ⛔ Legal pages rewrite after the lawyer: Terms, Privacy, Licences, Content policy (30–70 clips not "eight", AI section, Egyptian company, holy-sites rule, VAT line) — 🤖 · 1–2 days · *needs BIZ-02, BIZ-03*
+- [ ] **DEV-27** ⛔ Licence certificate: real licence text (today 2 sentences), singular labels, licensor company line, drop "(optional)" — 🤝 · ½ day · *needs BIZ-02*
+- [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
+- [ ] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min
+- [ ] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days
+- [ ] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day
+- [ ] **DEV-32** Contact details shown on `/contact` and in site data — 🤖 · 30 min · *needs BIZ-10*
+
+### SEO fixes
+- [ ] **DEV-33** ⛔ English album, clip, creator, collection and hub pages point Google at the Arabic page — use `localeAlternates` everywhere so each language is indexed — 🤖 · ½ day
+- [ ] **DEV-34** Sitemap sends theme/tag terms to `/collections/…` which 404 — fix; add clip pages; video sitemap — 🤖 · ½ day
+- [ ] **DEV-35** English pages carry Arabic in share data (`ar_SA`, `inLanguage`, breadcrumbs) — make locale-aware — 🤖 · 2 hrs
+- [ ] **DEV-36** Structured data: VideoObject `uploadDate` + AI-origin marker; Product image/brand; Organization address/contact; album share image = cover — 🤖 · ½ day
+- [ ] **DEV-37** Hide private pages from Google in English too (`/en/account`, `/en/studio`, `/en/admin`, `/checkout`, `/boards`); noindex empty hubs — 🤖 · 1 hr
+- [ ] **DEV-38** Missing page descriptions (~10 routes) + natural English hub titles ("Riyadh stock footage") — 🤖 · 2 hrs
+- [ ] **DEV-39** ⛔ Page speed: hero film is 31 MB and never cached — lighter encode, long cache headers, phone poster; preload fonts, cache them — 🤖 · 1 day
+- [ ] **DEV-40** `SITE_ORIGIN` / `AUTH_URL` set together so links never fall back to localhost — 🤖 · 30 min
+
+### Hub pages and blog
+- [ ] **DEV-41** Admin fields to write text for location and category pages; hub shows intro, 3 FAQs, albums first, related hubs — 🤖 · 2 days
+- [ ] **DEV-42** Occasions pages `/occasions/[slug]` (Ramadan, Eid, Founding Day, National Day, Riyadh Season) — 🤖 · 1 day
+- [ ] **DEV-43** Blog: `/blog`, article page, categories, RSS, sitemap, Article structured data — through Impeccable — 🤖 · 2 days
+- [ ] **DEV-44** Blog admin: editor with Arabic preview, drafts, scheduling, SEO fields, "embed album" block — 🤖 · 2 days
+- [ ] **DEV-45** Proper waitlist: its own table, consent line, language, source, unsubscribe, export/sync to Resend Audiences — 🤖 · 1–2 days
+- [ ] **DEV-46** Cookie-free analytics + UTM tracking — 🤖 · 3 hrs · *needs D10*
+
+## M5 — Rehearsal · by 21 Nov
+
+- [ ] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day
+- [ ] **DEV-48** Security: suspended users logged out at once; rate limits on sign-in, sign-up, checkout; Content-Security-Policy — 🤖 · 1 day
+- [ ] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day
+- [ ] **DEV-50** Sentry error reporting wired — 🤖 · ½ day · *needs BIZ-08*
+- [ ] **DEV-51** Paymob refunds made in the Paymob dashboard reverse Laqta's records — 🤖 · ½ day · *needs BIZ-04*
+- [ ] **DEV-52** Privacy features as decided (deletion/export by email or a button) — 🤖 · ½–2 days · *needs BIZ-12*
+- [ ] **DEV-53** ⛔ Full rehearsal on the test site: buyer (card + bank transfer, emails, download, licence PDF) and creator (upload → review → live → sale email) — 🤝 · ½ day
+- [ ] **DEV-54** Emails land in the inbox (Gmail + Outlook, Arabic + English) — 🤝 · 1 hr
+- [ ] **DEV-55** Phone + desktop pass of every page in both languages; landing on a real iPhone — 🤖 · ½ day
+- [ ] **DEV-56** Restore a database backup once — 🤝 · 1 hr
+- [ ] **DEV-57** Operator daily digest email (queue, unsettled transfers, failed mail, messages) — 🤖 · 1 day
+
+## M6 — Live
+
+- [ ] **DEV-58** ⛔ Production deploy: domain, SSL, production seed, albums loaded — 🤝 · ½ day
+- [ ] **DEV-59** Uptime + SSL monitoring — 🤝 · 30 min
+- [ ] **DEV-60** First two weeks: daily check of errors, failed emails, zero-result searches — 🤖
+
+## After launch
+Price negotiation with creators (decision B) · admin-editable legal pages ·
+accounting CSV exports · mada / Tabby / Tamara · HLS streaming ·
+e-invoicing via a certified provider · team accounts · English studio ·
+studio: edit releases and clip metadata beyond titles.

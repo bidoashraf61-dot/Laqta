@@ -2,9 +2,9 @@
 
 Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
-session.** Rules live in `CLAUDE.md`; the task list lives in `LAUNCH-ROADMAP.md`.
+session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-26_
+_Last updated: 2026-09-26 (checklists)_
 
 ---
 
@@ -16,8 +16,8 @@ _Last updated: 2026-09-26_
   Albums only — no single clips, no packs. 30–70 clips around one subject.
   One-time purchase, perpetual licence, **no subscription**. Prices in **USD**.
 - **Audience:** freelancers and agencies, no geographic limit.
-- **Supply:** launch catalogue is 4–5 of the owner's own albums; outside
-  creators (Egypt-first, then Saudi/Arab) sell later through the studio.
+- **Supply at launch:** the owner's first album (**Ramadan**) plus ~6 albums
+  from outside AI-video creators, who sign up and upload through the studio.
 - **Company:** registered in **Egypt**. Owner operates it **alone** and is not a
   developer.
 - **Main competitor reference:** Artlist (subscription). Laqta's pitch: real
@@ -46,17 +46,17 @@ English site under `/en`, transactional email outbox.
 
 | Service | State | Unblocked by |
 |---|---|---|
-| Paymob card + Apple Pay | code done, dormant | `PAYMOB_*` env — roadmap P1.1 |
-| Resend email | code done, mail queues in outbox | account + DNS + key — P1.8 |
-| AWS S3 + CloudFront | drivers done, local fallback | AWS setup — P1.9 |
-| Sentry | privacy scrubber only; SDK not installed | P1.10 + P2.1 |
-| SMS for phone sign-in | **not built** — see blocker below | P0.1 |
-| Hosting / deploy | **nothing exists** — no Dockerfile, CI or server | P1.11 + P2.9 |
+| Paymob card + Apple Pay | code done, dormant | `PAYMOB_*` env — BIZ-04 |
+| Resend email | code done, mail queues in outbox | account + DNS + key — BIZ-13 |
+| AWS S3 + CloudFront | drivers done, local fallback | AWS setup — BIZ-06, DEV-15 |
+| Sentry | privacy scrubber only; SDK not installed | BIZ-08 + DEV-50 |
+| SMS for phone sign-in | **not built** — see blocker below | DEV-01 |
+| Hosting / deploy | **nothing exists** — no Dockerfile, CI or server | BIZ-07 + DEV-14 |
 
-**Launch blockers (details and order in `LAUNCH-ROADMAP.md`):**
+**Launch blockers (details in `checklists/`):**
 1. **Phone sign-in hole** — without an SMS provider the code is returned to
-   the browser; live, anyone could sign in as any phone. P0.1.
-2. **No backup** — no git remote; the repo exists only on this Mac. P0.2.
+   the browser; live, anyone could sign in as any phone. DEV-01.
+2. **No backup** — no git remote; the repo exists only on this Mac. BIZ-01.
 3. No real footage — every album is seed/demo data; previews are hero-film
    stand-ins, no trailers. Phase 3.
 4. Legal text unreviewed; accountant answers missing; contact details empty.
@@ -124,7 +124,7 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 
 - Work on a branch, merge to `main` with `--no-ff`. `main` is the checkout in
   the project folder.
-- **No remote yet** (P0.2). ~69 old local branches, all merged (P0.3).
+- **No remote yet** (BIZ-01). ~69 old local branches, all merged (DEV-03).
 - `laqta-worktrees/foundation` is an abandoned August checkout with
   uncommitted edits — ask the owner before deleting.
 
@@ -143,5 +143,18 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Published the Launch Path page (six milestones, daily picks, ticks saved
   to its database): https://claude.ai/artifact/1MPK7uQK6q1oxtpWk9ZcSU
 
-**Next:** P0.1 (close the phone sign-in hole) — 🤖, can start immediately.
-Owner: start P0.2 and the Phase 1 accounts today.
+## 9. Session — 2026-09-26 (continued)
+
+- Ran five audits (live site checks — all gates green; Arabic content; SEO
+  and blog; outside-creator readiness; business and operations).
+- Replaced `LAUNCH-ROADMAP.md` with four checklists in `checklists/`
+  (portal, album, marketing, business & legal; 157 tasks, M1–M6).
+- **Plan changes:** the first album is now **Ramadan** (not «فوق الغيم»);
+  launch includes **~6 albums from outside creators**, so creator onboarding
+  (DEV-05 – DEV-16) and the test site move to M2 (20 Oct).
+- The Launch Path page published earlier
+  (https://claude.ai/artifact/1MPK7uQK6q1oxtpWk9ZcSU) uses the old task
+  numbers and is superseded by `checklists/`.
+
+**Next:** owner answers decisions D1–D10 (`checklists/README.md`) and sends
+BIZ-02/03/04; Claude starts DEV-01.

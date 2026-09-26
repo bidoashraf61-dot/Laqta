@@ -10,15 +10,18 @@ copy-paste blocks.
 
 1. **`HANDOFF.md`** — current state of the project: what is live, what is
    dormant, what broke last, what the owner still owes. Read it first.
-2. **`LAUNCH-ROADMAP.md`** — the ordered pipeline of tasks to launch, in six
-   milestones (M1–M6). The owner ticks tasks on the Launch Path page; sync its
-   ticks first (instructions at the top of the roadmap). Pick the
+2. **`checklists/`** — the launch task lists, split four ways: portal
+   development (`DEV-`), album creation (`ALB-`), marketing (`MKT-`),
+   business & legal (`BIZ-`), all on the same six milestones (M1–M6). The
+   owner opens a session each day to pick tasks: suggest 2–3 from the current
+   milestone whose *needs* are done, ⛔ first. Tick a task (with the date) in
+   the same commit that finishes it. Pick the
    next unchecked task in the current phase unless the owner says otherwise,
    and tick it (with date + commit) in the same change that finishes it.
 3. **`specs/`** — the truth for every route. Read the route's spec before
    touching the route (rules below).
 
-When you finish a task: update the spec, tick the roadmap, and refresh the
+When you finish a task: update the spec, tick the checklist, and refresh the
 "Current state" section of `HANDOFF.md`.
 
 ## Folder map
@@ -54,7 +57,7 @@ When you finish a task: update the spec, tick the roadmap, and refresh the
 │
 ├── CLAUDE.md          this file — rules
 ├── HANDOFF.md         current state for the next session
-├── LAUNCH-ROADMAP.md  ordered launch pipeline
+├── checklists/        launch task lists: portal, album, marketing, business
 ├── DESIGN.md          normative design system (Impeccable reads it from the root)
 ├── README.md          developer setup, data model, auth, domain helpers
 └── TESTING.md         how the verification gates run

@@ -245,7 +245,21 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   so. `verify:flows` covers both cases on throwaway accounts.
 - To use it yourself: `/admin/users` → find your account → «اجعله صانع محتوى».
 
-**Next:** DEV-09 (price control, $49–$249), DEV-08 (album details form). Owner: approve the creator
+## 15. Session — 2026-09-27 (DEV-09)
+
+- **DEV-09 done — you set every album's price.** Creators no longer choose a
+  band; a new album is created unpriced (`priceStandard = 0`) and the studio
+  shows «يُحدَّد السعر عند الاعتماد». On `/admin/review/[id]` a required
+  «سعر الألبوم» field (USD 49–249) is pre-filled from the band for the clip
+  count; `decideReview` re-checks the range and writes price, USD and tier.
+  Checkout refuses any unpriced album. Bands re-cut in the seed and the local
+  database: 30–39 $79 · 40–49 $119 · 50–59 $159 · 60–70 $199 (suggestions
+  only; editable on `/admin/catalogue`, which now enforces 49–249). `/sell`
+  FAQ states $49–$249. New gate `npm run verify:pricing` (in `npm run verify`).
+- Still not built: Spec B (the creator accepts the price before going live).
+
+**Next:** DEV-08 (album details form: AI/filmed, orientation, location,
+category, permits). Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

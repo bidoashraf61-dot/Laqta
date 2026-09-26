@@ -84,11 +84,9 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.
-- The price band editor changes the price of **new** albums only. The owner's decision
-  that a band edit "reprices live albums and notifies their creators" (2026-08-20) is not
-  built: there is no creator notification for it, and Spec B (creator accepts the price)
-  does not exist yet. All four seeded bands (8–11, 12–19, 20–34, 35+) sit partly or wholly
-  outside the 30–70 clip album and are flagged on the page until re-cut.
+- Album prices are set per album at approval on `/admin/review/[id]` ($49–$249, DEV-09);
+  price bands only suggest. Spec B (the creator accepts the price before the album goes
+  live) is still not built — the creator is told the price by the approval email only.
 - Making a buyer a creator (`/admin/users/[id]`) takes effect at their next sign-in: an
   open session is still a buyer at the `/studio` gate (the success message says so).
 - Suspending an account (`/admin/users/[id]`) refuses new sign-ins only; a JWT already

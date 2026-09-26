@@ -1,12 +1,11 @@
 import { redirect } from 'next/navigation'
 import { requireCreator } from '@/lib/auth'
-import { db } from '@/lib/db'
 import { Field } from '@/components/ui/label'
 import { Input, Textarea } from '@/components/ui/input'
 import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { SettingsForm } from '@/components/dashboard/form'
 import { createAlbum } from '@/app/(studio)/studio/actions'
-import { formatMoney, formatNumber, t } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -23,10 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * New album.
  *
- * Deliberately short: title, description, band. Price is not a field — it is
- * read off the PriceBand for the chosen band, so the catalogue keeps one price
- * per size of album and no creator can undercut or inflate it. Clips arrive
- * afterwards, on the album's own page.
+ * Deliberately short: title and description. No price and no band — Laqta sets
+ * the price at approval (DEV-09). Clips arrive afterwards, on the album's own
+ * page.
  */
 export default async function NewAlbumPage() {
   // Resolve the locale before rendering anything.
@@ -41,8 +39,6 @@ export default async function NewAlbumPage() {
 
   const user = await requireCreator()
   if (!user.creatorId) redirect('/sell')
-
-  const bands = await db.priceBand.findMany({ orderBy: { priceStandard: 'asc' } })
 
   return (
     <>
@@ -66,35 +62,6 @@ export default async function NewAlbumPage() {
             <Textarea id="descriptionEn" name="descriptionEn" rows={3} maxLength={1000} dir="ltr" />
           </Field>
 
-          <Field label={t('dash.albumTier')} htmlFor="tier" hint={t('dash.albumTierHint')} required>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {bands.map((band, index) => (
-                <label
-                  key={band.id}
-                  className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 transition-colors hover:border-foreground/25 has-[:checked]:border-gold/40 has-[:checked]:bg-gold/8"
-                >
-                  <input
-                    type="radio"
-                    id={index === 0 ? 'tier' : undefined}
-                    name="tier"
-                    value={band.tier}
-                    defaultChecked={band.tier === 'standard'}
-                    className="mt-1 accent-[hsl(var(--gold))]"
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium">{band.labelAr}</span>
-                    <span className="numeric block text-xs text-muted-foreground">
-                      {formatNumber(band.minClips)}
-                      {band.maxClips ? `–${formatNumber(band.maxClips)}` : '+'}{' '}
-                    </span>
-                    <span className="numeric mt-1 block text-sm text-gold">
-                      {formatMoney(Number(band.priceStandard), band.currency)}
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          </Field>
         </SettingsForm>
       </Panel>
     </>

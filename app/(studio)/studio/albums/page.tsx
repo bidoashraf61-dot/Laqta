@@ -188,9 +188,16 @@ export default async function StudioAlbumsPage({
                     <TableCell className="numeric text-end text-muted-foreground">
                       {formatNumber(Number(stat?.purchases ?? 0))}
                     </TableCell>
-                    <TableCell className="numeric text-end text-gold">
-                      {formatMoney(Number(album.priceStandard), album.currency)}
-                    </TableCell>
+                    {Number(album.priceStandard) > 0 ? (
+                      <TableCell className="numeric text-end text-gold">
+                        {formatMoney(Number(album.priceStandard), album.currency)}
+                      </TableCell>
+                    ) : (
+                      // Unpriced until Laqta approves it — DEV-09.
+                      <TableCell className="text-end text-xs text-muted-foreground">
+                        {t('dash.priceAtApproval')}
+                      </TableCell>
+                    )}
                     <TableCell className="text-end text-xs text-muted-foreground">
                       <span className="numeric">{formatDate(album.updatedAt)}</span>
                     </TableCell>

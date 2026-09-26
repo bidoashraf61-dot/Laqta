@@ -26,6 +26,7 @@ export async function submitReview(input: {
   checklist: Checklist
   decision: 'approve' | 'request_changes' | 'reject'
   note: string
+  price?: number | string | null
 }) {
   const admin = await requireAdmin()
   const result = await decideReview({ ...input, reviewerId: admin.id })

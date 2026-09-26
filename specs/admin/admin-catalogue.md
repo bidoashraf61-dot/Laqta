@@ -39,8 +39,8 @@ trailer, and the price band editor.
 | «تمييز» (hidden when delisted) | `toggleAlbumFeatured(id, !isFeatured)` | sets `isFeatured` and `featureRank` (`0` when featured, `null` when not); revalidates `/admin/merchandising` and `/` |
 | «شطب» (hidden when delisted) | `setAlbumStatus(id,'delisted')`, native confirm | `Album.status='delisted'`, `delistedAt=now`. Audits `album.delisted` |
 | Band row «تعديل» | opens that band's form (disclosure) | Fields: «اسم الشريحة», «الاسم بالإنجليزية», «أقل عدد لقطات», «أكثر عدد لقطات» (blank = open-ended, hint «اتركه فارغًا لشريحة مفتوحة من الأعلى.»), «السعر بالدولار». The tier is fixed on an existing band |
-| Band form → «حفظ» | `savePriceBand` (`SettingsForm`) | Validates with `lib/price-bands.ts#validateBand` (labels required; counts positive integers; min ≤ max; 0 < price ≤ 100000; one band per tier; no overlapping clip range with another band — «هذا المدى يتداخل مع شريحة «…».»). Writes `PriceBand` only; audits `priceband.update` with before/after. Success: «حُفظت الشريحة. الألبومات الحالية لم يتغير سعرها.» Revalidates `/admin/catalogue` and `/studio/albums/new` |
-| Band form → «حذف» | `deletePriceBand(id)`, native confirm «حذف هذه الشريحة؟ لن يختارها أحد لألبوم جديد، والألبومات الحالية تحتفظ بسعرها.» | Deletes the `PriceBand`; audits `priceband.delete` with the old values. The tier disappears from `/studio/albums/new` |
+| Band form → «حفظ» | `savePriceBand` (`SettingsForm`) | Validates with `lib/price-bands.ts#validateBand` (labels required; counts positive integers; min ≤ max; price within $49–$249 in whole cents (`dash.bandPriceRange` «سعر الشريحة بين ٤٩ و٢٤٩ دولاراً، مثل أسعار الألبومات.»); one band per tier; no overlapping clip range with another band — «هذا المدى يتداخل مع شريحة «…».»). Writes `PriceBand` only; audits `priceband.update` with before/after. Success: «حُفظت الشريحة. لم يتغير سعر أي ألبوم.» Revalidates `/admin/catalogue` and `/studio/albums/new` |
+| Band form → «حذف» | `deletePriceBand(id)`, native confirm «حذف هذه الشريحة؟ لن تُقترح بعد الآن، والألبومات تحتفظ بسعرها.» | Deletes the `PriceBand`; audits `priceband.delete` with the old values. That clip range then has no suggested price on the review page |
 | «إضافة شريحة» (only while a tier has no band) | opens the new-band form, with a «الفئة» select of the free tiers | `savePriceBand` without an id → `PriceBand.create` with `currency: 'USD'`; audits `priceband.create`. When all four tiers have bands the button is replaced by «كل الفئات الأربع لها شرائح. عدّل واحدة أو احذفها.» |
 
 ## States
@@ -61,8 +61,8 @@ trailer, and the price band editor.
 - **Band outside the album range** — a warning «خارج مدى الألبوم» badge on any band whose clip
   range is not wholly inside 30–70, plus one warning line under the hint: «الألبوم الآن من
   30 إلى 70 لقطة وبوابة الاستوديو تفرض ذلك، فالشريحة المعلَّمة يقع جزء من مداها أو كله
-  خارج ما يمكن أن يكونه ألبوم جديد.» (The seeded bands are 8–11, 12–19, 20–34 and 35+, so all four are flagged
-  until the owner re-cuts them.)
+  خارج ما يمكن أن يكونه ألبوم جديد.» (Re-cut 2026-09-27, DEV-09: the seed now gives 30–39 $79, 40–49 $119, 50–59 $159,
+  60–70 $199, all inside — nothing is flagged unless a band is edited out of range.)
 - **Band validation error** — inline destructive alert above that band's fields.
 - **Pending** — `ActionButton` spinner + disabled, then toast + `router.refresh()`.
 - **Truncation** — hard `take: 100`, no pagination.
@@ -72,17 +72,17 @@ trailer, and the price band editor.
 - A **«معاينات حُمّلت»** column counts `CompDownload` rows per album over the last 30 days (a ZIP counts once) — people testing the album in their own edit, a buying-intent signal. Read-only.
 - Pausing or delisting an album **cannot break a completed purchase**: entitlement is
   served from `OrderItem.clipManifestSnapshot`, never re-derived from the album.
-- **A band edit reprices nothing that exists.** A band's price is copied onto
-  `Album.priceStandard` only when a creator creates a draft (`createAlbum` in
-  `app/(studio)/studio/actions.ts`); nothing re-reads it. So an edit changes the price of
-  albums created afterwards — live, paused and draft albums keep theirs, and completed
-  orders keep the gross/VAT/commission frozen on each `OrderItem` (lib/orders.ts). The
-  page says so in `dash.priceBandsHint`: «تعديل الشريحة يسري على الألبومات التي تُنشأ
-  بعده فقط. الألبومات الحالية، المعروضة منها والمسودات، تحتفظ بسعرها، والطلبات
-  المكتملة لا تتغير أبدًا.»
+- **Bands are a suggestion, and a band edit reprices nothing** (DEV-09). The operator sets
+  each album's price at approval on `/admin/review/[id]`; the band whose clip range holds the
+  album's count only pre-fills that field. A creator never picks a band. So an edit changes
+  the next suggestion and nothing else — every album keeps the price it was approved at, and
+  completed orders keep the gross/VAT/commission frozen on each `OrderItem`
+  (lib/orders.ts). The page says so in `dash.priceBandsHint`: «الشرائح اقتراح فقط: تملأ
+  خانة السعر في صفحة المراجعة حسب عدد لقطات الألبوم، وأنت تحدّد السعر النهائي عند
+  الاعتماد. تعديلها لا يغيّر سعر أي ألبوم، والطلبات المكتملة لا تتغير أبداً.»
 - The owner's 2026-08-20 decision that a band edit "reprices live albums and notifies
-  their creators" is **not implemented** — it needs the creator notification (and Spec B's
-  price acceptance) first. See the README's dead ends.
+  their creators" is superseded by per-album pricing at approval. Spec B's creator price
+  acceptance is still not built.
 - Currency is not editable: USD only at launch (owner, 2026-09-24).
 - Every mutation writes an `AuditLog` row.
 

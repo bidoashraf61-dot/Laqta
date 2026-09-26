@@ -35,7 +35,7 @@ the one control that needs no review round trip: pause and resume.
 - A `delisted` album whose latest `ReviewTask.decision` is `reject` shows a destructive «لم يُقبل» badge instead of the generic status, so a rejection is visible from the list; the row links to the album, where the reason is.
 - `setAlbumVisibility` re-resolves the creator from the session and scopes by `creatorId` (admins bypass the scope) — rendering the page is not the authorisation boundary.
 - Visibility moves only between `live` and `paused`. Anything re-entering the catalogue from another state must pass through review; this control cannot publish.
-- Price is displayed, never editable here — it comes from the album's `PriceBand`-derived `priceStandard`.
+- Price is displayed, never editable here. It is the price the operator set at approval; an unpriced album (`priceStandard = 0`, every album before approval) shows «يُحدَّد السعر عند الاعتماد» in muted text instead of an amount (DEV-09).
 - Pausing an album does not touch anything already sold: entitlement is served from `OrderItem.clipManifestSnapshot`, so a buyer's library is unaffected.
 
 ## Verified by

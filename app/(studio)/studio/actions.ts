@@ -239,10 +239,10 @@ function slugify(value: string) {
 /**
  * Create a draft album.
  *
- * Price is never typed by the creator: it is read off the PriceBand for the
- * chosen tier, so the catalogue keeps one price per size of album and a
- * creator cannot undercut or inflate the band. Clips are added afterwards, and
- * the tier is re-derived from the real clip count before review.
+ * No price and no band: the album is created UNPRICED (`priceStandard = 0`)
+ * and the operator sets the price at approval, $49–$249, with the band for
+ * its clip count as the suggestion (DEV-09, lib/price-bands.ts). Checkout
+ * refuses an unpriced album, so a draft can never sell at zero.
  */
 export async function createAlbum(_state: Result | null, formData: FormData): Promise<Result> {
   const tr = await actionT()
@@ -251,18 +251,9 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
 
   const titleAr = String(formData.get('titleAr') ?? '').trim()
   const titleEn = String(formData.get('titleEn') ?? '').trim()
-  const tier = String(formData.get('tier') ?? 'standard')
 
   if (!titleAr) return { ok: false, message: tr('studio.titleArRequired') }
   if (!titleEn) return { ok: false, message: tr('studio.titleEnRequired') }
-  if (!['mini', 'standard', 'pro', 'signature'].includes(tier)) {
-    return { ok: false, message: tr('state.error') }
-  }
-
-  const band = await db.priceBand.findUnique({
-    where: { tier: tier as 'mini' | 'standard' | 'pro' | 'signature' },
-  })
-  if (!band) return { ok: false, message: tr('state.error') }
 
   const base = slugify(titleEn) || 'album'
   let slug = base
@@ -274,7 +265,6 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
     slug = `${base}-${attempt}`
   }
 
-  const priceStandard = Number(band.priceStandard)
   // Every album carries the licence it will be sold under from its first
   // moment — a draft with none once reached checkout and sold blank (DEV-06).
   const licenceVersionId = await currentLicenceId()
@@ -286,9 +276,9 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
       titleEn,
       descriptionAr: String(formData.get('descriptionAr') ?? '').trim() || null,
       descriptionEn: String(formData.get('descriptionEn') ?? '').trim() || null,
-      tier: tier as 'mini' | 'standard' | 'pro' | 'signature',
-      priceStandard,
-      currency: band.currency,
+      // Unpriced until approval; the tier is set from the clip count then.
+      priceStandard: 0,
+      currency: 'USD',
       status: 'draft',
       licenceVersionId,
     },

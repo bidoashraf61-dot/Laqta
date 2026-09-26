@@ -261,19 +261,24 @@ async function seedLicences() {
   return { commercial }
 }
 
-/** Price bands. Extended is 3× standard by policy — locked in 00-README. */
+/**
+ * Price bands — the SUGGESTED price for an album of that size, pre-filled on
+ * the review page; the operator sets the real price at approval (DEV-09).
+ * Cut to the 30–70 clip album, inside the $49–$249 range (decision D4).
+ * Upserted in full so an older database is re-cut too.
+ */
 async function seedPriceBands() {
   const bands = [
-    ['mini', 'ألبوم مصغّر', 'Mini', 8, 11, 79],
-    ['standard', 'ألبوم قياسي', 'Standard', 12, 19, 199],
-    ['pro', 'ألبوم احترافي', 'Pro', 20, 34, 399],
-    ['signature', 'ألبوم مميّز', 'Signature', 35, null, 799],
+    ['mini', 'ألبوم ٣٠–٣٩ لقطة', 'Album of 30–39 clips', 30, 39, 79],
+    ['standard', 'ألبوم ٤٠–٤٩ لقطة', 'Album of 40–49 clips', 40, 49, 119],
+    ['pro', 'ألبوم ٥٠–٥٩ لقطة', 'Album of 50–59 clips', 50, 59, 159],
+    ['signature', 'ألبوم ٦٠–٧٠ لقطة', 'Album of 60–70 clips', 60, 70, 199],
   ] as const
 
   for (const [tier, labelAr, labelEn, minClips, maxClips, priceStandard] of bands) {
     await db.priceBand.upsert({
       where: { tier },
-      update: { priceStandard },
+      update: { labelAr, labelEn, minClips, maxClips, priceStandard },
       create: { tier, labelAr, labelEn, minClips, maxClips, priceStandard },
     })
   }

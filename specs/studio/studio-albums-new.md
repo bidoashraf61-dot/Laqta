@@ -12,7 +12,7 @@ Nothing else — clips are added later, on the album's own page.
 ## Controls
 | Control | Action | Effect |
 |---|---|---|
-| Form (`SettingsForm`) → «إنشاء» | `createAlbum` server action | Creates `Album` with `status: 'draft'`, writes `AuditLog` `album.create`, revalidates `/studio/albums`, then `redirect('/studio/albums/{id}')` |
+| Form (`SettingsForm`) → «إنشاء» | `createAlbum` server action | Creates `Album` with `status: 'draft'` and `licenceVersionId` = the current licence, writes `AuditLog` `album.create`, revalidates `/studio/albums`, then `redirect('/studio/albums/{id}')` |
 | `titleAr` (required, ≤120) | form field | `Album.titleAr` |
 | `titleEn` (required, ≤120, `dir="ltr"`) | form field | `Album.titleEn`; also the source of the ASCII `slug` |
 | `descriptionAr` / `descriptionEn` (≤1000) | form fields | Stored, or `null` when blank |
@@ -30,6 +30,7 @@ Nothing else — clips are added later, on the album's own page.
 - The creator never types a price. `priceStandard` is copied from the chosen `PriceBand`; `priceExtended = priceStandard × band.extendedMultiplier`; `currency` comes from the band. One price per size of album, no undercutting.
 - The bands are edited on `/admin/catalogue` (add, edit, delete; audited). A band edit changes only what this page offers and copies from then on — an album already created keeps its price. A deleted band's tier disappears from the radios.
 - New albums are always created `status: 'draft'` — this route cannot publish.
+- **Every album carries a licence from creation** (`lib/licence.currentLicenceId()`, DEV-06). Albums made here once had none and sold with a blank licence.
 - The action re-resolves the creator from the session; `creatorId` is never taken from the form.
 
 ## Verified by

@@ -22,6 +22,13 @@
  * these buyers was shown the full commercial licence at checkout and charged
  * for it; repointing corrects an error rather than rewriting an agreement.
  *
+ * ── Blank licences (DEV-06) ─────────────────────────────────────────────────
+ * Albums created in the studio were given no licence, and checkout copied the
+ * album's pointer onto the order — so a creator album sold with a blank
+ * licence and a certificate with no terms. Albums and order items with no
+ * licence are pointed at the current one, for the same reason as above: the
+ * buyer was shown the commercial licence and paid for it.
+ *
  * Idempotent. Safe to run more than once.
  */
 import { db } from '../lib/db'
@@ -63,8 +70,20 @@ async function main() {
   })
   await db.licenceVersion.update({ where: { id: commercial.id }, data: { isCurrent: true } })
 
-  // Certificates printed from a retired licence carry the wrong terms and must
-  // be rebuilt. Clearing the key is enough: the route regenerates on demand.
+  // Blank licences: albums from the studio, and anything sold from them.
+  const albums = await db.album.updateMany({
+    where: { licenceVersionId: null },
+    data: { licenceVersionId: commercial.id },
+  })
+  console.log(`gave ${albums.count} album(s) with no licence the commercial licence`)
+  const blankItems = await db.orderItem.updateMany({
+    where: { licenceVersionId: null },
+    data: { licenceVersionId: commercial.id },
+  })
+  console.log(`gave ${blankItems.count} order item(s) with no licence the commercial licence`)
+
+  // Certificates printed from a retired or blank licence carry the wrong terms
+  // and must be rebuilt. Clearing the key is enough: the route regenerates on demand.
   const cleared = await db.licenceCertificate.updateMany({
     where: { pdfKey: { not: null } },
     data: { pdfKey: null },

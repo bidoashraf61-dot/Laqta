@@ -217,6 +217,23 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   commission = 70% to the creator. Set founding creators to silver in admin
   (and note that silver is normally earned at USD 12.5k lifetime).
 
-**Next:** owner approves the creator brief and sends BIZ-02/03/04. Claude's remaining M1
+## 13. Session — 2026-09-26 (DEV-06)
+
+- **DEV-06 done — blank licence fixed.** Studio albums were created with no
+  `licenceVersionId`, and checkout copied the album's pointer onto the order,
+  so a creator album would have sold with no licence text (and a blank
+  certificate). Now `lib/licence.currentLicenceId()` is set at album creation
+  (studio) and approval (`lib/admin.decideReview`), and checkout freezes the
+  **current** licence on every line — refusing to sell if none is current.
+  `npm run repair:licences` also fills blank albums/order items (ran locally:
+  2 albums fixed). `verify:licence` now fails on any album or order item
+  without a licence. **Run `npm run repair:licences` once on the production
+  database when it exists.**
+- Album production moved to the `Laqta Albums` folder; this project covers the
+  portal only. ALB-01 decided (AI, 50 × 10 s, 1080p, 24 fps).
+
+**Next:** DEV-05 (make-creator button + Apply → contact), DEV-09 (price
+control, $49–$249), DEV-08 (album details form). Owner: approve the creator
+brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
+import { currentLicenceId } from '@/lib/licence'
 import { resolveCommission, vatOn } from '@/lib/commission'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
 import { drainSoon } from '@/lib/outbox'
@@ -85,6 +86,14 @@ export async function checkout({
 }): Promise<CheckoutResult> {
   if (lines.length === 0) return { ok: false, messageKey: 'cart.empty' }
 
+  // Frozen onto every line below. Never the album's own pointer: an album
+  // created without one would sell with a blank licence (DEV-06).
+  const licenceVersionId = await currentLicenceId()
+  if (!licenceVersionId) {
+    console.error('[checkout] no current LicenceVersion — refusing to sell without a licence')
+    return { ok: false, messageKey: 'cart.unavailable' }
+  }
+
   const albums = await db.album.findMany({
     where: { id: { in: lines.map((line) => line.albumId) }, status: 'live' },
     include: {
@@ -157,7 +166,7 @@ export async function checkout({
           orderId: created.id,
           albumId: album.id,
           creatorId: album.creator.id,
-          licenceVersionId: album.licenceVersionId,
+          licenceVersionId,
           grossAmount: gross,
           vatAmount: lineVat,
           commissionRate: commission.rate,

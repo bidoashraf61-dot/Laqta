@@ -16,7 +16,7 @@ Impeccable, `npm run verify` green. Key and milestones: [README](README.md).
 Today nobody can become a creator, and creator albums would sell with a blank licence.
 
 - [ ] **DEV-05** ⛔ Admin button "make this user a creator" on `/admin/users/[id]` (use it for your own account too). Point "Apply" on `/sell` to the contact form. — 🤖 · 1 day
-- [ ] **DEV-06** ⛔ Fix the blank licence: set the commercial licence on every album at creation and approval; repair existing ones — 🤖 · 2 hrs
+- [x] **DEV-06** ⛔ Fix the blank licence: set the commercial licence on every album at creation and approval; repair existing ones — 🤖 · 2 hrs — done 2026-09-26 (checkout also freezes the current licence; `verify:licence` fails on any blank)
 - [ ] **DEV-07** ⛔ Creator agreement acceptance — versioned, recorded, shown before the studio opens; exclusivity choice recorded — 🤖 · ½ day · *needs BIZ-09 text*
 - [ ] **DEV-08** ⛔ Album details form (creator + admin): AI-generated/filmed, orientation, location, category, time of day, tags, permits declaration. Fix `/sell` copy that promises it. — 🤖 · 2 days · *needs D1*
 - [ ] **DEV-09** ⛔ Price control: admin sets the album price at approval; creators stop choosing a band. Re-cut price bands to 30–70 clips. Fix `/sell` FAQ + studio hint. — 🤖 · 1 day · *needs D4*

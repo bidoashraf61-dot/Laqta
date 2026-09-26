@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { currentLicenceId } from '@/lib/licence'
 import { recordAudit } from '@/lib/audit'
 import { notifyAlbumDecision } from '@/lib/notifications'
 import { reverseCommission } from '@/lib/commission'
@@ -86,10 +87,20 @@ export async function decideReview(input: ReviewDecisionInput) {
 
   const checklist = normaliseChecklist(input.checklist)
 
+  // An approved album goes on sale, so it must carry the licence it is sold
+  // under — set here as well as at creation, for albums made before DEV-06.
+  let licenceVersionId: string | null = null
   if (input.decision === 'approve') {
     const gate = canApprove(checklist)
     if (!gate.ok)
       return { ok: false as const, messageKey: 'admin.cannotApprove', detail: gate.reason }
+    licenceVersionId = await currentLicenceId()
+    if (!licenceVersionId)
+      return {
+        ok: false as const,
+        messageKey: 'admin.cannotApprove',
+        detail: 'No licence is marked current.',
+      }
   }
 
   if (input.decision !== 'approve' && !input.note.trim()) {
@@ -123,6 +134,7 @@ export async function decideReview(input: ReviewDecisionInput) {
           ? {
               status: 'live',
               publishedAt: new Date(),
+              licenceVersionId,
               clearedForCommercial: cleared,
               clearanceStatus: cleared ? 'full' : 'editorial_only',
             }

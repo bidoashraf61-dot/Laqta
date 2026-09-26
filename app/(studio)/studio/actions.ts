@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireCreator } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { currentLicenceId } from '@/lib/licence'
 import { getEarnings, submitForReview, MIN_PAYOUT_USD } from '@/lib/studio'
 import { recordAudit } from '@/lib/audit'
 import { actionT } from '@/lib/locale-request'
@@ -274,6 +275,9 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
   }
 
   const priceStandard = Number(band.priceStandard)
+  // Every album carries the licence it will be sold under from its first
+  // moment — a draft with none once reached checkout and sold blank (DEV-06).
+  const licenceVersionId = await currentLicenceId()
   const album = await db.album.create({
     data: {
       slug,
@@ -286,6 +290,7 @@ export async function createAlbum(_state: Result | null, formData: FormData): Pr
       priceStandard,
       currency: band.currency,
       status: 'draft',
+      licenceVersionId,
     },
     select: { id: true },
   })

@@ -37,7 +37,7 @@ The conversion page: show every clip in the album, both licence prices, and the 
 - **No trailer** — `trailerKey` is NULL, or is a bucket key with no CDN configured → the album's own cover still (`catalogue.altAlbumCover` alt) with `PreviewWatermark`. Never another album's footage or a hero segment: the seed's hero-loop stand-in trailers were removed (2026-09-24) and the dev database cleared of them. If there is no clip poster at all, a gradient wordmark stands in.
 - **Trailer file fails to load** (CDN 404, network) → the player steps down to the poster with no play button, rather than a black box with a dead control.
 - **`trailerUrl`** — a legacy column, unused and not read. `trailerKey` is the only trailer field.
-- **No licence version** — the licence paragraph is omitted.
+- **No licence version** — the licence paragraph is omitted. Should not occur since DEV-06: every album gets the current licence at creation and approval, `npm run repair:licences` fills older ones, and `verify:licence` fails on any album without one.
 - **Sole album by this creator** — the "other albums" section is hidden.
 
 ## Invariants

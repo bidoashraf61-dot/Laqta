@@ -112,6 +112,17 @@ async function main() {
     console.log('  pass  nothing retired')
   }
 
+  // DEV-06: studio albums were created with no licence and sold blank.
+  console.log('\nNo album and no order item is without a licence')
+  const [bareAlbums, bareItems] = await Promise.all([
+    db.album.count({ where: { licenceVersionId: null } }),
+    db.orderItem.count({ where: { licenceVersionId: null } }),
+  ])
+  if (bareAlbums > 0) fail(`${bareAlbums} album(s) have no licence — run npm run repair:licences`)
+  else console.log('  pass  every album carries a licence')
+  if (bareItems > 0) fail(`${bareItems} order item(s) have no licence — run npm run repair:licences`)
+  else console.log('  pass  every order item carries a licence')
+
   // The same promise, made on the page instead of the certificate. These claims
   // were removed from the copy, recorded in specs/public/index.md and
   // specs/glossary.md as banned, and still came back through an editorial

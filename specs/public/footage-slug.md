@@ -25,7 +25,7 @@ A crawlable, shareable page for one clip that plays that clip's own preview and 
 | Album title (sidebar) | Link | `/albums/{creatorHandle}/{albumSlug}` |
 | "اشترِ الألبوم" (`catalogue.buyAlbum`) | Link | `/albums/{creatorHandle}/{albumSlug}` — **not** a cart add; the tier is picked on the album page |
 | "كل اللقطات" (`catalogue.allClips`) | Link | Same album URL |
-| «أضف للوح» (`commerce.addToBoard`) | Link | `/account/boards?add={clip.id}` — behind the `/account` auth guard in `middleware.ts`; an anonymous visitor is bounced to `/sign-in` |
+| «أضف للوح» (`commerce.addToBoard`) | Link | `/account/boards?add={clip.id}` — behind the `/account` auth guard in `middleware.ts`; an anonymous visitor is bounced to `/sign-in`; signed in, the boards page leads with "add this clip to…" (DEV-49) |
 
 Read-only apart from navigation — this route calls no server action.
 

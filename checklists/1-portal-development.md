@@ -89,7 +89,7 @@ album's price, and no way to edit site wording without a developer.
 
 - [x] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day — done 2026-09-27 (`npm run db:seed:production` with ADMIN_EMAIL/ADMIN_PASSWORD; shared real data in `prisma/seed-base.ts`; demo seed refuses non-local databases; demo seed's missing-licence bug fixed; `verify:production-seed`)
 - [ ] **DEV-48** Security: suspended users logged out at once; rate limits on sign-in, sign-up, checkout; Content-Security-Policy — 🤖 · 1 day
-- [ ] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day
+- [x] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day — done 2026-09-27 (owner: finish. Boards finished — «أضف للوح» on a clip opens "add to…" with one button per board or a new board holding the clip; `/account/boards/[id]` shares by link on/off with copy, removes clips, renames, deletes; `verify:flows` drives it as the buyer. Promo codes were already wired end to end by DEV-63 — admin `/admin/promos`, the checkout field, `verify:promos` — nothing left to finish)
 - [ ] **DEV-50** Sentry error reporting wired — 🤖 · ½ day · *needs BIZ-08*
 - [ ] **DEV-51** Paymob refunds made in the Paymob dashboard reverse Laqta's records — 🤖 · ½ day · *needs BIZ-04*
 - [ ] **DEV-52** Privacy features as decided (deletion/export by email or a button) — 🤖 · ½–2 days · *needs BIZ-12*

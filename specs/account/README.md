@@ -40,7 +40,8 @@ Two invariants govern this area and are restated in the specs that touch them:
 | `/account/certificates/[orderItemId]` | The licence certificate PDF for one purchased album. Route handler. | [../api/certificates.md](../api/certificates.md) |
 | `/account/purchases` | Order history table — number, date, total, invoice, status. Read-only. | [account-purchases.md](./account-purchases.md) |
 | `/account/downloads` | Redemption log, latest 200. Read-only. | [account-downloads.md](./account-downloads.md) |
-| `/account/boards` | Lists the user's clip boards and their share state. No create/edit controls exist. | [account-boards.md](./account-boards.md) |
+| `/account/boards` | The user's clip boards: list, create, and "add this clip" from a clip page (DEV-49). | [account-boards.md](./account-boards.md) |
+| `/account/boards/[id]` | One board: its clips, share by link on/off, remove, rename, delete (DEV-49). | [account-boards-id.md](./account-boards-id.md) |
 | `/account/security` | TOTP enrolment and removal; mandatory and non-removable for creator and admin — an unenrolled one is held here from `/admin` and `/studio` until they enrol. | [account-security.md](./account-security.md) |
 
 ## Known gaps
@@ -50,8 +51,8 @@ Two invariants govern this area and are restated in the specs that touch them:
   `/account/downloads` and `/account/security` were added to the nav.
 - ~~The hub renders its cards as inert text.~~ **Closed.** Every card is a link,
   and the hub carries a profile summary with a link to `/account/profile`.
-- The footage detail page links «أضف إلى لوح» to `/account/boards?add=<clipId>`;
-  the boards page ignores `searchParams`, so nothing is added.
+- ~~«أضف للوح» on a clip page lands on a boards page that ignores `?add=`.~~ **Closed
+  (DEV-49).** Boards can be created, filled from a clip page, shared, emptied and deleted.
 - `/account/library/[id]` is in neither the `audit` nor the `verify:arabic`
   route list, so the one page that hands over files is never opened by a browser
   gate.

@@ -41,4 +41,4 @@ Read-only. A viewer cannot comment, approve, add to the board, or buy from this 
 - `masterKey` is never referenced.
 
 ## Verified by
-Not covered — no gate visits `/boards/[token]`.
+`verify:flows` (DEV-49) opens a freshly shared board's link signed out and expects 200. The owner shares and unshares from `/account/boards/[id]`.

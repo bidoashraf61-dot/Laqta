@@ -664,6 +664,58 @@ async function main() {
     await page.context().close()
   }
 
+  // ── Buyer: add a clip to a new board, share it, open it, remove, delete ─
+  //
+  // DEV-49: «أضف للوح» on the clip page used to land on a list that ignored
+  // `?add=`. Through the real pages, as the seeded buyer.
+  {
+    const db = new PrismaClient()
+    const clip = await db.clip.findFirst({ where: { album: { status: 'live' }, ingestStatus: 'ready' }, select: { id: true, slug: true } })
+    const buyer = await db.user.findUnique({ where: { email: 'buyer@agency.sa' }, select: { id: true } })
+    const name = `لوح اختبار ${Date.now()}`
+    if (!clip || !buyer) {
+      report('boards flow', false, 'seed clip or buyer missing')
+    } else {
+      const buyerContext = await signIn(browser, 'buyer@agency.sa')
+      const page = await buyerContext.newPage()
+      const errors = watchErrors(page)
+      try {
+        await page.goto(`${BASE}/footage/${clip.slug}`, { waitUntil: 'networkidle' })
+        await page.getByRole('link', { name: 'أضف للوح' }).first().click()
+        await page.waitForURL((url) => url.pathname === '/account/boards' && url.search.includes('add='), { timeout: 15_000 }).catch(() => {})
+        await page.fill('input[name="name"]', name)
+        await page.getByRole('button', { name: 'لوح جديد بهذه اللقطة' }).click()
+        await page.waitForURL((url) => /\/account\/boards\/[^/]+$/.test(url.pathname), { timeout: 15_000 }).catch(() => {})
+        const board = await db.board.findFirst({ where: { userId: buyer.id, name }, include: { clips: true } })
+        report('a new board is created from the clip page, holding that clip', board?.clips.some((c) => c.clipId === clip.id) === true)
+
+        if (board) {
+          await page.getByRole('button', { name: 'شارك برابط' }).click()
+          await page.getByRole('button', { name: 'أوقف المشاركة' }).waitFor({ timeout: 10_000 }).catch(() => {})
+          const shared = await db.board.findUnique({ where: { id: board.id }, select: { isPublic: true, shareToken: true } })
+          report('sharing a board makes it public', shared?.isPublic === true)
+          const anon = await fetch(`${BASE}/boards/${shared?.shareToken}`, { redirect: 'manual' })
+          report('the shared link opens without signing in', anon.status === 200, String(anon.status))
+
+          await page.getByRole('button', { name: 'شيلها من اللوح' }).first().click()
+          await page.getByText('اللوح فاضي').waitFor({ timeout: 10_000 }).catch(() => {})
+          report('removing the clip empties the board', (await db.boardClip.count({ where: { boardId: board.id } })) === 0)
+
+          page.once('dialog', (dialog) => dialog.accept())
+          await page.getByRole('button', { name: 'احذف اللوح' }).click()
+          await page.waitForURL((url) => url.pathname === '/account/boards', { timeout: 15_000 }).catch(() => {})
+          report('deleting the board removes it', (await db.board.count({ where: { id: board.id } })) === 0)
+        }
+        report('no errors on the boards flow', errors.length === 0, errors.slice(0, 2).join(' | '))
+      } finally {
+        await db.board.deleteMany({ where: { userId: buyer.id, name } }).catch(() => {})
+        await page.close()
+        await buyerContext.close()
+      }
+    }
+    await db.$disconnect()
+  }
+
   await browser.close()
   console.log(failures ? `\n${failures} flow(s) failed.` : '\nEvery flow works.')
   process.exit(failures ? 1 : 0)

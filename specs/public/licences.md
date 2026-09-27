@@ -1,12 +1,13 @@
 # Licences
 
-**Route** `/licences` · **Access** public · **Rendering** server component, effectively static (no DB access)
+**Route** `/licences` · **Access** public · **Rendering** server component, dynamic (one `DocumentVersion` read per render)
 
 ## Purpose
 Explain what the one licence covers, and the few things it does not — the buyer's largest pre-purchase anxiety.
 
 ## Data in
-- None. Renders the `LICENCES` sections and `EFFECTIVE_FROM` from `content/legal.ts`.
+- `loadDocument('licences')` (`lib/editable-documents.ts`, DEV-64a): the newest `DocumentVersion` the owner published from [`/admin/content/licences`](../admin/admin-content-key.md), else the `LICENCES` sections from `content/legal.ts`.
+- The effective date is that version's `publishedAt`; with nothing published it is the shared `EFFECTIVE_FROM` (`2026-08-01`) from `content/legal.ts`.
 - **Note:** this page does not read `LicenceVersion` from the database. The per-album licence text shown on the album PDP comes from `Album.licenceVersion.bodyAr`; this page is separately authored prose. The two can drift.
 
 ## Controls
@@ -18,9 +19,9 @@ Explain what the one licence covers, and the few things it does not — the buye
 Read-only. Linked from the landing page's licensing band (`landing.licenseCta`).
 
 ## States
-- No empty, error or loading state — content is a compile-time constant.
-- Effective date is the shared `EFFECTIVE_FROM` constant.
-- Flagged in-code as pending review by Saudi counsel.
+- No empty, error or loading state. A database error, or a stored version that no longer passes the publish rules, renders the `content/legal.ts` text — copy never breaks the page.
+- The effective date is the live version's publish date, or the shared `EFFECTIVE_FROM` for the original text.
+- The code default is flagged in-code as pending review by Saudi counsel.
 
 ## Invariants
 - «ما يمنعه الترخيص» includes **publishing a watermarked preview**: a downloaded preview is for testing in the edit; the licence covers only files delivered after purchase (added 2026-09-24 with preview downloads — **pending the owner's counsel**).
@@ -29,7 +30,7 @@ Read-only. Linked from the landing page's licensing band (`landing.licenseCta`).
 - Effective date must always render.
 
 ## Verified by
-`verify:arabic`, `audit`.
+`verify:arabic`, `audit`, `verify:documents` (load, publish, restore, fall-back), `verify:licence` (scans the published version).
 
 ## One licence — the collapse
 

@@ -1,6 +1,6 @@
 # Contact
 
-**Route** `/contact` (Arabic) · `/en/contact` (English) · **Access** public, no account · **Rendering** server component, dynamic (reads the locale header; channel values read from env at request time); the form is a client component posting to a server action
+**Route** `/contact` (Arabic) · `/en/contact` (English) · **Access** public, no account · **Rendering** server component, dynamic (reads the locale header; channel values read from env at request time; one `DocumentVersion` read for the guide); the form is a client component posting to a server action
 
 ## Purpose
 Let anyone reach the operator: a contact form that always works, plus the direct lines (WhatsApp, support email) and the company's legal identity (name, Egyptian address, commercial registration number) once the owner supplies them.
@@ -17,7 +17,7 @@ Let anyone reach the operator: a contact form that always works, plus the direct
   | Commercial registration no. | `CONTACT_CR_NUMBER` | Company details footer, `.numeric` |
 
   The English name/address fall back to the Arabic (localisation contract).
-- `CONTACT` from `content/legal.ts` — the four guidance sections (support, creators, rights reports, companies), rendered in the "Before you write" aside via `pickLocalised`. Still part of the export/import content pipeline and `verify:licence`'s copy scan.
+- `loadDocument('contact')` (`lib/editable-documents.ts`, DEV-64a) — the guidance sections in the "Before you write" aside: the newest version the owner published from [`/admin/content/contact`](../admin/admin-content-key.md), else `CONTACT` from `content/legal.ts` (support, creators, rights reports, companies). Rendered by `DocumentBody variant="guide"` (sans subheads, paragraphs only — the contact guide never shows a bullet list, and the editor refuses one). The code default is still part of the export/import content pipeline; `verify:licence` scans both it and the published version.
 - Copy: `messages/*.json` → `contact.*`.
 
 ## Layout
@@ -44,7 +44,7 @@ Hidden honeypot field `website` (off-screen, `aria-hidden`, `tabIndex=-1`): if f
 - **Validation error** — zod errors come back as message keys per field, rendered under the field (`aria-invalid`, `aria-describedby`), a summary line beside the button (`role=alert`), and focus moves to the first invalid field. Everything typed is kept (`onSubmit` + controlled fields — not `<form action>`, which resets the form).
 - **Rate limited** — «وصلتنا منك عدة رسائل…» in a `role=alert` box above the fields; values kept. Limits: 5 per salted-IP-hash per hour, 3 per email per 10 minutes, counted from stored rows.
 - **Server error** — storage failure (or network drop) shows `contact.errServer` («…وما ضاع منها شيء. جرّب…»), never a validation message; values kept.
-- **Success** — the form is replaced by a card: «وصلتنا رسالتك، شكراً لك.» + «نقرأ كل رسالة بأنفسنا، وردّنا يوصلك على بريدك:» and the address (`.ltr-island`). Focus moves to the heading. **No reply time is promised** — there is no SLA to back one (the old "within one business day" line was removed from `CONTACT` for the same reason).
+- **Success** — the form is replaced by a card: «وصلتنا رسالتك، شكراً لك.» + «نقرأ كل رسالة بأنفسنا، وردّنا يوصلك على بريدك:» and the address (`.ltr-island`). Focus moves to the heading. **No reply time is promised** — there is no SLA to back one (the old "within one business day" line was removed from `CONTACT` for the same reason — keep it out of published versions too).
 
 ## Invariants
 - **Stored first, mailed second.** The `ContactMessage` row is written, then `notifyContactMessage` (`lib/notifications.ts`) mails `OPERATOR_EMAIL` via `sendMail`. A mail failure or a missing provider never fails the submission; `mailDelivered` records whether it left.
@@ -57,6 +57,7 @@ Hidden honeypot field `website` (off-screen, `aria-hidden`, `tabIndex=-1`): if f
 
 ## Verified by
 - `verify:arabic` — `/contact` and `/en/contact` both pass their purity checks.
-- `verify:i18n`, `verify:action-locale`, `verify:licence` (copy scan includes `contact.*` and `CONTACT`).
+- `verify:i18n`, `verify:action-locale`, `verify:licence` (copy scan includes `contact.*`, `CONTACT` and the published contact guide).
+- `verify:documents` — the guide loads, publishes, restores and falls back; a bullet list is refused on this page.
 - `audit` — route renders clean at desktop and phone.
 - Manual (2026-09-24): empty submit → three inline errors + focus on name; filled submit on `/en/contact` → success card, row stored with `locale=en`, console logs "OPERATOR_EMAIL is not set — contact message stored, not mailed". Rendered at 1440 and phone width in both languages, with no channels and with all channels set (test values via env, not committed).

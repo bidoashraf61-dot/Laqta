@@ -1,5 +1,6 @@
 import type { ComponentType, SVGProps } from 'react'
 import {
+  FileText,
   Gauge,
   Image,
   Inbox,
@@ -115,7 +116,10 @@ export const ADMIN_NAV: DashboardSection[] = [
   },
   {
     titleKey: 'dash.sectionSettings',
-    links: [{ href: '/admin/settings', labelKey: 'dash.settings', icon: Laqta.Settings }],
+    links: [
+      { href: '/admin/content', labelKey: 'dash.docs.nav', icon: FileText },
+      { href: '/admin/settings', labelKey: 'dash.settings', icon: Laqta.Settings },
+    ],
   },
 ]
 

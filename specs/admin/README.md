@@ -52,13 +52,15 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination), batch approved ones into a payout run with one export file per rail, and mark a run (or a single payout) paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
+| `/admin/content` | The long-form pages (Terms, Privacy, Licences, Content policy, About, Contact): what the site shows now, open the editor. | [admin-content.md](admin-content.md) |
+| `/admin/content/[key]` | Edit one page in Arabic and English with a live preview, publish with a note, restore any earlier version or the original text. | [admin-content-key.md](admin-content-key.md) |
 | `/admin/reports` | Zero-result search report plus the last 50 audit entries. Read-only. | [admin-reports.md](admin-reports.md) |
 | `/admin/settings` | Operating constants, licence version, storage status. Read-only by design. | [admin-settings.md](admin-settings.md) |
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover 15 top-level routes (now including `/admin/messages`
-  and `/admin/users`). `/admin/users/[id]` is in neither (it needs an id).
+- `verify:arabic` and `audit` cover 17 routes (now including `/admin/messages`,
+  `/admin/users`, `/admin/content` and `/admin/content/terms`). `/admin/users/[id]` is in neither (it needs an id).
   `/admin/requests` is in neither. **`/admin/review/[id]` is in
   neither** — the surface where the review gate actually lives is unexercised by any gate.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
@@ -71,6 +73,9 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `verify:payments` covers the Paymob callback into `settleOrder` and the derived
   webhook/manual source shown on `/admin/orders` (handler level, not the rendered row).
 - `verify:entitlement` covers the order snapshot.
+- `verify:documents` covers `lib/editable-documents.ts` behind `/admin/content/[key]`: the publish
+  rules, publish, restore (to a version and to the original text), audit rows and the
+  fall-back to `content/legal.ts` (library level — the client editor is not driven).
 - `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin.
 - `verify:impersonation` drives a whole view-as-user session in real Chrome: who may be
   viewed, non-admins never see the control, blank reason refused, start/end/expiry rows
@@ -97,5 +102,11 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
   control. Files reach the bucket through `npm run media:upload` (`docs/tech/media-aws.md`).
   `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.
+- The page editor (`/admin/content/[key]`) covers the six long-form pages only (DEV-64a).
+  Landing, `/sell`, FAQ and email copy (DEV-64b) and every other interface string
+  (DEV-64c) still live in `messages/*.json` and need a code change.
+- The shell's `<main>` is `overflow-x-clip` (was `overflow-y-auto`, which silently
+  disabled every `position: sticky` in the dashboards); wide content is clipped rather
+  than scrollable inside `<main>` — give a wide table its own scroll wrapper.
 - A refund or void done in the Paymob dashboard is only *flagged* on `/admin/orders`
   (`reversed_at_gateway`); nothing reverses the Laqta ledger automatically.

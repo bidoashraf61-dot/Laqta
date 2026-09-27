@@ -1,12 +1,12 @@
 # About
 
-**Route** `/about` · **Access** public · **Rendering** server component, effectively static (no DB access, no dynamic APIs)
+**Route** `/about` · **Access** public · **Rendering** server component, dynamic (one `DocumentVersion` read per render)
 
 ## Purpose
 Explain what Laqta is and how the marketplace works, as a read-mode document.
 
 ## Data in
-- None. Renders the `ABOUT` array of `DocumentSection` from `content/legal.ts` through `components/layout/document-page.tsx`.
+- `loadDocument('about')` (`lib/editable-documents.ts`, DEV-64a): the newest version the owner published from [`/admin/content/about`](../admin/admin-content-key.md), else the `ABOUT` sections from `content/legal.ts`. Rendered through `components/layout/document-page.tsx` → `document-body.tsx`.
 - No effective date is passed for this document (unlike the policy pages).
 
 ## Controls
@@ -18,13 +18,13 @@ Explain what Laqta is and how the marketplace works, as a read-mode document.
 Read-only.
 
 ## States
-- No empty, error or loading state — the content is a compile-time constant, so the page cannot fail to have content.
-- Content is Arabic only.
+- No empty, error or loading state. A database error, or a stored version that no longer passes the publish rules, renders the `content/legal.ts` text — the page cannot fail to have content.
+- Bilingual: `/en/about` renders the English side of each section, falling back to the Arabic per field.
 
 ## Invariants
 - Rendered through `DocumentPage` (shared by about, terms, privacy, licences, content-policy): the summary under the title is `<Prose>` (Serif Text 1.2rem / 1.85), matching the site-wide head composition.
-- Policy and marketing prose lives in `content/legal.ts`, not in the message dictionary — these are reviewed as whole documents by counsel, not as strings.
+- Policy and marketing prose lives in `content/legal.ts` (the default) and published `DocumentVersion` rows, not in the message dictionary — these are reviewed and edited as whole documents, not as strings.
 - Measure capped at `62ch` so it tracks Arabic glyph width rather than a Latin assumption.
 
 ## Verified by
-`verify:arabic`, `audit`.
+`verify:arabic`, `audit`, `verify:documents`, `verify:licence` (scans the published version).

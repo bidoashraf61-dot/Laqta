@@ -45,9 +45,9 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-62** Bundles: the owner builds a bundle of albums with a bundle price (or % off) and dates; a public bundle page and «اشترِ الحزمة» in the cart; the discount is split across the albums pro-rata so each creator's share and each licence stay correct — 🤖 · 2–3 days · *needs owner decision: bundle discount paid by Laqta or shared with creators*
 - [x] **DEV-63** ⛔ Promo codes that work: a code field at checkout that applies `/admin/promos` codes (window, cap, minimum, album limits), counts redemptions, and pays creators on the discounted price — today codes are created but never applied — 🤖 · 1 day — done 2026-09-27 (`lib/promos.ts`; code box at checkout with live preview; order + receipt carry the discount; `verify:promos`)
 - [ ] **DEV-64** Every word editable from admin (content-control design, `docs/decisions/2026-08-20-content-control-design.md`), in three phases with preview, both languages and revert — 🤖 · 6–8 days total
-  - **64a** Legal and long-form pages (Terms, Privacy, Licences, Content policy, About, Contact) — 2 days
-  - **64b** Landing, `/sell` and marketing copy, FAQ, emails — 2 days
-  - **64c** Every remaining interface string (~1,600 lines), with checks that an edit cannot blank a label, overflow its box or break Arabic direction — 2–3 days
+  - [x] **64a** Legal and long-form pages (Terms, Privacy, Licences, Content policy, About, Contact) — 2 days — done 2026-09-27 (`/admin/content` + editor with live AR/EN preview, publish with note, version history + restore; `DocumentVersion`, `lib/editable-documents.ts`; banned claims refused at publish; `verify:documents`)
+  - [ ] **64b** Landing, `/sell` and marketing copy, FAQ, emails — 2 days
+  - [ ] **64c** Every remaining interface string (~1,600 lines), with checks that an edit cannot blank a label, overflow its box or break Arabic direction — 2–3 days
 
 
 

@@ -54,7 +54,13 @@ export function DashboardShell({
           </div>
         </header>
 
-        <main className="scrollbar-thin flex-1 overflow-y-auto">
+        {/* `overflow-x-clip`, not `overflow-y-auto`: the page scrolls on the
+            window (main is never height-bound), and any `auto` overflow here
+            made main a scroll container that never scrolls — which pins every
+            `position: sticky` inside it to nothing. Clip keeps wide content
+            from pushing the page sideways without creating that container
+            (the /admin/content editor's preview and publish bar, DEV-64a). */}
+        <main className="flex-1 overflow-x-clip">
           <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">{children}</div>
         </main>
       </div>

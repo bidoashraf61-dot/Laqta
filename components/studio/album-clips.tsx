@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { EmptyState, Spinner } from '@/components/ui/state'
 import {
+  DropdownMenuCheckboxItem,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -17,7 +18,7 @@ import {
 import { toast } from '@/components/ui/toast'
 import { useT } from '@/lib/i18n-client'
 import { cn } from '@/lib/utils'
-import { deleteClip, moveClip, setAlbumCover, updateClipTitles } from '@/app/(studio)/studio/actions'
+import { deleteClip, moveClip, setAlbumCover, setClipPeople, updateClipTitles } from '@/app/(studio)/studio/actions'
 import { UploadError, cancelUpload, formatBytes, uploadMaster, type UploadProgress } from './upload-engine'
 
 export type StudioClip = {
@@ -36,6 +37,7 @@ export type StudioClip = {
   posterUrl: string | null
   originalFilename: string | null
   identifiableFaces: boolean
+  hasPeople: boolean
   movement: string | null
 }
 
@@ -520,6 +522,27 @@ function ClipRow({
                         {t('studio.upload.makeCover')}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
+                      {/*
+                        Who is in the shot (DEV-10). Clear faces need a model
+                        release before the album can be submitted, so the
+                        creator marks them here and links the release on
+                        /studio/releases.
+                      */}
+                      <DropdownMenuCheckboxItem
+                        checked={clip.hasPeople}
+                        disabled={pending}
+                        onCheckedChange={(value) => run(() => setClipPeople(clip.id, 'hasPeople', value === true))}
+                      >
+                        {t('catalogue.peopleWith')}
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={clip.identifiableFaces}
+                        disabled={pending}
+                        onCheckedChange={(value) => run(() => setClipPeople(clip.id, 'identifiableFaces', value === true))}
+                      >
+                        {t('catalogue.identifiableFaces')}
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onSelect={() => {
@@ -539,8 +562,13 @@ function ClipRow({
         </div>
       </div>
       {clip.identifiableFaces ? (
-        <p className="mt-2 ps-9">
+        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 ps-9">
           <Badge variant="warning">{t('catalogue.identifiableFaces')}</Badge>
+          <span className="text-xs text-muted-foreground">{t('studio.upload.facesNeedRelease')}</span>
+        </p>
+      ) : clip.hasPeople ? (
+        <p className="mt-2 ps-9">
+          <Badge variant="neutral">{t('catalogue.peopleWith')}</Badge>
         </p>
       ) : null}
     </li>

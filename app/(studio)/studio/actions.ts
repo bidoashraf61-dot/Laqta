@@ -144,6 +144,35 @@ export async function updateClipTitles(clipId: string, formData: FormData): Prom
   return { ok: true, message: tr('dash.saved') }
 }
 
+/**
+ * Whether a clip shows people, and whether their faces are identifiable
+ * (DEV-10). The creator is the one who knows; nothing else set these, so the
+ * model-release gate never fired and the release linker had nothing to show.
+ * The two stay consistent: clear faces imply people; no people means no faces.
+ */
+export async function setClipPeople(
+  clipId: string,
+  field: 'hasPeople' | 'identifiableFaces',
+  value: boolean,
+): Promise<Result> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error, clip } = await editableClip(user, clipId)
+  if (error || !clip) return clipRefusal(error)
+  if (field !== 'hasPeople' && field !== 'identifiableFaces') return { ok: false, message: tr('state.error') }
+
+  const data =
+    field === 'identifiableFaces'
+      ? { identifiableFaces: value, ...(value ? { hasPeople: true } : {}) }
+      : { hasPeople: value, ...(value ? {} : { identifiableFaces: false }) }
+
+  await db.clip.update({ where: { id: clip.id }, data })
+  await recordAudit({ actorId: user.id, action: 'clip.people', entity: 'Clip', entityId: clip.id, detail: data })
+  revalidatePath(`/studio/albums/${clip.albumId}`)
+  revalidatePath('/studio/releases')
+  return { ok: true, message: tr('dash.saved') }
+}
+
 /** Swap a clip with its neighbour. Order is what the album page and the ZIP follow. */
 export async function moveClip(clipId: string, direction: 'up' | 'down'): Promise<Result> {
   const tr = await actionT()

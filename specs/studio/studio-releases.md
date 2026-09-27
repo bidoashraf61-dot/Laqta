@@ -10,7 +10,7 @@ submission gate and the reviewer read.
 ## Data in
 - `Release.findMany` where `creatorId`, `orderBy [{ verification: 'asc' }, { createdAt: 'desc' }]`, including `clipLinks { clipId }`. Renders `subjectName`, `type`, `authority`, `referenceNumber`, `validFrom`/`validTo`, link count, `verification`, `rejectionReason`, and the scan: `fileName`, `fileSizeBytes`, with "attached" decided by `lib/uploads.ts#hasDocument` (`fileUploadedAt` set and `fileKey` under `documents/`).
 - `maxDocumentBytes()` (`UPLOAD_MAX_DOCUMENT_BYTES`, default 15 MiB).
-- `Clip.findMany` where `album.creatorId` = this creator AND (`identifiableFaces` OR `hasPeople`), `orderBy createdAt desc`, `take 200`; selects `id, titleAr, identifiableFaces, album.titleAr`. This is the linkable-clip pool for every release on the page.
+- `Clip.findMany` where `album.creatorId` = this creator — **every** clip, not only people/faces ones (DEV-10: a property release or permit covers clips with nobody in them, and nothing used to set the flags, so the pool was always empty). `orderBy [identifiableFaces desc, hasPeople desc, album.createdAt desc, orderIndex asc]`, `take 500`; selects `id, titleAr, identifiableFaces, hasPeople, album.titleAr`. Each row in the linker shows «وجوه واضحة» (warning colour) or «فيها أشخاص» beside the title. The flags are set per clip on `/studio/albums/[id]`.
 
 ## Controls
 | Control | Action | Effect |

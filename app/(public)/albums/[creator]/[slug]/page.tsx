@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, Download, FileText, Receipt } from 'lucide-react'
@@ -140,13 +141,10 @@ export default async function AlbumPage({
       slug: true,
       titleAr: true,
       titleEn: true,
-      priceStandard: true,
+      ...OFFER_SELECT,
       ratingAvg: true,
       ratingCount: true,
       trailerKey: true,
-      compareAtPrice: true,
-      offerLabelAr: true,
-      offerLabelEn: true,
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
@@ -166,7 +164,9 @@ export default async function AlbumPage({
     : []
   const coverById = new Map(covers.map((clip) => [clip.id, clip.thumbnailKeys[0] ?? null]))
 
-  const priceStandard = Number(album.priceStandard)
+  // Price paid now + struck regular price, per the offer's dates (DEV-60).
+  const pricing = priceNow(album)
+  const priceStandard = pricing.priceStandard
   const { comp } = await searchParams
   const sample = await getPublicSample()
   const compCount = album.clips.filter((clip) => previewDeliverable(clip.previewKey)).length
@@ -382,11 +382,8 @@ export default async function AlbumPage({
                       creatorNameEn: other.creator.displayNameEn,
                       titleAr: other.titleAr,
                       titleEn: other.titleEn,
-                      priceStandard: Number(other.priceStandard),
-                      compareAtPrice:
-                        other.compareAtPrice == null ? null : Number(other.compareAtPrice),
-                      offerLabelAr: other.offerLabelAr,
-                      offerLabelEn: other.offerLabelEn,
+                      // The price paid NOW and the struck regular price, per the offer's dates (lib/offers.ts).
+                      ...priceNow(other),
                       currency: other.currency,
                       clipCount: other.clipCount,
                       totalRuntimeS: other.totalRuntimeS,
@@ -409,7 +406,7 @@ export default async function AlbumPage({
             albumSlug={album.slug}
             creatorHandle={album.creator.handle}
             priceStandard={priceStandard}
-            compareAtPrice={album.compareAtPrice ? Number(album.compareAtPrice) : null}
+            compareAtPrice={pricing.compareAtPrice}
             currency={album.currency}
             clipCount={album.clipCount}
           />

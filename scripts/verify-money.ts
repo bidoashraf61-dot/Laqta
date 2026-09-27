@@ -20,6 +20,7 @@ import { refundOrderItem } from '../lib/admin'
 import { getEarnings } from '../lib/studio'
 import { resolveCommission, reverseCommission } from '../lib/commission'
 import { db } from '../lib/db'
+import { priceNow } from '../lib/offers'
 
 let failures = 0
 function report(name: string, ok: boolean, detail = '') {
@@ -57,7 +58,8 @@ async function main() {
   if (!item) throw new Error('no order item')
 
   const expected = resolveCommission({
-    grossAmount: Number(album.priceStandard),
+    // What checkout charges: the running offer's price if any (DEV-60).
+    grossAmount: priceNow(album).priceStandard,
     tier: originalTier,
     isExclusive: album.isExclusive,
     override: album.creator.commissionRateOverride

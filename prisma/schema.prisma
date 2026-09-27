@@ -471,12 +471,9 @@ model Album {
   status AlbumStatus @default(draft)
   tier   AlbumTier   @default(standard)
 
+  /// The album's REGULAR price — what it sells at when no offer is running.
+  /// Set at approval (DEV-09) or by the owner by hand (DEV-61).
   priceStandard Decimal @db.Decimal(10, 2)
-  /// The price this album is normally sold at, when it is currently on offer.
-  /// NULL means "no offer" — it is deliberately not a discount percentage,
-  /// because a percentage has to be recomputed to display and can drift from
-  /// what was actually charged. The struck-through number a buyer sees is the
-  /// number stored here, and `priceStandard` is always what they pay.
   /// A short cut of the album, shown large at the top of its page. NULL until
   /// one is produced — the page then leads with the cover still instead of an
   /// empty player, which is the difference between "no trailer yet" and
@@ -487,10 +484,17 @@ model Album {
   /// `/admin/catalogue` or `npm run media:upload`.
   trailerKey    String?
 
-  compareAtPrice Decimal? @db.Decimal(10, 2)
-  /// Short offer label, e.g. «عرض الإطلاق». NULL when compareAtPrice is NULL.
-  /// Bilingual like every other display column: the English storefront shows an
-  /// offer badge too, and a single-language column meant it read Arabic there.
+  /// An offer (DEV-60), set on /admin/catalogue: the sale price, running from
+  /// `offerStartsAt` (NULL = now) until `offerEndsAt` (NULL = until removed).
+  /// Stored as a price, never a percentage — the struck-through regular price
+  /// a buyer sees is `priceStandard`, the number the album truly reverts to.
+  /// Whether it is running is decided at read time by lib/offers.ts, so an
+  /// offer starts and ends on its dates with no job to run.
+  offerPrice     Decimal?  @db.Decimal(10, 2)
+  offerStartsAt  DateTime?
+  offerEndsAt    DateTime?
+  /// Short offer label, e.g. «عرض الإطلاق». Bilingual like every other
+  /// display column; English falls back to Arabic.
   offerLabelAr   String?
   offerLabelEn   String?
   currency       String   @default("USD")

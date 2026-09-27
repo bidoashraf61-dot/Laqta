@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { db } from '@/lib/db'
 import { normaliseArabic } from '@/lib/i18n'
 
@@ -299,7 +300,7 @@ const postgresDriver: SearchDriver = {
               slug: true,
               titleAr: true,
               titleEn: true,
-              priceStandard: true,
+              ...OFFER_SELECT,
               currency: true,
               clipCount: true,
               origin: true,
@@ -331,7 +332,7 @@ const postgresDriver: SearchDriver = {
           slug: row.album.slug,
           titleAr: row.album.titleAr,
           titleEn: row.album.titleEn,
-          priceStandard: Number(row.album.priceStandard),
+          priceStandard: priceNow(row.album).priceStandard,
           currency: row.album.currency,
           clipCount: row.album.clipCount,
           origin: row.album.origin,

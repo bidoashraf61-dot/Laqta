@@ -704,6 +704,37 @@
         "high": "High"
       },
       "invalid": "Choose from the lists only."
+    },
+    "offer": {
+      "add": "Offer",
+      "edit": "Edit offer",
+      "save": "Save offer",
+      "price": "Offer price (USD)",
+      "priceHint": "Below the regular price: ${price}.",
+      "labelAr": "Offer label in Arabic",
+      "labelEn": "Offer label in English",
+      "labelEnHint": "Optional; the Arabic label shows if left blank.",
+      "startsAt": "Starts",
+      "startsHint": "Leave blank to start now.",
+      "endsAt": "Ends",
+      "endsHint": "Leave blank to run until you end it.",
+      "remove": "End offer",
+      "removeConfirm": "End the offer now? The album goes back to its regular price.",
+      "saved": "Offer saved.",
+      "removed": "Offer ended; the album is back at its regular price.",
+      "priceInvalid": "The offer price must be above zero and below the regular price (${price}).",
+      "labelRequired": "Enter the offer label in Arabic.",
+      "datesInvalid": "The end date must be after the start and in the future.",
+      "listTitle": "Offers",
+      "none": "No album is on offer. Add one from an album's row in the table.",
+      "from": "From",
+      "until": "until",
+      "noEnd": "No end date",
+      "state": {
+        "running": "Running now",
+        "scheduled": "Scheduled",
+        "ended": "Ended"
+      }
     }
   },
   "account": {

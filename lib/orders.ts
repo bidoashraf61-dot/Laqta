@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client'
+import { priceNow } from '@/lib/offers'
 import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
 import { evaluatePromo, redeem } from '@/lib/promos'
@@ -125,7 +126,7 @@ export async function checkout({
   if (promoCode && promoCode.trim()) {
     const evaluated = await evaluatePromo(
       promoCode,
-      albums.map((album) => ({ albumId: album.id, gross: Number(album.priceStandard) })),
+      albums.map((album) => ({ albumId: album.id, gross: priceNow(album).priceStandard })),
     )
     if (!evaluated.ok) return { ok: false, messageKey: evaluated.error }
     promo = evaluated
@@ -173,7 +174,8 @@ export async function checkout({
       // The price actually paid: list price less this line's share of the
       // promo discount. Commission, VAT and refunds all run on it (DEV-63).
       const lineDiscount = promo?.discounts[album.id] ?? 0
-      const gross = Math.round((Number(album.priceStandard) - lineDiscount) * 100) / 100
+      // The price NOW — a running offer's price inside its dates (DEV-60).
+      const gross = Math.round((priceNow(album).priceStandard - lineDiscount) * 100) / 100
       const lineVat = vatOn(gross, VAT_RATE)
 
       const commission = resolveCommission({

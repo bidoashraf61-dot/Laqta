@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { OFFER_SELECT, offerRunningWhere, priceNow } from '@/lib/offers'
 import { currentSeason } from '@/lib/season'
 import { mediaUrl } from '@/lib/media'
 import type { AlbumCardData } from '@/components/catalogue/album-card'
@@ -16,10 +17,7 @@ const ALBUM_CARD_SELECT = {
   slug: true,
   titleAr: true,
   titleEn: true,
-  priceStandard: true,
-  compareAtPrice: true,
-  offerLabelAr: true,
-  offerLabelEn: true,
+  ...OFFER_SELECT,
   currency: true,
   clipCount: true,
   totalRuntimeS: true,
@@ -34,7 +32,9 @@ type AlbumRow = {
   titleAr: string
   titleEn: string
   priceStandard: unknown
-  compareAtPrice: unknown
+  offerPrice: unknown
+  offerStartsAt: Date | null
+  offerEndsAt: Date | null
   offerLabelAr: string | null
   offerLabelEn: string | null
   currency: string
@@ -64,13 +64,8 @@ async function toCards(rows: AlbumRow[]): Promise<AlbumCardData[]> {
     creatorNameEn: row.creator.displayNameEn,
     titleAr: row.titleAr,
     titleEn: row.titleEn,
-    priceStandard: Number(row.priceStandard),
-    // NULL when the album is not on offer. Kept as the ORIGINAL price rather
-    // than a percentage: a percentage has to be recomputed to display and can
-    // drift from what was actually charged.
-    compareAtPrice: row.compareAtPrice == null ? null : Number(row.compareAtPrice),
-    offerLabelAr: row.offerLabelAr,
-    offerLabelEn: row.offerLabelEn,
+    // The price paid NOW and the struck regular price, per the offer's dates (lib/offers.ts).
+    ...priceNow(row),
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,
@@ -128,14 +123,14 @@ export type LandingTrailer = Awaited<ReturnType<typeof getLandingTrailers>>[numb
  * Albums currently on offer.
  *
  * Ordered by the size of the saving, so the strongest offer leads. An album
- * with no `compareAtPrice` is not on offer and never appears here — the rail
+ * whose offer is not running NOW (lib/offers.ts) never appears here — the rail
  * disappears entirely rather than rendering an empty "offers" heading, which
  * would advertise that there are none.
  */
 export async function getOfferAlbums(take = 8) {
   const rows = await db.album.findMany({
-    where: { status: 'live', compareAtPrice: { not: null } },
-    orderBy: [{ compareAtPrice: 'desc' }, { publishedAt: 'desc' }],
+    where: { status: 'live', ...offerRunningWhere() },
+    orderBy: [{ priceStandard: 'desc' }, { publishedAt: 'desc' }],
     take,
     select: ALBUM_CARD_SELECT,
   })
@@ -261,7 +256,7 @@ export async function getFootageWall(take = 12): Promise<FootageTile[]> {
           slug: true,
           titleAr: true,
           titleEn: true,
-          priceStandard: true,
+          ...OFFER_SELECT,
           currency: true,
           clipCount: true,
           clearedForCommercial: true,
@@ -287,7 +282,7 @@ export async function getFootageWall(take = 12): Promise<FootageTile[]> {
       slug: row.album.slug,
       titleAr: row.album.titleAr,
       titleEn: row.album.titleEn,
-      priceStandard: Number(row.album.priceStandard),
+      priceStandard: priceNow(row.album).priceStandard,
       currency: row.album.currency,
       clipCount: row.album.clipCount,
       clearedForCommercial: row.album.clearedForCommercial,
@@ -363,7 +358,7 @@ export async function getSeasonalShelf(take = 6) {
 
   // No season, or nothing tagged for it: lead with what is actually on offer.
   const rows = await db.album.findMany({
-    where: { status: 'live', compareAtPrice: { not: null } },
+    where: { status: 'live', ...offerRunningWhere() },
     orderBy: [{ publishedAt: 'desc' }],
     take,
     select: ALBUM_CARD_SELECT,

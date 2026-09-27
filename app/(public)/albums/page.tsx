@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { getPublicSample } from '@/lib/sample'
 import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
@@ -50,10 +51,7 @@ export default async function AlbumsPage({
       slug: true,
       titleAr: true,
       titleEn: true,
-      priceStandard: true,
-      compareAtPrice: true,
-      offerLabelAr: true,
-      offerLabelEn: true,
+      ...OFFER_SELECT,
       currency: true,
       clipCount: true,
       totalRuntimeS: true,
@@ -80,10 +78,8 @@ export default async function AlbumsPage({
     creatorNameEn: row.creator.displayNameEn,
     titleAr: row.titleAr,
     titleEn: row.titleEn,
-    priceStandard: Number(row.priceStandard),
-    compareAtPrice: row.compareAtPrice == null ? null : Number(row.compareAtPrice),
-    offerLabelAr: row.offerLabelAr,
-    offerLabelEn: row.offerLabelEn,
+    // The price paid NOW and the struck regular price, per the offer's dates (lib/offers.ts).
+    ...priceNow(row),
     currency: row.currency,
     clipCount: row.clipCount,
     totalRuntimeS: row.totalRuntimeS,

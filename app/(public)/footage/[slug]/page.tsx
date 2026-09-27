@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, MapPin } from 'lucide-react'
@@ -77,7 +78,7 @@ async function getClip(slug: string) {
           slug: true,
           titleAr: true,
           titleEn: true,
-          priceStandard: true,
+          ...OFFER_SELECT,
           currency: true,
           clipCount: true,
           origin: true,
@@ -356,7 +357,7 @@ export default async function ClipPage({
               </p>
 
               <p className="numeric text-3xl font-bold text-gold">
-                {formatMoney(Number(clip.album.priceStandard), clip.album.currency)}
+                {formatMoney(priceNow(clip.album).priceStandard, clip.album.currency)}
               </p>
 
               <div className="grid gap-2">

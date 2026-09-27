@@ -322,8 +322,20 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   does not commit). `verify:flows` "an uploaded clip reaches «جاهزة»" fails
   intermittently because of it. Not caused by DEV-63; logged as a separate task.
 
-**Next (owner's order):** DEV-60 (album offers), DEV-61 (special price), then
-DEV-64 in three phases; DEV-62 bundles needs the discount decision. Owner: approve the creator
+## 20. Session — 2026-09-27 (DEV-60)
+
+- **DEV-60 done — album offers.** `/admin/catalogue`: «عرض» on each album row
+  (sale price, AR/EN label, start/end in the owner's clock), «إنهاء العرض»,
+  offer state in the price column, and an «العروض» panel. Model changed:
+  `priceStandard` is always the REGULAR price; the offer is `offerPrice` +
+  `offerStartsAt/EndsAt` (migration `album_offers` moved the demo offers
+  over; `compareAtPrice` dropped). `lib/offers.ts#priceNow` decides at read
+  time, so offers start/stop on their dates with no job; storefront, cart and
+  checkout all use it. New gate `npm run verify:offers`.
+- Price sort and the search price filter still use the regular price.
+
+**Next (owner's order):** DEV-61 (special price), then DEV-64 in three phases;
+DEV-62 bundles needs the discount decision. Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

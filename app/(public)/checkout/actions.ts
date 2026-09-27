@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { checkout } from '@/lib/orders'
 import { PAYMENT_METHODS, availableMethods, type PaymentMethod } from '@/lib/payments'
 import { requestLocale } from '@/lib/locale-request'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { evaluatePromo } from '@/lib/promos'
 import { vatOn } from '@/lib/commission'
 
@@ -129,9 +130,9 @@ export async function previewPromo(rawCode: string): Promise<PromoPreview> {
   if (!cart || cart.items.length === 0) return { ok: false, messageKey: 'cart.empty' }
   const albums = await db.album.findMany({
     where: { id: { in: cart.items.map((item) => item.albumId) }, status: 'live', priceStandard: { gt: 0 } },
-    select: { id: true, priceStandard: true },
+    select: { id: true, ...OFFER_SELECT },
   })
-  const lines = albums.map((album) => ({ albumId: album.id, gross: Number(album.priceStandard) }))
+  const lines = albums.map((album) => ({ albumId: album.id, gross: priceNow(album).priceStandard }))
   const result = await evaluatePromo(rawCode, lines)
   if (!result.ok) return { ok: false, messageKey: result.error, vars: result.vars }
 

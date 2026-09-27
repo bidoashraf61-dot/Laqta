@@ -953,6 +953,85 @@ export async function setContactMessageStatus(
 // ── Price bands ─────────────────────────────────────────────────────────────
 
 /**
+ * Put an album on offer, or change its offer — `/admin/catalogue` (DEV-60).
+ *
+ * The sale price must be above zero and below the album's regular price
+ * (`priceStandard`); the dates are exact instants from the browser (the form
+ * converts the owner's local clock). No start = running now; no end = until
+ * removed. The offer runs by its dates at read time (lib/offers.ts): pages,
+ * the cart and checkout all charge it inside the window and not outside.
+ * Past orders keep what they paid. Audited with before/after.
+ */
+export async function saveAlbumOffer(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+
+  const albumId = String(formData.get('albumId') ?? '')
+  const album = await db.album.findUnique({
+    where: { id: albumId },
+    select: { priceStandard: true, offerPrice: true, offerStartsAt: true, offerEndsAt: true, offerLabelAr: true, offerLabelEn: true },
+  })
+  if (!album) return { ok: false, message: tr('state.notFound') }
+
+  const price = Number(String(formData.get('offerPrice') ?? '').trim())
+  const regular = Number(album.priceStandard)
+  if (!Number.isFinite(price) || price <= 0 || price >= regular || Math.round(price * 100) !== price * 100) {
+    return { ok: false, message: tr('dash.offer.priceInvalid', { price: regular }) }
+  }
+  const labelAr = String(formData.get('offerLabelAr') ?? '').trim().slice(0, 40)
+  const labelEn = String(formData.get('offerLabelEn') ?? '').trim().slice(0, 40)
+  if (!labelAr) return { ok: false, message: tr('dash.offer.labelRequired') }
+  const date = (name: string) => {
+    const raw = String(formData.get(name) ?? '').trim()
+    if (!raw) return null
+    const value = new Date(raw)
+    return Number.isNaN(value.getTime()) ? undefined : value
+  }
+  const startsAt = date('startsAt')
+  const endsAt = date('endsAt')
+  if (startsAt === undefined || endsAt === undefined) return { ok: false, message: tr('dash.offer.datesInvalid') }
+  if (endsAt && (endsAt <= new Date() || (startsAt && endsAt <= startsAt))) {
+    return { ok: false, message: tr('dash.offer.datesInvalid') }
+  }
+
+  await db.album.update({
+    where: { id: albumId },
+    data: { offerPrice: price, offerLabelAr: labelAr, offerLabelEn: labelEn || null, offerStartsAt: startsAt, offerEndsAt: endsAt },
+  })
+  await recordAudit({
+    actorId: admin.id,
+    action: 'album.offer.set',
+    entity: 'Album',
+    entityId: albumId,
+    detail: { before: album, after: { offerPrice: price, labelAr, labelEn, startsAt, endsAt } },
+  })
+  revalidatePath('/admin/catalogue')
+  revalidatePath('/', 'layout')
+  return { ok: true, message: tr('dash.offer.saved') }
+}
+
+/** End an album's offer now — it goes back to its regular price. Audited. */
+export async function removeAlbumOffer(albumId: string): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  const album = await db.album.findUnique({
+    where: { id: albumId },
+    select: { offerPrice: true, offerStartsAt: true, offerEndsAt: true, offerLabelAr: true, offerLabelEn: true },
+  })
+  if (!album) return { ok: false, message: tr('state.notFound') }
+  await db.album.update({
+    where: { id: albumId },
+    data: { offerPrice: null, offerStartsAt: null, offerEndsAt: null, offerLabelAr: null, offerLabelEn: null },
+  })
+  await recordAudit({ actorId: admin.id, action: 'album.offer.remove', entity: 'Album', entityId: albumId, detail: { before: album } })
+  revalidatePath('/admin/catalogue')
+  revalidatePath('/', 'layout')
+  return { ok: true, message: tr('dash.offer.removed') }
+}
+
+/**
  * Save the price calculator's parameters — `/admin/catalogue` (DEV-09c).
  *
  * The importance grade of each aspect, the price limits and the creator's

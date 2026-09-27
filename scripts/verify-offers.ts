@@ -12,6 +12,7 @@
 import { checkout } from '../lib/orders'
 import { offerRunning, offerRunningWhere, priceNow } from '../lib/offers'
 import { db } from '../lib/db'
+import { setRegularPrice } from '../lib/album-price'
 
 let failures = 0
 function report(label: string, ok: boolean, detail = '') {
@@ -79,10 +80,34 @@ async function main() {
 
     await setOffer({ offerPrice: sale, offerEndsAt: new Date(Date.now() - 1000) })
     report('checkout charges the regular price after it ends', (await buy()) === regular)
+
+    // ── DEV-61: the owner's special regular price ─────────────────────────────
+    const admin = await db.user.findFirst({ where: { role: 'admin' }, select: { id: true } })
+    await setOffer({ offerPrice: sale })
+    const below = await setRegularPrice({ albumId: album.id, price: sale, actorId: admin!.id })
+    report('a regular price at or under the offer is refused', !below.ok && below.error.key === 'dash.price.belowOffer')
+    await setOffer({ offerPrice: null })
+    const bad = await setRegularPrice({ albumId: album.id, price: '0', actorId: admin!.id })
+    report('a zero price is refused', !bad.ok && bad.error.key === 'dash.price.invalid')
+    const special = 999
+    const done = await setRegularPrice({ albumId: album.id, price: special, reason: 'test', actorId: admin!.id })
+    report('any price outside the calculator range is accepted', done.ok)
+    report('checkout charges the new regular price', (await buy()) === special)
+    report(
+      'the change is audited with from/to',
+      (await db.auditLog.count({ where: { action: 'album.price.set', entityId: album.id, detail: { path: ['to'], equals: special } } })) >= 1,
+    )
+    const draft = await db.album.findFirst({ where: { status: 'draft' }, select: { id: true } })
+    if (draft) {
+      const refusedDraft = await setRegularPrice({ albumId: draft.id, price: 100, actorId: admin!.id })
+      report('a draft is priced at approval, not by hand', !refusedDraft.ok && refusedDraft.error.key === 'dash.price.notLive')
+    }
   } finally {
+    await db.auditLog.deleteMany({ where: { action: 'album.price.set', entityId: album.id, detail: { path: ['reason'], equals: 'test' } } })
     await db.album.update({
       where: { id: album.id },
       data: {
+        priceStandard: album.priceStandard,
         offerPrice: album.offerPrice,
         offerStartsAt: album.offerStartsAt,
         offerEndsAt: album.offerEndsAt,

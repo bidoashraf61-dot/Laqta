@@ -21,6 +21,7 @@ import {
 import { ALBUM_TIERS, parseBandForm, validateBand } from '@/lib/price-bands'
 import { COUNTRIES } from '@/lib/countries'
 import { parseAlbumDetailsForm, saveAlbumDetails } from '@/lib/album-details'
+import { setRegularPrice } from '@/lib/album-price'
 import { loadPricingConfig, parsePricingForm, savePricingChoices } from '@/lib/pricing-config'
 
 export async function submitReview(input: {
@@ -1009,6 +1010,26 @@ export async function saveAlbumOffer(_state: Result | null, formData: FormData):
   revalidatePath('/admin/catalogue')
   revalidatePath('/', 'layout')
   return { ok: true, message: tr('dash.offer.saved') }
+}
+
+/**
+ * Set an album's REGULAR price by hand — `/admin/catalogue` (DEV-61). The
+ * rules live in `lib/album-price.ts#setRegularPrice`.
+ */
+export async function setAlbumPrice(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  const result = await setRegularPrice({
+    albumId: String(formData.get('albumId') ?? ''),
+    price: formData.get('price'),
+    reason: String(formData.get('reason') ?? ''),
+    actorId: admin.id,
+  })
+  if (!result.ok) return { ok: false, message: tr(result.error.key, 'vars' in result.error ? result.error.vars : undefined) }
+  revalidatePath('/admin/catalogue')
+  revalidatePath('/', 'layout')
+  return { ok: true, message: tr('dash.price.saved') }
 }
 
 /** End an album's offer now — it goes back to its regular price. Audited. */

@@ -302,7 +302,7 @@ async function main() {
         await page.getByRole('button', { name: 'المزيد' }).first().click()
         await page.getByRole('menuitem', { name: 'تعديل العنوان' }).click()
         await page.fill('input[name="titleAr"]', 'كثبان عند الغروب')
-        await page.getByRole('button', { name: 'حفظ' }).click()
+        await page.getByRole('button', { name: 'حفظ', exact: true }).click()
         await page.getByText('كثبان عند الغروب').first().waitFor({ timeout: 10_000 }).catch(() => {})
         const renamed = await db.clip.findFirst({ where: { albumId: album.id }, select: { titleAr: true } })
         report('renaming a clip lands', renamed?.titleAr === 'كثبان عند الغروب')

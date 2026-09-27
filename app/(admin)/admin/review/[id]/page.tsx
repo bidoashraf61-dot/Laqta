@@ -17,6 +17,9 @@ import { pickLocalised } from '@/lib/locale'
 import { mediaUrl } from '@/lib/media'
 import { hasDocument } from '@/lib/uploads'
 import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount } from '@/lib/price-bands'
+import { loadAlbumDetails } from '@/lib/album-details'
+import { AlbumDetailsForm } from '@/components/studio/album-details-form'
+import { adminSaveAlbumDetails } from '@/app/(admin)/admin/actions'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   // Resolve the locale before rendering anything.
@@ -72,12 +75,14 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
     select: { labelAr: true, labelEn: true, minClips: true, maxClips: true, priceStandard: true },
   })
   const band = bandForCount(task.album.clipCount, bands)
+  const details = await loadAlbumDetails(task.album.id)
+  // The creator's recommendation comes first (owner, 2026-09-27); the band is
+  // the fallback for albums saved before the calculator existed.
+  const recommended = task.album.recommendedPrice === null ? null : Number(task.album.recommendedPrice)
   const suggestedPrice =
     Number(task.album.priceStandard) > 0
       ? Number(task.album.priceStandard)
-      : band
-        ? Number(band.priceStandard)
-        : null
+      : (recommended ?? (band ? Number(band.priceStandard) : null))
 
   const duplicates = await findDuplicates(task.albumId)
   const consistency = analyseConsistency(task.album.clips)
@@ -222,6 +227,17 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         </div>
       </section>
 
+      {/* The creator's details (DEV-08), correctable here — a wrong category is
+          fixed by the reviewer, not bounced back as a change request. */}
+      {details ? (
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold">{t('studio.details.title')}</h2>
+          <div className="rounded-lg border p-5">
+            <AlbumDetailsForm view={details} action={adminSaveAlbumDetails.bind(null, task.album.id)} />
+          </div>
+        </section>
+      ) : null}
+
       <ReviewChecklist
         taskId={task.id}
         initial={checklist}
@@ -230,6 +246,8 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           min: PRICE_MIN_USD,
           max: PRICE_MAX_USD,
           bandLabel: band ? pickLocalised(band.labelAr, band.labelEn) : null,
+          recommended,
+          recommendedNote: task.album.recommendedNote,
         }}
       />
     </div>

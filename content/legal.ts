@@ -266,10 +266,10 @@ export const CONTENT_POLICY: DocumentSection[] = [
     heading: 'ما الذي نقبله',
     headingEn: 'What we accept',
     bodyEn: [
-      'Saudi footage at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.',
+      'Saudi footage at 720p, 1080p or 4K — the resolution is stated on each album and reflected in its price — in coherent albums of 30 to 70 clips around one subject. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.',
     ],
     body: [
-      'لقطات سعودية بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.',
+      'لقطات سعودية بدقة 720p أو 1080p أو 4K، تُذكر دقة كل ألبوم عليه وتنعكس على سعره، ضمن ألبومات متناسقة من ٣٠ إلى ٧٠ لقطة حول موضوع واحد. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.',
     ],
   },
   {

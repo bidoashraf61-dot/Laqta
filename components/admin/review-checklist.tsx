@@ -46,7 +46,15 @@ export function ReviewChecklist({
   taskId: string
   initial: Checklist
   /** The album price the operator sets on approval (DEV-09). */
-  price: { suggested: number | null; min: number; max: number; bandLabel: string | null }
+  price: {
+    suggested: number | null
+    min: number
+    max: number
+    bandLabel: string | null
+    /** The creator's recommended price and reasoning (DEV-08). */
+    recommended?: number | null
+    recommendedNote?: string | null
+  }
 }) {
   const t = useT()
   const [price, setPrice] = useState(priceRange.suggested === null ? '' : String(priceRange.suggested))
@@ -161,8 +169,18 @@ export function ReviewChecklist({
           </div>
           <p id="album-price-hint" className="text-xs text-muted-foreground">
             {t('admin.albumPriceHint', { min: priceRange.min, max: priceRange.max })}
-            {priceRange.bandLabel ? ` ${t('admin.albumPriceBand', { band: priceRange.bandLabel })}` : ''}
+            {priceRange.recommended != null
+              ? ` ${t('admin.albumPriceRecommended', { price: priceRange.recommended })}`
+              : priceRange.bandLabel
+                ? ` ${t('admin.albumPriceBand', { band: priceRange.bandLabel })}`
+                : ''}
           </p>
+          {priceRange.recommendedNote ? (
+            <p className="whitespace-pre-line rounded-md bg-muted/60 p-3 text-sm">
+              <span className="block text-xs text-muted-foreground">{t('admin.albumPriceNote')}</span>
+              {priceRange.recommendedNote}
+            </p>
+          ) : null}
         </div>
 
         {!gate.ok ? (

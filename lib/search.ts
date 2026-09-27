@@ -220,8 +220,15 @@ const postgresDriver: SearchDriver = {
         ],
       })
     }
+    // A tag on the clip, or on its album — the album details form (DEV-08)
+    // tags whole albums (time of day, shot style), as location and category.
     for (const tag of filters.tags ?? []) {
-      andClauses.push({ taxonomy: { some: { taxonomy: { kind: 'tag', slug: tag } } } })
+      andClauses.push({
+        OR: [
+          { taxonomy: { some: { taxonomy: { kind: 'tag', slug: tag } } } },
+          { album: { taxonomy: { some: { taxonomy: { kind: 'tag', slug: tag } } } } },
+        ],
+      })
     }
 
     // Free text: literal substring on either language, OR membership of any

@@ -258,8 +258,29 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   FAQ states $49–$249. New gate `npm run verify:pricing` (in `npm run verify`).
 - Still not built: Spec B (the creator accepts the price before going live).
 
-**Next:** DEV-08 (album details form: AI/filmed, orientation, location,
-category, permits). Owner: approve the creator
+## 16. Session — 2026-09-27 (DEV-08 + price calculator)
+
+- **Owner's pricing model** (recorded in `checklists/README.md` D4): price =
+  clip-count base × resolution (720p 0.6 · 1080p 1 · 4K 1.3) × footage type
+  (AI live action 1 · AI 3D 0.9 · AI 2D 0.8 · filmed 1.25) × quality
+  (standard 0.9 · good 1 · exceptional 1.15), $49–$249. Creator rates quality
+  and recommends a price within ±15%. **Approving the album approves the
+  price; a counter-price travels with «طلب تعديل» feedback** and the creator
+  resubmits — no separate acceptance step (owner, 2026-09-27; DEV-09b). **720p accepted.**
+- **DEV-08 done.** «تفاصيل الألبوم» on `/studio/albums/[id]`: footage type,
+  resolution, quality, orientation, category, locations, time of day, occasion,
+  style tags, permits statement, and a live price calculator with the
+  creator's recommended price + reason. Same form, editable in any status, on
+  `/admin/review/[id]`, whose price field now pre-fills the recommendation.
+  Submission requires saved details and an in-range recommendation. Two
+  migrations (`album_details`, `album_pricing_inputs`). Search `?tag=` now
+  matches album tags. Content policy: 720p/1080p/4K and 30–70 clips (was
+  «ثماني لقطات»). Creator brief updated (720p, calculator table).
+- Local database migration history was out of step (older changes applied
+  by `db push`); reconciled with `prisma migrate resolve` — status clean.
+
+**Next:** DEV-09b (proposed price inside the request-changes feedback), then
+DEV-09c (owner edits multipliers). Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

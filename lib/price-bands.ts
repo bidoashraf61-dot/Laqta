@@ -27,9 +27,10 @@ import { MAX_ALBUM_CLIPS, MIN_ALBUM_CLIPS } from '@/lib/studio'
 
 export const ALBUM_TIERS: AlbumTier[] = ['mini', 'standard', 'pro', 'signature']
 
-/** The album price range the owner set (decision D4, 2026-09-26). */
-export const PRICE_MIN_USD = 49
-export const PRICE_MAX_USD = 249
+// Pure, and needed by the client-side calculator — defined there so that
+// importing them never drags this module's server imports into a bundle.
+import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount } from '@/lib/price-calculator'
+export { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount }
 
 /** A price the operator may approve at: in range, whole cents. Else null. */
 export function parseAlbumPrice(raw: unknown): number | null {
@@ -40,17 +41,7 @@ export function parseAlbumPrice(raw: unknown): number | null {
   return value
 }
 
-/** The band whose clip range holds `clipCount`, if any. */
-export function bandForCount<T extends { minClips: number; maxClips: number | null }>(
-  clipCount: number,
-  bands: T[],
-): T | null {
-  return (
-    bands.find(
-      (band) => clipCount >= band.minClips && clipCount <= (band.maxClips ?? Number.POSITIVE_INFINITY),
-    ) ?? null
-  )
-}
+
 
 export type BandInput = {
   id?: string

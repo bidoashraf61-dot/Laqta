@@ -88,6 +88,36 @@ enum AlbumOrigin {
 
 /// The shape the album was cut for. Denormalised onto the album like
 /// `clipCount`, because a grid needs it before it has loaded a single clip.
+/// Pricing inputs on the album details form (DEV-08, owner 2026-09-27). Each
+/// is a multiplier in lib/price-calculator.ts.
+enum AlbumResolution {
+  sd720 // 1280×720
+  hd1080 // 1920×1080
+  uhd4k // 3840×2160
+}
+
+/// For a generated album: what kind of picture it is. A filmed album is
+/// `live_action` by definition.
+enum FootageStyle {
+  live_action
+  animated_3d
+  animated_2d
+}
+
+/// The creator's own rating, confirmed or changed by the owner at review.
+enum QualityLevel {
+  standard
+  good
+  exceptional
+}
+
+/// The creator's statement about releases and permits, made on the album
+/// details form (DEV-08). Silence is not a statement: NULL blocks submission.
+enum PermitsDeclaration {
+  none_needed // no identifiable people, no private or permit-only sites
+  attached // the releases and permits it needs are uploaded in the studio
+}
+
 enum AlbumOrientation {
   landscape // 16:9 and wider
   portrait // 9:16
@@ -478,6 +508,20 @@ model Album {
   /// launch catalogue is; a generated album has to say so explicitly.
   origin      AlbumOrigin      @default(captured)
   orientation AlbumOrientation @default(landscape)
+
+  /// Album details form (DEV-08). Set when the creator (or an admin) saves the
+  /// form; submission requires it, so `origin` and `orientation` are a choice,
+  /// not the schema default.
+  permitsDeclaration PermitsDeclaration?
+  detailsCompletedAt DateTime?
+
+  /// Pricing inputs and the creator's recommended price (DEV-08). The owner
+  /// sets `priceStandard` at approval; see lib/price-calculator.ts.
+  resolution         AlbumResolution?
+  footageStyle       FootageStyle?
+  qualityLevel       QualityLevel?
+  recommendedPrice   Decimal?         @db.Decimal(10, 2)
+  recommendedNote    String?
 
   clearanceStatus ClearanceStatus @default(pending)
   isExclusive     Boolean         @default(false)

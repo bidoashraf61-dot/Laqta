@@ -20,6 +20,7 @@ import {
 } from '@/lib/payouts'
 import { ALBUM_TIERS, parseBandForm, validateBand } from '@/lib/price-bands'
 import { COUNTRIES } from '@/lib/countries'
+import { parseAlbumDetailsForm, saveAlbumDetails } from '@/lib/album-details'
 
 export async function submitReview(input: {
   taskId: string
@@ -242,6 +243,37 @@ export async function makeCreator(_state: Result | null, formData: FormData): Pr
   revalidatePath('/admin/users')
   revalidatePath('/admin/creators')
   return { ok: true, message: tr('dash.makeCreatorDone') }
+}
+
+/**
+ * Correct an album's details from the review page (DEV-08). Any status: the
+ * reviewer fixes a wrong category or location rather than bouncing the album
+ * back for a label. Audited as the admin.
+ */
+export async function adminSaveAlbumDetails(
+  albumId: string,
+  _state: Result | null,
+  formData: FormData,
+): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  if (!(await db.album.findUnique({ where: { id: albumId }, select: { id: true } }))) {
+    return { ok: false, message: tr('state.notFound') }
+  }
+  const parsed = parseAlbumDetailsForm(formData)
+  if (!parsed.ok) return { ok: false, message: tr(parsed.error) }
+  const saved = await saveAlbumDetails(albumId, parsed.input)
+  if (!saved.ok) return { ok: false, message: tr(saved.error) }
+  await recordAudit({
+    actorId: admin.id,
+    action: 'album.details.admin',
+    entity: 'Album',
+    entityId: albumId,
+    detail: parsed.input,
+  })
+  revalidatePath('/admin/review')
+  return { ok: true, message: tr('studio.details.saved') }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -42,6 +42,7 @@ No server action mutates anything on this route; the only write is the search lo
 - **Filter facets are hard-coded** — the chip values in `FilterRail` are literals, not derived from the data, so a chip can exist with zero matching clips.
 - **`matchedTaxonomy` is computed but unused** — `SearchResult.matchedTaxonomy` is returned by `search()` and never rendered; there is no "did you mean" UI.
 - **Not wired**: `minPrice`/`maxPrice` and `tags` exist in `ClipFilters` (tags read from `?tag=`), but no control in `FilterRail` sets a price range.
+- A `?tag=` filter matches a tag on the clip **or on its album** (album tags come from the album details form, DEV-08), the same way location and category already did.
 - **Search engine** — Postgres today. `SearchDriver` is the boundary for a future Meilisearch driver; nothing in the route layer changes when it lands.
 
 ## Invariants

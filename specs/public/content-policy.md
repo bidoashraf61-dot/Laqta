@@ -28,3 +28,6 @@ Read-only. Linked from `/sell`.
 
 ## Verified by
 `verify:arabic`, `audit`.
+
+## Accepted resolutions (2026-09-27)
+The «ما الذي نقبله» section reads «لقطات سعودية بدقة 720p أو 1080p أو 4K، تُذكر دقة كل ألبوم عليه وتنعكس على سعره، ضمن ألبومات متناسقة من ٣٠ إلى ٧٠ لقطة حول موضوع واحد.» (EN to match). Was «1080p أو 4K … لا تقل عن ثماني لقطات» — 720p is now accepted at a lower price (owner) and the eight-clip minimum predated the 30–70 album.

@@ -49,7 +49,7 @@ These change how many tasks are done. Record each answer here.
 | D1 | Launch AI-only, or creators may also upload filmed footage? | AI-only | **AI + filmed** — creators may upload both (2026-09-26) |
 | D2 | "Own it forever" or "permanent licence"? | «ترخيص دائم» — matches the Terms | **«ترخيص دائم»** |
 | D3 | Also rewrite «تصوير» where it means the buyer's own shoot day? | Yes — one rule, no exceptions | **No** — «تصوير» is allowed, since the catalogue has filmed footage too; use it only where true |
-| D4 | Album price for 30–70 clips | Decide a range (audit suggests $99–$249) | **$49–$249** |
+| D4 | Album price for 30–70 clips | Decide a range (audit suggests $99–$249) | **$49–$249.** Price = clip-count base × resolution (720p ×0.6 · 1080p ×1 · 4K ×1.3) × type (AI live action ×1 · AI 3D ×0.9 · AI 2D ×0.8 · filmed ×1.25) × quality (standard ×0.9 · good ×1 · exceptional ×1.15). Creator rates quality and recommends a price; owner approves or counters; creator must accept a counter. 720p accepted at the lower multiplier (2026-09-27) |
 | D5 | Master quality: 1080p, or upscale to 4K? | If 1080p, change the copy that says 4K | **Mixed** — each album states its real resolution; site-wide «4K» claims go |
 | D6 | Verticals inside an album? | No — dedicated vertical albums | **Dedicated vertical albums** |
 | D7 | VAT at checkout until the accountant answers | 0%, no invoice promise | **Keep 15%** until the accountant answers (owner's choice, risk explained) |

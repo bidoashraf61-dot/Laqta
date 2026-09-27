@@ -57,6 +57,8 @@ Node can interleave them. Context is per-render by construction.
 | Source | Bilingual by | Notes |
 |---|---|---|
 | `messages/ar.json` / `messages/en.json` | `t('key')` | English falls back to Arabic per key, so a missing key renders Arabic — never a raw dot-path |
+| `CopyOverride` rows (DEV-64b) — owner edits of `landing.*`, `sell.*`, `email.*` | inside `translate()` | Resolution per key: **preview draft** (admin preview render only) → **published override** → JSON → Arabic JSON. The JSON is never modified and is always the fallback; removing an override is how a string returns to it. Server components read a process-wide published map (refreshed in `requestLocale()`, ≤15 s old); client components get published + draft for their locale through `LocaleProvider`'s `copy` context, never a module global. See [`admin-copy-group.md`](admin/admin-copy-group.md) |
+| `DocumentVersion` rows (DEV-64a) | `loadDocument(key)` | The long-form pages; falls back to `content/legal.ts` |
 | `content/legal.ts` | `headingEn` / `bodyEn` / `listEn` | Falls back per section, as a unit |
 | Database columns | `<Bilingual ar en />`, or `pickLocalised(ar, en)` outside JSX | Both fall back to Arabic when the English side is empty |
 

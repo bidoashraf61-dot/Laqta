@@ -21,7 +21,7 @@ refresh a dashboard.
 | Outbox (queue, drain, retry) | `lib/outbox.ts` | `enqueue(tx, …)`, `drain()`, `drainSoon()` |
 | Templates | `emails/registry.ts` | Pure `(locale, payload)` → blocks |
 | Layout | `emails/layout.ts` | Blocks → HTML part + text part, one source |
-| Copy | `messages/*.json` → `email.*` | 80 keys, both languages |
+| Copy | `messages/*.json` → `email.*`, plus the owner's edits (`CopyOverride`, DEV-64b) | 82 keys, both languages; `drain()` refreshes the edits before rendering, so an edit reaches mail already queued. Edited from [`/admin/content/copy/email`](admin/admin-copy-group.md), previewed at [`/admin/content/copy/email/preview`](admin/admin-copy-email-preview.md) |
 | PDF renderer | `lib/documents.ts` | Chrome via Playwright |
 | Licence certificate | `lib/certificate.ts` | Rendered per order item, attached to the receipt |
 | Absolute URLs | `lib/site.ts` | `SITE_ORIGIN`; a sender has no request |
@@ -230,7 +230,8 @@ say different things.
   unresolved; no dot-paths; `lang`/`dir` declared; Arabic present in `ar`, no
   Arabic prose in `en`; untrusted markup escaped; gold at most once;
 - no refund, filmed-on-location or first/largest copy in any rendered message
-  or `email.*` string;
+  or `email.*` string (the patterns live in `lib/copy-claims.ts`, shared with
+  the copy editor, which refuses them at publish — `verify:copy`);
 - no inline Arabic in `emails/` or `lib/notifications.ts`; both dictionaries in
   step; every enqueued template exists;
 - the Resend request shape against a mocked `fetch` (endpoint, Bearer key,

@@ -28,7 +28,7 @@ anything else is `notFound()`.
   (`translate('ar'|'en', footer.*)`), whether the page is dated, whether it shows lists.
 
 ## Layout
-- Header: «تحرير: {title}», back to «نصوص الصفحات», the line «على الموقع الآن: …» (the
+- Header: «تحرير: {title}», back to «نصوص الموقع والصفحات» (admin nav: «نصوص الموقع»), the line «على الموقع الآن: …» (the
   original text, or the live version's date), and «عرض الصفحة» (new tab).
 - **Desktop (lg+):** editor and preview side by side; the preview is sticky and scrolls
   on its own. **Below lg:** a two-way switch «تحرير / معاينة» shows one pane at a time.

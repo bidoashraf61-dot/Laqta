@@ -1,11 +1,15 @@
-# Page text
+# Site copy and pages
 
 **Route** `/admin/content` · **Access** admin only · **Rendering** server, dynamic (`auth()`)
 
 ## Purpose
-The list of the long-form pages the owner edits from admin (DEV-64a): Terms, Privacy,
-Licences, Content policy, About, Contact. Each row says what the site shows right now —
-the original text from the code, or the newest published version — and opens its editor.
+The hub for every word the owner edits from admin, in two panels:
+- **«نصوص الموقع»** (DEV-64b) — the landing page and FAQ, the `/sell` page, the emails:
+  how many strings, how many edited, when last published; opens
+  [`/admin/content/copy/[group]`](admin-copy-group.md).
+- **«الصفحات الطويلة»** (DEV-64a) — Terms, Privacy, Licences, Content policy, About,
+  Contact: the original text or the newest published version; opens
+  [`/admin/content/[key]`](admin-content-key.md).
 
 ## Data in
 - The fixed registry `DOCUMENTS` / `DOCUMENT_KEYS` in `lib/editable-documents.ts` — six rows, always
@@ -14,6 +18,9 @@ the original text from the code, or the newest published version — and opens i
 - `DocumentVersion.findMany({ distinct: ['docKey'], orderBy: [{ docKey }, { publishedAt: 'desc' }] })`
   — the newest version per page — and `groupBy(['docKey'])` for the version count.
 - Publisher names: `User.findMany` on the publishers' ids (`name`, else `email`).
+- Per copy group (`COPY_GROUPS` in `lib/copy-rules.ts`): `groupKeys(group).length`,
+  `CopyOverride.findMany({ distinct: ['key'] })` under the prefix (edited strings), and the
+  newest `CopyRevision.publishedAt` under the prefix.
 
 Takes no `searchParams`.
 
@@ -21,6 +28,8 @@ Takes no `searchParams`.
 
 | Control | Action | Effect |
 | --- | --- | --- |
+| Copy group title / «تعديل» | plain `<a>` → `/admin/content/copy/[group]` | opens the copy editor |
+| Copy group «عرض الصفحة» | plain `<a>`, new tab | `/` or `/sell` (none for email) |
 | Page title (row) | plain `<a>` (`Anchor`) → `/admin/content/[key]` | opens the editor |
 | «عرض الصفحة» (row) | plain `<a>`, new tab | the public page (`/terms`, …) |
 | «تعديل» (row) | plain `<a>` → `/admin/content/[key]` | opens the editor |
@@ -32,14 +41,16 @@ CLAUDE.md says must never be a soft client push.
 - **Nothing published** for a page — neutral badge «النص الأصلي» and «لم تُنشر نسخة معدّلة بعد.»
 - **Published** — success badge «منشورة {date}», then publisher · the version's note ·
   «النسخ المنشورة: {count}».
-- No empty state: the six rows always exist.
+- **Copy group** — success badge «المعدّلة: N» when any string is edited; then
+  «N نصاً · آخر نشر {date}» or «… · لم يُعدَّل شيء بعد.»
+- No empty state: the three copy rows and six page rows always exist.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
-- The list is the registry, not the table: a page with no versions still has a row, and a
+- Both lists are registries, not tables: a page with no versions still has a row, and a
   `docKey` in the table that is not in the registry is never shown.
 - Nothing on this route writes.
 
 ## Verified by
-`verify:arabic`, `audit` (both list `/admin/content`), `verify:documents` (the library
-behind it).
+`verify:arabic`, `audit` (both list `/admin/content`), `verify:documents` and
+`verify:copy` (the libraries behind it).

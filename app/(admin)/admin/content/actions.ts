@@ -10,6 +10,8 @@ import {
   restoreDocument,
   type PublishResult,
 } from '@/lib/editable-documents'
+import { publishCopy, saveCopyPreview, undoCopyBatch, type CopyPublishResult } from '@/lib/copy-overrides'
+import { COPY_GROUPS } from '@/lib/copy-rules'
 
 /**
  * Publish and restore the long-form pages — `/admin/content/[key]` (DEV-64a).
@@ -53,4 +55,55 @@ export async function restoreDocumentAction(key: string, from: string): Promise<
   if (!isDocumentKey(key)) return { ok: false, message: tr('state.notFound') }
   const result = await restoreDocument({ key, from, actorId: admin.id })
   return finish(key, result, 'dash.docs.restored')
+}
+
+// ─── Site copy (DEV-64b) ─────────────────────────────────────────────────────
+
+export type CopyActionResult = {
+  ok: boolean
+  message?: string
+  /** The string a refusal is about, so the editor can point at it. */
+  at?: { key: string; locale: 'ar' | 'en' }
+  /** Set by the preview action. */
+  previewId?: string
+}
+
+async function finishCopy(result: CopyPublishResult, okKey: string): Promise<CopyActionResult> {
+  const tr = await actionT()
+  if (!result.ok) return { ok: false, message: tr(result.error.key, result.error.vars), at: result.error.at }
+  // The edited copy is read inside translate() on every page, so every page
+  // that shows it is stale — the landing, /sell, both languages.
+  for (const group of Object.values(COPY_GROUPS)) {
+    if (group.path) {
+      revalidatePath(group.path)
+      revalidatePath(`/en${group.path === '/' ? '' : group.path}`)
+    }
+  }
+  revalidatePath('/admin/content', 'layout')
+  return { ok: true, message: tr(okKey) }
+}
+
+/** `changes`: `[{ key, locale, value }]`; an empty value means "back to the original". */
+export async function publishCopyAction(changes: unknown, note: string): Promise<CopyActionResult> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  return finishCopy(await publishCopy({ changes, note, actorId: admin.id }), 'dash.copy.publishedToast')
+}
+
+export async function undoCopyBatchAction(batchId: string): Promise<CopyActionResult> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  return finishCopy(await undoCopyBatch({ batchId, actorId: admin.id }), 'dash.copy.undone')
+}
+
+/** Store drafts for `?copyPreview=<id>` — shown to admins only (middleware). */
+export async function previewCopyAction(changes: unknown): Promise<CopyActionResult> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  const result = await saveCopyPreview({ values: changes, actorId: admin.id })
+  if (!result.ok) return { ok: false, message: tr(result.error.key, result.error.vars), at: result.error.at }
+  return { ok: true, previewId: result.id }
 }

@@ -1,5 +1,6 @@
 import ar from '@/messages/ar.json'
 import en from '@/messages/en.json'
+import { cache } from 'react'
 import { BCP47, currentLocale, DIRECTION, type Locale } from '@/lib/locale'
 
 /**
@@ -74,8 +75,10 @@ export function translate(
   active: Locale,
   key: string,
   vars?: Record<string, string | number>,
+  overrides?: CopyOverrideMap | null,
 ): string {
-  let value = lookup(DICTIONARIES[active], key)
+  let value: unknown = overrideFor(active, key, overrides)
+  if (typeof value !== 'string') value = lookup(DICTIONARIES[active], key)
   if (typeof value !== 'string' && active !== 'ar') value = lookup(ar as Messages, key)
 
   if (typeof value !== 'string') return key
@@ -84,6 +87,65 @@ export function translate(
   return value.replace(/\{(\w+)\}/g, (_match, name: string) =>
     name in vars ? String(vars[name]) : `{${name}}`,
   )
+}
+
+// ── Edited copy (DEV-64b) ───────────────────────────────────────────────────
+
+/**
+ * `{ "<locale>:<key>": value }` — strings the owner edited from
+ * `/admin/content/copy`, layered over the JSON. The JSON is never modified and
+ * is always the fallback: a key with no entry here reads the dictionary.
+ */
+export type CopyOverrideMap = Record<string, string>
+
+const IS_SERVER = typeof window === 'undefined'
+
+/**
+ * The PUBLISHED edits, process-wide on the server. Global is correct here,
+ * unlike the locale: every reader sees the same published copy, so two
+ * concurrent requests cannot disagree about it. Filled and refreshed by
+ * `lib/copy-overrides.ts#refreshCopyOverrides` (called from `requestLocale()`
+ * and before mail renders). Never set in the browser — client components get
+ * their map through context (`lib/i18n-client`), passed as `overrides`.
+ */
+let published: CopyOverrideMap = {}
+
+export function setPublishedCopy(map: CopyOverrideMap) {
+  published = map
+}
+
+/**
+ * Unpublished drafts for ONE render — the owner previewing edits on the real
+ * page. Per-render (React `cache()`), so a preview can never leak into another
+ * visitor's page; outside a render (actions, mail) there is no draft.
+ */
+const draftHolder = cache((): { current: CopyOverrideMap | null } => ({ current: null }))
+
+export function setDraftCopy(map: CopyOverrideMap | null) {
+  if (IS_SERVER) draftHolder().current = map
+}
+
+/** True while this render shows unpublished copy (the owner's preview). */
+export function isCopyPreview(): boolean {
+  return IS_SERVER && draftHolder().current !== null
+}
+
+/** Published + this render's drafts, for one locale — what client components need. */
+export function activeCopy(locale: Locale): CopyOverrideMap {
+  const merged: CopyOverrideMap = {}
+  const prefix = `${locale}:`
+  for (const source of [published, IS_SERVER ? draftHolder().current : null]) {
+    if (!source) continue
+    for (const [k, v] of Object.entries(source)) if (k.startsWith(prefix)) merged[k] = v
+  }
+  return merged
+}
+
+function overrideFor(active: Locale, key: string, explicit?: CopyOverrideMap | null) {
+  const id = `${active}:${key}`
+  if (explicit) return explicit[id]
+  if (!IS_SERVER) return undefined
+  return draftHolder().current?.[id] ?? published[id]
 }
 
 // ── Formatting ──────────────────────────────────────────────────────────────

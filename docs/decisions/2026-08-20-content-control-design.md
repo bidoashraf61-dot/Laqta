@@ -1,6 +1,6 @@
 # Spec D — Content control (admin as CMS)
 
-**Status** approved 2026-08-20; **phase 64a built 2026-09-27** (long-form pages — see below); 64b/64c not built, interface copy still lives in `messages/*.json` · **Order** fourth (A → C → B → D) · **Largest of the four**
+**Status** approved 2026-08-20; **64a built 2026-09-27** (long-form pages) and **64b built 2026-09-27** (landing, `/sell`, FAQ, email copy) — see below; 64c (every other string) not built · **Order** fourth (A → C → B → D) · **Largest of the four**
 
 ## Purpose
 
@@ -102,6 +102,25 @@ page to fail.
 - Admin routes: `/admin/content` (list) and `/admin/content/[key]` (editor) — not
   `/admin/content/documents`; 64c's string editor will need its own route.
 - Specs: `specs/admin/admin-content.md`, `specs/admin/admin-content-key.md`.
+
+### What 64b actually built (2026-09-27) — differs from this spec
+
+- **`CopyOverride` holds only published values** (unique key+locale, no `status`);
+  history is `CopyRevision` rows grouped by `batchId` with `before`/`after`, so "revert"
+  is **undo a whole publish** (a new batch), plus per-string «إرجاع الأصل» in the editor.
+- **Drafts** live in the editor (and browser storage). **Preview** stores them in
+  `CopyPreview` and opens the real page with `?copyPreview=<id>`; the middleware honours it
+  for admins only and the drafts apply per render (React `cache()`) — never globally.
+- **Caching:** a per-process map refreshed from `requestLocale()` at most every 15 s
+  (no Next cache tag); client components receive their locale's map by context.
+- **Save-time validation** as specified (placeholders, length class, no HTML, direction,
+  banned claims) in `lib/copy-rules.ts`, run in the browser and on the server. The length
+  class is derived from the original's length, not hand-classified per key. There is **no
+  override-with-confirmation** of a failing rule, and `verify:leading` / `verify:contrast`
+  do not measure staged copy — the length cap stands in for them.
+- Scope: `landing.*` (incl. FAQ), `sell.*`, `email.*`. Routes: `/admin/content` (hub),
+  `/admin/content/copy/[group]`, `/admin/content/copy/email/preview`.
+  Specs: `specs/admin/admin-copy-group.md`, `admin-copy-email-preview.md`.
 
 ### `CmsEntry` — connected, finally
 

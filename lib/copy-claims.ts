@@ -49,3 +49,29 @@ export function findBannedClaim(text: string): { match: string; why: string } | 
   }
   return null
 }
+
+/**
+ * Owner decisions that bind every public string, not only the licence:
+ * refunds are never mentioned (2026-09-23), and no "first" / "largest" claim.
+ * Moved here from `scripts/verify-mail.ts` so the copy editor (DEV-64b)
+ * refuses them at publish as well.
+ */
+export const SITE_BANS: Array<[RegExp, string]> = [
+  [/refund|reimburs|money[- ]back|استرد|استرجا|مسترد|إرجاع المبلغ/i, 'mentions refunds'],
+  // The CLAIM, not the word: "browse the library first" is fine on /sell.
+  [
+    /\b(?:the )?(?:first|largest|biggest)\s+(?:saudi\s+|arabic\s+)?(?:stock|footage|library|platform|marketplace)\b|\blargest\b|\bbiggest\b|الأكبر|الأول(ى)? من نوع|أكبر مكتبة|أول مكتبة|أول منصة/i,
+    'claims first or largest',
+  ],
+]
+
+/**
+ * Mail only, the rules verify:mail has always applied: none of the messages
+ * may say the footage was filmed or shot anywhere, and none may use "first"
+ * or "largest" at all.
+ */
+export const MAIL_BANS: Array<[RegExp, string]> = [
+  // Mail keeps the stricter word-level rule verify:mail has always applied.
+  [/\b(first|largest|biggest)\b/i, 'claims first or largest'],
+  [/\bfilmed\b|\bshot (on|in|at)\b|on location|صُ?وِّ?رت? في|صوّرنا|صورناها|تم تصوير/i, 'claims the footage was filmed'],
+]

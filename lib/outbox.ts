@@ -5,6 +5,7 @@ import { sendMail, isMailConfigured } from '@/lib/mail'
 import { documentPath } from '@/lib/storage'
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/locale'
 import { renderTemplate, type TemplateName } from '@/emails/registry'
+import { refreshCopyOverrides } from '@/lib/copy-overrides'
 
 /**
  * The transactional outbox.
@@ -105,6 +106,10 @@ export async function drain(limit = 25) {
     const waiting = await db.mailOutbox.count({ where: { sentAt: null, failedAt: null } })
     return { attempted: 0, sent: 0, failed: 0, skipped: waiting }
   }
+
+  // Email copy the owner edited (DEV-64b) — a sender runs outside any request,
+  // so nothing else has loaded it. An edit reaches mail already queued.
+  await refreshCopyOverrides()
 
   const pending = await db.mailOutbox.findMany({
     where: { sentAt: null, failedAt: null, attempts: { lt: MAX_ATTEMPTS } },

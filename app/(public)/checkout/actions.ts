@@ -6,7 +6,8 @@ import { db } from '@/lib/db'
 import { checkout } from '@/lib/orders'
 import { PAYMENT_METHODS, availableMethods, type PaymentMethod } from '@/lib/payments'
 import { requestLocale } from '@/lib/locale-request'
-import { OFFER_SELECT, priceNow } from '@/lib/offers'
+import { priceNow } from '@/lib/offers'
+import { BUNDLE_ALBUM_SELECT, bundleLines, resolveBundles } from '@/lib/bundles'
 import { evaluatePromo } from '@/lib/promos'
 import { vatOn } from '@/lib/commission'
 
@@ -130,13 +131,21 @@ export async function previewPromo(rawCode: string): Promise<PromoPreview> {
   if (!cart || cart.items.length === 0) return { ok: false, messageKey: 'cart.empty' }
   const albums = await db.album.findMany({
     where: { id: { in: cart.items.map((item) => item.albumId) }, status: 'live', priceStandard: { gt: 0 } },
-    select: { id: true, ...OFFER_SELECT },
+    select: BUNDLE_ALBUM_SELECT,
   })
   const lines = albums.map((album) => ({ albumId: album.id, gross: priceNow(album).priceStandard }))
-  const result = await evaluatePromo(rawCode, lines)
+  // A bundle's albums take the bundle price, not the code (DEV-62).
+  const bundles = await resolveBundles(bundleLines(albums))
+  const result = await evaluatePromo(
+    rawCode,
+    lines.filter((line) => !bundles.bundleOf[line.albumId]),
+  )
   if (!result.ok) return { ok: false, messageKey: result.error, vars: result.vars }
 
-  const paid = lines.map((line) => Math.round((line.gross - (result.discounts[line.albumId] ?? 0)) * 100) / 100)
+  const paid = lines.map(
+    (line) =>
+      Math.round((line.gross - (bundles.discounts[line.albumId] ?? 0) - (result.discounts[line.albumId] ?? 0)) * 100) / 100,
+  )
   const subtotal = paid.reduce((sum, value) => sum + value, 0)
   const vatAmount = paid.reduce((sum, value) => sum + vatOn(value), 0)
   return { ok: true, code: result.code, discount: result.total, subtotal, vatAmount, total: subtotal + vatAmount }

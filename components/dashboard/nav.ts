@@ -4,6 +4,7 @@ import {
   Gauge,
   Image,
   Inbox,
+  Layers,
   Receipt,
   Sparkles,
   Users,
@@ -112,6 +113,7 @@ export const ADMIN_NAV: DashboardSection[] = [
       { href: '/admin/orders', labelKey: 'admin.orders', icon: Laqta.Basket },
       { href: '/admin/payouts', labelKey: 'admin.payoutRuns', icon: Laqta.Chest },
       { href: '/admin/promos', labelKey: 'dash.promos', icon: Sparkles },
+      { href: '/admin/bundles', labelKey: 'dash.bundles.nav', icon: Layers },
     ],
   },
   {

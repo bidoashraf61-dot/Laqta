@@ -33,7 +33,7 @@ export const COPY_GROUPS = {
     titleKey: 'dash.copy.group.catalogue',
     path: '/albums',
   },
-  checkout: { sections: ['cart', 'checkout', 'promo'], titleKey: 'dash.copy.group.checkout', path: '/cart' },
+  checkout: { sections: ['cart', 'checkout', 'promo', 'bundle'], titleKey: 'dash.copy.group.checkout', path: '/cart' },
   account: { sections: ['auth', 'account', 'library', 'boards'], titleKey: 'dash.copy.group.account', path: '/account' },
   contact: { sections: ['contact'], titleKey: 'dash.copy.group.contact', path: '/contact' },
 } as const satisfies Record<string, { sections: readonly string[]; titleKey: string; path: string | null }>

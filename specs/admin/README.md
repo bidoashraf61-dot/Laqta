@@ -52,6 +52,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination), batch approved ones into a payout run with one export file per rail, and mark a run (or a single payout) paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
+| `/admin/bundles` | Album bundles: what each costs apart and together, whether a buyer can get it now; switch on/off. | [admin-bundles.md](admin-bundles.md) |
+| `/admin/bundles/new`, `/admin/bundles/[id]` | Build or edit a bundle with a live per-album split of who pays the discount (Laqta). | [admin-bundles-edit.md](admin-bundles-edit.md) |
 | `/admin/content` | Hub for the owner's words: every visitor-facing copy group and the long-form pages; what each shows now, open its editor. | [admin-content.md](admin-content.md) |
 | `/admin/content/copy/[group]` | Edit any visitor-facing copy (8 groups: landing, sell, email, site, catalogue, checkout, account, contact) in Arabic and English with live rule checks, preview on the real page, publish, undo a publish. | [admin-copy-group.md](admin-copy-group.md) |
 | `/admin/content/copy/email/preview` | One email rendered with sample data, with or without unpublished edits. | [admin-copy-email-preview.md](admin-copy-email-preview.md) |
@@ -61,7 +63,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover 20 routes (now including `/admin/messages`,
+- `verify:arabic` and `audit` cover 22 routes (plus `/admin/bundles` and `/admin/bundles/new`) (now including `/admin/messages`,
   `/admin/users`, `/admin/content`, `/admin/content/terms`,
   `/admin/content/copy/landing`, `/admin/content/copy/catalogue` and
   `/admin/content/copy/email/preview`). `/admin/users/[id]` is in neither (it needs an id).
@@ -77,6 +79,10 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `verify:payments` covers the Paymob callback into `settleOrder` and the derived
   webhook/manual source shown on `/admin/orders` (handler level, not the rendered row).
 - `verify:entitlement` covers the order snapshot.
+- `verify:bundles` covers `lib/bundles.ts` behind `/admin/bundles`: the arithmetic, the
+  Laqta-share ceiling, every save rule, checkout (applies only when complete and running,
+  biggest saving wins, creators paid in full, promo codes do not stack), settlement and an
+  exact full refund.
 - `verify:documents` covers `lib/editable-documents.ts` behind `/admin/content/[key]`: the publish
   rules, publish, restore (to a version and to the original text), audit rows and the
   fall-back to `content/legal.ts` (library level — the client editor is not driven).
@@ -94,6 +100,12 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
   or order moved, restored).
 
 ## Dead ends worth knowing
+
+- A bundle whose discount comes to exceed Laqta's share on an album (after a price change or
+  a creator promoted to a lower commission) silently stops applying at checkout; the only
+  signal is its «غير متاحة» badge on `/admin/bundles`. Nothing notifies the owner.
+- A buyer who already owns an album of a bundle cannot get the bundle price — it needs every
+  album in one order. The bundle page says so.
 
 
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`

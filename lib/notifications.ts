@@ -139,6 +139,7 @@ export async function notifyOrderPaid(
         status: true,
         subtotal: true,
         discountAmount: true,
+        bundleDiscountAmount: true,
         promoCode: true,
         vatAmount: true,
         total: true,
@@ -199,6 +200,8 @@ export async function notifyOrderPaid(
         ...(Number(order.discountAmount) > 0
           ? { discountAmount: Number(order.discountAmount), promoCode: order.promoCode ?? '' }
           : {}),
+        // A bundle's discount, already off the subtotal (DEV-62).
+        ...(Number(order.bundleDiscountAmount) > 0 ? { bundleDiscountAmount: Number(order.bundleDiscountAmount) } : {}),
         vatAmount: Number(order.vatAmount),
         total: Number(order.total),
         currency: order.currency,

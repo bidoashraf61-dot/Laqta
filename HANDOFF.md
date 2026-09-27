@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-64 done — every visitor-facing word editable from admin)_
+_Last updated: 2026-09-27 (DEV-62 done — album bundles, discount paid by Laqta)_
 
 ---
 
@@ -428,14 +428,35 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   in two groups, button cap, plural `{count}` kept). All 28 gates green on a
   production build.
 
-## 25. Where to pick up
+## 25. Session — 2026-09-27 (DEV-62)
 
-DEV-64 is finished. **DEV-62 (bundles)** still waits on the owner: does Laqta
-cover a bundle discount from its share, or is it shared with creators
-pro-rata? Otherwise pick from `checklists/` — the ⛔ tasks with no
-dependency are DEV-20 (AI vs filmed wording, «4K» claims), DEV-33 (English
-pages indexed separately), DEV-39 (page speed). Many ⛔ tasks wait on the
-owner's accounts (BIZ-02/03/04/06/07/13).
+- **Owner decision:** a bundle's discount is paid **from Laqta's share**; every
+  creator earns what their album earns sold alone.
+- **DEV-62 done — bundles.** «الحزم» in the admin Money menu:
+  `/admin/bundles` (list, five states incl. «غير متاحة»), `/admin/bundles/new`
+  and `/[id]` (pick 2–12 live albums, % off or one fixed price, dates; a live
+  panel shows per album what the buyer pays / the creator gets / Laqta keeps).
+  Public `/bundles/[slug]` with «اشترِ الحزمة» (→ `/cart/add?bundle=`), a
+  «ضمن حزمة» line on album pages, «توفير الحزمة» in cart and checkout,
+  «خصم الحزمة» in the receipt email.
+- **Rules:** the bundle price applies automatically when every album of a
+  running bundle is in the order (biggest saving wins between overlapping
+  bundles). **Ceiling:** no album's discount may exceed Laqta's commission on
+  it (20–35%) — refused at save, skipped at checkout. Promo codes apply only to
+  albums outside a bundle.
+- **Money:** a bundled `OrderItem` has `bundleId`, `discountAmount` = its
+  share, `creatorNetAmount` = the stand-alone net, commission = paid − net
+  (`lib/bundles.ts`, `lib/bundle-pricing.ts`). `Order.bundleDiscountAmount`.
+  Migration `bundles`. A refund that empties a line now reverses exactly the
+  frozen amounts left (not rate × gross), so every line nets to zero.
+- New gate `npm run verify:bundles` (29 checks, in `npm run verify`).
+
+## 26. Where to pick up
+
+All owner-decision tasks in the portal list are answered. Next ⛔ tasks with
+no dependency: DEV-20 (AI vs filmed wording, blanket «4K» claims), DEV-33
+(English pages indexed on their own), DEV-39 (page speed). Many ⛔ tasks wait
+on the owner's accounts (BIZ-02/03/04/06/07/13).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

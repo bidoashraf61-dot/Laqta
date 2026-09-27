@@ -259,7 +259,22 @@ export async function refundOrderItem({
 
   // THE frozen rate.
   const frozenRate = Number(item.commissionRate)
-  const { commissionReversed, creatorNetReversed } = reverseCommission({ refundGross, frozenRate })
+  let { commissionReversed, creatorNetReversed } = reverseCommission({ refundGross, frozenRate })
+
+  // The refund that empties the line reverses exactly what is left of the
+  // frozen amounts, so a line always nets to zero. The rate is stored to four
+  // places; on a bundled line (DEV-62) it is derived from the amounts, and
+  // rate × gross could land a cent off the creator's frozen net.
+  const closesLine = Math.round((Number(item.refundedAmount) + refundGross) * 100) >= Math.round(gross * 100)
+  if (closesLine) {
+    const before = await db.refundLine.aggregate({
+      where: { orderItemId: item.id },
+      _sum: { commissionReversed: true, creatorNetReversed: true },
+    })
+    const cents = (value: number) => Math.round(value * 100) / 100
+    commissionReversed = cents(Number(item.commissionAmount) - Number(before._sum.commissionReversed ?? 0))
+    creatorNetReversed = cents(Number(item.creatorNetAmount) - Number(before._sum.creatorNetReversed ?? 0))
+  }
 
   const vatShare = Number(item.vatAmount) * (refundGross / gross)
   const isPartial = refundGross < gross

@@ -109,6 +109,8 @@ const ROUTES = [
   '/admin/orders',
   '/admin/payouts',
   '/admin/promos',
+  '/admin/content',
+  '/admin/content/terms',
   '/admin/reports',
   '/admin/settings',
 ]

@@ -17,36 +17,8 @@ import { readFileSync } from 'node:fs'
 import { db } from '../lib/db'
 import * as legal from '../content/legal'
 import type { DocumentSection } from '../components/layout/document-page'
-
-/**
- * Phrasing that only makes sense in a world with more than one licence.
- *
- * A NUMBER is required for the cap patterns. An earlier version matched the
- * bare phrase "view cap" and flagged the correct licence, whose English text
- * reads "with no view cap" — a check that fires on the negation of the thing
- * it is looking for is worse than no check.
- */
-const CONTRADICTIONS: Array<[RegExp, string]> = [
-  [/بحد أقصى[^.]{0,40}[\d٠-٩]/u, 'caps the number of views'],
-  [/(?:up to|maximum of)\s+[\d,.]+\s*(?:million\s*)?views/i, 'caps the number of views'],
-  [/الترخيص القياسي|standard licen[cs]e/i, 'names a "standard" tier'],
-  [/الترخيص الموسّع|extended licen[cs]e/i, 'names an "extended" tier'],
-]
-
-/**
- * Claims the copy has made and the product cannot back.
- *
- * The launch catalogue is AI-generated, so "real locations" and "permits
- * cleared" are false about it (specs/public/index.md). A price comparison names
- * a competitor by implication and cannot be substantiated. "Every use" is false
- * while the licence excludes reselling the clip itself.
- */
-const OVERCLAIMS: Array<[RegExp, string]> = [
-  [/بسعر لقطة (?:مفردة|واحدة)|أرخص ب|cheaper than|\d+\s*(?:×|x|times) cheaper/i, 'compares price'],
-  [/مواقع (?:سعودية )?حقيقية|actually shot|real locations/i, 'claims the footage was filmed on location'],
-  [/تصاريح موثّقة|permits (?:and locations )?cleared|documented clearance/i, 'claims permits were cleared'],
-  [/جميع الاستخدامات|every use\b|all uses\b/i, 'claims the licence covers every use'],
-]
+import { CONTRADICTIONS, OVERCLAIMS } from '../lib/copy-claims'
+import { DOCUMENT_KEYS, normaliseSections } from '../lib/editable-documents'
 
 type Tree = { [k: string]: string | Tree }
 const flatten = (tree: Tree, prefix = ''): Array<[string, string]> =>
@@ -54,6 +26,7 @@ const flatten = (tree: Tree, prefix = ''): Array<[string, string]> =>
     typeof v === 'string' ? [[prefix + k, v] as [string, string]] : flatten(v, `${prefix}${k}.`),
   )
 
+// The code defaults; the published versions from /admin/content are added in main().
 const DOCUMENTS: Record<string, DocumentSection[]> = {
   terms: legal.TERMS,
   privacy: legal.PRIVACY,
@@ -139,6 +112,19 @@ async function main() {
       ),
     ),
   ]
+  // DEV-64a: what the site actually shows may be a version the owner published
+  // from /admin/content. Publishing refuses these claims already; this is the
+  // net under that, and it catches a pattern added here after a publish.
+  for (const key of DOCUMENT_KEYS) {
+    const latest = await db.documentVersion.findFirst({ where: { docKey: key }, orderBy: { publishedAt: 'desc' } })
+    if (!latest) continue
+    normaliseSections(latest.sections).forEach((s, i) => {
+      for (const text of [s.heading, s.headingEn, ...s.body, ...(s.bodyEn ?? []), ...(s.list ?? []), ...(s.listEn ?? [])]) {
+        if (text) copy.push([`published.${key}.${i + 1}`, text])
+      }
+    })
+  }
+
   let honest = true
   for (const [key, text] of copy) {
     for (const [pattern, why] of [...CONTRADICTIONS, ...OVERCLAIMS]) {

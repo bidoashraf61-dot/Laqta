@@ -1,6 +1,6 @@
 # Spec D — Content control (admin as CMS)
 
-**Status** approved 2026-08-20, not built (checked 2026-09-26 — copy still lives in `messages/*.json` and `content/`) · **Order** fourth (A → C → B → D) · **Largest of the four**
+**Status** approved 2026-08-20; **phase 64a built 2026-09-27** (long-form pages — see below); 64b/64c not built, interface copy still lives in `messages/*.json` · **Order** fourth (A → C → B → D) · **Largest of the four**
 
 ## Purpose
 
@@ -85,6 +85,23 @@ override map is fetched **once** and cached with a tag:
 
 If the cache read fails, the JSON default renders. Copy is never a reason for a
 page to fail.
+
+### What 64a actually built (2026-09-27) — differs from this spec
+
+- **A dedicated `DocumentVersion` model, not `CmsEntry`.** A page is a list of sections
+  (heading, paragraphs, bullet list — each in Arabic and English); `CmsEntry` is a title
+  and one body, so storing sections there would have meant JSON inside a text column.
+  `CmsEntry` stays unused, left for blog/help.
+- **Append-only versions, no draft rows.** Publishing writes a row; the newest row is live;
+  a restore writes a copy. The unpublished draft lives in the editor (and the browser's
+  storage between visits), with a live preview that renders the real page component —
+  so there is no separate "preview the site with drafts applied" mode for documents.
+- **Publish-time gates** are `lib/editable-documents.ts#validateSections` (structure, lengths, no
+  HTML, no Arabic pasted into English) plus the banned-claim list from `verify:licence`,
+  now shared in `lib/copy-claims.ts`. No override: the owner rewords instead.
+- Admin routes: `/admin/content` (list) and `/admin/content/[key]` (editor) — not
+  `/admin/content/documents`; 64c's string editor will need its own route.
+- Specs: `specs/admin/admin-content.md`, `specs/admin/admin-content-key.md`.
 
 ### `CmsEntry` — connected, finally
 

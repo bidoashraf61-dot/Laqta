@@ -1506,6 +1506,29 @@ model CmsEntry {
   @@index([kind, status])
 }
 
+/// A published version of a long-form page — Terms, Privacy, Licences,
+/// Content policy, About, Contact (DEV-64a). Append-only: the latest row per
+/// `docKey` is what the site shows; no row at all means the text in
+/// `content/legal.ts`. A restore writes a NEW row, so the history is never
+/// rewritten and "these terms took effect on X" stays true for every version.
+/// A dedicated model rather than `CmsEntry`: a document is a list of sections
+/// (heading, paragraphs, list — in both languages), not a title and one body.
+model DocumentVersion {
+  id             String   @id @default(cuid())
+  /// 'terms' | 'privacy' | 'licences' | 'content-policy' | 'about' | 'contact'
+  docKey         String
+  /// DocumentSection[] — validated by lib/editable-documents.ts before it is written.
+  sections       Json
+  /// The owner's reason for the change, shown in the version history.
+  note           String?
+  /// Set when this row re-publishes an earlier version.
+  restoredFromId String?
+  publishedAt    DateTime @default(now())
+  publishedById  String?
+
+  @@index([docKey, publishedAt])
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Audit
 // ─────────────────────────────────────────────────────────────────────────────

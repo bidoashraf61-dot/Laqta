@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { formatDate, t } from '@/lib/i18n'
 import { PageTitle, Prose } from '@/components/ui/typography'
-import { pickLocalised } from '@/lib/locale'
+import { currentLocale } from '@/lib/locale'
+import { DocumentBody } from '@/components/layout/document-body'
 
 /**
  * The document surface.
@@ -62,32 +63,7 @@ export function DocumentPage({
         ) : null}
       </header>
 
-      <div className="max-w-[62ch] space-y-10">
-        {sections.map((section) => (
-          <section key={section.heading}>
-            <h2 className="font-subhead text-xl font-bold">
-              {pickLocalised(section.heading, section.headingEn)}
-            </h2>
-            {pickLocalised(section.body, section.bodyEn).map((paragraph) => (
-              <p key={paragraph} className="mt-3 font-serif leading-[1.9] text-foreground/85">
-                {paragraph}
-              </p>
-            ))}
-            {section.list ? (
-              <ul className="mt-4 space-y-2">
-                {pickLocalised(section.list, section.listEn).map((item) => (
-                  <li
-                    key={item}
-                    className="relative ps-5 font-serif leading-[1.9] text-foreground/85 before:absolute before:start-0 before:top-[0.85em] before:size-1.5 before:rounded-full before:bg-gold"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </section>
-        ))}
-      </div>
+      <DocumentBody sections={sections} locale={currentLocale()} className="max-w-[62ch]" />
 
       {footer ? <div className="mt-14 max-w-[62ch]">{footer}</div> : null}
     </article>

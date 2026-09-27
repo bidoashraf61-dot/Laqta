@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (end of session — DEV-61 done, DEV-64a next)_
+_Last updated: 2026-09-27 (DEV-64a done — long-form pages editable from admin; DEV-64b next)_
 
 ---
 
@@ -30,7 +30,7 @@ _Last updated: 2026-09-27 (end of session — DEV-61 done, DEV-64a next)_
 - **No refund copy anywhere public** — not a policy, not "no refunds".
 - Plain claims over metaphor (`docs/content/brand-voice-ar.md`).
 
-## 2. Current state (2026-09-26)
+## 2. Current state (2026-09-27)
 
 **Built and working locally (all verify gates green at last merge):**
 public catalogue + landing (hero cinematic, footage wall, trailers section),
@@ -40,7 +40,9 @@ free sample album, watermarked preview downloads, contact form, password
 reset, creator studio (albums, clip uploads with ffprobe, release scans,
 earnings, payouts), admin (review queue with enforced checklist, catalogue,
 orders, refunds, payouts + payout runs with bank/Wise/Payoneer exports,
-users + read-only view-as-user, price-band editor, taxonomy, reports),
+users + read-only view-as-user, price-band editor, taxonomy, reports,
+album offers / special prices / promo codes, and the page-text editor for
+Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a),
 English site under `/en`, transactional email outbox.
 
 **Built but switched off — waiting for the owner's accounts/keys:**
@@ -342,35 +344,57 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   audited `album.price.set`. Rules in `lib/album-price.ts`; checks in
   `verify:offers`.
 
-## 22. Where to pick up — DEV-64a (not started; owner closed the session 2026-09-27)
+## 22. Session — 2026-09-27 (DEV-64a)
 
-**Owner's order of work:** DEV-64a → 64b → 64c (every word editable). DEV-62
-(bundles) waits on the owner's decision: does Laqta cover a bundle discount
-from its share, or is it shared with creators pro-rata?
+- **DEV-64a done — the six long-form pages are editable from admin.**
+  «نصوص الصفحات» in the admin nav → `/admin/content` (list) →
+  `/admin/content/[key]` (editor): sections in Arabic with the English folded
+  under each, paragraphs separated by a blank line, lists one item per line;
+  live preview (the real page component) in either language; publish with a
+  note; version history with «فتح في المحرر» and «استرجاع» (also back to the
+  original text). Draft kept in the browser between visits; leaving with
+  unpublished changes asks first.
+- **Storage:** new `DocumentVersion` table (migration `document_versions`),
+  append-only; the newest row per page is live, a restore writes a copy. No row
+  = the text in `content/legal.ts`, which stays the default and the fallback.
+  Chosen over `CmsEntry` (recorded in the content-control design doc).
+  `lib/editable-documents.ts` (load / validate / publish / restore). ⚠️ Not
+  `lib/documents.ts` — that is the PDF renderer.
+- **Safety at publish:** Arabic heading and text required, length limits, no
+  HTML, no Arabic pasted into English fields, no lists on the contact guide,
+  and the banned-claim list (now shared in `lib/copy-claims.ts`) refused with
+  the section number. `verify:licence` also scans published versions.
+  New gate `npm run verify:documents` (in `npm run verify`, no server).
+- **Dashboard shell:** `<main>` changed from `overflow-y-auto` to
+  `overflow-x-clip` — the old value silently disabled every `position: sticky`
+  in the dashboards (needed for the editor's preview and publish bar). Audit
+  clean at both widths on every route.
+- Public pages print the live version's publish date as «يسري من».
+- Gates: all green on a production build except the known intermittent
+  `verify:flows` "uploaded clip reaches «جاهزة»" (failed with and without this
+  change).
+- **Found this session:** the local database was empty (no users, albums or
+  licences) — reseeded with `npm run db:seed`. After seeding,
+  `verify:licence` failed with "2 album(s) have no licence" until
+  `npm run repair:licences` ran: **the seed creates two albums without a
+  licence** — a seed bug worth fixing before DEV-47 (production seed).
+- Testing tip: a second dev server in this folder must be started with
+  `AUTH_URL=http://localhost:<port>`, or the middleware rewrites every request
+  to :3000 (`.claude/launch.json` has `laqta-3001`).
 
-**DEV-64a plan (legal & long-form pages editable from admin):**
-- Today: Terms, Privacy, Licences, Content policy, About, Contact are
-  `DocumentSection[]` constants in `content/legal.ts` (type in
-  `components/layout/document-page.tsx`: heading/headingEn, body/bodyEn[],
-  list/listEn[]); pages under `app/(public)/{terms,privacy,licences,
-  content-policy,about,contact}` import them; one `EFFECTIVE_FROM` for all.
-- Design doc: `docs/decisions/2026-08-20-content-control-design.md` — code
-  stays the default layer; published DB versions override; previous versions
-  stay readable ("these terms took effect on X"). It suggests `CmsEntry`
-  (kind `legal`, exists, unused) — a dedicated versioned model
-  (e.g. `DocumentVersion { docKey, sections Json, publishedAt, publishedBy,
-  note }`) fits the sections shape better; decide and record it.
-- Build: `lib/documents.ts#loadDocument(key)` (latest published version or the
-  code default; validated shape); pages read it and show that version's
-  effective date; `/admin/content` list + `/admin/content/[key]` editor
-  (sections AR/EN, paragraphs, lists, add/remove/reorder, live preview,
-  publish with note, version history with «استرجاع»); admin nav link.
-- Safety: Arabic required (English falls back), no empty section, and the
-  banned-claim patterns in `scripts/verify-licence.ts` (CONTRADICTIONS /
-  OVERCLAIMS) moved to a shared lib and enforced at publish; `verify:licence`
-  must also scan published DB versions. New gate for load/publish/restore.
-- Hard rules: Impeccable for the new admin UI, spec per new route
-  (`specs/admin/`), update `specs/admin/README.md`.
+## 23. Where to pick up — DEV-64b
+
+**Owner's order of work:** DEV-64b (landing, `/sell`, FAQ, emails editable)
+→ 64c (every interface string). DEV-62 (bundles) still waits on the owner's
+decision: does Laqta cover a bundle discount from its share, or is it shared
+with creators pro-rata?
+
+**DEV-64b notes:** that copy lives in `messages/*.json` (keys `landing.*`,
+`sell.*`, FAQ) and `emails/`. The design doc's `CopyOverride` layer
+(override → JSON default, one cached map, checked through `translate()`) fits
+here; placeholders (`{count}`) must survive an edit. Reuse
+`lib/copy-claims.ts` at publish, and the `/admin/content` list as the home for
+a new "Copy" section.
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

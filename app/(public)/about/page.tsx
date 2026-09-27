@@ -1,6 +1,6 @@
 import { Link } from '@/components/ui/link'
 import { DocumentPage } from '@/components/layout/document-page'
-import { ABOUT } from '@/content/legal'
+import { loadDocument } from '@/lib/editable-documents'
 import { t } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
@@ -28,12 +28,14 @@ export default async function AboutPage() {
   // out English and the body Arabic. Each segment resolves it itself, and the
   // call is a cached header read plus an idempotent write.
   await requestLocale()
+  // The published version from /admin/content, else the text in content/legal.ts.
+  const document = await loadDocument('about')
 
   return (
     <DocumentPage
       title={t('footer.about')}
       summary={t('brand.promise')}
-      sections={ABOUT}
+      sections={document.sections}
       footer={
         <p className="text-sm text-muted-foreground">
           {t('legal.questions')}{' '}

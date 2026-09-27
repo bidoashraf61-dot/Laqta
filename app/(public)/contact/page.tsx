@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { ContactForm } from '@/components/contact/contact-form'
 import { Headline, Prose } from '@/components/ui/typography'
-import { CONTACT } from '@/content/legal'
+import { loadDocument } from '@/lib/editable-documents'
+import { DocumentBody } from '@/components/layout/document-body'
 import { CONTACT_TOPICS, contactChannels, displayWhatsapp } from '@/content/contact'
 import { t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
-import { localeAlternates, pickLocalised } from '@/lib/locale'
+import { currentLocale, localeAlternates, pickLocalised } from '@/lib/locale'
 
 export async function generateMetadata(): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
@@ -34,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * prose) is the site standard. The direct lines sit in the head, not in a
  * sidebar, because on a phone WhatsApp is the fastest route and must be above
  * the form, not three screens below it. The guidance is the old document copy
- * (CONTACT in content/legal.ts), now read beside the form it describes.
+ * (CONTACT in content/legal.ts, editable at /admin/content/contact), now read beside the form it describes.
  */
 export default async function ContactPage({
   searchParams,
@@ -54,6 +55,9 @@ export default async function ContactPage({
   // Only a known topic preselects; anything else leaves the select blank.
   const { topic } = await searchParams
   const initialTopic = (CONTACT_TOPICS as readonly string[]).includes(topic ?? '') ? topic! : ''
+
+  // The guide beside the form — published from /admin/content, else content/legal.ts.
+  const guide = await loadDocument('contact')
 
   const { whatsapp, email, company } = contactChannels()
   const companyName = pickLocalised(company.nameAr, company.nameEn || null)
@@ -119,20 +123,7 @@ export default async function ContactPage({
           <h2 id="contact-guide" className="font-subhead text-xl font-bold">
             {t('contact.guideTitle')}
           </h2>
-          <div className="mt-6 space-y-7">
-            {CONTACT.map((section) => (
-              <section key={section.heading}>
-                <h3 className="font-sans text-base font-medium">
-                  {pickLocalised(section.heading, section.headingEn)}
-                </h3>
-                {pickLocalised(section.body, section.bodyEn).map((paragraph) => (
-                  <p key={paragraph} className="mt-1.5 font-serif leading-[1.85] text-foreground/75">
-                    {paragraph}
-                  </p>
-                ))}
-              </section>
-            ))}
-          </div>
+          <DocumentBody sections={guide.sections} locale={currentLocale()} variant="guide" className="mt-6" />
         </aside>
       </div>
 

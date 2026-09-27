@@ -316,7 +316,7 @@ async function main() {
 
         // DEV-12: every title in one form.
         await page.getByRole('button', { name: 'تعديل كل العناوين' }).click()
-        const en = page.locator('input[dir="ltr"]').first()
+        const en = page.locator('form[data-bulk-titles] input[dir="ltr"]').first()
         await en.fill('Dunes at sunset')
         await page.getByRole('button', { name: 'حفظ العناوين' }).click()
         await page.getByRole('button', { name: 'تعديل كل العناوين' }).waitFor({ timeout: 10_000 }).catch(() => {})

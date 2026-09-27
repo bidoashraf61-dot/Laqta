@@ -306,6 +306,22 @@ async function main() {
         await page.getByText('كثبان عند الغروب').first().waitFor({ timeout: 10_000 }).catch(() => {})
         const renamed = await db.clip.findFirst({ where: { albumId: album.id }, select: { titleAr: true } })
         report('renaming a clip lands', renamed?.titleAr === 'كثبان عند الغروب')
+
+        // DEV-10: who is in the shot, from the clip menu.
+        await page.getByRole('button', { name: 'المزيد' }).first().click()
+        await page.getByRole('menuitemcheckbox', { name: 'وجوه واضحة' }).click()
+        await page.getByText('تحتاج تصريح نموذج', { exact: false }).first().waitFor({ timeout: 10_000 }).catch(() => {})
+        const flagged = await db.clip.findFirst({ where: { albumId: album.id }, select: { hasPeople: true, identifiableFaces: true } })
+        report('marking clear faces sets faces AND people', flagged?.identifiableFaces === true && flagged?.hasPeople === true)
+
+        // DEV-12: every title in one form.
+        await page.getByRole('button', { name: 'تعديل كل العناوين' }).click()
+        const en = page.locator('input[dir="ltr"]').first()
+        await en.fill('Dunes at sunset')
+        await page.getByRole('button', { name: 'حفظ العناوين' }).click()
+        await page.getByRole('button', { name: 'تعديل كل العناوين' }).waitFor({ timeout: 10_000 }).catch(() => {})
+        const bulk = await db.clip.findFirst({ where: { albumId: album.id }, select: { titleEn: true } })
+        report('the bulk title form saves', bulk?.titleEn === 'Dunes at sunset', String(bulk?.titleEn))
         report('no errors on the upload flow', errors.length === 0, errors.slice(0, 2).join(' | '))
 
         await page.goto(`${BASE}/studio/releases`, { waitUntil: 'networkidle' })
@@ -318,12 +334,26 @@ async function main() {
 
         const adminOpen = await adminContext.request.get(`${BASE}/api/studio/releases/${release.id}/document`, { maxRedirects: 0 })
         report('an admin opens the scan through the private route', [200, 302].includes(adminOpen.status()), String(adminOpen.status()))
+
+        // DEV-19: the reviewer verifies the release from the review page.
+        if (clip) await db.releaseClip.create({ data: { releaseId: release.id, clipId: clip.id } })
+        const task = await db.reviewTask.create({ data: { albumId: album.id, status: 'in_progress' } })
+        const reviewPage = await adminContext.newPage()
+        await reviewPage.goto(`${BASE}/admin/review/${task.id}`, { waitUntil: 'networkidle' })
+        await reviewPage.getByRole('button', { name: 'اعتماد', exact: true }).first().click()
+        await reviewPage.getByText('اعتُمد التصريح.').first().waitFor({ timeout: 10_000 }).catch(() => {})
+        const decided = await db.release.findUnique({ where: { id: release.id }, select: { verification: true, verifiedAt: true } })
+        report('an admin verifies a release from the review page', decided?.verification === 'verified' && Boolean(decided?.verifiedAt), String(decided?.verification))
+        await reviewPage.close()
+        await db.reviewTask.delete({ where: { id: task.id } }).catch(() => {})
       } finally {
         const clips = await db.clip.findMany({ where: { albumId: album.id } })
         const page = await creatorContext.newPage()
         for (const clip of clips) {
           await page.request.delete(`${BASE}/api/studio/uploads/${clip.id}`).catch(() => {})
         }
+        // A verified release's scan cannot be removed (by design) — reopen it first.
+        await db.release.update({ where: { id: release.id }, data: { verification: 'pending' } }).catch(() => {})
         await page.request.delete(`${BASE}/api/studio/releases/${release.id}/document`).catch(() => {})
         await page.close()
         await db.release.delete({ where: { id: release.id } }).catch(() => {})

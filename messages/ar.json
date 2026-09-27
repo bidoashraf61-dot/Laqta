@@ -504,7 +504,16 @@
     "proposedPriceInvalid": "السعر المقترح بين {min} و{max} دولار.",
     "proposingBlocksApprove": "فيه سعر مقترح مكتوب، فالاعتماد معطّل. أرسله مع «طلب تعديل»، أو امسحه لتعتمد بسعر الصانع.",
     "gateUndecided": "كل فحص لازم يُحسم قبل الاعتماد.",
-    "gateBlocking": "فحص إلزامي راسب: {labels}."
+    "gateBlocking": "فحص إلزامي راسب: {labels}.",
+    "releaseVerify": "اعتماد",
+    "releaseReject": "رفض",
+    "releaseRejectReason": "سبب الرفض — يقرؤه صانع المحتوى",
+    "releaseRejectConfirm": "تأكيد الرفض",
+    "releaseRejectedBecause": "سبب الرفض:",
+    "releaseVerified": "اعتُمد التصريح.",
+    "releaseRejected": "رُفض التصريح، ويظهر السبب لصانع المحتوى.",
+    "releaseNeedsDocument": "ما يُعتمد تصريح بلا نسخة من المستند.",
+    "releaseReasonRequired": "اكتب سبب الرفض."
   },
   "cart": {
     "title": "سلتك",

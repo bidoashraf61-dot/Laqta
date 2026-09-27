@@ -31,7 +31,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [ ] **DEV-16** ⛔ **Test site online** + upload one real multi-GB 4K master through S3 → processing → review → approval — 🤝 · 1 day · *needs DEV-14, DEV-15*
 - [x] **DEV-17** AI-accuracy check added to the review checklist (warped buildings, garbled Arabic text, wrong dress, morphing, flicker) + translate the checklist to Arabic — 🤖 · 3 hrs — done 2026-09-27 (ninth check «دقة الذكاء الاصطناعي», blocking, «لا ينطبق» for filmed albums; every check's name, reason and prompts now Arabic from the dictionary; approval refusals read in Arabic; unit tests for the check and the copy)
 - [ ] **DEV-18** Duplicate detection: compute the perceptual hash during processing — 🤖 · ½ day
-- [ ] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs
+- [x] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs — done 2026-09-27 («اعتماد» / «رفض» per release on the review page; verify needs the scan, reject needs a reason the creator reads; audited; `verify:flows` verifies one)
 
 ## Owner controls — requested 2026-09-27 (owner picks the timing)
 

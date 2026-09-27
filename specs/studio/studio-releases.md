@@ -32,7 +32,7 @@ There is still no edit and no delete for a release itself — only for its scan.
 - **No releases** — `EmptyState` (`dash.noReleases`); the create panel stays.
 - **No linkable clips** — `ReleaseLinker` renders `dash.noLinkableClips` instead of the disclosure.
 - **Rejected release** — `rejectionReason` renders in a destructive alert on the card.
-- **Verification badge** — `pending` / `verified` / `rejected` via `StatusBadge domain="release"`; only a reviewer can move it, never this page.
+- **Verification badge** — `pending` / `verified` / `rejected` via `StatusBadge domain="release"`; only a reviewer can move it, never this page — with «اعتماد» / «رفض» on `/admin/review/[id]` (DEV-19); a rejection's reason shows here.
 - **No scan** — the card's «المستند» strip shows «إرفاق المستند» and «لم يُرفق المستند بعد. المراجع لا يعتمد تصريحاً بلا نسخة منه.» with the accepted formats (`PDF · JPG · PNG`, isolated) and the cap.
 - **Scan attached** — file name (link) and size, with «استبدال» and «إزالة».
 - **Verified** — the scan shows without controls, and «اعتُمد هذا التصريح، فلا يُستبدل مستنده.»; the route refuses PUT/DELETE with `verified` too.
@@ -49,4 +49,4 @@ There is still no edit and no delete for a release itself — only for its scan.
 - A scan is never public: private storage (`documents/` in the masters bucket, or `.documents/` locally), opened only through the authenticated route, refused by `mediaUrl()`.
 
 ## Verified by
-`verify:arabic`, `audit`. `verify:flows` attaches a PDF through a fixture release's card and has an admin open it through the private route; `verify:uploads` covers the type/size/ownership/verified rules and that the scan is never under `public/`. The linker and the create form are not exercised by `verify:flows`.
+`verify:arabic`, `audit`. `verify:flows` attaches a PDF through a fixture release's card, has an admin open it through the private route, then verify it from the review page (DEV-19); `verify:uploads` covers the type/size/ownership/verified rules and that the scan is never under `public/`. The linker and the create form are not exercised by `verify:flows`.

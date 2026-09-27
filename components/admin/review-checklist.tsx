@@ -78,7 +78,7 @@ export function ReviewChecklist({
       setError(null)
       const result = await submitReview({ taskId, checklist, decision, note, price, proposedPrice })
       if (!result.ok) {
-        setError(result.detail ?? t(result.messageKey))
+        setError(result.detail ?? t(result.messageKey, 'vars' in result ? result.vars : undefined))
         return
       }
       toast.success(t(result.messageKey))

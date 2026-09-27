@@ -21,7 +21,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [x] **DEV-08** ⛔ Album details form (creator + admin): AI-generated/filmed, orientation, location, category, time of day, tags, permits declaration. **Plus (owner, 2026-09-27): resolution (720p/1080p/4K), footage type (AI live action / AI 3D / AI 2D / filmed), quality self-rating, a live price calculator and the creator's recommended price.** Fix `/sell` copy that promises it. — 🤖 · 2 days · *needs D1* — done 2026-09-27 (details form + calculator on `/studio/albums/[id]`, editable by admin on `/admin/review/[id]`; submission requires it; `verify:pricing`)
 - [x] **DEV-09** ⛔ Price control: admin sets the album price at approval; creators stop choosing a band. Re-cut price bands to 30–70 clips. Fix `/sell` FAQ + studio hint. — 🤖 · 1 day · *needs D4* — done 2026-09-27 ($49–$249 at approval; bands 30–39 $79 · 40–49 $119 · 50–59 $159 · 60–70 $199 as suggestions; `verify:pricing`)
 - [x] **DEV-09b** ⛔ Price in the review round: approving the album approves its price (built); «طلب تعديل» can carry the owner's proposed price with the feedback; the creator sees both in the studio, updates the details (recommended price pre-filled with the proposal) and resubmits. No separate price-acceptance step (owner, 2026-09-27). Approve then sells at the creator's recommended price — a different price goes back as a proposal, not straight live — 🤖 · ½–1 day — done 2026-09-27 (`ReviewTask.proposedPrice`; approve sells at the recommendation; proposal disables approve; `verify:pricing`)
-- [ ] **DEV-09c** Owner can edit the price-calculator multipliers in admin — 🤖 · ½ day
+- [x] **DEV-09c** Owner controls the price calculator from admin — done 2026-09-27: dropdowns only (owner): importance grade low/medium/high for resolution, footage type and quality; price limits $29/$49/$69 – $199/$249/$299; creator margin ±10/15/20%; live example; audited
 - [ ] **DEV-10** Releases can link to any clip; per-clip "shows people / faces" toggle — 🤖 · ½ day
 - [ ] **DEV-11** 2FA required for creators before they reach the studio — 🤖 · ½ day
 - [ ] **DEV-12** Bulk edit of clip titles (today each defaults to the file name) — 🤖 · 1 day
@@ -33,7 +33,23 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [ ] **DEV-18** Duplicate detection: compute the perceptual hash during processing — 🤖 · ½ day
 - [ ] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs
 
-## M4 — Content, SEO and blog · by 14 Nov
+## Owner controls — requested 2026-09-27 (owner picks the timing)
+
+The owner wants full control from the admin dashboard. What exists today: albums can
+*show* a crossed-out price and offer label, but nothing in admin sets them; promo codes
+can be created but checkout ignores them; there are no bundles, no way to change a live
+album's price, and no way to edit site wording without a developer.
+
+- [ ] **DEV-60** Album offers: on `/admin/catalogue`, put any live album on offer — a sale price, a label (AR/EN) and start/end dates — and remove it; an «العروض» list of what is on offer now and next. Buyers already see offers on cards; checkout charges the sale price inside the dates. Creator share is on the price actually paid — 🤖 · 1 day
+- [ ] **DEV-61** Special price: the owner can set any live album's regular price by hand (any amount, outside the calculator), audited; past orders keep what they paid — 🤖 · ½ day
+- [ ] **DEV-62** Bundles: the owner builds a bundle of albums with a bundle price (or % off) and dates; a public bundle page and «اشترِ الحزمة» in the cart; the discount is split across the albums pro-rata so each creator's share and each licence stay correct — 🤖 · 2–3 days · *needs owner decision: bundle discount paid by Laqta or shared with creators*
+- [ ] **DEV-63** ⛔ Promo codes that work: a code field at checkout that applies `/admin/promos` codes (window, cap, minimum, album limits), counts redemptions, and pays creators on the discounted price — today codes are created but never applied — 🤖 · 1 day
+- [ ] **DEV-64** Every word editable from admin (content-control design, `docs/decisions/2026-08-20-content-control-design.md`), in three phases with preview, both languages and revert — 🤖 · 6–8 days total
+  - **64a** Legal and long-form pages (Terms, Privacy, Licences, Content policy, About, Contact) — 2 days
+  - **64b** Landing, `/sell` and marketing copy, FAQ, emails — 2 days
+  - **64c** Every remaining interface string (~1,600 lines), with checks that an edit cannot blank a label, overflow its box or break Arabic direction — 2–3 days
+
+
 
 ### Site copy (🤖 writes, 🧑 approves)
 - [ ] **DEV-20** ⛔ Review every «تصوير» / ص-و-ر form and "filmed/shot" wording (~25 places: origin badge «تصوير حقيقي», landing, `/sell`, studio, legal pages, meta keywords). **D1/D3 answered: AI + filmed**, so keep «تصوير» where it describes filmed footage; fix only places that call generated footage filmed or say the catalogue is AI-only. Remove blanket «4K» claims (D5: resolution stated per album) — 🤖 · ½ day

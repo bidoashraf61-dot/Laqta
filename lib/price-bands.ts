@@ -5,8 +5,8 @@ import { MAX_ALBUM_CLIPS, MIN_ALBUM_CLIPS } from '@/lib/studio'
  * Price bands — a GUIDE, not a rule (DEV-09, decision D4).
  *
  * ── Who sets an album's price ───────────────────────────────────────────────
- * The operator, at approval (`lib/admin.decideReview`), anywhere from
- * `PRICE_MIN_USD` to `PRICE_MAX_USD`. A creator never chooses a price or a
+ * The operator, at approval (`lib/admin.decideReview`), inside the price range
+ * set on /admin/catalogue (`lib/pricing-config.ts`, default $49–$249). A creator never chooses a price or a
  * band: a new album is created UNPRICED (`priceStandard = 0`), and checkout
  * refuses an unpriced album. The band whose clip range holds the album's
  * count is only the SUGGESTION pre-filled on the review page.
@@ -29,19 +29,8 @@ export const ALBUM_TIERS: AlbumTier[] = ['mini', 'standard', 'pro', 'signature']
 
 // Pure, and needed by the client-side calculator — defined there so that
 // importing them never drags this module's server imports into a bundle.
-import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount } from '@/lib/price-calculator'
-export { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount }
-
-/** A price the operator may approve at: in range, whole cents. Else null. */
-export function parseAlbumPrice(raw: unknown): number | null {
-  const value = typeof raw === 'number' ? raw : Number(String(raw ?? '').trim())
-  if (!Number.isFinite(value)) return null
-  if (value < PRICE_MIN_USD || value > PRICE_MAX_USD) return null
-  if (Math.round(value * 100) !== value * 100) return null
-  return value
-}
-
-
+import { bandForCount, parseAlbumPrice, type PricingConfig } from '@/lib/price-calculator'
+export { bandForCount, parseAlbumPrice }
 
 export type BandInput = {
   id?: string
@@ -65,7 +54,7 @@ export type BandError =
   | { key: 'dash.bandLabelRequired' }
   | { key: 'dash.bandCountsInvalid' }
   | { key: 'dash.bandMinMax' }
-  | { key: 'dash.bandPriceRange' }
+  | { key: 'dash.bandPriceRange'; vars: { min: number; max: number } }
   | { key: 'dash.bandTierTaken' }
   | { key: 'state.error' }
   | { key: 'dash.bandOverlap'; vars: { label: string } }
@@ -78,7 +67,11 @@ function overlaps(a: { minClips: number; maxClips: number | null }, b: { minClip
 }
 
 /** Validate a band against the others. Returns the first problem, or null. */
-export function validateBand(input: BandInput, others: BandRow[]): BandError | null {
+export function validateBand(
+  input: BandInput,
+  others: BandRow[],
+  range: Pick<PricingConfig, 'priceMin' | 'priceMax'>,
+): BandError | null {
   if (!(ALBUM_TIERS as string[]).includes(input.tier)) return { key: 'state.error' }
   if (!input.labelAr.trim() || !input.labelEn.trim()) return { key: 'dash.bandLabelRequired' }
   if (
@@ -90,8 +83,8 @@ export function validateBand(input: BandInput, others: BandRow[]): BandError | n
   }
   if (input.maxClips !== null && input.minClips > input.maxClips) return { key: 'dash.bandMinMax' }
   // A band is the suggestion for an album price, so it lives in the same range.
-  if (parseAlbumPrice(input.priceStandard) === null) {
-    return { key: 'dash.bandPriceRange' }
+  if (parseAlbumPrice(input.priceStandard, range) === null) {
+    return { key: 'dash.bandPriceRange', vars: { min: range.priceMin, max: range.priceMax } }
   }
 
   const rest = others.filter((band) => band.id !== input.id)

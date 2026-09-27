@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
 import { bandForCount, parseAlbumPrice } from '@/lib/price-bands'
+import { loadPricingConfig } from '@/lib/pricing-config'
 import { recordAudit } from '@/lib/audit'
 import { notifyAlbumDecision } from '@/lib/notifications'
 import { reverseCommission } from '@/lib/commission'
@@ -96,10 +97,16 @@ export async function decideReview(input: ReviewDecisionInput) {
 
   // A counter-price travels with the feedback (owner, 2026-09-27): only on
   // request-changes, optional, and in range when given.
+  const pricing = await loadPricingConfig()
   let proposedPrice: number | null = null
   if (input.decision === 'request_changes' && String(input.proposedPrice ?? '').trim() !== '') {
-    proposedPrice = parseAlbumPrice(input.proposedPrice)
-    if (proposedPrice === null) return { ok: false as const, messageKey: 'admin.proposedPriceInvalid' }
+    proposedPrice = parseAlbumPrice(input.proposedPrice, pricing)
+    if (proposedPrice === null)
+      return {
+        ok: false as const,
+        messageKey: 'admin.proposedPriceInvalid',
+        vars: { min: pricing.priceMin, max: pricing.priceMax },
+      }
   }
 
   const checklist = normaliseChecklist(input.checklist)
@@ -118,8 +125,14 @@ export async function decideReview(input: ReviewDecisionInput) {
     // the tier is only a record of which band the count fell in.
     price = parseAlbumPrice(
       task.album.recommendedPrice !== null ? Number(task.album.recommendedPrice) : input.price,
+      pricing,
     )
-    if (price === null) return { ok: false as const, messageKey: 'admin.priceRequired' }
+    if (price === null)
+      return {
+        ok: false as const,
+        messageKey: 'admin.priceRequired',
+        vars: { min: pricing.priceMin, max: pricing.priceMax },
+      }
     const bands = await db.priceBand.findMany({ select: { tier: true, minClips: true, maxClips: true } })
     tier = bandForCount(task.album.clipCount, bands)?.tier
     const gate = canApprove(checklist)

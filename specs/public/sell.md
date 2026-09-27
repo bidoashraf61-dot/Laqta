@@ -13,7 +13,7 @@ Recruit creators: lead with their revenue share, then answer the two objections 
 
 ## Pricing copy
 How-it-works step 2 (`sell.how2Body`) reads «ارفع اللقطات، وسمِّ الألبوم، واملأ تفاصيله: مولّدة أو مصوّرة، وموقعها وتصنيفها، وأرفق التصاريح.» — true since the album details form (DEV-08).
-The FAQ «مين يحدد السعر؟» answers «تحدّده لقطة عند المراجعة، بين ٤٩ و٢٤٩ دولاراً، مسترشدةً بعدد لقطات الألبوم وجودتها.» (`sell.faq3A`; EN "Laqta sets it at review, between $49 and $249, guided by the album's clip count and quality."). It must match `lib/price-bands.PRICE_MIN_USD` / `PRICE_MAX_USD` and the review page (DEV-09).
+The FAQ «مين يحدد السعر؟» answers «تحدّده لقطة عند المراجعة، بين {min} و{max} دولار، مسترشدةً بعدد لقطات الألبوم ودقته ونوعه وجودته.» (`sell.faq3A`), with `{min}`/`{max}` read from the owner's pricing settings (`lib/pricing-config`, DEV-09c) — the page cannot drift from the range the review page enforces.
 
 ## Controls
 

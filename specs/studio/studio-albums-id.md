@@ -52,9 +52,11 @@ even outside the range — by the save action and by the submission gate
 (`lib/album-details.latestProposal`).
 
 **Calculator** (owner, 2026-09-27): base from the band for the clip count (count clamped
-to 30–70) × resolution (720p 0.6 · 1080p 1.0 · 4K 1.3) × type (AI live action 1.0 · AI 3D
-0.9 · AI 2D 0.8 · filmed 1.25) × quality (standard 0.9 · good 1.0 · exceptional 1.15),
-clamped to $49–$249 and rounded to whole dollars; the recommendation range is ±15%.
+to 30–70) × resolution × type × quality, clamped to the price range and rounded to whole
+dollars; the recommendation range is ± the spread. Every number comes from the owner's dropdown
+choices on `/admin/catalogue` (DEV-09c, `lib/pricing-config.ts`) — defaults 720p 0.6 · 1080p 1.0 · 4K
+1.3; AI live action 1.0 · AI 3D 0.9 · AI 2D 0.8 · filmed 1.25; standard 0.9 · good 1.0 ·
+exceptional 1.15; $49–$249; ±15%. The form receives the live settings in `view.config`.
 
 ## Controls
 | Control | Action | Effect |

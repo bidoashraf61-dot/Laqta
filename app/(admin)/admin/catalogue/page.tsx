@@ -23,6 +23,8 @@ import { setAlbumStatus, toggleAlbumFeatured } from '@/app/(admin)/admin/actions
 import { formatMoney, formatNumber, t } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { BandEditor, type EditableBand } from '@/components/admin/band-editor'
+import { PricingSettings } from '@/components/admin/pricing-settings'
+import { loadPricingChoices } from '@/lib/pricing-config'
 import { ALBUM_TIERS, bandFit } from '@/lib/price-bands'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -81,6 +83,7 @@ export default async function AdminCataloguePage({
       : {}),
   }
 
+  const pricingChoices = await loadPricingChoices()
   const [albums, counts, bands] = await Promise.all([
     db.album.findMany({
       where,
@@ -285,6 +288,19 @@ export default async function AdminCataloguePage({
             <div className="mb-4" />
           )}
           <BandEditor bands={bandRows} freeTiers={freeTiers} />
+        </Panel>
+
+        {/* The rest of the price calculator (DEV-09c): range, spread and the
+            multipliers. The bands above are its clip-count bases. */}
+        <Panel title={t('dash.pricing.title')}>
+          <PricingSettings
+            choices={pricingChoices}
+            bands={bands.map((band) => ({
+              minClips: band.minClips,
+              maxClips: band.maxClips,
+              priceStandard: Number(band.priceStandard),
+            }))}
+          />
         </Panel>
       </div>
     </>

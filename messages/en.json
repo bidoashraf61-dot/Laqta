@@ -468,7 +468,7 @@
     "faq2Q": "Can I sell the same album elsewhere?",
     "faq2A": "Yes. Selling on Laqta is non-exclusive, as long as you hold the full rights. Exclusivity is an option that adds five points to your share.",
     "faq3Q": "Who sets the price?",
-    "faq3A": "Laqta sets it at review, between $49 and $249, guided by the album's clip count and quality.",
+    "faq3A": "Laqta sets it at review, between ${min} and ${max}, guided by the album's clip count, resolution, footage type and quality.",
     "faq4Q": "What if my album is turned down?",
     "faq4A": "You get a specific note on what needs changing, and the album comes back to you to edit and resubmit.",
     "albumRulesTitle": "What makes an album",
@@ -678,7 +678,28 @@
     "makeCreatorHandleInvalid": "The handle is 3 to 30 characters: lower-case letters, digits and hyphens.",
     "makeCreatorHandleTaken": "That handle is taken. Choose another.",
     "makeCreatorNamesRequired": "Enter the display name in Arabic and in English.",
-    "makeCreatorSuspended": "This account is suspended. Reactivate it first."
+    "makeCreatorSuspended": "This account is suspended. Reactivate it first.",
+    "pricing": {
+      "title": "Price calculator",
+      "hint": "The numbers behind every album's suggested price, alongside the band prices above. A change reaches the next calculation only: published albums keep their price and completed orders never change.",
+      "min": "Lowest album price",
+      "max": "Highest album price",
+      "spread": "Creator's recommendation margin",
+      "spreadHint": "How far the creator's price may sit from the suggestion, up or down.",
+      "example": "Example — 50 clips, 4K, AI live action, good quality:",
+      "exampleRange": "Creator recommends within:",
+      "save": "Save pricing settings",
+      "saved": "Pricing settings saved. They apply to the next calculation.",
+      "resolutionImportance": "Weight of resolution in the price",
+      "typeImportance": "Weight of footage type in the price",
+      "qualityImportance": "Weight of quality in the price",
+      "grade": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "invalid": "Choose from the lists only."
+    }
   },
   "account": {
     "profileTitle": "Your details",

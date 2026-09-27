@@ -1,4 +1,5 @@
 import { Link } from '@/components/ui/link'
+import { loadPricingConfig } from '@/lib/pricing-config'
 import { BadgeCheck, Coins, FileCheck2, Send, Upload } from 'lucide-react'
 import { db } from '@/lib/db'
 import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/commission'
@@ -82,10 +83,12 @@ export default async function SellPage() {
     { icon: Coins, title: t('sell.how4Title'), body: t('sell.how4Body') },
   ]
 
+  // The price range is the owner's setting (DEV-09c), not a constant in the copy.
+  const pricing = await loadPricingConfig()
   const faqs = [
     { q: t('sell.faq1Q'), a: t('sell.faq1A') },
     { q: t('sell.faq2Q'), a: t('sell.faq2A') },
-    { q: t('sell.faq3Q'), a: t('sell.faq3A') },
+    { q: t('sell.faq3Q'), a: t('sell.faq3A', { min: pricing.priceMin, max: pricing.priceMax }) },
     { q: t('sell.faq4Q'), a: t('sell.faq4A') },
   ]
 

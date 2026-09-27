@@ -16,7 +16,9 @@
 import { decideReview } from '../lib/admin'
 import { checkout } from '../lib/orders'
 import { CHECK_KEYS, type Checklist } from '../lib/review-checklist'
-import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount, parseAlbumPrice } from '../lib/price-bands'
+import { bandForCount, parseAlbumPrice } from '../lib/price-bands'
+import { DEFAULT_PRICING } from '../lib/price-calculator'
+import { DEFAULT_CHOICES, loadPricingConfig, parsePricingForm, toConfig } from '../lib/pricing-config'
 import { suggestPrice } from '../lib/price-calculator'
 import { loadBands, saveAlbumDetails } from '../lib/album-details'
 import { canSubmit } from '../lib/studio'
@@ -28,12 +30,25 @@ function report(label: string, ok: boolean, detail = '') {
   console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${label}${detail ? ` — ${detail}` : ''}`)
 }
 
+/** Order-insensitive comparison of two plain objects. */
+const same = (a: unknown, b: unknown): boolean => {
+  const sort = (value: unknown): unknown =>
+    value && typeof value === 'object'
+      ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, sort((value as Record<string, unknown>)[key])]))
+      : value
+  return JSON.stringify(sort(a)) === JSON.stringify(sort(b))
+}
+
 const allPass = Object.fromEntries(CHECK_KEYS.map((key) => [key, { state: 'pass' }])) as Checklist
 
 async function main() {
   console.log('Album pricing\n')
 
-  report('range is $49–$249', PRICE_MIN_USD === 49 && PRICE_MAX_USD === 249)
+  // The gate asserts the DEFAULT arithmetic, so it runs against defaults and
+  // puts the owner's saved settings back afterwards.
+  const savedSettings = await db.pricingSetting.findUnique({ where: { id: 'default' } })
+  await db.pricingSetting.deleteMany({ where: { id: 'default' } })
+  report('default range is $49–$249', DEFAULT_PRICING.priceMin === 49 && DEFAULT_PRICING.priceMax === 249)
   report('48.99 and 249.01 are refused', parseAlbumPrice('48.99') === null && parseAlbumPrice('249.01') === null)
   report('49 and 249 are accepted', parseAlbumPrice('49') === 49 && parseAlbumPrice(249) === 249)
   report('a third of a cent is refused', parseAlbumPrice('99.999') === null)
@@ -68,6 +83,28 @@ async function main() {
   report('a rich mix never goes above $249', ceiling?.price === 249, String(ceiling?.price))
   const early = suggestPrice({ clipCount: 5, resolution: 'hd1080', type: 'ai_live_action', quality: 'good', bands: calcBands })
   report('an album still uploading is priced as 30 clips', early?.price === 79, String(early?.price))
+
+  // ── The owner's settings (DEV-09c): dropdown grades, not typed numbers ────
+  report('the default choices are exactly the agreed numbers', same(toConfig(DEFAULT_CHOICES), DEFAULT_PRICING))
+  report('no saved settings → the defaults', same(await loadPricingConfig(), DEFAULT_PRICING))
+  await db.pricingSetting.create({ data: { id: 'default', config: { resolution: 'high', priceMin: 12, spread: 'x' } } })
+  const merged = await loadPricingConfig()
+  report(
+    'a saved grade applies, unknown values fall back',
+    merged.resolution.uhd4k === 1.5 && merged.priceMin === 49 && merged.spread === 0.15 && merged.type.filmed === 1.25,
+  )
+  const raised = suggestPrice({ clipCount: 50, resolution: 'uhd4k', type: 'ai_live_action', quality: 'good', bands: calcBands, config: merged })
+  report('the calculator follows the grade: resolution high → 4K ×1.5 → $239', raised?.price === 239, String(raised?.price))
+  const form = new FormData()
+  for (const [k, v] of Object.entries({ resolution: 'low', type: 'high', quality: 'medium', priceMin: '69', priceMax: '299', spread: '0.2' })) form.set(k, v)
+  const parsed = parsePricingForm(form)
+  report('the admin dropdowns parse', parsed.ok && parsed.choices.type === 'high' && parsed.choices.priceMax === 299)
+  form.set('priceMin', '50')
+  report('a value not in its dropdown is refused', !parsePricingForm(form).ok)
+  form.set('priceMin', '69'); form.set('type', 'extreme')
+  report('an unknown grade is refused', !parsePricingForm(form).ok)
+  report('a custom range moves what may be approved', parseAlbumPrice('280', { priceMin: 69, priceMax: 299 }) === 280 && parseAlbumPrice('60', { priceMin: 69, priceMax: 299 }) === null)
+  await db.pricingSetting.deleteMany({ where: { id: 'default' } })
 
   // A throwaway creator, album (45 clips, unpriced) and review task.
   const run = Date.now()
@@ -198,6 +235,8 @@ async function main() {
     await db.order.deleteMany({ where: { userId: buyer.id } })
     await db.reviewTask.deleteMany({ where: { albumId: album.id } })
     await db.album.delete({ where: { id: album.id } })
+    await db.pricingSetting.deleteMany({ where: { id: 'default' } })
+    if (savedSettings) await db.pricingSetting.create({ data: savedSettings as never })
     await db.reviewTask.deleteMany({ where: { albumId: draft.id } })
     await db.auditLog.deleteMany({ where: { entityId: draft.id } })
     await db.album.delete({ where: { id: draft.id } })

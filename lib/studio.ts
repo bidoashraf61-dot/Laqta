@@ -7,6 +7,7 @@ import { addBusinessDays } from '@/lib/utils'
 import { emptyChecklist } from '@/lib/review-checklist'
 import { columnsToType, suggestPrice } from '@/lib/price-calculator'
 import { latestProposal, loadBands } from '@/lib/album-details'
+import { loadPricingConfig } from '@/lib/pricing-config'
 
 /**
  * Creator-side operations.
@@ -122,6 +123,7 @@ export async function canSubmit(albumId: string): Promise<SubmitCheck> {
       type: columnsToType(album.origin, album.footageStyle),
       quality: album.qualityLevel,
       bands: await loadBands(),
+      config: await loadPricingConfig(),
     })
     const price = Number(album.recommendedPrice)
     const acceptsProposal = price === (await latestProposal(albumId))

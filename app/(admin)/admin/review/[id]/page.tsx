@@ -16,7 +16,8 @@ import { requestLocale } from '@/lib/locale-request'
 import { pickLocalised } from '@/lib/locale'
 import { mediaUrl } from '@/lib/media'
 import { hasDocument } from '@/lib/uploads'
-import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount } from '@/lib/price-bands'
+import { bandForCount } from '@/lib/price-bands'
+import { loadPricingConfig } from '@/lib/pricing-config'
 import { loadAlbumDetails } from '@/lib/album-details'
 import { AlbumDetailsForm } from '@/components/studio/album-details-form'
 import { adminSaveAlbumDetails } from '@/app/(admin)/admin/actions'
@@ -76,6 +77,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   })
   const band = bandForCount(task.album.clipCount, bands)
   const details = await loadAlbumDetails(task.album.id)
+  const pricing = await loadPricingConfig()
   // The creator's recommendation comes first (owner, 2026-09-27); the band is
   // the fallback for albums saved before the calculator existed.
   const recommended = task.album.recommendedPrice === null ? null : Number(task.album.recommendedPrice)
@@ -243,8 +245,8 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
         initial={checklist}
         price={{
           suggested: suggestedPrice,
-          min: PRICE_MIN_USD,
-          max: PRICE_MAX_USD,
+          min: pricing.priceMin,
+          max: pricing.priceMax,
           bandLabel: band ? pickLocalised(band.labelAr, band.labelEn) : null,
           recommended,
           recommendedNote: task.album.recommendedNote,

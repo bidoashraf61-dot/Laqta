@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
-import { formatDate, t } from '@/lib/i18n'
+import { countOf, formatDate, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
@@ -80,7 +80,7 @@ export default async function LibraryPage() {
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {t('commerce.byCreator', { creator: entry.album.creator.displayNameAr })} ·{' '}
-                  <span className="numeric">{entry.clips.length}</span> {t('library.clips')} ·{' '}
+                  {countOf('clip', entry.clips.length)} ·{' '}
                   {t('library.purchasedOn')}{' '}
                   <span className="numeric">{formatDate(entry.grantedAt)}</span>
                 </p>

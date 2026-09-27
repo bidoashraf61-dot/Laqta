@@ -10,7 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/state'
 import { Bilingual, UserText } from '@/components/ui/bilingual'
 import { ReviewChecklist } from '@/components/admin/review-checklist'
 import { BackLink } from '@/components/dashboard/primitives'
-import { formatMoney, t } from '@/lib/i18n'
+import { countOf, formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { requestLocale } from '@/lib/locale-request'
 import { pickLocalised } from '@/lib/locale'
@@ -107,7 +107,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
             {t('commerce.byCreator', { creator: task.album.creator.displayNameAr })}
           </UserText>{' '}
           · <span className="ltr-island">{task.album.creator.country}</span> ·{' '}
-          <span className="numeric">{task.album.clipCount}</span> {t('commerce.clip')}
+          {countOf('clip', task.album.clipCount)}
           {Number(task.album.priceStandard) > 0 ? (
             <>
               {' · '}

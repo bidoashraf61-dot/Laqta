@@ -48,7 +48,7 @@ requested ──approve──▶ approved ──create run──▶ processing �
 
 ## Layout
 1. Header + stat tiles (queued total, one tile per rail).
-2. **Run panel** «الدفعة الجارية» — a line saying how many approved payouts are ready (or
+2. **Run panel** «الدفعة الجارية» — a line saying how many approved payouts are ready, label-first so the number needs no agreement («طلبات معتمدة جاهزة للدفعة القادمة: {count}.»; the create/confirm/paid messages likewise — DEV-22) (or
    that none are), and the create button in the panel header. When a run is selected:
    label (LTR), run status badge, line count · total; **files** — three rail cells, each with
    «البنود» count, net total and «تنزيل الملف» (plain `<a download>`), or «لا تحويلات على هذه القناة»;

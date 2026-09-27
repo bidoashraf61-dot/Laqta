@@ -31,6 +31,7 @@ Read-only. A viewer cannot comment, approve, add to the board, or buy from this 
 - The board owner's name is fetched but not displayed.
 
 ## Invariants
+- The clip count under the title is `countOf('clip', n)`, in normal RTL flow (DEV-22).
 - Sits in the `(public)` group deliberately: requiring a client to sign up to view a shortlist kills the agency workflow.
 - Every clip still carries its album ribbon and price — the person viewing this is the person approving the spend.
 - Only clips from `live` albums are shown.

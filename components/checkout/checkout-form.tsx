@@ -17,9 +17,6 @@ import { formatMoneyIn } from '@/lib/i18n'
 const METHOD_LABEL: Record<PaymentMethod, string> = {
   card: 'checkout.methodCard',
   apple_pay: 'checkout.methodApplePay',
-  mada: 'checkout.methodMada',
-  tabby: 'checkout.methodTabby',
-  tamara: 'checkout.methodTamara',
   bank_transfer: 'checkout.methodBankTransfer',
 }
 
@@ -53,7 +50,6 @@ export function CheckoutForm({
 
   // Card and Apple Pay are paid on Paymob's hosted page; bank transfer is not.
   const hosted = method === 'card' || method === 'apple_pay'
-  const gatewayOffered = methods.some((option) => option === 'card' || option === 'apple_pay')
 
   function onSubmit(formData: FormData) {
     setError(null)
@@ -275,13 +271,9 @@ export function CheckoutForm({
         </div>
         <input type="hidden" name="method" value={method} />
 
-        {/* Said plainly rather than shown as a disabled button nobody can
-            explain. Card and Apple Pay appear once Paymob is configured. */}
-        {gatewayOffered ? null : (
-          <Alert variant="info">
-            <AlertDescription>{t('checkout.gatewayPending')}</AlertDescription>
-          </Alert>
-        )}
+        {/* No "card payment is being switched on" note (DEV-29): a checkout
+            states the methods it takes, not the ones it might take later.
+            Card and Apple Pay appear here once Paymob is configured. */}
 
         {/* The one thing a buyer should know before leaving the page. */}
         {hosted ? (

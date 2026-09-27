@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { SubmitButton } from '@/components/studio/submit-button'
 import { BackLink } from '@/components/dashboard/primitives'
-import { formatDate, formatMoney, t } from '@/lib/i18n'
+import { countOf, formatDate, formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
 import { specLabel } from '@/lib/spec-labels'
 import { requestLocale } from '@/lib/locale-request'
@@ -108,7 +108,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
           <Bilingual ar={album.titleAr} en={album.titleEn} />
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          <span className="numeric">{album.clipCount}</span> {t('commerce.clip')} ·{' '}
+          {countOf('clip', album.clipCount)} ·{' '}
           {/* Unpriced (0) until Laqta approves it — DEV-09. */}
           {Number(album.priceStandard) > 0 ? (
             <span className="numeric">

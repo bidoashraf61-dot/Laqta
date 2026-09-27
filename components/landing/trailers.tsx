@@ -1,7 +1,7 @@
 import { albumHref } from '@/components/catalogue/album-card'
 import { Headline, Prose, Section } from '@/components/ui/typography'
 import type { LandingTrailer } from '@/lib/catalogue'
-import { clipCount, formatMoney, t } from '@/lib/i18n'
+import { countOf, formatMoney, t } from '@/lib/i18n'
 import { pickLocalised } from '@/lib/locale'
 import { TrailerTheatre, type TheatreItem } from '@/components/landing/trailer-theatre'
 
@@ -33,7 +33,7 @@ export function Trailers({ trailers }: { trailers: LandingTrailer[] }) {
       href: albumHref(album),
       trailerKey: album.trailerKey,
       posterKey: album.coverKey,
-      clips: clipCount(album.clipCount),
+      clips: countOf('clip', album.clipCount),
       price: formatMoney(album.priceStandard, album.currency),
       videoLabel: t('media.trailerAlt', { album: title }),
     }

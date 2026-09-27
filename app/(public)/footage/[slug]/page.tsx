@@ -4,7 +4,7 @@ import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, MapPin } from 'lucide-react'
 import { db } from '@/lib/db'
-import { formatMoney, t } from '@/lib/i18n'
+import { countOf, formatMoney, t } from '@/lib/i18n'
 import { formatDuration, cn } from '@/lib/utils'
 import { specLabel } from '@/lib/spec-labels'
 import { Badge } from '@/components/ui/badge'
@@ -24,8 +24,7 @@ import { requestLocale } from '@/lib/locale-request'
 import { auth } from '@/lib/auth'
 import { previewDeliverable } from '@/lib/previews'
 import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 /**
  * Clip detail.
@@ -165,7 +164,7 @@ export default async function ClipPage({
 
   return (
     <div className="container-tight py-16">
-      <VideoJsonLd clip={clip} url={`${SITE_URL}${localePath(currentLocale(), `/footage/${slug}`)}`} />
+      <VideoJsonLd clip={clip} url={`${siteOrigin()}${localePath(currentLocale(), `/footage/${slug}`)}`} />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-6">
@@ -355,7 +354,7 @@ export default async function ClipPage({
               </Link>
 
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="numeric">{clip.album.clipCount}</span> {t('commerce.clip')}
+                {countOf('clip', clip.album.clipCount)}
                 {clip.album.clearedForCommercial ? (
                   <BadgeCheck className="size-4 text-success" />
                 ) : null}

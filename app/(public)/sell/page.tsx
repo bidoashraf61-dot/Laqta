@@ -6,7 +6,7 @@ import { TIER_RATES, TIER_THRESHOLDS_USD, EXCLUSIVE_BONUS_POINTS } from '@/lib/c
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Headline, Prose, Section } from '@/components/ui/typography'
-import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
+import { countOf, formatMoney, formatPercent, t } from '@/lib/i18n'
 import { FaqSchema } from '@/components/catalogue/faq-schema'
 import type { Metadata } from 'next'
 import { REVEAL } from '@/lib/motion'
@@ -112,9 +112,9 @@ export default async function SellPage() {
           </Button>
         </div>
         <p className="mt-6 text-sm text-muted-foreground">
-          <span className="numeric">{formatNumber(clips)}</span> {t('landing.trustClips')}
+          {countOf('clip', clips)}
           {' · '}
-          <span className="numeric">{formatNumber(creators)}</span> {t('landing.trustCreators')}
+          {countOf('creator', creators)}
         </p>
       </section>
 

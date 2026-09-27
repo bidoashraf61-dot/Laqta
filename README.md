@@ -24,6 +24,19 @@ npm run db:seed
 npm run dev                   # → http://localhost:3000 (Arabic), /en for English
 ```
 
+### The site origin (`SITE_ORIGIN` + `AUTH_URL`)
+
+Every absolute link the site writes — email links, `sitemap.xml`, `robots.txt`,
+canonical/hreflang/Open Graph tags, JSON-LD, the Paymob callback and return
+URLs, the email-verification link — comes from one function, `siteOrigin()` in
+`lib/site.ts`. It reads `SITE_ORIGIN`, then `AUTH_URL` (then `NEXTAUTH_URL`).
+
+**Set `SITE_ORIGIN` and `AUTH_URL` together, to the same public origin**
+(`https://<your domain>`, no trailing slash). If they differ the server logs a
+warning. In production, if neither is set, `npm run build` and the server stop
+with an error instead of writing links to localhost. Only in development does
+an unset origin fall back to `http://localhost:3000`.
+
 `npm run db:start` downloads a real Postgres binary into `node_modules` and runs
 it against `./.pgdata` (git-ignored). **Every parallel session should point at
 the same `DATABASE_URL`** so you are all developing against one catalogue.

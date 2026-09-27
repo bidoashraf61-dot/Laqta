@@ -27,6 +27,7 @@ Read-only.
 - Ordering exposes `lifetimeGmv` indirectly (highest-earning creator first) but the figure itself is never rendered.
 
 ## Invariants
+- Each card's album count is `countOf('album', n)` («ألبوم واحد», «٣ ألبومات», «١٥ ألبوماً») (DEV-22).
 - Only `status='approved'` creators appear, and only those with at least one live album.
 - No financial figure (`lifetimeGmv`, balances) is rendered on a public surface.
 

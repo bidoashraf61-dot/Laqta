@@ -2,7 +2,7 @@ import { Check } from 'lucide-react'
 import { Link } from '@/components/ui/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { formatMoney, t } from '@/lib/i18n'
+import { countLabel, formatMoney, t } from '@/lib/i18n'
 
 /**
  * The buy panel — price, what the licence covers, and the button.
@@ -64,7 +64,7 @@ export function LicencePicker({
         */}
         <p className="flex items-baseline gap-1.5 border-b pb-4 text-sm text-muted-foreground">
           <span className="numeric text-xl font-bold text-foreground">{clipCount}</span>
-          {t('catalogue.shotsIncluded')}
+          {countLabel('clip', clipCount)} {t('catalogue.shotsIncluded')}
         </p>
 
         {/* What the one licence actually grants. Stated as facts rather than

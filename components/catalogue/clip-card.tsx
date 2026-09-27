@@ -12,7 +12,7 @@ import { HoverPreview } from '@/components/catalogue/hover-preview'
 
 import { Anchor } from '@/components/ui/link'
 import { REVEAL, revealDelay } from '@/lib/motion'
-import { useMoney, usePick, useT } from '@/lib/i18n-client'
+import { useCount, useMoney, usePick, useT } from '@/lib/i18n-client'
 
 /**
  * The clip card — and the album ribbon underneath it.
@@ -52,6 +52,7 @@ export function ClipCard({
    * infinite.
    */
   const t = useT()
+  const count = useCount()
   const money = useMoney()
   const pick = usePick()
 
@@ -112,7 +113,7 @@ export function ClipCard({
             {money(clip.album.priceStandard, clip.album.currency)}
           </span>
           <span className="text-muted-foreground">
-            · <span className="numeric">{clip.album.clipCount}</span> {t('commerce.clip')}
+            · {count('clip', clip.album.clipCount)}
           </span>
           {/* How it was made, not whether it is cleared. Every album is
               licensed for commercial use — that badge distinguished nothing

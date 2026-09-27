@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { formatMoneyIn, translate, type CopyOverrideMap } from '@/lib/i18n'
+import { countIn, formatMoneyIn, translate, type CopyOverrideMap, type CountNoun } from '@/lib/i18n'
 import { BCP47, DEFAULT_LOCALE, type Locale } from '@/lib/locale'
 
 /**
@@ -66,6 +66,16 @@ export function useT(): (key: string, vars?: Record<string, string | number>) =>
     (key: string, vars?: Record<string, string | number>) => translate(locale, key, vars, copy),
     [locale, copy],
   )
+}
+
+/**
+ * `countOf`, for client components: «٦ لقطات», "22 clips". Reads the same
+ * locale and edited copy as `useT()`.
+ */
+export function useCount(): (noun: CountNoun, n: number) => string {
+  const locale = React.useContext(LocaleContext)
+  const copy = React.useContext(CopyContext) ?? EMPTY
+  return React.useCallback((noun: CountNoun, n: number) => countIn(locale, noun, n, copy), [locale, copy])
 }
 
 /** For formatting inside client components — `Intl` needs the same locale. */

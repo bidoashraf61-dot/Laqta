@@ -3,7 +3,7 @@ import { Link } from '@/components/ui/link'
 import { db } from '@/lib/db'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
+import { countOf, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import { CreatorCta } from '@/components/landing/sections'
 import { Stars } from '@/components/ui/stars'
@@ -104,7 +104,7 @@ export default async function CreatorsPage() {
                       {pickLocalised(creator.cityAr, creator.cityEn)
                         ? `${pickLocalised(creator.cityAr, creator.cityEn)} · `
                         : ''}
-                      <span className="numeric">{creator._count.albums}</span> {t('commerce.album')}
+                      {countOf('album', creator._count.albums)}
                     </p>
                   </div>
                 </div>

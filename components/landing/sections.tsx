@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
-import { formatNumber, t } from '@/lib/i18n'
+import { countLabel, countOf, formatNumber, t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { Headline, Prose, Section } from '@/components/ui/typography'
 import { accentChip, cycleAccent, TILE_TINT } from '@/components/ui/accent'
@@ -49,9 +49,9 @@ export function TrustStrip({
   stats: { clips: number; albums: number; creators: number; cleared: number }
 }) {
   const items = [
-    { value: formatNumber(stats.clips), label: t('landing.trustClips') },
-    { value: formatNumber(stats.albums), label: t('landing.trustAlbums') },
-    { value: formatNumber(stats.creators), label: t('landing.trustCreators') },
+    { value: formatNumber(stats.clips), label: countLabel('clip', stats.clips) },
+    { value: formatNumber(stats.albums), label: countLabel('album', stats.albums) },
+    { value: formatNumber(stats.creators), label: countLabel('creator', stats.creators) },
     { value: t('landing.trustResolution'), label: t('landing.trustCleared') },
   ]
 
@@ -214,7 +214,7 @@ export function TopCreators({
               </span>
               <span className="block text-sm text-muted-foreground">
                 {creator.city ? `${creator.city} · ` : ''}
-                <span className="numeric">{creator.albumCount}</span> {t('commerce.album')}
+                {countOf('album', creator.albumCount)}
               </span>
             </span>
           </Link>

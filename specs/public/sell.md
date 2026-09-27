@@ -26,12 +26,13 @@ The FAQ «مين يحدد السعر؟» answers «تحدّده لقطة عند 
 Read-only — no form, no server action on this page. The application itself happens at `/sign-up`.
 
 ## States
-- **Empty catalogue** — the counts render as `0`; there is no conditional hiding of the trust line.
+- **Empty catalogue** — the counts render as «لا لقطات · لا صنّاع محتوى» (EN "0 clips · 0 creators"); there is no conditional hiding of the trust line.
 - **Tier threshold display** — `standard` (threshold 0) shows the tier label instead of a threshold figure.
 - **Currency** — thresholds come from `TIER_THRESHOLDS_USD` and render with `formatMoney` in USD, the same currency as prices and payouts.
 - **Also the creator-funnel entry point** — `/studio` redirects here when a signed-in user has no creator profile, so this page is reached mid-funnel as well as cold.
 
 ## Invariants
+- The trust line under the hero is `countOf('clip', clips) · countOf('creator', creators)` — «٣ صنّاع محتوى», not «٣ صانع محتوى» (DEV-22).
 - The album size stated on this page (`sell.whatWeNeed2`, `sell.how1Body`) is **30 to 70 clips around one subject** — the same range the studio submission gate enforces and the landing promises to buyers. Change all three together.
 - Creator-facing copy asks for **rights, not a production method**: «مادة سعودية
   تملك حقوقها كاملة، مع الإفصاح عن طريقة إنتاجها». It previously required footage

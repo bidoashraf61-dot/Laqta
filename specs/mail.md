@@ -67,7 +67,7 @@ to the server console and returns `false`; `drain` returns early with a
 |---|---|---|---|
 | `order.placed` | `checkout()` → `notifyOrderPlaced(orderId)`, after a `bank_transfer` order is recorded as awaiting settlement | Buyer | Order number, amount due, transfer reference (`gatewayRef`, `BT-…`), bank name / account name / IBAN / SWIFT from `BANK_*` env; with no `BANK_IBAN`, "reply and we'll send the account details and invoice". Button → `/account/purchases`. |
 | `order.confirmed` | `settleOrder()` → `notifyOrderPaid(orderId, { client: tx })` inside the settlement transaction — the admin «تأكيد الدفع» path and any future gateway webhook that calls `settleOrder` | Buyer | Album titles, order number, subtotal / VAT / total as frozen on the Order, button → `/account/library`, licence certificate(s) attached once rendered |
-| `sample.claimed` | `settleOrder()` → `notifyOrderPaid` for an order with `paymentMethod: 'sample'` (instead of `order.confirmed`) | Buyer | Not a receipt — no totals: what is in the library, under which licence, button → library, certificate attached when rendered |
+| `sample.claimed` | `settleOrder()` → `notifyOrderPaid` for an order with `paymentMethod: 'sample'` (instead of `order.confirmed`) | Buyer | Not a receipt — no totals: what is in the library, under which licence, button → library, certificate attached when rendered. The clip count is `countIn(locale, 'clip', n)` («٦ لقطات», «٢٤ لقطة», "24 clips" — DEV-22) |
 | `album.approved` | `decideReview` approve → `notifyAlbumDecision(albumId)` | Creator | Button → the live album page |
 | `album.changes` | `decideReview` request changes → `notifyAlbumDecision` | Creator | The reviewer's note, button → `/studio/albums/[id]` |
 | `album.rejected` | `decideReview` reject → `notifyAlbumDecision` | Creator | The reviewer's reason (mandatory), an invitation to reply, button → `/studio/albums/[id]`, where the reason and the failed checks are shown |
@@ -192,7 +192,7 @@ say different things.
 | `MAIL_FROM` | Sender on a verified domain, e.g. `لقطة <orders@mail.laqta.sa>` |
 | `MAIL_REPLY_TO` | Default Reply-To for buyer and creator mail |
 | `MAIL_OPERATOR_TO` | Operator inbox: review queue + contact form (`OPERATOR_EMAIL` still read as fallback) |
-| `SITE_ORIGIN` | Origin for every link in mail (falls back to `AUTH_URL`) |
+| `SITE_ORIGIN` | Origin for every link in mail — and every other absolute URL (sitemap, robots, canonical/OG, JSON-LD, Paymob callbacks, verification link) via `siteOrigin()`. Set together with `AUTH_URL` to the same value; falls back to `AUTH_URL` then `NEXTAUTH_URL`; a mismatch is warned; in production with neither set, the build/server throws instead of linking to localhost (DEV-40) |
 | `BANK_NAME`, `BANK_ACCOUNT_NAME`, `BANK_IBAN`, `BANK_SWIFT` | Quoted in `order.placed` |
 
 ## Owner setup — Resend

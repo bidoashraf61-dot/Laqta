@@ -13,8 +13,7 @@ import { ImpersonationBanner } from '@/components/layout/impersonation-banner'
 import { CopyPreviewBanner } from '@/components/layout/copy-preview-banner'
 import '@/styles/globals.css'
 import { THEME_SCRIPT } from '@/lib/theme'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 export const viewport: Viewport = {
   themeColor: '#14141A',
@@ -36,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = `${t('brand.name')} — ${t('brand.tagline')}`
 
   return {
-    metadataBase: new URL(SITE_URL),
+    metadataBase: new URL(siteOrigin()),
     title: { default: title, template: `%s · ${t('brand.name')}` },
     description: t('brand.promise'),
     // No `alternates` here (DEV-33): whatever the root sets, every page without

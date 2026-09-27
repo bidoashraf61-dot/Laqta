@@ -7,7 +7,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { Headline, Prose } from '@/components/ui/typography'
 import { SubmitButton } from '@/components/dashboard/form'
 import { auth } from '@/lib/auth'
-import { clipCount, formatNumber, t } from '@/lib/i18n'
+import { countOf, formatNumber, t } from '@/lib/i18n'
 import { currentLocale, localeAlternates, localePath, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { mediaUrl } from '@/lib/media'
@@ -70,7 +70,7 @@ export default async function SamplePage({
           {sample.descriptionAr || sample.descriptionEn ? (
             <Bilingual ar={sample.descriptionAr ?? ''} en={sample.descriptionEn} />
           ) : (
-            t('sample.body', { clips: clipCount(sample.clips.length) })
+            t('sample.body', { clips: countOf('clip', sample.clips.length) })
           )}
         </Prose>
 

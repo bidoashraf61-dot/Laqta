@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button'
 import { SubHeadline } from '@/components/ui/typography'
 import { UserText } from '@/components/ui/bilingual'
 import type { AlbumReviewData } from '@/lib/reviews'
-import { formatDate, formatNumber } from '@/lib/i18n'
+import { formatDate } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
-import { useT } from '@/lib/i18n-client'
+import { useCount, useT } from '@/lib/i18n-client'
 
 /**
  * Buyer reviews, under the album they are about.
@@ -60,6 +60,7 @@ export function AlbumReviews({
   ownReview: { rating: number; bodyAr: string | null } | null
 }) {
   const t = useT()
+  const count = useCount()
 
   const [state, setState] = React.useState<{ ok: boolean; messageKey: string } | null>(null)
   const [rating, setRating] = React.useState(ownReview?.rating ?? 5)
@@ -81,8 +82,7 @@ export function AlbumReviews({
             {/* The number, always — not just the glyphs. */}
             <span className="numeric font-bold">{ratingAvg.toFixed(1)}</span>
             <span className="text-muted-foreground">
-              {t('review.outOf')} · <span className="numeric">{formatNumber(ratingCount)}</span>{' '}
-              {t('review.count')}
+              {t('review.outOf')} · {count('rating', ratingCount)}
             </span>
           </p>
         ) : null}

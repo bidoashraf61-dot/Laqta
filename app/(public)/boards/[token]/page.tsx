@@ -4,7 +4,7 @@ import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { db } from '@/lib/db'
 import { ClipCard } from '@/components/catalogue/clip-card'
 import { EmptyState } from '@/components/ui/state'
-import { t } from '@/lib/i18n'
+import { countOf, t } from '@/lib/i18n'
 import type { ClipHit } from '@/lib/search'
 import { PageTitle } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
@@ -113,8 +113,8 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
     <div className="container py-10">
       <header className="mb-6 space-y-1">
         <PageTitle>{board.name}</PageTitle>
-        <p className="numeric text-sm text-muted-foreground">
-          {hits.length} {t('boards.clips')}
+        <p className="text-sm text-muted-foreground">
+          {countOf('clip', hits.length)}
         </p>
       </header>
 

@@ -13,8 +13,11 @@
  *     never `paid`: only the signed server callback settles
  *     (lib/paymob-callback.ts → settleOrder).
  *
- * mada, Tabby and Tamara are NOT part of the Paymob integration and stay
- * hidden. Nothing here pretends a card was charged.
+ * mada, Tabby and Tamara are NOT part of the Paymob integration, so they are
+ * not methods here at all (DEV-29 removed their labels too — a checkout must
+ * not advertise a rail that does not exist). mada-branded cards that Paymob's
+ * card integration accepts go through `card`. Nothing here pretends a card
+ * was charged.
  *
  * That is deliberate. The alternative — a fake "card" path that flips orders
  * to paid — produces a system that looks finished, and the day a real gateway
@@ -37,19 +40,12 @@
 
 import { createPaymobIntention, paymobMethods } from '@/lib/paymob'
 
-export const PAYMENT_METHODS = [
-  'card',
-  'apple_pay',
-  'mada',
-  'tabby',
-  'tamara',
-  'bank_transfer',
-] as const
+export const PAYMENT_METHODS = ['card', 'apple_pay', 'bank_transfer'] as const
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
 /** Methods that need a gateway. Only card + Apple Pay have one (Paymob). */
-export const GATEWAY_METHODS: PaymentMethod[] = ['card', 'apple_pay', 'mada', 'tabby', 'tamara']
+export const GATEWAY_METHODS: PaymentMethod[] = ['card', 'apple_pay']
 
 export function isGatewayMethod(method: PaymentMethod) {
   return GATEWAY_METHODS.includes(method)

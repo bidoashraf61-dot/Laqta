@@ -9,7 +9,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { PageTitle, Prose } from '@/components/ui/typography'
 import { BUNDLE_ALBUM_SELECT, bundleLines, overCeiling, priceBundle } from '@/lib/bundles'
 import { priceNow } from '@/lib/offers'
-import { clipCount, formatDate, formatMoney, t } from '@/lib/i18n'
+import { countOf, formatDate, formatMoney, t } from '@/lib/i18n'
 import { localeAlternates, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { cn } from '@/lib/utils'
@@ -138,7 +138,7 @@ export default async function BundlePage({ params }: { params: Promise<{ slug: s
           </PageTitle>
           {description ? <Prose>{description}</Prose> : null}
           <p className="text-sm text-muted-foreground">
-            {t('bundle.albums', { count: albums.length })} · {clipCount(totalClips)}
+            {t('bundle.albums', { count: albums.length })} · {countOf('clip', totalClips)}
           </p>
         </div>
 

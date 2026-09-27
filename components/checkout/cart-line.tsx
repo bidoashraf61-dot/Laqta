@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatMoney } from '@/lib/i18n'
 import { removeFromCart } from '@/app/(public)/cart/actions'
-import { useT } from '@/lib/i18n-client'
+import { useCount, useT } from '@/lib/i18n-client'
 
 /**
  * A cart line.
@@ -36,6 +36,7 @@ export function CartLine({
   currency: string
 }) {
   const t = useT()
+  const count = useCount()
 
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -49,7 +50,7 @@ export function CartLine({
           </p>
           <p className="text-sm text-muted-foreground">
             {t('commerce.byCreator', { creator: creatorNameAr })} ·{' '}
-            <span className="numeric">{clipCount}</span> {t('commerce.clip')}
+            {count('clip', clipCount)}
           </p>
           {/* Stated, not chosen. The licence is the same on every line, and a
               buyer should not have to infer that from its absence. */}

@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 const PRIVATE = ['/account', '/studio', '/admin', '/cart', '/checkout', '/sign-in', '/sign-up', '/forgot-password', '/reset-password']
 
@@ -16,7 +15,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: PRIVATE.flatMap((path) => [path, `/en${path}`]).concat('/api/'),
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
+    sitemap: `${siteOrigin()}/sitemap.xml`,
+    host: siteOrigin(),
   }
 }

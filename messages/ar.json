@@ -1904,8 +1904,6 @@
     "labelAmount": "المبلغ",
     "labelMethod": "طريقة التحويل",
     "methodIban": "تحويل بنكي",
-    "methodPayoneer": "Payoneer",
-    "methodWise": "Wise",
     "payoutPaidCta": "سجل التحويلات",
     "paymentFailedSubject": "ما تمّ الدفع — {order}",
     "paymentFailedLead": "الدفع ما اكتمل،",

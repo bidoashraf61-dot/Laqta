@@ -1206,8 +1206,6 @@
     "labelAmount": "Amount",
     "labelMethod": "Method",
     "methodIban": "Bank transfer",
-    "methodPayoneer": "Payoneer",
-    "methodWise": "Wise",
     "payoutPaidCta": "Payout history",
     "paymentFailedSubject": "Payment didn't go through — {order}",
     "paymentFailedLead": "The payment didn't complete,",

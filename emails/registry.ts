@@ -412,8 +412,11 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
 
     case 'payout.paid': {
       const amount = iso(money('amount'))
-      const methodKey = { iban: 'methodIban', payoneer: 'methodPayoneer', wise: 'methodWise' }[raw(payload, 'method')]
-      const method = methodKey ? tr(`email.${methodKey}`) : raw(payload, 'method')
+      // Payoneer and Wise are names — the same in both languages, so not in
+      // the dictionary (whose Arabic side must carry no bare English).
+      const rawMethod = raw(payload, 'method')
+      const method =
+        rawMethod === 'iban' ? tr('email.methodIban') : ({ payoneer: 'Payoneer', wise: 'Wise' } as Record<string, string>)[rawMethod] ?? rawMethod
       return message({
         subject: tr('email.payoutPaidSubject', { amount }),
         lead: tr('email.payoutPaidLead'),

@@ -74,6 +74,8 @@ const ROUTES = [
   '/admin/promos',
   '/admin/content',
   '/admin/content/terms',
+  '/admin/content/copy/landing',
+  '/admin/content/copy/email/preview',
   '/admin/reports',
   '/admin/settings',
 ]

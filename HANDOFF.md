@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-64a done — long-form pages editable from admin; DEV-64b next)_
+_Last updated: 2026-09-27 (DEV-64b done — landing, /sell, FAQ and email copy editable from admin; DEV-64c next)_
 
 ---
 
@@ -41,8 +41,9 @@ reset, creator studio (albums, clip uploads with ffprobe, release scans,
 earnings, payouts), admin (review queue with enforced checklist, catalogue,
 orders, refunds, payouts + payout runs with bank/Wise/Payoneer exports,
 users + read-only view-as-user, price-band editor, taxonomy, reports,
-album offers / special prices / promo codes, and the page-text editor for
-Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a),
+album offers / special prices / promo codes, the page-text editor for
+Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a — and the
+site-copy editor for the landing page + FAQ, `/sell` and every email — DEV-64b),
 English site under `/en`, transactional email outbox.
 
 **Built but switched off — waiting for the owner's accounts/keys:**
@@ -347,7 +348,7 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 ## 22. Session — 2026-09-27 (DEV-64a)
 
 - **DEV-64a done — the six long-form pages are editable from admin.**
-  «نصوص الصفحات» in the admin nav → `/admin/content` (list) →
+  «نصوص الموقع» in the admin nav → `/admin/content` (hub) →
   `/admin/content/[key]` (editor): sections in Arabic with the English folded
   under each, paragraphs separated by a blank line, lists one item per line;
   live preview (the real page component) in either language; publish with a
@@ -382,19 +383,48 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   `AUTH_URL=http://localhost:<port>`, or the middleware rewrites every request
   to :3000 (`.claude/launch.json` has `laqta-3001`).
 
-## 23. Where to pick up — DEV-64b
+## 23. Session — 2026-09-27 (DEV-64b)
 
-**Owner's order of work:** DEV-64b (landing, `/sell`, FAQ, emails editable)
-→ 64c (every interface string). DEV-62 (bundles) still waits on the owner's
-decision: does Laqta cover a bundle discount from its share, or is it shared
-with creators pro-rata?
+- **DEV-64b done — site copy editable from admin.** `/admin/content` is now a
+  hub («نصوص الموقع»): site copy (landing + FAQ 131 strings, `/sell` 51,
+  emails 82) above the long pages. `/admin/content/copy/[group]`: every string
+  with Arabic and English side by side, search, «المعدّلة فقط», live rule
+  checks, «إرجاع الأصل» per box, «معاينة على الصفحة» (opens the real page with
+  the drafts, admin only, under a preview bar), publish with a note, publish
+  history with «التراجع عن هذا النشر». Emails: pick a message and preview it
+  with sample data (`/admin/content/copy/email/preview`).
+- **How it works:** `messages/*.json` untouched and always the fallback.
+  `CopyOverride` (published edits) + `CopyRevision` (history, batches) +
+  `CopyPreview` (drafts for preview) — migration `copy_overrides`. The lookup
+  is inside `translate()` (`lib/i18n.ts`): preview draft → published → JSON.
+  Server: a per-process map refreshed from `requestLocale()` every ≤15 s;
+  client components get it by context from the root layout; mail refreshes
+  it in `drain()`. `?copyPreview=` is honoured by the middleware for admins
+  only.
+- **Rules at publish** (`lib/copy-rules.ts`, same code in the browser):
+  `{placeholders}` kept, length cap from the original's length, no HTML,
+  right language in each box, no banned claim — licence claims, refund copy,
+  first/largest (all copy), "filmed" (email). Ban patterns now live in
+  `lib/copy-claims.ts` (shared with verify:mail, verify:licence).
+- New gate `npm run verify:copy` (30 checks, no server; in `npm run verify`).
+  `verify:arabic` now skips textarea contents (field values, not copy).
+- Gates: all green on a production build (the flaky upload flow failed once,
+  passed on rerun).
 
-**DEV-64b notes:** that copy lives in `messages/*.json` (keys `landing.*`,
-`sell.*`, FAQ) and `emails/`. The design doc's `CopyOverride` layer
-(override → JSON default, one cached map, checked through `translate()`) fits
-here; placeholders (`{count}`) must survive an edit. Reuse
-`lib/copy-claims.ts` at publish, and the `/admin/content` list as the home for
-a new "Copy" section.
+## 24. Where to pick up — DEV-64c
+
+**Owner's order of work:** DEV-64c — every remaining interface string
+(~1,600 lines: nav, catalogue, checkout, account, studio, dashboards).
+DEV-62 (bundles) still waits on the owner's decision: does Laqta cover a
+bundle discount from its share, or is it shared with creators pro-rata?
+
+**DEV-64c notes:** the machinery is built — widen `COPY_GROUPS` in
+`lib/copy-rules.ts` (a group per top-level `messages` section) and the editor
+works as is. What 64c must add: (1) length caps tuned for labels/buttons
+(today derived from the original's length), (2) care with keys used as
+`aria-label`/metadata, (3) maybe a per-page grouping for the ~600 `dash.*`
+keys, (4) whether admin/studio labels should be editable at all (ask the
+owner — they are not public copy).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

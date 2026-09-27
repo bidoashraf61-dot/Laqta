@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authConfig } from '@/lib/auth.config'
-import { LOCALE_HEADER } from '@/lib/locale'
+import { COPY_PREVIEW_HEADER, LOCALE_HEADER } from '@/lib/locale'
 import {
   IMPERSONATION_BLOCKED_GET,
   IMPERSONATION_END_PATH,
@@ -80,25 +80,34 @@ export default auth((request) => {
     }
   }
 
+  // ── 4. Copy preview (DEV-64b) ─────────────────────────────────────────────
+  // `?copyPreview=<id>` shows unpublished copy — to an admin, never while
+  // viewing as someone else. Anyone else gets the published page.
+  const copyPreview =
+    user?.role === 'admin' && !viewing ? request.nextUrl.searchParams.get('copyPreview') : null
+
   if (english) {
     const url = request.nextUrl.clone()
     url.pathname = routed
-    return rewriteWithLocale(request, url, locale, viewing)
+    return rewriteWithLocale(request, url, locale, viewing, copyPreview)
   }
 
-  return NextResponse.next({ request: { headers: withLocale(request.headers, locale, viewing) } })
+  return NextResponse.next({ request: { headers: withLocale(request.headers, locale, viewing, copyPreview) } })
 })
 
 /**
  * The locale travels as a REQUEST header, not a response header — the layout
  * reads it during render, and a response header would arrive far too late.
  */
-function withLocale(source: Headers, locale: string, viewing: boolean): Headers {
+function withLocale(source: Headers, locale: string, viewing: boolean, copyPreview: string | null = null): Headers {
   const headers = new Headers(source)
   headers.set(LOCALE_HEADER, locale)
   // Always overwritten, never passed through: a client cannot send its own.
   if (viewing) headers.set(IMPERSONATION_HEADER, '1')
   else headers.delete(IMPERSONATION_HEADER)
+  // Unpublished copy is shown to an admin only (DEV-64b); same rule.
+  if (copyPreview) headers.set(COPY_PREVIEW_HEADER, copyPreview)
+  else headers.delete(COPY_PREVIEW_HEADER)
   return headers
 }
 
@@ -107,9 +116,10 @@ function rewriteWithLocale(
   url: URL,
   locale: string,
   viewing: boolean,
+  copyPreview: string | null = null,
 ) {
   return NextResponse.rewrite(url, {
-    request: { headers: withLocale(request.headers, locale, viewing) },
+    request: { headers: withLocale(request.headers, locale, viewing, copyPreview) },
   })
 }
 

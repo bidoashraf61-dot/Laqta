@@ -12,6 +12,8 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 - No stats query, and **no offers/shelf query** — `getCatalogueStats()` and `getOfferAlbums()` exist but this page calls neither. Nothing on the landing counts clips, albums, or creators out loud.
 - `Clip.masterKey` is never selected.
 
+- Copy: `landing.*` from `messages/*.json` through `translate()` — including the FAQ (`landing.faq*`). The owner edits any of it at [`/admin/content/copy/landing`](../admin/admin-copy-group.md) (DEV-64b); edits are validated at publish against the invariants below (banned claims, placeholders, length caps). `?copyPreview=<id>` shows an admin their unpublished drafts under a preview banner; visitors never see drafts.
+
 ## Sections (in order)
 1. `HeroCinematic` — scroll-scrubbed film; two CTAs. Two-cut headline (Thmanyah Sans Light lead, Serif Display Bold statement), no kashida: «جمهورك سعودي، ولقطات إعلانك سعودية.» (EN «Your audience is Saudi, and so is your footage.») — chosen by the owner on 2026-09-24 over the shoot-day line, to lead with the Saudi-footage USP. Written to `docs/content/brand-voice-ar.md`: a plain claim, no metaphor. The body under it (`landing.heroBody`) no longer repeats «سعودية». The USP rail — four claims as a vertical scrubber — sits at the inline-start edge on desktop and **docks to the bottom of the frame on mobile**; it was `display:none` below 1024px until 2026-09, so phone visitors never saw it.
 2. `ProblemSolution` — a **split**: media at the inline-start (the right, in Arabic), copy at the inline-end. Stacks copy-first on phones. Headline «لقطات من موقع واحد، بضوء واحد وهوية واحدة.», drawn from the section's own claim. Body claim: an album gathers **٣٠–٧٠ matching clips around one subject** (EN «30 to 70 matching clips around a single subject»; changed from 10–24 by the owner on 2026-09-24). The media slot is a placeholder still, built to take a video (`.mp4`/`.webm`, preferred) or an image/GIF for the planned Premiere-timeline capture — one constant, `MEDIA.src`.
@@ -73,4 +75,4 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 - Fully server-rendered — nothing on the page may require client JS to become visible.
 
 ## Verified by
-`verify:hero` (the film mounts, scrubs both ways, stays bounded; the wall, collection, and licensing sections render below it), `verify:arabic` (both directions), `audit`.
+`verify:copy` (the edit layer and its rules), `verify:hero` (the film mounts, scrubs both ways, stays bounded; the wall, collection, and licensing sections render below it), `verify:arabic` (both directions), `audit`.

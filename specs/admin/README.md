@@ -52,15 +52,18 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination), batch approved ones into a payout run with one export file per rail, and mark a run (or a single payout) paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
-| `/admin/content` | The long-form pages (Terms, Privacy, Licences, Content policy, About, Contact): what the site shows now, open the editor. | [admin-content.md](admin-content.md) |
+| `/admin/content` | Hub for the owner's words: site copy (landing + FAQ, `/sell`, emails) and the long-form pages; what each shows now, open its editor. | [admin-content.md](admin-content.md) |
+| `/admin/content/copy/[group]` | Edit landing / `/sell` / email copy in Arabic and English with live rule checks, preview on the real page, publish, undo a publish. | [admin-copy-group.md](admin-copy-group.md) |
+| `/admin/content/copy/email/preview` | One email rendered with sample data, with or without unpublished edits. | [admin-copy-email-preview.md](admin-copy-email-preview.md) |
 | `/admin/content/[key]` | Edit one page in Arabic and English with a live preview, publish with a note, restore any earlier version or the original text. | [admin-content-key.md](admin-content-key.md) |
 | `/admin/reports` | Zero-result search report plus the last 50 audit entries. Read-only. | [admin-reports.md](admin-reports.md) |
 | `/admin/settings` | Operating constants, licence version, storage status. Read-only by design. | [admin-settings.md](admin-settings.md) |
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover 17 routes (now including `/admin/messages`,
-  `/admin/users`, `/admin/content` and `/admin/content/terms`). `/admin/users/[id]` is in neither (it needs an id).
+- `verify:arabic` and `audit` cover 19 routes (now including `/admin/messages`,
+  `/admin/users`, `/admin/content`, `/admin/content/terms`,
+  `/admin/content/copy/landing` and `/admin/content/copy/email/preview`). `/admin/users/[id]` is in neither (it needs an id).
   `/admin/requests` is in neither. **`/admin/review/[id]` is in
   neither** — the surface where the review gate actually lives is unexercised by any gate.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
@@ -76,6 +79,10 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - `verify:documents` covers `lib/editable-documents.ts` behind `/admin/content/[key]`: the publish
   rules, publish, restore (to a version and to the original text), audit rows and the
   fall-back to `content/legal.ts` (library level — the client editor is not driven).
+- `verify:copy` covers `lib/copy-rules.ts` + `lib/copy-overrides.ts` behind
+  `/admin/content/copy/[group]`: every original passes, each edit rule refuses, publish /
+  reset / undo / preview against the database, and `translate()` precedence (library level —
+  the client editor and the preview banner are not driven).
 - `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin.
 - `verify:impersonation` drives a whole view-as-user session in real Chrome: who may be
   viewed, non-admins never see the control, blank reason refused, start/end/expiry rows
@@ -102,9 +109,11 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
   control. Files reach the bucket through `npm run media:upload` (`docs/tech/media-aws.md`).
   `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.
-- The page editor (`/admin/content/[key]`) covers the six long-form pages only (DEV-64a).
-  Landing, `/sell`, FAQ and email copy (DEV-64b) and every other interface string
-  (DEV-64c) still live in `messages/*.json` and need a code change.
+- Editable from admin: the six long-form pages (DEV-64a) and `landing.*`, `sell.*`,
+  `email.*` (DEV-64b). Every other interface string (DEV-64c — nav, catalogue, checkout,
+  account, studio, dashboards…) still lives in `messages/*.json` and needs a code change.
+- A published copy edit reaches a second server instance within 15 s (per-process map,
+  `lib/copy-overrides.ts`); only the publishing process updates at once.
 - The shell's `<main>` is `overflow-x-clip` (was `overflow-y-auto`, which silently
   disabled every `position: sticky` in the dashboards); wide content is clipped rather
   than scrollable inside `<main>` — give a wide table its own scroll wrapper.

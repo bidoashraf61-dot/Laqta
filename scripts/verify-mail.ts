@@ -36,6 +36,8 @@ import { readFileSync } from 'node:fs'
 import { TEMPLATES, renderTemplate } from '../emails/registry'
 import { sendMail, RESEND_ENDPOINT } from '../lib/mail'
 import type { Locale } from '../lib/locale'
+import { SAMPLE_PAYLOAD as PAYLOAD } from '../emails/sample-payload'
+import { MAIL_BANS, SITE_BANS } from '../lib/copy-claims'
 
 const ar = JSON.parse(readFileSync('messages/ar.json', 'utf8'))
 const en = JSON.parse(readFileSync('messages/en.json', 'utf8'))
@@ -47,48 +49,6 @@ const fail = (message: string) => {
 }
 const pass = (message: string) => console.log(`  pass  ${message}`)
 
-/**
- * Every value a template could ask for, so nothing renders as an empty gap.
- *
- * Latin values on purpose. The point of the English check below is that the
- * TEMPLATE's own words are English — but an album's Arabic title legitimately
- * appears inside an English message, so real data would make the check
- * meaningless. Payload values are deliberately not the thing under test.
- *
- * `message` carries markup: the contact form is untrusted input, and it must
- * arrive in the operator's inbox as text, never as HTML.
- */
-const PAYLOAD = {
-  name: 'Athar Agency',
-  email: 'visitor@example.test',
-  subject: 'Licensing question',
-  message: 'Hello <script>alert(1)</script> & welcome',
-  senderLocale: 'en',
-  orderNumber: 'LQ-2026-1006',
-  albumTitles: ['AlUla Aerials', 'Riyadh Nights'],
-  subtotal: 399,
-  vatAmount: 59.85,
-  total: 458.85,
-  currency: 'USD',
-  reference: 'BT-LQ-2026-1006',
-  bankName: 'Saudi National Bank',
-  bankAccountName: 'Laqta LLC',
-  bankIban: 'SA0380000000608010167519',
-  bankSwift: 'NCBKSAJE',
-  album: 'AlUla Aerials',
-  creator: 'Yousef Shami',
-  price: '399 US$',
-  notes: 'Please regrade shot 4.',
-  taskId: 'task_1',
-  libraryUrl: 'https://laqta.sa/account/library',
-  orderUrl: 'https://laqta.sa/account/purchases',
-  albumUrl: 'https://laqta.sa/albums/x/y',
-  reviewUrl: 'https://laqta.sa/admin/review',
-  resetUrl: 'https://laqta.sa/reset-password?token=fixture',
-  minutes: 30,
-  expiresAt: '2099-01-01T00:00:00.000Z',
-  certificateAttached: true,
-}
 
 const ARABIC = /[؀-ۿ]/
 const LATIN_WORD = /\b[A-Za-z]{4,}\b/
@@ -100,13 +60,11 @@ const GOLD = /#7A6127/gi
  */
 const BANNED: Array<{ rule: string; pattern: RegExp }> = [
   // Owner decision: refunds are never mentioned, in any language.
-  { rule: 'refund copy', pattern: /refund|reimburs|money[- ]back|استرد|استرجا|مسترد|إرجاع المبلغ/i },
-  // The catalogue is AI-generated: nothing was filmed or shot anywhere.
-  {
-    rule: 'filmed-on-location claim',
-    pattern: /\bfilmed\b|\bshot (on|in|at)\b|on location|صُ?وِّ?رت? في|صوّرنا|صورناها|تم تصوير/i,
-  },
-  { rule: 'first/largest claim', pattern: /\b(first|largest|biggest)\b|الأكبر|الأول(ى)? من نوع|أكبر مكتبة/i },
+  { rule: 'refund copy', pattern: SITE_BANS[0][0] },
+  // Shared with the copy editor (lib/copy-claims.ts), which refuses the same
+  // wording when the owner publishes an email edit (DEV-64b).
+  ...MAIL_BANS.map(([pattern, rule]) => ({ rule, pattern })),
+  { rule: 'first/largest claim', pattern: SITE_BANS[1][0] },
 ]
 
 /* ───────────────────────── 1. Templates ───────────────────────── */

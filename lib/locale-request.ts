@@ -1,6 +1,11 @@
+import { cache } from 'react'
 import { headers } from 'next/headers'
-import { translate } from '@/lib/i18n'
-import { DEFAULT_LOCALE, isLocale, LOCALE_HEADER, setLocale, type Locale } from '@/lib/locale'
+import { setDraftCopy, translate } from '@/lib/i18n'
+import { COPY_PREVIEW_HEADER, DEFAULT_LOCALE, isLocale, LOCALE_HEADER, setLocale, type Locale } from '@/lib/locale'
+import { loadCopyPreview, refreshCopyOverrides } from '@/lib/copy-overrides'
+
+/** One preview read per render, however many segments ask. */
+const previewCopy = cache((id: string) => loadCopyPreview(id))
 
 /**
  * Reads the locale the middleware resolved, and seeds the store with it.
@@ -21,9 +26,19 @@ import { DEFAULT_LOCALE, isLocale, LOCALE_HEADER, setLocale, type Locale } from 
  * `generateMetadata` and the layout can each call it without coordinating.
  */
 export async function requestLocale(): Promise<Locale> {
-  const value = (await headers()).get(LOCALE_HEADER)
+  const incoming = await headers()
+  const value = incoming.get(LOCALE_HEADER)
   const locale = isLocale(value) ? value : DEFAULT_LOCALE
   setLocale(locale)
+
+  // The owner's edited copy (DEV-64b): the published map is refreshed here
+  // because every page, layout, metadata and action already awaits this —
+  // at most one query per 15 seconds per process. A preview render (admin
+  // only; the middleware sets the header) layers its drafts on top.
+  await refreshCopyOverrides()
+  const preview = incoming.get(COPY_PREVIEW_HEADER)
+  setDraftCopy(preview ? await previewCopy(preview) : null)
+
   return locale
 }
 

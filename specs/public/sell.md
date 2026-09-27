@@ -9,7 +9,7 @@ Recruit creators: lead with their revenue share, then answer the two objections 
 - `Clip.count()` where `album.status='live'`.
 - `Creator.count()` where `status='approved'`.
 - Constants from `lib/commission.ts`: `TIER_RATES` (standard/silver/gold platform rate; the page shows `1 - rate` as the creator share), `TIER_THRESHOLDS_USD` (silver 12,500 · gold 50,000), `EXCLUSIVE_BONUS_POINTS` (0.05).
-- All copy from `messages/ar.json` under `sell.*`.
+- All copy from `messages/*.json` under `sell.*`, through `translate()` — so any string the owner edited at [`/admin/content/copy/sell`](../admin/admin-copy-group.md) (DEV-64b) shows instead, and an admin's `?copyPreview=<id>` shows unpublished drafts under a preview banner.
 
 ## Pricing copy
 How-it-works step 2 (`sell.how2Body`) reads «ارفع اللقطات، وسمِّ الألبوم، واملأ تفاصيله: مولّدة أو مصوّرة، وموقعها وتصنيفها، وأرفق التصاريح.» — true since the album details form (DEV-08).
@@ -44,4 +44,4 @@ Read-only — no form, no server action on this page. The application itself hap
 - No individual creator's earnings are shown.
 
 ## Verified by
-`verify:arabic`, `audit`. The commission arithmetic behind the numbers is covered by `verify:money`.
+`verify:copy` (the edit layer and its rules). `verify:arabic`, `audit`. The commission arithmetic behind the numbers is covered by `verify:money`.

@@ -46,7 +46,7 @@ album's price, and no way to edit site wording without a developer.
 - [x] **DEV-63** ⛔ Promo codes that work: a code field at checkout that applies `/admin/promos` codes (window, cap, minimum, album limits), counts redemptions, and pays creators on the discounted price — today codes are created but never applied — 🤖 · 1 day — done 2026-09-27 (`lib/promos.ts`; code box at checkout with live preview; order + receipt carry the discount; `verify:promos`)
 - [ ] **DEV-64** Every word editable from admin (content-control design, `docs/decisions/2026-08-20-content-control-design.md`), in three phases with preview, both languages and revert — 🤖 · 6–8 days total
   - [x] **64a** Legal and long-form pages (Terms, Privacy, Licences, Content policy, About, Contact) — 2 days — done 2026-09-27 (`/admin/content` + editor with live AR/EN preview, publish with note, version history + restore; `DocumentVersion`, `lib/editable-documents.ts`; banned claims refused at publish; `verify:documents`)
-  - [ ] **64b** Landing, `/sell` and marketing copy, FAQ, emails — 2 days
+  - [x] **64b** Landing, `/sell` and marketing copy, FAQ, emails — 2 days — done 2026-09-27 (`/admin/content/copy/[group]`: AR/EN side by side, live rule checks, preview on the real page via `?copyPreview`, publish, undo a publish; email preview; `CopyOverride` layer inside `translate()`; `verify:copy`)
   - [ ] **64c** Every remaining interface string (~1,600 lines), with checks that an edit cannot blank a label, overflow its box or break Arabic direction — 2–3 days
 
 

@@ -58,6 +58,13 @@ export const HTML_LANG: Record<Locale, string> = { ar: 'ar', en: 'en' }
 /** Header the middleware writes and the root layout reads. */
 export const LOCALE_HEADER = 'x-laqta-locale'
 
+/**
+ * Set by the middleware — for an admin only — when the URL carries
+ * `?copyPreview=<id>`: this render shows that preview's unpublished copy
+ * (DEV-64b). Always overwritten, so a visitor cannot send it.
+ */
+export const COPY_PREVIEW_HEADER = 'x-laqta-copy-preview'
+
 const IS_SERVER = typeof window === 'undefined'
 
 const holder = cache((): { current: Locale } => ({ current: DEFAULT_LOCALE }))

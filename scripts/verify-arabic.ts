@@ -111,6 +111,8 @@ const ROUTES = [
   '/admin/promos',
   '/admin/content',
   '/admin/content/terms',
+  '/admin/content/copy/landing',
+  '/admin/content/copy/email/preview',
   '/admin/reports',
   '/admin/settings',
 ]
@@ -199,6 +201,10 @@ function visibleText(html: string) {
     .replace(/<([a-z]+)[^>]*class="[^"]*(?:ltr-island|numeric)[^"]*"[^>]*>[\s\S]*?<\/\1>/gi, ' ')
     .replace(/<bdi\b[^>]*>[\s\S]*?<\/bdi>/gi, ' ')
     .replace(/<code[\s\S]*?<\/code>/gi, ' ')
+    // A textarea's content is its VALUE — data being edited, like an input's
+    // `value` attribute, which this never read either. The admin copy editor
+    // (DEV-64b) holds `{count}`-style placeholders there by design.
+    .replace(/<textarea\b[\s\S]*?<\/textarea>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;|&#\d+;/gi, ' ')
     .replace(/\s+/g, ' ')

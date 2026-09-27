@@ -1,8 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { formatMoneyIn } from '@/lib/i18n'
-import { translate } from '@/lib/i18n'
+import { formatMoneyIn, translate, type CopyOverrideMap } from '@/lib/i18n'
 import { BCP47, DEFAULT_LOCALE, type Locale } from '@/lib/locale'
 
 /**
@@ -26,15 +25,29 @@ import { BCP47, DEFAULT_LOCALE, type Locale } from '@/lib/locale'
  */
 
 const LocaleContext = React.createContext<Locale>(DEFAULT_LOCALE)
+const EMPTY: CopyOverrideMap = {}
+
+/**
+ * The owner's edited copy for this locale (DEV-64b) — published edits plus,
+ * on a preview render, the drafts. Context for the same reason as the locale:
+ * a module variable would be shared by every concurrent server render.
+ */
+const CopyContext = React.createContext<CopyOverrideMap | null>(null)
 
 export function LocaleContextProvider({
   locale,
+  copy = null,
   children,
 }: {
   locale: Locale
+  copy?: CopyOverrideMap | null
   children: React.ReactNode
 }) {
-  return <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>
+  return (
+    <LocaleContext.Provider value={locale}>
+      <CopyContext.Provider value={copy}>{children}</CopyContext.Provider>
+    </LocaleContext.Provider>
+  )
 }
 
 /**
@@ -46,9 +59,12 @@ export function LocaleContextProvider({
  */
 export function useT(): (key: string, vars?: Record<string, string | number>) => string {
   const locale = React.useContext(LocaleContext)
+  // An empty map, never null, so the browser never falls through to the
+  // server-only published store.
+  const copy = React.useContext(CopyContext) ?? EMPTY
   return React.useCallback(
-    (key: string, vars?: Record<string, string | number>) => translate(locale, key, vars),
-    [locale],
+    (key: string, vars?: Record<string, string | number>) => translate(locale, key, vars, copy),
+    [locale, copy],
   )
 }
 

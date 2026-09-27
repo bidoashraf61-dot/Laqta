@@ -1529,6 +1529,56 @@ model DocumentVersion {
   @@index([docKey, publishedAt])
 }
 
+/// An edited value of one interface string — landing, `/sell`, FAQ and email
+/// copy (DEV-64b). Sits on top of `messages/<locale>.json`, which stays the
+/// default: no row means the JSON value, and removing a row is how a string
+/// goes back to it. Only the published value lives here; history is
+/// `CopyRevision`.
+model CopyOverride {
+  id          String   @id @default(cuid())
+  /// Dot-path into messages/*.json, e.g. 'landing.heroBold'.
+  key         String
+  /// 'ar' | 'en'
+  locale      String
+  value       String
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+
+  @@unique([key, locale])
+}
+
+/// One string changed by one publish. A publish is a batch (`batchId`); undoing
+/// it publishes a new batch that puts every `before` back. `null` means the
+/// JSON default. Append-only.
+model CopyRevision {
+  id                  String   @id @default(cuid())
+  batchId             String
+  key                 String
+  locale              String
+  before              String?
+  after               String?
+  note                String?
+  restoredFromBatchId String?
+  publishedAt         DateTime @default(now())
+  publishedById       String?
+
+  @@index([batchId])
+  @@index([publishedAt])
+}
+
+/// Unpublished copy the owner is previewing on the real page
+/// (`?copyPreview=<id>`); visible to admins only. Short-lived; old rows are
+/// pruned when a new preview is saved.
+model CopyPreview {
+  id          String   @id @default(cuid())
+  /// { "<locale>:<key>": value } — the draft values only.
+  values      Json
+  createdById String
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Audit
 // ─────────────────────────────────────────────────────────────────────────────

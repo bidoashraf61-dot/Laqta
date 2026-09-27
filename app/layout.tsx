@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Metadata, Viewport } from 'next'
 import { auth } from '@/lib/auth'
-import { t } from '@/lib/i18n'
+import { activeCopy, isCopyPreview, t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
 import { DIRECTION, HTML_LANG, localePath } from '@/lib/locale'
 import { LocaleProvider } from '@/components/layout/locale-provider'
@@ -10,6 +10,7 @@ import { RouteProgress } from '@/components/layout/route-progress'
 import { RevealScope } from '@/components/ui/reveal'
 import { Toaster } from '@/components/ui/toast'
 import { ImpersonationBanner } from '@/components/layout/impersonation-banner'
+import { CopyPreviewBanner } from '@/components/layout/copy-preview-banner'
 import '@/styles/globals.css'
 import { THEME_SCRIPT } from '@/lib/theme'
 
@@ -109,7 +110,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="min-h-dvh bg-background font-sans text-foreground">
-        <LocaleProvider locale={locale}>
+        {/* The owner's edited copy (DEV-64b) reaches client components here;
+            server components read it inside translate(). */}
+        <LocaleProvider locale={locale} copy={activeCopy(locale)}>
           <Providers session={session}>
             <a
               href="#main"
@@ -126,6 +129,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             {session?.user?.impersonation ? (
               <ImpersonationBanner view={session.user.impersonation} />
             ) : null}
+            {isCopyPreview() ? <CopyPreviewBanner /> : null}
             {/* Both are engines, not chrome: they render nothing until there
                 is something to reveal or a navigation to report. They live at
                 the document root because both watch the whole document — the

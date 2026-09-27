@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { DOCUMENT_KEYS, DOCUMENTS } from '@/lib/editable-documents'
+import { COPY_GROUP_KEYS, COPY_GROUPS, groupKeys } from '@/lib/copy-rules'
 import { formatDate, formatNumber, t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
 import { cn } from '@/lib/utils'
@@ -20,7 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * `/admin/content` — the long-form pages the owner edits (DEV-64a).
+ * `/admin/content` — the words the owner edits: site copy (landing, `/sell`,
+ * emails — DEV-64b) and the long-form pages (DEV-64a).
  *
  * Six fixed rows, one per page, each saying what the site shows right now:
  * the original text from the code, or the newest published version with its
@@ -49,11 +51,39 @@ export default async function AdminContentPage() {
     }),
     db.documentVersion.groupBy({ by: ['docKey'], _count: { _all: true } }),
   ])
-  const publisherIds = [...new Set(latest.map((row) => row.publishedById).filter(Boolean))] as string[]
+  const publisherIds = [
+    ...new Set(latest.map((row) => row.publishedById).filter(Boolean)),
+  ] as string[]
   const publishers = publisherIds.length
-    ? await db.user.findMany({ where: { id: { in: publisherIds } }, select: { id: true, name: true, email: true } })
+    ? await db.user.findMany({
+        where: { id: { in: publisherIds } },
+        select: { id: true, name: true, email: true },
+      })
     : []
   const who = new Map(publishers.map((u) => [u.id, u.name || u.email]))
+  const copyStats = await Promise.all(
+    COPY_GROUP_KEYS.map(async (group) => {
+      const prefix = COPY_GROUPS[group].prefix
+      const [edited, last] = await Promise.all([
+        db.copyOverride.findMany({
+          where: { key: { startsWith: prefix } },
+          distinct: ['key'],
+          select: { key: true },
+        }),
+        db.copyRevision.findFirst({
+          where: { key: { startsWith: prefix } },
+          orderBy: { publishedAt: 'desc' },
+          select: { publishedAt: true },
+        }),
+      ])
+      return {
+        group,
+        total: groupKeys(group).length,
+        edited: edited.length,
+        last: last?.publishedAt ?? null,
+      }
+    }),
+  )
   const byKey = new Map(latest.map((row) => [row.docKey, row]))
   const countByKey = new Map(counts.map((row) => [row.docKey, row._count._all]))
 
@@ -61,76 +91,143 @@ export default async function AdminContentPage() {
     <>
       <DashboardHeader title={t('dash.docs.title')} description={t('dash.docs.hint')} />
 
-      <Panel>
-        <ul className="-my-2 divide-y divide-border/60">
-          {DOCUMENT_KEYS.map((key) => {
-            const definition = DOCUMENTS[key]
-            const version = byKey.get(key)
-            const count = countByKey.get(key) ?? 0
-            const publisher = version?.publishedById ? who.get(version.publishedById) : null
-
-            return (
-              <li key={key} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4">
+      <div className="space-y-6">
+        <Panel title={t('dash.copy.sectionCopy')}>
+          <p className="-mt-1 mb-2 text-sm text-muted-foreground">
+            {t('dash.copy.sectionCopyHint')}
+          </p>
+          <ul className="-mb-2 divide-y divide-border/60">
+            {copyStats.map(({ group, total, edited, last }) => (
+              <li
+                key={group}
+                className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4"
+              >
                 <div className="min-w-0 space-y-1">
-                  <h2 className="flex flex-wrap items-center gap-2 font-medium">
+                  <h3 className="flex flex-wrap items-center gap-2 font-medium">
                     <Anchor
-                      href={`/admin/content/${key}`}
+                      href={`/admin/content/copy/${group}`}
                       className="transition-colors duration-hover ease-lens hover:text-gold"
                     >
-                      {t(definition.titleKey)}
+                      {t(COPY_GROUPS[group].titleKey)}
                     </Anchor>
-                    {version ? (
+                    {edited ? (
                       <Badge variant="success">
-                        {t('dash.docs.publishedOn', { date: formatDate(version.publishedAt) })}
+                        {t('dash.copy.modified', { count: formatNumber(edited) })}
                       </Badge>
-                    ) : (
-                      <Badge variant="neutral">{t('dash.docs.original')}</Badge>
-                    )}
-                  </h2>
+                    ) : null}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    <span className="ltr-island" dir="ltr">
-                      {definition.path}
-                    </span>
-                    {' · '}
-                    {version
-                      ? [
-                          publisher ? t('dash.docs.by', { name: publisher }) : null,
-                          version.note,
-                          t('dash.docs.versions', { count: formatNumber(count) }),
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')
-                      : t('dash.docs.originalHint')}
+                    {[
+                      t('dash.copy.strings', { count: formatNumber(total) }),
+                      last
+                        ? t('dash.copy.lastPublished', { date: formatDate(last) })
+                        : t('dash.copy.neverEdited'),
+                    ].join(' · ')}
                   </p>
                 </div>
-
                 <div className="flex shrink-0 items-center gap-2">
+                  {COPY_GROUPS[group].path ? (
+                    <Anchor
+                      href={COPY_GROUPS[group].path}
+                      target="_blank"
+                      rel="noopener"
+                      className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+                    >
+                      <ExternalLink className="size-3.5" aria-hidden />
+                      {t('dash.docs.view')}
+                      <span className="sr-only">
+                        {t(COPY_GROUPS[group].titleKey)} {t('dash.docs.viewNewTab')}
+                      </span>
+                    </Anchor>
+                  ) : null}
                   <Anchor
-                    href={definition.path}
-                    target="_blank"
-                    rel="noopener"
-                    className={buttonVariants({ variant: 'ghost', size: 'sm' })}
-                  >
-                    <ExternalLink className="size-3.5" aria-hidden />
-                    {t('dash.docs.view')}
-                    <span className="sr-only">
-                      {t(definition.titleKey)} {t('dash.docs.viewNewTab')}
-                    </span>
-                  </Anchor>
-                  <Anchor
-                    href={`/admin/content/${key}`}
-                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                    href={`/admin/content/copy/${group}`}
+                    className={buttonVariants({ variant: 'outline', size: 'sm' })}
                   >
                     <PencilLine className="size-3.5" aria-hidden />
                     {t('dash.docs.edit')}
-                    <span className="sr-only">{t(definition.titleKey)}</span>
+                    <span className="sr-only">{t(COPY_GROUPS[group].titleKey)}</span>
                   </Anchor>
                 </div>
               </li>
-            )
-          })}
-        </ul>
-      </Panel>
+            ))}
+          </ul>
+        </Panel>
+
+        <Panel title={t('dash.copy.sectionPages')}>
+          <ul className="-my-2 divide-y divide-border/60">
+            {DOCUMENT_KEYS.map((key) => {
+              const definition = DOCUMENTS[key]
+              const version = byKey.get(key)
+              const count = countByKey.get(key) ?? 0
+              const publisher = version?.publishedById ? who.get(version.publishedById) : null
+
+              return (
+                <li
+                  key={key}
+                  className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4"
+                >
+                  <div className="min-w-0 space-y-1">
+                    <h3 className="flex flex-wrap items-center gap-2 font-medium">
+                      <Anchor
+                        href={`/admin/content/${key}`}
+                        className="transition-colors duration-hover ease-lens hover:text-gold"
+                      >
+                        {t(definition.titleKey)}
+                      </Anchor>
+                      {version ? (
+                        <Badge variant="success">
+                          {t('dash.docs.publishedOn', { date: formatDate(version.publishedAt) })}
+                        </Badge>
+                      ) : (
+                        <Badge variant="neutral">{t('dash.docs.original')}</Badge>
+                      )}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      <span className="ltr-island" dir="ltr">
+                        {definition.path}
+                      </span>
+                      {' · '}
+                      {version
+                        ? [
+                            publisher ? t('dash.docs.by', { name: publisher }) : null,
+                            version.note,
+                            t('dash.docs.versions', { count: formatNumber(count) }),
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')
+                        : t('dash.docs.originalHint')}
+                    </p>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Anchor
+                      href={definition.path}
+                      target="_blank"
+                      rel="noopener"
+                      className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+                    >
+                      <ExternalLink className="size-3.5" aria-hidden />
+                      {t('dash.docs.view')}
+                      <span className="sr-only">
+                        {t(definition.titleKey)} {t('dash.docs.viewNewTab')}
+                      </span>
+                    </Anchor>
+                    <Anchor
+                      href={`/admin/content/${key}`}
+                      className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                    >
+                      <PencilLine className="size-3.5" aria-hidden />
+                      {t('dash.docs.edit')}
+                      <span className="sr-only">{t(definition.titleKey)}</span>
+                    </Anchor>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </Panel>
+      </div>
     </>
   )
 }

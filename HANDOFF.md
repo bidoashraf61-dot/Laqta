@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-47 done — production seed)_
+_Last updated: 2026-09-27 (DEV-11 done — two-factor now enforced for creator and admin)_
 
 ---
 
@@ -45,7 +45,8 @@ users + read-only view-as-user, price-band editor, taxonomy, reports,
 album offers / special prices / promo codes, the page-text editor for
 Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a — and the
 site-copy editor for every string a visitor reads — DEV-64b/c),
-English site under `/en`, transactional email outbox.
+English site under `/en`, transactional email outbox, **mandatory two-factor
+for creator and admin accounts** (DEV-11 — enforced, not just promised).
 
 **Built but switched off — waiting for the owner's accounts/keys:**
 
@@ -532,21 +533,47 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   (override `SEED_DEMO=1`), and no longer creates two albums without a
   licence (checked on a fresh database).
 - New gate `npm run verify:production-seed` (throwaway database, 17 checks).
-- **Found:** two-step sign-in is described as required for admin and
-  creators (Terms, studio copy, README) but not enforced anywhere — a task
-  chip was raised ("Enforce two-step sign-in for admin and creators").
-  Worth doing before launch.
+- **Found:** two-step sign-in was described as required for admin and
+  creators but not enforced — **fixed in DEV-11 (§31).**
 - Owner, at launch: run the production seed against the production database
   (DEV-58), sign in, enable 2FA at `/account/security`.
 
-## 31. Where to pick up (status saved 2026-09-27, end of session)
+## 31. Session — 2026-09-27 (DEV-11)
+
+- **DEV-11 done — two-factor is now enforced**, as the Terms, the security
+  page and the README already claimed. A creator or admin without 2FA still
+  signs in, but every `/admin/*` and `/studio/*` page sends them to
+  `/account/security` (English keeps `/en`) with a notice «فعّل التحقق بخطوتين
+  لتدخل»; once they turn it on they go straight back to where they were.
+  Held three ways: middleware (cookie), the admin/studio layouts (database),
+  and every admin/studio action + upload route. View-as-user still works — the
+  admin is handed back still enrolled. `lib/two-factor.ts` explains it.
+- **Two real sign-in bugs fixed on the way** (no one had 2FA on, so nobody
+  hit them): the sign-in action sent the word "undefined" as the code, so an
+  enrolled account was always told «بيانات الدخول غير صحيحة»; and the code
+  step wiped the email and password fields.
+- **Local demo accounts now have 2FA on** (admin, creator, nada — fixed dev
+  secrets in `prisma/seed.ts`). To sign in to one locally:
+  `npm run totp:code -- admin@laqta.sa` prints the current 6-digit code. The
+  browser gates type the code themselves (`scripts/two-factor-fixture.mjs`) —
+  no bypass exists, not even in development.
+- **Owner, before launch:** the real admin account (yours) must enrol at
+  `/account/security` with an authenticator app (Google Authenticator,
+  1Password…) on first sign-in. There are **no backup codes** — if the phone is
+  lost, getting back in needs a database edit. Worth a DEV task before launch.
+- `verify:auth` +30 checks (the hold in both languages, `next`, open
+  `/account`, stale cookie, layout lock, upload API 403); `verify:flows` (a new
+  creator is held, then reaches the studio once enrolled);
+  `verify:impersonation` (the admin comes back enrolled).
+- The demo 2FA secrets are public (the repo is public), like the demo
+  password — harmless for dev data, but never run `prisma/seed.ts` on production.
+
+## 32. Where to pick up (status saved 2026-09-27, end of session)
 
 **Open tasks:** 140 across the four lists (20 ⛔). Portal: **46 open** —
-- **26 Claude can do now:** DEV-10, 11, 12, 17, 18, 19, 22, 23, 24, 29, 30,
+- **25 Claude can do now:** DEV-10, 12, 17, 18, 19, 22, 23, 24, 29, 30,
   31, 34, 35, 36, 38, 40, 41, 42, 43, 44, 45, 48, 49, 55, 57.
-  DEV-11 (2FA for creators) is being built in a separate session started from
-  the "Enforce two-step sign-in for admin and creators" chip — check whether
-  it merged before touching auth. DEV-35 is partly done (DEV-33 fixed og:locale
+  DEV-11 (2FA) is done and merged (§31). DEV-35 is partly done (DEV-33 fixed og:locale
   and canonicals; breadcrumbs / `inLanguage` in JSON-LD remain).
 - **19 wait on the owner / accounts:** DEV-07, 13, 14, 15, 16, 25, 26, 27, 28,
   32, 46, 50, 51, 52, 53, 54, 56, 58, 59.

@@ -17,6 +17,7 @@ import bcrypt from 'bcryptjs'
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { submitSignIn } from './two-factor-fixture.mjs'
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
 
@@ -30,9 +31,8 @@ async function signIn(browser: Browser, email: string) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } })
   const page = await context.newPage()
   await page.goto(`${BASE}/sign-in`, { waitUntil: 'domcontentloaded' })
-  await page.fill('input[name="email"]', email)
-  await page.fill('input[name="password"]', 'Laqta!2026')
-  await page.click('button[type="submit"]')
+  // Creator and admin answer the 2FA step too (scripts/two-factor-fixture.mjs).
+  await submitSignIn(page, email, 'Laqta!2026')
   await page.waitForURL((url) => !url.pathname.includes('/sign-in'), { timeout: 20_000 }).catch(() => {})
   await page.close()
   return context
@@ -567,12 +567,32 @@ async function main() {
       report('no errors on the make-creator flow', errors.length === 0, errors.slice(0, 2).join(' | '))
       await page.close()
 
+      // Mandatory 2FA: a new creator is held on /account/security until they
+      // enrol, with the notice saying why, and nothing of the studio renders.
+      targetContext = await signIn(browser, email)
+      {
+        const held = await targetContext.newPage()
+        await held.goto(`${BASE}/studio`, { waitUntil: 'domcontentloaded' })
+        const url = new URL(held.url())
+        report(
+          'unenrolled, the new creator is sent to the 2FA page',
+          url.pathname === '/account/security' && url.searchParams.get('next') === '/studio',
+          url.pathname + url.search,
+        )
+        report('  …which says why', (await held.locator('[data-two-factor="required"]').count()) === 1)
+        await held.close()
+      }
+      await targetContext.close()
+      await db.user.update({
+        where: { id: target.id },
+        data: { twoFactorEnabled: true, twoFactorSecret: 'LAQTAFLOWSMAKERTOTPSECRETFIXTURE' },
+      })
       targetContext = await signIn(browser, email)
       const studio = await targetContext.newPage()
       await studio.goto(`${BASE}/studio`, { waitUntil: 'domcontentloaded' })
       const body = await studio.locator('main').innerText().catch(() => '')
       report(
-        'after signing in they reach the studio itself',
+        'enrolled and signed in, they reach the studio itself',
         new URL(studio.url()).pathname.startsWith('/studio') && !body.includes('الوصول غير مسموح') && body.length > 0,
         new URL(studio.url()).pathname,
       )
@@ -594,7 +614,16 @@ async function main() {
     const run = Date.now()
     const email = `flows-admin-maker-${run}@laqta.test`
     const other = await db.user.create({
-      data: { email, name: 'Flows Admin', role: 'admin', passwordHash: await bcrypt.hash('Laqta!2026', 10), locale: 'ar' },
+      data: {
+        email,
+        name: 'Flows Admin',
+        role: 'admin',
+        passwordHash: await bcrypt.hash('Laqta!2026', 10),
+        locale: 'ar',
+        // Enrolled: this checks the creator profile reaching the session, not 2FA.
+        twoFactorEnabled: true,
+        twoFactorSecret: 'LAQTAFLOWSADMINTOTPSECRETFIXTURE',
+      },
     })
     const otherContext = await signIn(browser, email)
     try {

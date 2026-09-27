@@ -10,6 +10,16 @@ live, the creator roster, disputes, the catalogue, the storefront, orders and mo
 before touching the database. Middleware is the gate, the layout is the lock, the action
 is the last word.
 
+**Two-factor is mandatory** (`lib/two-factor.ts`). An admin who has not enrolled in TOTP
+signs in normally but every `/admin/*` request is sent to `/account/security?next=<path>`
+(`/en/account/security?next=/en/…` under English) with a notice saying why; after enrolling
+they are taken back to `next`. The same three layers hold it: middleware on the cookie's
+`tfa` claim (only an explicit `false` — a cookie minted before the claim is left to the
+layout), `app/(admin)/layout.tsx` on the database value, and `requireRole()` (so
+`requireAdmin()`) throwing `TWO_FACTOR_REQUIRED` for any forged action. The seeded
+`admin@laqta.sa` is enrolled with a published dev secret — `npm run totp:code --
+admin@laqta.sa` prints the current code.
+
 **Shape.** All routes render inside `DashboardShell` with the `admin` nav
 (`components/dashboard/nav.ts`). Lists filter through the URL (`FilterChips`, `SearchBox`,
 `RangePicker` — plain anchors, deliberately, see the note in
@@ -90,7 +100,15 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
   `/admin/content/copy/[group]`: every original passes, each edit rule refuses, publish /
   reset / undo / preview against the database, and `translate()` precedence (library level —
   the client editor and the preview banner are not driven).
-- `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin.
+- `verify:auth` asserts the role matrix on `/admin` for buyer, creator and admin (the
+  seeded creator and admin sign in with their TOTP code), and the mandatory-2FA hold: an
+  unenrolled admin is sent from `/admin`, `/admin/orders?…`, `/studio`, `/en/admin` and
+  `/en/studio/…` to the enrolment page with the right `next`; `/account/*` and sign-out stay
+  open; a cookie from before enrolling is held until refreshed; and the layout lock sends
+  `/admin` to enrol when 2FA is removed mid-session.
+- `verify:impersonation` also checks that ending (or expiring) a view hands the admin back
+  **still enrolled** — the viewed buyer's `tfa: false` never leaks out — and `/admin`
+  opens rather than the 2FA page.
 - `verify:impersonation` drives a whole view-as-user session in real Chrome: who may be
   viewed, non-admins never see the control, blank reason refused, start/end/expiry rows
   and audit entries, the banner, and 403s for a server-action POST, an `/en` POST, a
@@ -117,6 +135,16 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
   open session is still a buyer at the `/studio` gate (the success message says so).
 - Suspending an account (`/admin/users/[id]`) refuses new sign-ins only; a JWT already
   issued keeps working until it expires.
+- **2FA has no recovery path.** No backup codes, and no admin control resets another
+  account's 2FA: an admin or creator who loses their authenticator needs a database edit
+  (`twoFactorEnabled = false, twoFactorSecret = null`), after which they are held on
+  `/account/security` to enrol again.
+- An admin held for 2FA still sees «لوحة التحكم» / «الاستوديو» in the header; each click
+  lands back on `/account/security` with the notice.
+- When the layout lock fires (2FA removed from a live session), the page below it has
+  already started rendering in parallel and its `requireAdmin()` throws
+  `TWO_FACTOR_REQUIRED` into the server log. The visitor only sees the redirect; the log
+  line is noise, not a leak.
 - The view-as-user write guard in `lib/db.ts` is not exercised by any gate on its own —
   every writing path a gate can reach is already refused by middleware first.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload

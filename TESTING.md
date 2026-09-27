@@ -24,6 +24,18 @@ Seeded by `npm run db:seed`. Password for all three: `Laqta!2026`
 | `creator@laqta.sa` | creator | the studio (`/studio/*`) |
 | `admin@laqta.sa` | admin | the control panel (`/admin/*`) |
 
+Creator and admin **must** have two-factor on (it is mandatory — without it
+`/studio` and `/admin` send them to `/account/security`). The seed enrols both
+with a fixed dev secret, so signing in asks for a 6-digit code:
+
+```bash
+npm run totp:code -- creator@laqta.sa
+```
+
+The browser gates answer that step themselves (`scripts/two-factor-fixture.mjs`),
+reading each account's secret from the database — an account you re-enrolled
+with your own authenticator still passes.
+
 An admin has **no creator profile**, so `/studio` redirects it to `/sell`. Use
 the creator account for the studio — testing the studio as admin measures a
 marketing page.

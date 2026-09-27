@@ -7,6 +7,7 @@ import {
   IMPERSONATION_END_PATH,
   IMPERSONATION_HEADER,
 } from '@/lib/impersonation-shared'
+import { enrolmentUrl, twoFactorRequired } from '@/lib/two-factor'
 
 const { auth } = NextAuth(authConfig)
 
@@ -21,7 +22,9 @@ const { auth } = NextAuth(authConfig)
  *      page has its own indexable URL, but the router only ever sees one tree —
  *      no `app/[locale]` segment, no route file that has to exist twice.
  *   3. Role guards — /admin admin-only, /studio creator-or-admin,
- *      /account any authenticated user.
+ *      /account any authenticated user — then mandatory two-factor: a creator
+ *      or admin who has not enrolled is sent from /admin and /studio to
+ *      /account/security to do it (lib/two-factor.ts).
  *
  * Order matters: guards run on the STRIPPED path, so `/en/admin` is guarded
  * exactly as `/admin` is. A locale prefix must never be a way around a role.
@@ -77,6 +80,21 @@ export default auth((request) => {
       // Rewrite, not redirect: the URL the user typed stays in the address bar
       // so they can hand it to someone who does have the role.
       return rewriteWithLocale(request, url, locale, viewing)
+    }
+    // ── 3b. Two-factor is mandatory for the dashboards ──────────────────────
+    // Only an explicit `false` from the cookie: a cookie minted before the
+    // claim existed carries none, and the layout lock reads the database for
+    // it. /account is never held — enrolment happens there.
+    if (
+      required !== 'authenticated' &&
+      twoFactorRequired(user.role) &&
+      user.twoFactorEnabled === false
+    ) {
+      const url = request.nextUrl.clone()
+      const [path, query] = enrolmentUrl(locale, pathname + search).split('?')
+      url.pathname = path
+      url.search = `?${query}`
+      return NextResponse.redirect(url)
     }
   }
 

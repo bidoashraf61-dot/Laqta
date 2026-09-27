@@ -5,7 +5,8 @@ straight, and get paid.
 
 Every route sits under the `(studio)` route group. Its layout re-runs the guard
 that `middleware.ts` already applied — unauthenticated → `/sign-in?callbackUrl=/studio`,
-role other than `creator`/`admin` → `/forbidden` — and wraps the page in
+role other than `creator`/`admin` → `/forbidden`, **creator or admin without 2FA
+enrolled → `/account/security?next=/studio`** — and wraps the page in
 `DashboardShell` with the `STUDIO_NAV` sidebar. Every page then calls
 `requireCreator()` again inside itself; all but `/studio/albums/[id]` additionally
 redirect a user with no `Creator` row (typically an admin) to `/sell`.
@@ -26,6 +27,17 @@ or entitlement directly: it requests, and an admin settles.
 | `/studio/settings` | Public profile, payout rail, and the current revenue share | [studio-settings.md](./studio-settings.md) |
 
 ## Area-wide rules
+
+- **Two-factor is mandatory** (`lib/two-factor.ts`). A creator (or admin) who has not
+  enrolled in TOTP signs in, but every `/studio/*` request goes to
+  `/account/security?next=<path>` (`/en/…` kept) with a notice, and comes back after
+  enrolment. Held three ways: middleware on the cookie's `tfa` claim, the `(studio)`
+  layout on the database value, and `requireCreator()` / `studioActor()` refusing with
+  `TWO_FACTOR_REQUIRED` / 403 `two_factor_required` — the upload routes sit outside
+  middleware, so `studioActor()` is their only 2FA check. A creator made by an admin
+  (`/admin/users/[id]`) therefore enrols on their first visit. Seeded
+  `creator@laqta.sa` / `nada@laqta.sa` are enrolled with published dev secrets
+  (`npm run totp:code -- creator@laqta.sa`).
 
 - **Every server action re-resolves the creator from the session** and scopes its
   query by `creatorId`. Rendering a page is never the authorisation boundary — a

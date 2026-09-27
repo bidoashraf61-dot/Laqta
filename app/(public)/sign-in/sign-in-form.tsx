@@ -55,6 +55,11 @@ function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [needsTotp, setNeedsTotp] = useState(false)
+  // Controlled on purpose. A form `action` resets every uncontrolled field when
+  // it settles, so the step that asks for the 2FA code used to arrive with the
+  // email and password wiped — and submitting it failed on the blank fields.
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   function onSubmit(formData: FormData) {
     setError(null)
@@ -79,7 +84,16 @@ function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
 
       <Field label={t('auth.email')} htmlFor="email" required>
         {/* Latin content on an Arabic page — forced LTR so the caret behaves. */}
-        <Input id="email" name="email" type="email" dir="ltr" autoComplete="email" required />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          dir="ltr"
+          autoComplete="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
       </Field>
 
       <Field label={t('auth.password')} htmlFor="password" required>
@@ -89,6 +103,8 @@ function EmailForm({ callbackUrl }: { callbackUrl?: string }) {
           type="password"
           dir="ltr"
           autoComplete="current-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
           required
         />
       </Field>

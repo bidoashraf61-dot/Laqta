@@ -20,6 +20,7 @@
  */
 
 import { chromium } from 'playwright'
+import { submitSignIn } from './two-factor-fixture.mjs'
 
 const BASE = process.env.VERIFY_BASE_URL ?? process.env.LAQTA_BASE ?? 'http://localhost:3000'
 const PASSWORD = 'Laqta!2026'
@@ -219,9 +220,8 @@ async function signIn(email) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } })
   const page = await context.newPage()
   await page.goto(BASE + '/sign-in', { waitUntil: 'domcontentloaded' })
-  await page.fill('input[name="email"]', email)
-  await page.fill('input[name="password"]', PASSWORD)
-  await page.click('button[type="submit"]')
+  // Creator and admin answer the 2FA step too (scripts/two-factor-fixture.mjs).
+  await submitSignIn(page, email, PASSWORD)
   await page
     .waitForURL((u) => !u.pathname.includes('/sign-in'), { timeout: 25_000 })
     .catch(() => {})

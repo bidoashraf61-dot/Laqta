@@ -72,6 +72,9 @@ Password for all of them: `Laqta!2026`
 | `nada@laqta.sa` | creator (Saudi, Standard tier) |
 | `buyer@agency.sa` | buyer (business account, CR + VAT on file) |
 
+The admin and both creators have two-factor switched on (it is mandatory for
+those roles), so signing in asks for a code: `npm run totp:code -- admin@laqta.sa`.
+
 The seed also puts in the full bilingual Saudi taxonomy, one live album with 22
 clips, a draft, one album in review, five orders at different ages so the
 30-day payout hold is visible in the ledger, and ten search queries — seven of
@@ -213,10 +216,24 @@ email form only. No action ever returns a code to the browser (DEV-01).
 ### 2FA
 
 `lib/totp.ts` — RFC 6238 on `node:crypto`, no dependency. Enrolment lives at
-`/{locale}/account/security`. Mandatory for creator and admin
-(`twoFactorRequired(role)`); they cannot turn it off. When an enrolled account
-signs in without a code, the provider throws `TwoFactorRequiredError` and the
-form shows the authenticator step.
+`/account/security` (`/en/account/security`). **Mandatory for creator and admin**
+(`lib/two-factor.ts`); they cannot turn it off, and until they enrol every
+`/admin/*` and `/studio/*` request sends them to the enrolment page and back
+afterwards — held by middleware, the `(admin)`/`(studio)` layouts and
+`requireRole()`/`studioActor()`. When an enrolled account signs in without a
+code, the provider throws `TwoFactorRequiredError` and the form shows the
+authenticator step.
+
+The seeded demo admin and creators are enrolled with fixed, published dev
+secrets (`prisma/seed.ts` — never run it against production). To sign in to one
+locally, get the current code:
+
+```bash
+npm run totp:code -- admin@laqta.sa
+```
+
+The browser gates type the code the same way (`scripts/two-factor-fixture.mjs`);
+there is no bypass.
 
 ---
 

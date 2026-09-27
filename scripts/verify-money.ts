@@ -94,6 +94,7 @@ async function main() {
   report(
     '…carrying the frozen creator net',
     Math.abs(Number((saleMail[0]?.payload as { earnings?: number })?.earnings ?? -1) - Number(item.creatorNetAmount)) < 0.005,
+    `${(saleMail[0]?.payload as { earnings?: number })?.earnings} vs ${item.creatorNetAmount}`,
   )
   await db.mailOutbox.deleteMany({ where: { id: { in: saleMail.map((row) => row.id) } } })
 

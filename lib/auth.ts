@@ -89,20 +89,24 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         totp: { label: 'Authenticator code', type: 'text' },
       },
       async authorize(raw, request) {
-        const parsed = emailSchema.safeParse(raw)
-        if (!parsed.success) return null
-
         // DEV-48: consecutive failures per account, and attempts per network.
         // Here rather than in the sign-in action, so a POST straight to the
-        // Auth.js callback meets the same wall. A success clears the account's
-        // count, so only failures in a row add up.
-        const emailKey = limitKey(parsed.data.email.toLowerCase())
+        // Auth.js callback meets the same wall — and BEFORE the shape check,
+        // so a malformed attempt (a too-short guess) counts too. A success
+        // clears the account's count, so only failures in a row add up.
+        const rawEmail = String((raw as { email?: unknown } | undefined)?.email ?? '').trim().toLowerCase()
+        const emailKey = limitKey(rawEmail)
         const ip = clientIp(request?.headers)
-        const byEmail = hit('signin-email', emailKey, LIMITS.signInPerEmail.limit, LIMITS.signInPerEmail.windowMs)
+        const byEmail = rawEmail
+          ? hit('signin-email', emailKey, LIMITS.signInPerEmail.limit, LIMITS.signInPerEmail.windowMs)
+          : { ok: true as const }
         const byIp = limitsNetwork(ip)
           ? hit('signin-ip', limitKey(ip), LIMITS.signInPerIp.limit, LIMITS.signInPerIp.windowMs)
           : { ok: true as const }
         if (!byEmail.ok || !byIp.ok) throw new RateLimitedError()
+
+        const parsed = emailSchema.safeParse(raw)
+        if (!parsed.success) return null
 
         const user = await db.user.findUnique({
           where: { email: parsed.data.email.toLowerCase() },

@@ -502,7 +502,7 @@ async function securityRules() {
     report('a suspended account is sent away from /account', (await probe(live.jar, '/account')) === 'redirected')
     await db.user.update({ where: { id: user.id }, data: { status: 'active' } })
 
-    for (let i = 0; i < 10; i++) await signIn('email', { email, password: `wrong-${i}` })
+    for (let i = 0; i < 10; i++) await signIn('email', { email, password: `wrong-password-${i}` })
     const locked = await signIn('email', { email, password })
     report('ten wrong passwords in a row lock the account for a while — even the right one is refused', !locked.session.user)
   } finally {

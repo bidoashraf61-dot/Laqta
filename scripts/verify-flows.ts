@@ -295,7 +295,17 @@ async function main() {
           .waitFor({ timeout: 90_000 })
           .then(() => true)
           .catch(() => false)
-        report('an uploaded clip reaches «جاهزة» on the page', ready)
+        // The page polls with router.refresh(), which on this codebase can
+        // decline to commit under load (CLAUDE.md). One reload tells a
+        // stale screen apart from a clip that really never became ready.
+        const readyAfterReload =
+          ready ||
+          (await page
+            .reload({ waitUntil: 'networkidle' })
+            .then(() => page.getByText('جاهزة', { exact: true }).first().waitFor({ timeout: 30_000 }))
+            .then(() => true)
+            .catch(() => false))
+        report('an uploaded clip reaches «جاهزة» on the page', readyAfterReload, ready ? '' : 'after one reload')
         const clip = await db.clip.findFirst({ where: { albumId: album.id } })
         report('its specs came from the file', clip?.width === 1280 && Number(clip?.fps) === 25, `${clip?.width}×${clip?.height}@${clip?.fps}`)
 

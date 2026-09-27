@@ -31,13 +31,20 @@ export const CONTRADICTIONS: Array<[RegExp, string]> = [
  * locations" or "permits cleared" is false about part of it — how each album
  * was made is stated on the album (specs/public/index.md, DEV-20). A price comparison names
  * a competitor by implication and cannot be substantiated. "Every use" is false
- * while the licence excludes reselling the clip itself.
+ * while the licence excludes reselling the clip itself. "Yours forever" sells
+ * ownership; what is sold is a permanent licence (DEV-21).
  */
 export const OVERCLAIMS: Array<[RegExp, string]> = [
   [/بسعر لقطة (?:مفردة|واحدة)|أرخص ب|cheaper than|\d+\s*(?:×|x|times) cheaper/i, 'compares price'],
   [/مواقع (?:سعودية )?حقيقية|actually shot|real locations/i, 'claims the footage was filmed on location'],
   [/تصاريح موثّقة|permits (?:and locations )?cleared|documented clearance/i, 'claims permits were cleared'],
   [/جميع الاستخدامات|every use\b|all uses\b/i, 'claims the licence covers every use'],
+  // D2 (2026-09-26): the buyer holds a permanent LICENCE, not the footage —
+  // the Terms say so. "Yours forever" promised ownership (DEV-21).
+  [
+    /لك للأبد|ملكك للأبد|امتلاك دائم|امتلكه للأبد|وامتلكه|yours for life|yours forever|own it (?:for life|forever)|keep (?:it )?for good/i,
+    'promises ownership instead of a permanent licence',
+  ],
 ]
 
 export const BANNED_CLAIMS = [...CONTRADICTIONS, ...OVERCLAIMS]

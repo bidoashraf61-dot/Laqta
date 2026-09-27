@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-20 done — honest origin and resolution wording)_
+_Last updated: 2026-09-27 (DEV-21 done — «ترخيص دائم», not «لك للأبد»)_
 
 ---
 
@@ -474,12 +474,27 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Tip: after an app restart the shell loses `.env`; run gates with
   `set -a; . ./.env; set +a` first, and start the DB (`laqta-db`).
 
-## 27. Where to pick up
+## 27. Session — 2026-09-27 (DEV-21)
 
-Next ⛔ tasks with no dependency: DEV-21 is next in the list («لك للأبد» →
-«ترخيص دائم», D2 answered), then DEV-33 (English pages indexed on their own)
-and DEV-39 (page speed). Many ⛔ tasks wait on the owner's accounts
-(BIZ-02/03/04/06/07/13).
+- **DEV-21 done.** "Yours forever" wording replaced with «ترخيص دائم» /
+  "permanent licence" (D2) in 17 visitor strings, both languages: the brand
+  promise (also the sign-in intro), hero body, FAQ 3, offers hint, price
+  section, footer tagline, USP rail, licence and price titles, album-page
+  reassurance, library, bundle page, and the receipt email.
+- `lib/copy-claims.ts` now bans «لك للأبد», «ملكك للأبد», «امتلاك دائم»,
+  «وامتلكه», "yours for life/forever", "own it for life/forever", "keep for
+  good" — `verify:licence` fails on them and the copy editor refuses them.
+- Not changed: the Terms' «وتبقى ملكك للتحميل» (content/legal.ts) — a legal
+  text, for the lawyer's rewrite (DEV-26); the creator-facing «مادتك تبقى لك»
+  on /sell (true: creators keep their rights).
+- The local DB stops when the app restarts: `npm run db:start` (in the
+  background), and `set -a; . ./.env; set +a` before gates.
+
+## 28. Where to pick up
+
+Next ⛔ tasks with no dependency: DEV-33 (English pages indexed on their own)
+and DEV-39 (page speed). DEV-22 (clip-count grammar) is a quick non-⛔ one.
+Many ⛔ tasks wait on the owner's accounts (BIZ-02/03/04/06/07/13).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

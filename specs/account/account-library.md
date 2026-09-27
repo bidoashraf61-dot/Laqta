@@ -51,7 +51,7 @@ No mutations on this surface. No server actions.
   `album.clips`; a creator editing or deleting clips after purchase must not
   change what a buyer sees here.
 - Only the owner's rows: the `userId` filter is not optional.
-- Ownership is unlimited in time and download count («ملكك للأبد · تحميل غير محدود»).
+- The licence is permanent and downloads are unlimited («ترخيص دائم · تحميل بلا حد», DEV-21 — the buyer holds a licence, not the footage).
 
 ## Verified by
 `verify:entitlement` (buy → mutate album → library clip count unchanged),

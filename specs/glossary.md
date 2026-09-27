@@ -25,7 +25,7 @@ finds nothing.
 | Who supplies the footage | **صنّاع المحتوى** (with shadda) | creators |
 | The commercial grant | ترخيص تجاري كامل | full commercial licence |
 | Link to the licence page | تفاصيل الترخيص | Licence details |
-| What you keep after paying | امتلاك دائم | yours for life |
+| What you hold after paying | ترخيص دائم (D2; «امتلاك دائم» / «لك للأبد» retired in DEV-21 — they promised ownership of the footage, which the Terms deny; `verify:licence` now fails on them) | permanent licence |
 | How you pay | ادفع مرة واحدة · بلا اشتراكات | pay once · no subscriptions |
 | What lands in your library | الجودة الأصلية | original quality |
 | Common questions | الأسئلة الشائعة | Frequently asked questions |
@@ -34,7 +34,7 @@ finds nothing.
 | Footage made with generative tools | ذكاء اصطناعي | AI generated |
 | The album's shape | أفقي / عمودي / أفقي وعمودي | Landscape / Portrait / Landscape & portrait |
 | Footer rights line | جميع الحقوق محفوظة | All rights reserved |
-| Brand line | ألبومات لقطات سعودية، تشتريها مرة وتبقى لك. | Saudi footage albums. Buy once, keep for good. |
+| Brand line | ألبومات لقطات سعودية، تدفع مرة وترخيصها دائم. | Saudi footage albums. Pay once; the licence is permanent. |
 
 ## Deliberately NOT adopted from the source document
 

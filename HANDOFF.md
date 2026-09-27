@@ -317,6 +317,11 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   `order_promo`); the `order.confirmed` email shows the discount. New gate
   `npm run verify:promos` (in `npm run verify`).
 
+- **Known open bug:** the studio clip list sometimes never flips a finished
+  clip to «جاهزة» (its `router.refresh()` poll intermittently returns empty /
+  does not commit). `verify:flows` "an uploaded clip reaches «جاهزة»" fails
+  intermittently because of it. Not caused by DEV-63; logged as a separate task.
+
 **Next (owner's order):** DEV-60 (album offers), DEV-61 (special price), then
 DEV-64 in three phases; DEV-62 bundles needs the discount decision. Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1

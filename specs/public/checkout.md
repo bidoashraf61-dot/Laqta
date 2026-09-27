@@ -33,6 +33,7 @@ Collect the billing entity and payment method, then place the order — the one 
 | "اذهب إلى المكتبة" (success) | Link | `/account/library` |
 
 ## States
+- **Too many attempts (DEV-48)** — more than 20 orders or 30 promo previews per account in 10 minutes → `auth.rateLimited` «محاولات كثيرة ورا بعض. انتظر دقائق وجرّب مرة ثانية.»; no order is created.
 - **Signed out** — `redirect('/sign-in?callbackUrl=/checkout')`.
 - **Empty cart** — `redirect('/cart')`.
 - **Business without a VAT number** — refused server-side with `checkout.vatNumber` before any order is created.

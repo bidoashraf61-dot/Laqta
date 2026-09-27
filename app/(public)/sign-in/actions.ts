@@ -1,5 +1,7 @@
 'use server'
 
+import { headers } from 'next/headers'
+import { LIMITS, clientIp, hit, limitKey, limitsNetwork } from '@/lib/rate-limit'
 import { AuthError } from 'next-auth'
 import { z } from 'zod'
 import { signIn, normalisePhone, hashPassword } from '@/lib/auth'
@@ -60,6 +62,7 @@ export async function signInWithEmail(formData: FormData): Promise<AuthActionRes
     })
   } catch (error) {
     if (isTwoFactorChallenge(error)) return { status: 'two_factor' }
+    if (hasCode(error, 'rate_limited')) return { status: 'error', messageKey: 'auth.rateLimited' }
     if (error instanceof AuthError) {
       return { status: 'error', messageKey: 'auth.invalidCredentials' }
     }
@@ -105,6 +108,12 @@ const signUpInput = z.object({
 })
 
 export async function signUpWithEmail(formData: FormData): Promise<AuthActionResult> {
+  // DEV-48: account creation per network — a script minting accounts.
+  const ip = clientIp(await headers())
+  if (limitsNetwork(ip) && !hit('signup-ip', limitKey(ip), LIMITS.signUpPerIp.limit, LIMITS.signUpPerIp.windowMs).ok) {
+    return { status: 'error', messageKey: 'auth.rateLimited' }
+  }
+
   const parsed = signUpInput.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -145,9 +154,13 @@ export async function signUpWithEmail(formData: FormData): Promise<AuthActionRes
  * property and the message are checked.
  */
 function isTwoFactorChallenge(error: unknown) {
+  return hasCode(error, 'two_factor_required')
+}
+
+function hasCode(error: unknown, wanted: string) {
   if (!error || typeof error !== 'object') return false
   const code = (error as { code?: unknown }).code
-  if (code === 'two_factor_required') return true
+  if (code === wanted) return true
   const message = (error as { message?: unknown }).message
-  return typeof message === 'string' && message.includes('two_factor_required')
+  return typeof message === 'string' && message.includes(wanted)
 }

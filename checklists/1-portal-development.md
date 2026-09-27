@@ -31,7 +31,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [ ] **DEV-15** ⛔ S3 buckets + CORS + CloudFront wired; Resend switched on — 🤝 · 1 day · *needs BIZ-06, BIZ-13*
 - [ ] **DEV-16** ⛔ **Test site online** + upload one real multi-GB 4K master through S3 → processing → review → approval — 🤝 · 1 day · *needs DEV-14, DEV-15*
 - [x] **DEV-17** AI-accuracy check added to the review checklist (warped buildings, garbled Arabic text, wrong dress, morphing, flicker) + translate the checklist to Arabic — 🤖 · 3 hrs — done 2026-09-27 (ninth check «دقة الذكاء الاصطناعي», blocking, «لا ينطبق» for filmed albums; every check's name, reason and prompts now Arabic from the dictionary; approval refusals read in Arabic; unit tests for the check and the copy)
-- [ ] **DEV-18** Duplicate detection: compute the perceptual hash during processing — 🤖 · ½ day
+- [x] **DEV-18** Duplicate detection: compute the perceptual hash during processing — 🤖 · ½ day — done 2026-09-27 (64-bit dHash of the middle frame stored at ingest; the review page's duplicate report now matches near copies within 6 bits, not only identical hashes; unit tests + `verify:uploads`)
 - [x] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs — done 2026-09-27 («اعتماد» / «رفض» per release on the review page; verify needs the scan, reject needs a reason the creator reads; audited; `verify:flows` verifies one)
 
 ## Owner controls — requested 2026-09-27 (owner picks the timing)
@@ -63,7 +63,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-27** ⛔ Licence certificate: real licence text (today 2 sentences), singular labels, licensor company line, drop "(optional)" — 🤝 · ½ day · *needs BIZ-02*
 - [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT; **D7: keep 15% until BIZ-03 answers**); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
 - [x] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min — done 2026-09-27 (mada/Tabby/Tamara removed as payment methods and as copy; the «الدفع بالبطاقة قيد التفعيل» note is gone — bank-transfer-only checkout just shows bank transfer; the forged-method refusal reworded; `verify:payments` checks both)
-- [ ] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days
+- [x] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days — done 2026-09-27 (9 templates, AR + EN, all in the registry: verify-email in the reader's language; creator sale + payout paid inside their transactions; card failed/pending from the Paymob webhook; bank-transfer reminder after 3 days by the daily job; contact + request acknowledgements; creator welcome with the 2FA step; launch notice ready for the waitlist (DEV-45). Each sends once. **Owner:** nothing leaves until Resend is on (DEV-15), and the daily job needs the server's cron (DEV-14))
 - [x] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day — done 2026-09-27 (both writer briefs rewritten to D1–D10: 30–70 clips, $49–$249 set at review, AI + filmed and never «تصوير» for AI, resolution per album, «ترخيص دائم» not ownership, no refund copy, no mada/Tabby/Tamara, plural rules now in code; `gemini/` re-exported from today's copy (18 parts); the August website draft and the two old reviews marked superseded)
 - [ ] **DEV-32** Contact details shown on `/contact` and in site data — 🤖 · 30 min · *needs BIZ-10*
 
@@ -88,8 +88,8 @@ album's price, and no way to edit site wording without a developer.
 ## M5 — Rehearsal · by 21 Nov
 
 - [x] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day — done 2026-09-27 (`npm run db:seed:production` with ADMIN_EMAIL/ADMIN_PASSWORD; shared real data in `prisma/seed-base.ts`; demo seed refuses non-local databases; demo seed's missing-licence bug fixed; `verify:production-seed`)
-- [ ] **DEV-48** Security: suspended users logged out at once; rate limits on sign-in, sign-up, checkout; Content-Security-Policy — 🤖 · 1 day
-- [ ] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day
+- [x] **DEV-48** Security: suspended users logged out at once; rate limits on sign-in, sign-up, checkout; Content-Security-Policy — 🤖 · 1 day — done 2026-09-27 (suspension ends open sessions at the next page load; `lib/rate-limit.ts` limits sign-in (10 failures/account, 40/network per 15 min, also on the raw Auth.js callback), sign-up, checkout and promo previews; CSP + nosniff/referrer/frame/permissions headers on every page; `verify:auth` + unit tests)
+- [x] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day — done 2026-09-27 (owner: finish. Boards finished — «أضف للوح» on a clip opens "add to…" with one button per board or a new board holding the clip; `/account/boards/[id]` shares by link on/off with copy, removes clips, renames, deletes; `verify:flows` drives it as the buyer. Promo codes were already wired end to end by DEV-63 — admin `/admin/promos`, the checkout field, `verify:promos` — nothing left to finish)
 - [ ] **DEV-50** Sentry error reporting wired — 🤖 · ½ day · *needs BIZ-08*
 - [ ] **DEV-51** Paymob refunds made in the Paymob dashboard reverse Laqta's records — 🤖 · ½ day · *needs BIZ-04*
 - [ ] **DEV-52** Privacy features as decided (deletion/export by email or a button) — 🤖 · ½–2 days · *needs BIZ-12*
@@ -97,7 +97,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-54** Emails land in the inbox (Gmail + Outlook, Arabic + English) — 🤝 · 1 hr
 - [ ] **DEV-55** Phone + desktop pass of every page in both languages; landing on a real iPhone — 🤖 · ½ day
 - [ ] **DEV-56** Restore a database backup once — 🤝 · 1 hr
-- [ ] **DEV-57** Operator daily digest email (queue, unsettled transfers, failed mail, messages) — 🤖 · 1 day
+- [x] **DEV-57** Operator daily digest email (queue, unsettled transfers, failed mail, messages) — 🤖 · 1 day — done 2026-09-27 (Arabic morning email to MAIL_OPERATOR_TO: review queue + overdue, unconfirmed transfers + oldest, payout requests, open messages, new footage requests, failed mail; once a day via `npm run jobs:daily` or `POST /api/cron/daily` with `CRON_SECRET`)
 
 ## M6 — Live
 

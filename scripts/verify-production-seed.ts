@@ -76,7 +76,13 @@ async function counts(db: PrismaClient) {
       db.bundle.count(),
     ])
   return {
-    taxonomy: Object.fromEntries(taxonomy.map((row: { kind: string; _count: { _all: number } }) => [row.kind, row._count._all])),
+    // Sorted: groupBy returns kinds in no fixed order, and the idempotency check
+    // compares two runs as JSON — an unsorted object read as a change.
+    taxonomy: Object.fromEntries(
+      taxonomy
+        .map((row: { kind: string; _count: { _all: number } }) => [row.kind, row._count._all] as const)
+        .sort(([a], [b]) => a.localeCompare(b)),
+    ),
     licences, current, bands, users, albums, clips, orders, reviews, analytics, searches, collections, creators, promos, bundles,
   }
 }

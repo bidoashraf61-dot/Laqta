@@ -1,3 +1,4 @@
+import { notifyPaymentStatus } from '@/lib/notifications'
 import { randomUUID } from 'node:crypto'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
@@ -145,8 +146,15 @@ export async function handlePaymobCallback(
     // admin and reverses at the frozen rate; it is not triggered from here.
     return record('reversed_at_gateway', order.id)
   }
-  if (state === 'pending') return record('pending', order.id)
-  if (state === 'failed') return record('declined', order.id)
+  // The buyer hears about both (DEV-30) — once per order and state.
+  if (state === 'pending') {
+    await notifyPaymentStatus(order.id, 'pending')
+    return record('pending', order.id)
+  }
+  if (state === 'failed') {
+    await notifyPaymentStatus(order.id, 'failed')
+    return record('declined', order.id)
+  }
 
   const expectedCents = toMinorUnits(Number(order.total))
   if (

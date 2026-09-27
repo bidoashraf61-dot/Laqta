@@ -219,6 +219,7 @@ async function main() {
 
   await mandatoryTwoFactor()
   await passwordReset()
+  await securityRules()
 
   console.log(failures === 0 ? '\nAll auth checks passed.' : `\n${failures} check(s) failed.`)
   process.exitCode = failures === 0 ? 0 : 1
@@ -477,6 +478,41 @@ async function passwordReset() {
     await db.mailOutbox.deleteMany({ where: { toEmail: address } })
     await db.user.delete({ where: { id: user.id } })
   }
+}
+
+/**
+ * DEV-48: a suspension signs the account out at once; repeated wrong
+ * passwords lock the account for a while (even the right one is refused);
+ * pages carry a Content-Security-Policy.
+ */
+async function securityRules() {
+  console.log('\nSecurity (DEV-48)')
+  const stamp = Date.now()
+  const email = `verify-sec-${stamp}@laqta.test`
+  const password = 'Verify!2026-sec'
+  const user = await db.user.create({
+    data: { email, name: 'Verify Security', passwordHash: await bcrypt.hash(password, 10), locale: 'ar', role: 'buyer' },
+  })
+  try {
+    const live = await signIn('email', { email, password })
+    report('a fresh account signs in', Boolean(live.session.user))
+    await db.user.update({ where: { id: user.id }, data: { status: 'suspended' } })
+    const after = ((await fetch(`${BASE}/api/auth/session`, { headers: { Cookie: cookieHeader(live.jar) } }).then((r) => r.json())) ?? {}) as { user?: unknown }
+    report('suspending it ends the open session at once', !after.user)
+    report('a suspended account is sent away from /account', (await probe(live.jar, '/account')) === 'redirected')
+    await db.user.update({ where: { id: user.id }, data: { status: 'active' } })
+
+    for (let i = 0; i < 10; i++) await signIn('email', { email, password: `wrong-password-${i}` })
+    const locked = await signIn('email', { email, password })
+    report('ten wrong passwords in a row lock the account for a while — even the right one is refused', !locked.session.user)
+  } finally {
+    await db.user.delete({ where: { id: user.id } }).catch(() => {})
+  }
+
+  const page = await fetch(`${BASE}/`, { redirect: 'manual' })
+  const csp = page.headers.get('content-security-policy') ?? ''
+  report('pages carry a Content-Security-Policy', /frame-ancestors 'none'/.test(csp) && /object-src 'none'/.test(csp), csp.slice(0, 60))
+  report('…and nosniff + a referrer policy', page.headers.get('x-content-type-options') === 'nosniff' && Boolean(page.headers.get('referrer-policy')))
 }
 
 main()

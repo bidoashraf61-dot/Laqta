@@ -107,9 +107,28 @@ they throw rather than redirect, so they pair with — not replace — the layou
   re-issued (`unstable_update`) and they go back to `next`. A cookie from another browser,
   minted before enrolment, is held until «المتابعة» (or any `/api/auth/session` fetch)
   refreshes it from the database.
-- **Suspended user** → blocked at `authorize` time (no new session), *not* by
-  the guard. An already-issued JWT for a user suspended afterwards keeps working
-  until it expires.
+- **Suspended user** → blocked at `authorize` time (no new session), and — since
+  DEV-48 — an already-issued JWT is refused at the next `auth()` call: the `jwt`
+  callback's per-call account read returns `null` for `status='suspended'`, so the
+  session ends on the next server render (middleware, on the edge, still admits the
+  cookie; the route-group layout is the lock).
+- **Rate limits (DEV-48, `lib/rate-limit.ts`)** — in-process fixed windows, keys
+  hashed: sign-in 10 consecutive failures per account and 40 attempts per network
+  per 15 min (enforced in `authorize`, before the input's shape is checked — so a
+  malformed guess counts too — and so a POST straight to the Auth.js callback
+  meets it too; a success clears the account's count; a locked sign-in throws
+  `RateLimitedError`, `code='rate_limited'`); sign-up 10 per network per hour;
+  checkout 20 orders and 30 promo previews per account per 10 min. Loopback and an
+  unknown client IP are exempt from the per-network limits only. One server process
+  at launch — several instances would each keep their own counts.
+- **Security headers (DEV-48, `next.config.mjs`)** — every page (not `/api/*` or the
+  certificate PDFs) carries a Content-Security-Policy: `default-src 'self'`; scripts
+  from self (+ inline, for Next's hydration) and Google Tag Manager only; images,
+  media and fetches from self, the media CDN (`NEXT_PUBLIC_MEDIA_CDN_URL`), S3 for
+  studio uploads and Google Analytics; `frame-ancestors 'none'`, `object-src 'none'`,
+  `base-uri 'self'`, `form-action 'self'`. Plus `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY`, a
+  `Permissions-Policy` refusing camera/microphone/geolocation.
 - **Impersonation (view-as-user)** → the token's identity IS the customer's for the
   view, so the guard enforces the customer's role (an admin viewing a buyer cannot
   reach `/admin`). Middleware additionally refuses, with a 403, every non-GET request
@@ -142,7 +161,7 @@ they throw rather than redirect, so they pair with — not replace — the layou
 
 ## Verified by
 
-`verify:auth` — the whole matrix, over HTTP, against a running server: anonymous
+`verify:auth` — (DEV-48) a suspension ends an open session and `/account` redirects; ten wrong passwords lock the account (the right one then refused); `/` carries the CSP and nosniff/referrer headers. And the whole matrix, over HTTP, against a running server: anonymous
 redirects for `/account`, `/studio`, `/admin`, plus buyer/creator/admin against
 each, and the mandatory-2FA hold (middleware redirect with `next` in both languages,
 `/account/*` and sign-out open, the stale-cookie case, the layout lock, the upload-route

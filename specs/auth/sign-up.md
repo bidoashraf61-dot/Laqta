@@ -33,6 +33,7 @@ There is no phone sign-up form here — a phone account is created implicitly by
 the OTP rail on `/sign-in`, which is shut until an SMS provider exists (DEV-01).
 
 ## States
+- **Too many sign-ups from one network (DEV-48)** — more than 10 in an hour → `auth.rateLimited` «محاولات كثيرة ورا بعض. انتظر دقائق وجرّب مرة ثانية.»
 
 - **Signed in already** — never renders; `redirect('/')`.
 - **Pending** — button label swaps to `t('state.loading')`, disabled.

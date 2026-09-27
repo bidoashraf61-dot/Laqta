@@ -1,3 +1,4 @@
+import { LIMITS, clear, clientIp, hit, limitKey, limitsNetwork } from '@/lib/rate-limit'
 import NextAuth, { CredentialsSignin, type DefaultSession, type Session } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
@@ -63,6 +64,11 @@ export class TwoFactorRequiredError extends CredentialsSignin {
   code = 'two_factor_required'
 }
 
+/** Too many sign-in attempts for this account or network (DEV-48). */
+export class RateLimitedError extends CredentialsSignin {
+  code = 'rate_limited'
+}
+
 /**
  * Two credential providers.
  *
@@ -82,7 +88,23 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         password: { label: 'Password', type: 'password' },
         totp: { label: 'Authenticator code', type: 'text' },
       },
-      async authorize(raw) {
+      async authorize(raw, request) {
+        // DEV-48: consecutive failures per account, and attempts per network.
+        // Here rather than in the sign-in action, so a POST straight to the
+        // Auth.js callback meets the same wall — and BEFORE the shape check,
+        // so a malformed attempt (a too-short guess) counts too. A success
+        // clears the account's count, so only failures in a row add up.
+        const rawEmail = String((raw as { email?: unknown } | undefined)?.email ?? '').trim().toLowerCase()
+        const emailKey = limitKey(rawEmail)
+        const ip = clientIp(request?.headers)
+        const byEmail = rawEmail
+          ? hit('signin-email', emailKey, LIMITS.signInPerEmail.limit, LIMITS.signInPerEmail.windowMs)
+          : { ok: true as const }
+        const byIp = limitsNetwork(ip)
+          ? hit('signin-ip', limitKey(ip), LIMITS.signInPerIp.limit, LIMITS.signInPerIp.windowMs)
+          : { ok: true as const }
+        if (!byEmail.ok || !byIp.ok) throw new RateLimitedError()
+
         const parsed = emailSchema.safeParse(raw)
         if (!parsed.success) return null
 
@@ -106,6 +128,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
           if (!verifyToken(user.twoFactorSecret, parsed.data.totp)) return null
         }
 
+        clear('signin-email', emailKey)
         return toSessionUser(user)
       },
     }),
@@ -202,6 +225,9 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
           },
         })
         if (!account) return null
+        // DEV-48: a suspension signs the account out everywhere, at the next
+        // server render — not when the JWT happens to expire.
+        if (account.status === 'suspended') return null
         const issued = typeof token.signedInAt === 'number' ? token.signedInAt : ((token.iat as number) ?? 0) * 1000
         if (account.passwordChangedAt && account.passwordChangedAt.getTime() > issued) return null
 

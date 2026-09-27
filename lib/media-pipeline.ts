@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process'
+import { DHASH_HEIGHT, DHASH_WIDTH, dHashFromPixels } from '@/lib/phash'
 import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
@@ -293,4 +294,35 @@ export async function encodePreviewAndPoster(input: {
   ])
 
   return size
+}
+
+/**
+ * The clip's perceptual hash (DEV-18): one frame from the middle — past any
+ * fade-in — shrunk to 9×8 greys by ffmpeg, then `dHashFromPixels`. Null when
+ * the frame cannot be read; a missing hash only means no duplicate check,
+ * never a failed ingest.
+ */
+export function perceptualHashOf(file: string, durationS: number): Promise<string | null> {
+  const at = Math.max(0, durationS / 2).toFixed(3)
+  return new Promise((resolve) => {
+    const child = spawn('ffmpeg', [
+      '-hide_banner', '-loglevel', 'error',
+      '-ss', at, '-i', file,
+      '-frames:v', '1',
+      '-vf', `scale=${DHASH_WIDTH}:${DHASH_HEIGHT}:flags=area,format=gray`,
+      '-f', 'rawvideo', 'pipe:1',
+    ])
+    const chunks: Buffer[] = []
+    child.stdout.on('data', (chunk: Buffer) => chunks.push(chunk))
+    child.on('error', () => resolve(null))
+    child.on('close', (code) => {
+      const pixels = Buffer.concat(chunks)
+      if (code !== 0 || pixels.length < DHASH_WIDTH * DHASH_HEIGHT) return resolve(null)
+      try {
+        resolve(dHashFromPixels(new Uint8Array(pixels)))
+      } catch {
+        resolve(null)
+      }
+    })
+  })
 }

@@ -1,5 +1,6 @@
 'use server'
 
+import { notifyCreatorAdded } from '@/lib/notifications'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -87,6 +88,7 @@ export async function approveCreator(creatorId: string) {
     entity: 'Creator',
     entityId: creatorId,
   })
+  await notifyCreatorAdded(creatorId)
   revalidatePath('/admin')
   return { ok: true, messageKey: 'actions.approve' }
 }
@@ -243,6 +245,8 @@ export async function makeCreator(_state: Result | null, formData: FormData): Pr
     entityId: creator.id,
     detail: { userId, handle, tier: founding ? 'silver' : 'standard', founding },
   })
+  // «صرت صانع محتوى على لقطة» — with the 2FA step and the re-sign-in (DEV-30).
+  await notifyCreatorAdded(creator.id)
   revalidatePath(`/admin/users/${userId}`)
   revalidatePath('/admin/users')
   revalidatePath('/admin/creators')

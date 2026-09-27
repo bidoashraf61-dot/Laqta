@@ -1,3 +1,4 @@
+import { notifyPayoutPaid } from '@/lib/notifications'
 import { Prisma, type PayoutMethod } from '@prisma/client'
 import { db } from '@/lib/db'
 
@@ -85,6 +86,8 @@ export async function postPayoutPaid(
       memo: reference || null,
     },
   })
+  // «حوّلنا أرباحك» (DEV-30) — queued with the ledger row, both paths.
+  await notifyPayoutPaid(payoutId, tx)
   return true
 }
 

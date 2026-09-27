@@ -364,3 +364,166 @@ export async function notifyContactMessage(input: {
   drainSoon()
   return true
 }
+
+/* ─────────────────────────────── DEV-30 ─────────────────────────────── */
+
+/**
+ * «وصلك بيع جديد» — one message per creator per paid order, listing that
+ * creator's albums and what they earned (the frozen `creatorNetAmount`).
+ * Called by `settleOrder` INSIDE its transaction, like the receipt, so the sale
+ * and the news of it commit together. A zero line (the free sample) is no sale.
+ */
+export async function notifyCreatorSales(orderId: string, client: Client = db): Promise<void> {
+  const items = await client.orderItem.findMany({
+    where: { orderId, creatorNetAmount: { gt: 0 } },
+    select: {
+      creatorId: true,
+      creatorNetAmount: true,
+      order: { select: { orderNumber: true, currency: true } },
+      album: { select: { titleAr: true, titleEn: true } },
+      creator: { select: { user: { select: { email: true, locale: true } } } },
+    },
+  })
+  const byCreator = new Map<string, typeof items>()
+  for (const item of items) byCreator.set(item.creatorId, [...(byCreator.get(item.creatorId) ?? []), item])
+
+  for (const [creatorId, lines] of byCreator) {
+    const first = lines[0]
+    const email = first.creator.user?.email
+    if (!email) continue
+    const key = `${first.order.orderNumber}:${creatorId}`
+    if (await alreadyQueued(client, 'creator.sale', 'saleKey', key)) continue
+    const locale = localeOf(first.creator.user?.locale)
+    await enqueue(client, {
+      template: 'creator.sale',
+      toEmail: email,
+      locale,
+      payload: {
+        saleKey: key,
+        albumTitles: lines.map((line) => titleFor(locale, line.album.titleAr, line.album.titleEn)),
+        earnings: lines.reduce((sum, line) => sum + Number(line.creatorNetAmount), 0),
+        currency: first.order.currency,
+        earningsUrl: siteUrl('/studio/earnings', locale),
+      },
+    })
+  }
+}
+
+/** «حوّلنا أرباحك» — queued inside `postPayoutPaid`, once per payout. */
+export async function notifyPayoutPaid(payoutId: string, client: Client = db): Promise<void> {
+  if (await alreadyQueued(client, 'payout.paid', 'payoutId', payoutId)) return
+  const payout = await client.payout.findUnique({
+    where: { id: payoutId },
+    select: {
+      netAmount: true,
+      currency: true,
+      method: true,
+      reference: true,
+      creator: { select: { user: { select: { email: true, locale: true } } } },
+    },
+  })
+  const email = payout?.creator.user?.email
+  if (!payout || !email) return
+  const locale = localeOf(payout.creator.user?.locale)
+  await enqueue(client, {
+    template: 'payout.paid',
+    toEmail: email,
+    locale,
+    payload: {
+      payoutId,
+      amount: Number(payout.netAmount),
+      currency: payout.currency,
+      method: payout.method,
+      reference: payout.reference ?? '',
+      payoutsUrl: siteUrl('/studio/payouts', locale),
+    },
+  })
+}
+
+/**
+ * A card payment the gateway declined, or is still processing — once per
+ * order and state. The Paymob webhook calls this; the buyer otherwise only
+ * sees it if they are still on the return page.
+ */
+export async function notifyPaymentStatus(orderId: string, state: 'failed' | 'pending'): Promise<void> {
+  try {
+    const template = state === 'failed' ? 'order.paymentFailed' : 'order.paymentPending'
+    const order = await db.order.findUnique({
+      where: { id: orderId },
+      select: { orderNumber: true, status: true, user: { select: { email: true, locale: true } } },
+    })
+    if (!order?.user?.email || order.status !== 'pending') return
+    if (await alreadyQueued(db, template, 'orderNumber', order.orderNumber)) return
+    const locale = localeOf(order.user.locale)
+    await enqueue(db, {
+      template,
+      toEmail: order.user.email,
+      locale,
+      payload: {
+        orderNumber: order.orderNumber,
+        cartUrl: siteUrl('/cart', locale),
+        orderUrl: siteUrl('/account/purchases', locale),
+      },
+    })
+    drainSoon()
+  } catch (error) {
+    console.error('[notifications] payment status not queued:', error)
+  }
+}
+
+/** The visitor's acknowledgement of a /contact message, in their language. */
+export async function notifyContactReceived(input: { name: string; email: string; message: string; locale: 'ar' | 'en' }) {
+  try {
+    const email = input.email.trim()
+    if (!EMAIL.test(email)) return
+    await enqueue(db, {
+      template: 'contact.received',
+      toEmail: email,
+      locale: input.locale,
+      payload: { name: input.name.trim().slice(0, 200), message: input.message.trim().slice(0, MAX_MESSAGE) },
+    })
+    drainSoon()
+  } catch (error) {
+    console.error('[notifications] contact acknowledgement not queued:', error)
+  }
+}
+
+/** The requester's acknowledgement of a footage request. */
+export async function notifyRequestReceived(input: { email: string; brief: string; locale: 'ar' | 'en' }) {
+  try {
+    const email = input.email.trim()
+    if (!EMAIL.test(email)) return
+    await enqueue(db, {
+      template: 'request.received',
+      toEmail: email,
+      locale: input.locale,
+      payload: { brief: input.brief.trim().slice(0, 600) },
+    })
+    drainSoon()
+  } catch (error) {
+    console.error('[notifications] request acknowledgement not queued:', error)
+  }
+}
+
+/** «صرت صانع محتوى على لقطة» — once per creator profile. */
+export async function notifyCreatorAdded(creatorId: string): Promise<void> {
+  try {
+    if (await alreadyQueued(db, 'creator.added', 'creatorId', creatorId)) return
+    const creator = await db.creator.findUnique({
+      where: { id: creatorId },
+      select: { user: { select: { email: true, locale: true } } },
+    })
+    const email = creator?.user?.email
+    if (!email) return
+    const locale = localeOf(creator.user?.locale)
+    await enqueue(db, {
+      template: 'creator.added',
+      toEmail: email,
+      locale,
+      payload: { creatorId, studioUrl: siteUrl('/studio', locale) },
+    })
+    drainSoon()
+  } catch (error) {
+    console.error('[notifications] creator welcome not queued:', error)
+  }
+}

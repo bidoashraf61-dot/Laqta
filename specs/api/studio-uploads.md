@@ -44,6 +44,7 @@ ffprobe and makes the watermarked preview and poster. The client is
 - Complete with missing parts → **400** `incomplete`; the clip stays `uploading` and can resume.
 - Local driver: `…/part` on the S3 driver → **404** (bytes never pipe through the app in production).
 - After complete, ingest runs in the background (`lib/ingest.ts`): `uploaded → probing → transcoding → ready`, or `failed` with `Clip.ingestError` ∈ `missing | probe | container | codec | preview | size`.
+- **Perceptual hash (DEV-18).** Before a clip turns `ready`, ingest takes one frame from the middle of the master (`lib/media-pipeline.ts#perceptualHashOf`: ffmpeg → 9×8 greys) and stores its 64-bit dHash (`lib/phash.ts`, 16 hex) in `Clip.perceptualHash`. Best effort: an unreadable frame leaves it null and never fails the ingest.
 
 ## Invariants
 - **Specs come from the stored file.** Width, height (rotation applied), fps, duration, codec, bitrate, colour (`Rec.709`/`Rec.2020`/`HLG`/`PQ` only when tagged — LOG is never guessed), aspect ratio: ffprobe, server-side. Nothing the browser sends reaches those columns.
@@ -58,7 +59,7 @@ ffprobe and makes the watermarked preview and poster. The client is
 `verify:uploads` — refusals (other creator, album in review, type, size), a real
 ffmpeg-generated master uploaded in parts and assembled byte-exact, ffprobe specs,
 preview (H.264, 720 lines) and poster published, album totals and cover, the gate's
-`clipsProcessing`/`minClips`, an audio-only file failing with `probe`, delete removing
+`clipsProcessing`/`minClips`, the perceptual hash stored at ingest (DEV-18), an audio-only file failing with `probe`, delete removing
 row, master and preview; with `VERIFY_BASE_URL`, unauthenticated start and part → 401.
 `verify:auth` — an unenrolled creator's `GET …/[clipId]` → 403 `two_factor_required`.
 The S3 driver's presigned path is not exercised (no bucket in CI).

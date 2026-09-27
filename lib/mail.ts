@@ -138,7 +138,7 @@ const identifierFor = (userId: string, email: string) => `${userId}:${email.toLo
  * Returns the link when delivery did not happen, so a development caller can
  * surface it. It is never returned once a provider is configured.
  */
-export async function issueEmailVerification(userId: string, email: string, origin: string) {
+export async function issueEmailVerification(userId: string, email: string, origin: string, locale: 'ar' | 'en' = 'ar') {
   const identifier = identifierFor(userId, email)
 
   // One live token per address: issuing a new one invalidates the last, so a
@@ -154,7 +154,7 @@ export async function issueEmailVerification(userId: string, email: string, orig
     },
   })
 
-  const link = `${origin}/account/verify-email?token=${token}`
+  const link = `${origin}${locale === 'en' ? '/en' : ''}/account/verify-email?token=${token}`
 
   /*
    * Sent directly rather than queued, deliberately.
@@ -165,11 +165,12 @@ export async function issueEmailVerification(userId: string, email: string, orig
    * the development link when no provider is configured. Queuing would put a
    * drain between the click and that answer for no gain.
    */
-  const delivered = await sendMail(
-    email,
-    'تأكيد بريدك الإلكتروني — لقطة',
-    `لتأكيد بريدك الإلكتروني، افتح الرابط التالي خلال ${TOKEN_TTL_MINUTES} دقيقة:\n\n${link}`,
-  )
+  // The template, in the reader's language (DEV-30) — it used to be a bare
+  // Arabic text line built here. Imported lazily: the registry pulls in the
+  // whole dictionary, which this module's other callers never need.
+  const { renderTemplate } = await import('@/emails/registry')
+  const rendered = renderTemplate('auth.verifyEmail', locale, { verifyUrl: link, minutes: TOKEN_TTL_MINUTES })
+  const delivered = await sendMail(email, rendered.subject, rendered.text, [], { html: rendered.html })
 
   return { delivered, devLink: delivered ? null : link }
 }

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { actionT } from '@/lib/locale-request'
+import { actionT, requestLocale } from '@/lib/locale-request'
 import type { ActionResult } from '@/components/dashboard/form'
 import { issueEmailVerification } from '@/lib/mail'
 import { issueOtp, consumeOtp, phoneSignInEnabled } from '@/lib/otp'
@@ -165,7 +165,7 @@ export async function sendEmailVerification(): Promise<ActionResult & { devLink?
   // The link has to be absolute. It comes from the configured origin
   // (DEV-40), not the Host header: behind a proxy that header can be an
   // internal name, and the old fallback guessed 'localhost:3000'.
-  const { delivered, devLink } = await issueEmailVerification(session.user.id, user.email, siteOrigin())
+  const { delivered, devLink } = await issueEmailVerification(session.user.id, user.email, siteOrigin(), await requestLocale())
 
   return delivered
     ? { ok: true, message: tr('account.verifyEmailSent') }

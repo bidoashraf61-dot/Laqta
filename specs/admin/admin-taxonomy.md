@@ -45,6 +45,7 @@ There is **no delete control** — terms are only deactivated.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- Each term's album count is `countOf('album', n)` (DEV-22).
 - Terms are deactivated, never deleted: a delete would cascade away `AlbumTaxonomy` /
   `ClipTaxonomy` attachments and break bookmarked location URLs.
 - `(kind, slug)` is unique in the schema and re-checked in the action before writing.

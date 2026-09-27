@@ -105,6 +105,7 @@ Every clip action re-checks ownership and editability server-side (`lib/uploads.
 - **No `metadata` export** — this route falls back to the root title.
 
 ## Invariants
+- The subtitle's clip count is `countOf('clip', n)` (DEV-22).
 - **Clip specs are never typed or sent by the browser.** Width, height, fps, duration, codec, colour and aspect come from ffprobe on the stored master (`lib/ingest.ts`); the consistency check and the reviewer read those columns.
 - Masters go to private storage only (S3 masters bucket, or `.media/masters` on the local driver); the preview and poster are generated server-side with the site's watermark burnt in and published to the public media store (or `public/uploads/` locally).
 - `Album.clipCount`, `totalRuntimeS`, `totalSizeBytes` follow READY clips (`refreshAlbumTotals`), and the cover falls back to the first ready clip.

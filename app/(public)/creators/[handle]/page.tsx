@@ -7,7 +7,7 @@ import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { Stars } from '@/components/ui/stars'
-import { t, formatNumber, formatDate } from '@/lib/i18n'
+import { countOf, formatDate, formatNumber, t } from '@/lib/i18n'
 import { PageTitle, SubHeadline } from '@/components/ui/typography'
 import { currentLocale, localeAlternates, localePath, pickLocalised } from '@/lib/locale'
 import { REVEAL } from '@/lib/motion'
@@ -169,7 +169,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
               count={ratingTotal}
               label={t('review.ratingSummary', {
                 value: rating.toFixed(1),
-                count: String(ratingTotal),
+                count: countOf('rating', ratingTotal),
               })}
             />
           </span>

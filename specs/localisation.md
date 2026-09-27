@@ -66,6 +66,31 @@ Node can interleave them. Context is per-render by construction.
 JSON-LD, `alt`, `aria-label`, breadcrumb strings. Those attributes are where
 Arabic leaked longest, because no visual review catches them.
 
+## Counted nouns (DEV-22)
+
+A count is never a number beside a fixed noun — `{n} {t('commerce.clip')}`
+shipped "22 clip" in English and «٣ صانع محتوى» in Arabic. Every count goes
+through `lib/i18n.ts`:
+
+| Helper | Where | Gives |
+|---|---|---|
+| `countOf(noun, n)` | server components | «لقطة واحدة», «لقطتان», «٥ لقطات», «٢٢ لقطة», «١٠٠ لقطة» · "1 clip", "22 clips" |
+| `countLabel(noun, n)` | a tile whose figure is set apart | the noun alone, agreeing with `n` («صنّاع محتوى» for 5) |
+| `useCount()` | client components (`lib/i18n-client`) | `countOf` against the context locale and edited copy |
+| `countIn(locale, noun, n)` | mail, scripts | the same, locale passed in |
+
+The form is `Intl.PluralRules` for the locale: Arabic `zero` / `one` / `two` /
+`few` (3–10, 103–110 …) / `many` (11–99: singular accusative, «١٥ ألبوماً») /
+`other` (100+: singular genitive, «١٠٠ ألبوم»); English `one` / `other`. Each
+noun keeps all six forms in **both** dictionaries under `count.<noun>.<form>`
+(labels under `count.<noun>Label.<form>`) — English repeats its plural — so the
+copy editor (catalogue group, `count.*`) never shows an Arabic default in an
+English field. Nouns: `clip`, `album`, `creator` (these three with labels),
+`result`, `rating`, `preview`, `zip`, `search`. Numbers keep Latin digits
+(`formatNumberIn`), as everywhere else. Admin-only counts (rows, strings,
+payout items) are written label-first («عدد البنود: {count}»), which needs no
+agreement.
+
 ## SEO
 
 - **Canonical** — each page points at itself in its own language.
@@ -151,6 +176,12 @@ the wrapper makes the correct behaviour the default.
 - **Neither language of `content/legal.ts` has been reviewed by counsel.**
 
 ## Verified by
+
+`npm run verify:i18n` — every counted noun has all six forms in both
+dictionaries; worked Arabic and English cases (1, 2, 3, 10, 11, 22, 100, 103);
+no copy value glues `{count}` to a fixed noun; no component renders a number
+next to a translated noun (DEV-22).
+
 
 `npm run verify:arabic` — now bidirectional. Arabic routes must contain no
 un-isolated English; English routes must contain no Arabic. Also asserts the

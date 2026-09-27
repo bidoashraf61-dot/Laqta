@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react'
 import { Link } from '@/components/ui/link'
 import { buttonVariants } from '@/components/ui/button'
-import { formatNumber, t } from '@/lib/i18n'
+import { countOf, t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import { compLimits } from '@/lib/previews'
 
@@ -95,7 +95,7 @@ export function CompDownload({
         <WithResolution
           text={
             album
-              ? t('catalogue.compNoteAlbum', { count: formatNumber(fileCount ?? 0), res: '{res}' })
+              ? t('catalogue.compNoteAlbum', { count: countOf('preview', fileCount ?? 0), res: '{res}' })
               : t('catalogue.compNote', { res: '{res}' })
           }
         />
@@ -105,8 +105,8 @@ export function CompDownload({
         <p role="status" className="text-xs font-medium leading-relaxed text-warning">
           {notice === 'limit'
             ? album
-              ? t('catalogue.compLimitAlbum', { limit: formatNumber(compLimits().zipsPerDay) })
-              : t('catalogue.compLimit', { limit: formatNumber(compLimits().clipsPerHour) })
+              ? t('catalogue.compLimitAlbum', { limit: countOf('zip', compLimits().zipsPerDay) })
+              : t('catalogue.compLimit', { limit: countOf('preview', compLimits().clipsPerHour) })
             : t('catalogue.compUnavailable')}
         </p>
       ) : null}

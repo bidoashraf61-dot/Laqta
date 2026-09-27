@@ -29,6 +29,7 @@ Read-only. `?page=n` is accepted and applied, but no pagination controls are ren
 - `heroImage` is read into metadata (OpenGraph) but is not rendered on the hub page itself.
 
 ## Invariants
+- The result count reads `countOf('result', total)` («نتيجة واحدة», «٧ نتائج», «٢٤ نتيجة») (DEV-22).
 - Only live albums' ready clips appear.
 - Server-rendered end to end.
 - `BreadcrumbList` JSON-LD is emitted.

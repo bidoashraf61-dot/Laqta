@@ -5,7 +5,7 @@ import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, Download, FileText, Receipt } from 'lucide-react'
 import { db } from '@/lib/db'
-import { formatMoney, t } from '@/lib/i18n'
+import { countOf, formatMoney, t } from '@/lib/i18n'
 import { formatBytes, formatDuration, cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -219,7 +219,7 @@ export default async function AlbumPage({
                     src={hero}
                     alt={t('catalogue.altAlbumCover', {
                       album: pickLocalised(album.titleAr, album.titleEn),
-                      count: String(album.clipCount),
+                      count: countOf('clip', album.clipCount),
                     })}
                     className="size-full object-cover"
                   />
@@ -264,7 +264,7 @@ export default async function AlbumPage({
               {/* Only the number is LTR-isolated — see the note in
                   album-card.tsx. At display size the wrong order is glaring. */}
               <span className="font-display text-3xl font-bold text-foreground">
-                <span className="numeric">{album.clipCount}</span> {t('commerce.clip')}
+                {countOf('clip', album.clipCount)}
               </span>
               <span className="text-sm text-muted-foreground">
                 {t('catalogue.runtimeTotal', { duration: formatDuration(album.totalRuntimeS) })}

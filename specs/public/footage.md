@@ -48,6 +48,7 @@ No server action mutates anything on this route; the only write is the search lo
 - **Clip-card chips** (DEV-20): the origin badge reads «تصوير بالكاميرا» / "Filmed" or «مُنتَج بالذكاء الاصطناعي» / "AI generated" (was «تصوير حقيقي» / "Real footage"); the resolution chip reads 4K (width ≥ 3840), 1080p (≥ 1920) or 720p (was "HD").
 
 ## Invariants
+- The clip card's album ribbon states the clip count with `useCount()('clip', n)` (DEV-22).
 - Header: `PageTitle` (Serif Display Bold) over the subtitle set in `<Prose>` (Serif Text), the site-wide head composition — not a muted Sans line.
 - `/locations` and `/categories` **308 to this page**. Both indexes were walls of tiles that mostly read "0" on a launch-scale catalogue — pages whose whole job was to advertise how little there is. Browsing by location or category is a FILTER and now composes with every other facet instead of being a separate journey.
 - The redirects live in `next.config.mjs`, NOT as `redirect()` in a page. A render-time redirect on a statically generated route served the destination's HTML at the original URL — a 200 duplicate, which is worse for search than the page it replaced. Verified in a browser before switching: URL unchanged, status 200.

@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/state'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { t } from '@/lib/i18n'
+import { countOf, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
@@ -49,8 +49,8 @@ export default async function BoardsPage() {
             <Card key={board.id}>
               <CardHeader>
                 <CardTitle>{board.name}</CardTitle>
-                <p className="numeric text-sm text-muted-foreground">
-                  {board._count.clips} {t('boards.clips')}
+                <p className="text-sm text-muted-foreground">
+                  {countOf('clip', board._count.clips)}
                 </p>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">

@@ -35,6 +35,7 @@ Review the albums about to be bought, change licence tier in place, and go to ch
 - **A bundle applies** — every album of a running bundle is in the cart: one «توفير الحزمة» row per bundle; the line prices stay as stored, the totals are after the saving. Remove one of its albums and the row disappears.
 
 ## Invariants
+- Each cart line's clip count is `useCount()('clip', n)` (client), so it agrees in both languages (DEV-22).
 - Empty-state copy follows the Saudi register in `docs/content/brand-voice-ar.md` — «سلتك فاضية», never «فارغة»; «ما فيه», never «لا يوجد».
 - One `CartItem` per (cart, album) — enforced by the `@@unique([cartId, albumId])` constraint and the upsert in `addToCart`.
 - Prices displayed here are stored cart values; the authoritative freeze happens later, in `lib/orders.ts` at checkout. Nothing on this page may be treated as the frozen price.

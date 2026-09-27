@@ -8,7 +8,7 @@ import { FilterChips, SearchBox, Toolbar } from '@/components/dashboard/toolbar'
 import { ActionButton } from '@/components/dashboard/form'
 import { TaxonomyEditor, type ParentOption } from '@/components/admin/taxonomy-editor'
 import { toggleTaxonomyActive } from '@/app/(admin)/admin/actions'
-import { formatNumber, t } from '@/lib/i18n'
+import { countOf, t } from '@/lib/i18n'
 import { UserText } from '@/components/ui/bilingual'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
@@ -137,8 +137,7 @@ export default async function AdminTaxonomyPage({
                     <span className="ltr-island">/{term.slug}</span>
                     {term.parent ? ` · ${term.parent.nameAr}` : ''}
                     {' · '}
-                    <span className="numeric">{formatNumber(term._count.albums)}</span>{' '}
-                    {t('dash.termAlbums')}
+                    {countOf('album', term._count.albums)}
                   </p>
 
                   {term.synonymsAr.length > 0 || term.synonymsEn.length > 0 ? (

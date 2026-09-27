@@ -28,6 +28,7 @@ Read-only. There is no follow, contact or message control.
 - **Avatar** — first character of `displayNameAr` in a circle; there is no avatar image.
 
 ## Invariants
+- Stat tiles are headed «الألبومات المنشورة» / «اللقطات في المكتبة» / «زيارات ألبوماته» (EN "Albums published" / "Clips in the library" / "Visits to their albums") — titles, not nouns that must agree with the figure. The rating tile's accessible label reads «{value} من ٥ · ١٢ تقييماً» through `countOf('rating', n)` (DEV-22).
 - Emits **`ProfilePage` + `Person`** schema. On a marketplace the creators ARE the expertise signal — E-E-A-T's first two letters — and the page was full of authorship evidence with no way for an engine to read it as a person.
 - **Public analytics only.** Albums, clips, views and join date are the creator's shopfront and help a buyer judge them. Sales counts and revenue are deliberately NOT shown: that is the creator's commercial position, and publishing it on a profile they cannot opt out of would expose it to their own clients and competitors.
 - Featured albums render as their own section above the full list, so a creator's best work is not buried by recency order.

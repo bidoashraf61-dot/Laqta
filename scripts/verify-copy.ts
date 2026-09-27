@@ -82,7 +82,7 @@ async function main() {
   refuses('a licence overclaim', 'en', 'landing.heroBody', 'Covers every use you can think of.', 'claim')
   refuses('"filmed" in an email', 'en', 'email.orderConfirmedHeading', 'Filmed for you.', 'claim')
   refuses('a button that outgrows its box', 'ar', 'actions.save', 'احفظ كل التعديلات الآن من فضلك', 'tooLong')
-  refuses('a dropped plural count', 'ar', 'count.clipMany', 'لقطة كثيرة', 'placeholderMissing')
+  refuses('a dropped plural count', 'ar', 'count.clip.many', 'لقطة كثيرة', 'placeholderMissing')
   report('accepts Latin runs inside Arabic', validateCopy('ar', 'landing.heroBold', 'بدقة 4K ولقطات سعودية.') === null)
 
   // ── Against the database ─────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { formatMoneyIn, translate } from '@/lib/i18n'
+import { countIn, formatMoneyIn, translate } from '@/lib/i18n'
 import { BCP47, type Locale } from '@/lib/locale'
 import { renderMessage, type Message, type Rendered } from '@/emails/layout'
 
@@ -198,7 +198,7 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
             text: tr('email.sampleClaimedBody', {
               name: str(payload, 'name'),
               order,
-              count: iso(raw(payload, 'clipCount') || '0'),
+              count: iso(countIn(locale, 'clip', Number(raw(payload, 'clipCount')) || 0)),
             }),
           },
           { kind: 'details', rows: [{ label: tr('email.labelOrder'), value: raw(payload, 'orderNumber') }] },

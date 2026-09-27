@@ -45,6 +45,7 @@ No mutations on this surface. No server actions.
 - Revoked entitlements (`revokedAt` set) simply do not appear.
 
 ## Invariants
+- Each entry's clip count is `countOf('clip', n)` (DEV-22).
 - The free sample appears like any album (`getLibrary` marks it `isSample`); its album button goes to [`/sample`](../public/sample.md), not an album page.
 - **Frozen entitlement.** The clip list and count come from
   `OrderItem.clipManifestSnapshot`. This page must never join through to

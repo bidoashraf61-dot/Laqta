@@ -7,7 +7,7 @@ import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { ActionButton } from '@/components/dashboard/form'
 import { SlotEditor, type SlotValue } from '@/components/admin/slot-editor'
 import { toggleCollection, toggleSlotActive } from '@/app/(admin)/admin/actions'
-import { formatDate, formatNumber, t } from '@/lib/i18n'
+import { countOf, formatDate, t } from '@/lib/i18n'
 import { UserText } from '@/components/ui/bilingual'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
@@ -186,8 +186,7 @@ export default async function AdminMerchandisingPage() {
                         ) : null}
                       </h3>
                       <p className="mt-0.5 text-xs text-muted-foreground">
-                        <span className="numeric">{formatNumber(collection._count.albums)}</span>{' '}
-                        {t('commerce.album')}
+                        {countOf('album', collection._count.albums)}
                       </p>
                     </div>
 

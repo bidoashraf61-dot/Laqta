@@ -24,6 +24,7 @@ Read-only.
 - The album count shown is the count of `CollectionAlbum` rows, **not** the count of live albums — a collection containing only drafted albums still advertises a non-zero number and then renders empty on its own page.
 
 ## Invariants
+- The big figure is the bare number; the noun under it is `countLabel('album', n)`, agreeing with it (DEV-22).
 - Only `isPublished=true` collections are listed.
 
 ## Verified by

@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { CollectionCovers } from '@/components/catalogue/collection-covers'
-import { t } from '@/lib/i18n'
+import { countLabel, t } from '@/lib/i18n'
 import { REVEAL } from '@/lib/motion'
 import { requestLocale } from '@/lib/locale-request'
 import { localeAlternates } from '@/lib/locale'
@@ -114,7 +114,7 @@ export default async function CollectionsPage() {
                   <span className="numeric font-display text-3xl font-bold leading-none text-foreground">
                     {collection._count.albums}
                   </span>
-                  <span className="text-sm text-muted-foreground">{t('commerce.album')}</span>
+                  <span className="text-sm text-muted-foreground">{countLabel('album', collection._count.albums)}</span>
                 </p>
               </div>
             </Link>

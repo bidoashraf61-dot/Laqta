@@ -42,6 +42,7 @@ Read-only apart from navigation — this route calls no server action.
 - **Not cleared for commercial** — the `BadgeCheck` next to the clip count is simply absent; no explanatory copy on this surface.
 
 ## Invariants
+- The album box states the album's clip count through `countOf('clip', n)` («٢٢ لقطة», «٥ لقطات», "22 clips") — never a number beside a fixed noun (DEV-22).
 - **Preview download («حمّل المعاينة»)** in the side panel, below the buy actions, as an outline button (gold stays on the buy button): signed-in → `/api/preview/[clipId]?back=…`, the watermarked 720p file; signed-out → «سجّل دخولك وحمّل المعاينة» to `/sign-in?callbackUrl=<this page>`. A note under it says it is watermarked, 720p, for testing in the edit, not for published work. `?comp=limit|unavailable` renders a status line there. Rendered only when the preview is deliverable. Contract: [`../api/preview-download.md`](../api/preview-download.md).
 - A clip is never purchasable on its own. Every conversion control points at the album, and the album's clip count and price are stated on this page rather than discovered at checkout.
 - The player plays the clip being viewed — its own `previewKey` — and nothing else.

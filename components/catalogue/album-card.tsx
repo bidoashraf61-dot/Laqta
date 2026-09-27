@@ -1,7 +1,7 @@
 import { Sparkles, Video } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Bilingual } from '@/components/ui/bilingual'
-import { formatMoney, t } from '@/lib/i18n'
+import { countOf, formatMoney, t } from '@/lib/i18n'
 import { pickLocalised } from '@/lib/locale'
 
 import { cn } from '@/lib/utils'
@@ -215,7 +215,7 @@ export function AlbumCard({
               «16 لقطة» the way it is spoken.
             */}
             <span className="text-sm font-bold text-off-white">
-              <span className="numeric">{album.clipCount}</span> {t('commerce.clip')}
+              {countOf('clip', album.clipCount)}
             </span>
             <span className="text-xs">·</span>
             <span className="text-xs">{orientationLabel(album.orientation)}</span>
@@ -271,7 +271,7 @@ export function AlbumCard({
 function coverAlt(album: AlbumCardData) {
   return t('catalogue.altAlbumCover', {
     album: pickLocalised(album.titleAr, album.titleEn),
-    count: String(album.clipCount),
+    count: countOf('clip', album.clipCount),
   })
 }
 

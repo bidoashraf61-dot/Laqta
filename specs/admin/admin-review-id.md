@@ -74,6 +74,7 @@ authorisation boundary.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- The header's clip count is `countOf('clip', n)` (DEV-22).
 - **A counter-price travels with the feedback** (DEV-09b). «طلب تعديل» with a proposal writes `ReviewTask.proposedPrice` (refused outside 49–249: «السعر المقترح بين {min} و{max} دولار.»), audits it, and the `album.changes` email adds «واقترحنا سعراً للألبوم: {price}…». The creator's details form pre-fills the proposal and accepts it even outside the calculator range; there is no separate price-acceptance step.
 - **The operator sets every album's price, here, inside $49–$249** (decision D4). A creator never chooses a price or band; albums reach review unpriced (`priceStandard = 0`) and the header shows no price until one is set.
 - **Approval refuses without a current licence** (`admin.cannotApprove`, detail «No licence is marked current.») — an album goes live carrying the licence it is sold under (DEV-06).

@@ -11,7 +11,7 @@ import { EmptyState } from '@/components/ui/state'
 import { DashboardHeader, Panel, StatGrid, StatTile } from '@/components/dashboard/primitives'
 import { TrendChart } from '@/components/dashboard/charts'
 import { StatusBadge } from '@/components/dashboard/status'
-import { formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
+import { countOf, formatMoney, formatNumber, formatPercent, t } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -220,8 +220,8 @@ export default async function StudioPage() {
                     className="flex items-center justify-between gap-4 py-2.5 text-sm"
                   >
                     <UserText className="min-w-0 truncate">{signal.query}</UserText>
-                    <span className="numeric shrink-0 text-xs text-muted-foreground">
-                      {formatNumber(signal.searches)} {t('studio.searches')}
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {countOf('search', signal.searches)}
                     </span>
                   </li>
                 ))}

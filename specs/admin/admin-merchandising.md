@@ -46,6 +46,7 @@ Takes no `searchParams`; there is no search or filter on this route.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants
+- Each collection's album count is `countOf('album', n)` (DEV-22).
 - No money, no entitlement, no catalogue state. This surface only affects presentation.
 - Every mutation revalidates the public surface it feeds (`/` or `/collections`) as well
   as itself, so an operator's change is visible on the storefront without a deploy.

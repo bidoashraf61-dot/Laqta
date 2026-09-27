@@ -29,6 +29,7 @@ Read-only. **No filter rail and no pagination controls** — the page accepts `?
 - **No `seoDescAr`** — the editorial paragraph is omitted.
 
 ## Invariants
+- The result count reads `countOf('result', total)` (DEV-22).
 - Only live albums' ready clips appear.
 - The page is server-rendered end to end — this is the highest-value organic surface and must not depend on client JS.
 - `BreadcrumbList` JSON-LD is emitted.

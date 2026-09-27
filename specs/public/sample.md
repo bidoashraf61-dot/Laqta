@@ -28,7 +28,7 @@ Entry points: a banner on `/albums` («جرّب قبل ما تشتري: {clips} 
 - **Signed in, not claimed** → gold «خذ العيّنة مجاناً».
 - **Claimed** → «العيّنة في مكتبتك.» + «افتح المكتبة». A revoked claim is not re-granted.
 - **`?claim=unavailable`** (the sample was unpublished between render and claim) → «العيّنة مو متوفرة الحين.».
-- Body copy: the sample's own description if set, else «{clips} مختارة من ألبومات لقطة، بالنسخة الأصلية وترخيص تجاري كامل. مجانية لكل حساب، مرة واحدة.» — `{clips}` from `clipCount()` (`lib/i18n.ts`), which applies Arabic number agreement (لقطة واحدة / لقطتان / ٣–١٠ لقطات / ١١+ لقطة).
+- Body copy: the sample's own description if set, else «{clips} مختارة من ألبومات لقطة، بالنسخة الأصلية وترخيص تجاري كامل. مجانية لكل حساب، مرة واحدة.» — `{clips}` from `countOf('clip', n)` (`lib/i18n.ts`, DEV-22), which applies Arabic number agreement (لقطة واحدة / لقطتان / ٣–١٠ لقطات / ١١–٩٩ لقطة / ١٠٠ لقطة).
 
 ## Invariants
 - **A claim is an ordinary frozen entitlement.** One `Order` (`paymentMethod: 'sample'`, total 0), one `OrderItem` with `clipManifestSnapshot` = the curated clips *at claim time*, each carrying `sourceAlbum`, and the licence in force; one `Entitlement`; one `LicenceCertificate`; then the same `settleOrder` as every purchase. No cart, no payment gateway (no Paymob intention for 0).

@@ -198,22 +198,80 @@ export function formatMoneyIn(
 }
 
 /**
- * «٦ لقطات», «١٢ لقطة» — a clip count with Arabic number agreement.
+ * Counted nouns — «لقطة واحدة», «لقطتان», «٦ لقطات», «٢٢ لقطة», "22 clips".
  *
- * 1 and 2 have their own forms, 3–10 take the plural, 11 and up the singular
- * (tamyīz). Most of the site never needs this because albums are 30–70 clips;
- * the free sample can be any size. English only distinguishes one.
+ * Arabic number agreement has five live forms, and `Intl.PluralRules('ar')`
+ * names them exactly: `zero` (0), `one` (1), `two` (2), `few` (3–10, and
+ * 103–110 …), `many` (11–99 — the singular accusative tamyīz: «١٥ ألبوماً»)
+ * and `other` (100, 1000 … — the singular genitive: «١٠٠ ألبوم»). English
+ * has `one` and `other`. Each noun keeps all six forms in BOTH dictionaries
+ * under `count.<noun>.<form>` — English repeats its plural — so the copy
+ * editor never shows an Arabic default in an English field.
+ *
+ * Never write `{n} {t('commerce.clip')}`: that is how "22 clip" and
+ * «٣ صانع محتوى» shipped. `verify:i18n` refuses the pattern.
+ *
+ * `countLabel` is the same noun WITHOUT the number, for a stat tile that sets
+ * the figure large on its own line (`count.<noun>Label.<form>`).
  */
-export function clipCount(n: number): string {
-  const count = formatNumber(n)
-  if (n === 1) return t('count.clipOne')
-  if (n === 2) return t('count.clipTwo')
-  const tens = n % 100
-  return tens >= 3 && tens <= 10 ? t('count.clipFew', { count }) : t('count.clipMany', { count })
+export const COUNT_NOUNS = [
+  'clip',
+  'album',
+  'creator',
+  'result',
+  'rating',
+  'preview',
+  'zip',
+  'search',
+] as const
+export type CountNoun = (typeof COUNT_NOUNS)[number]
+export const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'] as const
+
+const PLURAL_RULES: Record<Locale, Intl.PluralRules> = {
+  ar: new Intl.PluralRules('ar'),
+  en: new Intl.PluralRules('en'),
+}
+
+export function pluralForm(active: Locale, n: number) {
+  return PLURAL_RULES[active].select(n) as (typeof PLURAL_FORMS)[number]
+}
+
+/** The count, with the locale passed in — client components and mail use this. */
+export function countIn(
+  active: Locale,
+  noun: CountNoun,
+  n: number,
+  overrides?: CopyOverrideMap | null,
+): string {
+  const count = formatNumberIn(BCP47[active], n)
+  return translate(active, `count.${noun}.${pluralForm(active, n)}`, { count }, overrides)
+}
+
+/** The noun alone, agreeing with `n` — for a tile whose figure is set apart. */
+export function countLabelIn(
+  active: Locale,
+  noun: CountNoun,
+  n: number,
+  overrides?: CopyOverrideMap | null,
+): string {
+  return translate(active, `count.${noun}Label.${pluralForm(active, n)}`, undefined, overrides)
+}
+
+/** `countIn` for the request's locale (server components). */
+export function countOf(noun: CountNoun, n: number): string {
+  return countIn(currentLocale(), noun, n)
+}
+
+export function countLabel(noun: CountNoun, n: number): string {
+  return countLabelIn(currentLocale(), noun, n)
+}
+
+export function formatNumberIn(bcp47: string, value: number) {
+  return new Intl.NumberFormat(`${bcp47}-u-nu-latn`).format(value)
 }
 
 export function formatNumber(value: number) {
-  return new Intl.NumberFormat(`${activeBcp47()}-u-nu-latn`).format(value)
+  return formatNumberIn(activeBcp47(), value)
 }
 
 export function formatPercent(fraction: number, digits = 1) {

@@ -33,6 +33,7 @@ Read-only otherwise: no server action is invoked from this page.
 - **Loading** — no route-level `loading.tsx`; the page is a single awaited `Promise.all`, so navigation blocks until all seven queries resolve.
 
 ## Invariants
+- Search-signal rows read `countOf('search', n)` («٤ عمليات بحث») (DEV-22).
 - Balance is displayed, never stored: `available` and `held` are derived from `CreatorLedger.availableAt` at read time (30-day hold), minus payouts already `approved|processing|paid`. Nothing on this page writes a balance.
 - Commission is frozen at purchase; the revenue tile is gross `AlbumStat.revenue`, not a recomputed split.
 - The demand panel shows other people's search strings (`SearchQueryLog.query`) — user text, rendered through `UserText`, never treated as markup.

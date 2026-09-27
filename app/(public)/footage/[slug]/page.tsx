@@ -4,7 +4,7 @@ import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, MapPin } from 'lucide-react'
 import { db } from '@/lib/db'
-import { formatMoney, t } from '@/lib/i18n'
+import { countOf, formatMoney, t } from '@/lib/i18n'
 import { formatDuration, cn } from '@/lib/utils'
 import { specLabel } from '@/lib/spec-labels'
 import { Badge } from '@/components/ui/badge'
@@ -355,7 +355,7 @@ export default async function ClipPage({
               </Link>
 
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="numeric">{clip.album.clipCount}</span> {t('commerce.clip')}
+                {countOf('clip', clip.album.clipCount)}
                 {clip.album.clearedForCommercial ? (
                   <BadgeCheck className="size-4 text-success" />
                 ) : null}

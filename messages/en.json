@@ -117,7 +117,6 @@
   "commerce": {
     "album": "album",
     "clip": "clip",
-    "clips": "clips",
     "buyAlbum": "Buy the album",
     "addToCart": "Add to cart",
     "buyNow": "Buy now",
@@ -170,9 +169,8 @@
     "signInFirst": "Sign in to leave a review.",
     "invalid": "Choose a rating from 1 to 5.",
     "outOf": "out of 5",
-    "count": "reviews",
     "verified": "Verified buyer",
-    "ratingSummary": "{value} out of 5 · {count} ratings"
+    "ratingSummary": "{value} out of 5 · {count}"
   },
   "security": {
     "title": "Security",
@@ -197,10 +195,6 @@
     "heroBody": "Footage albums matched in light and colour, ready to cut into your campaign. Pay once, and your licence is permanent.",
     "heroChipNoSub": "No subscription",
     "browseAlbums": "Browse the albums",
-    "trustClips": "clips",
-    "trustAlbums": "albums",
-    "trustRegions": "regions",
-    "trustCreators": "creators",
     "trustResolution": "Resolution per album",
     "trustCleared": "Cleared for commercial use",
     "audienceTitle": "Who Laqta is for",
@@ -242,8 +236,6 @@
     "notifyThanks": "Done — we'll write on launch day.",
     "notifyInvalid": "Enter a valid email address",
     "viewAll": "View all",
-    "clipCount": "{count} clips",
-    "albumCount": "{count} albums",
     "wallLead": "Browse by the clip,",
     "wallBold": "buy by the album.",
     "wallHint": "Tap any clip to open its album.",
@@ -331,7 +323,6 @@
     "categoriesTitle": "Browse by category",
     "collectionsTitle": "Collections",
     "creatorsTitle": "Creators",
-    "resultsCount": "{count} results",
     "filters": "Filters",
     "clearFilters": "Clear all",
     "applyFilters": "Apply",
@@ -384,9 +375,9 @@
     "compSignIn": "Sign in to download the preview",
     "compSignInAll": "Sign in to download all previews",
     "compNote": "Watermarked, {res}. Cut it into your timeline to test before you buy. Not for published work: the licence comes with purchase.",
-    "compNoteAlbum": "A ZIP of {count} watermarked {res} previews, to test in your timeline before you buy. Not for published work: the licence comes with purchase.",
-    "compLimit": "Limit reached: {limit} previews an hour. Try again in an hour.",
-    "compLimitAlbum": "Limit reached: {limit} preview ZIPs a day. Try again tomorrow.",
+    "compNoteAlbum": "A ZIP of {count}, watermarked, at {res}, to test in your timeline before you buy. Not for published work: the licence comes with purchase.",
+    "compLimit": "Limit reached: {limit} an hour. Try again in an hour.",
+    "compLimitAlbum": "Limit reached: {limit} a day. Try again tomorrow.",
     "compUnavailable": "This preview can't be downloaded right now.",
     "preview": "Preview",
     "watermarkNote": "Every preview is watermarked. What you buy arrives clean, at original quality.",
@@ -394,12 +385,12 @@
     "next": "Next",
     "previous": "Previous",
     "breadcrumb": "Breadcrumb",
-    "altAlbumCover": "The album {album} — {count} Saudi clips",
+    "altAlbumCover": "The album {album} — {count}",
     "altClipThumb": "The clip {clip}",
     "openAlbum": "Open the album",
-    "creatorAlbums": "albums published",
-    "creatorClips": "clips in the library",
-    "creatorViews": "visits to their albums",
+    "creatorAlbums": "Albums published",
+    "creatorClips": "Clips in the library",
+    "creatorViews": "Visits to their albums",
     "creatorSince": "Publishing on Laqta since",
     "creatorFeatured": "Featured albums",
     "creatorAll": "All albums",
@@ -421,7 +412,7 @@
     "offSuffix": "off",
     "runtimeTotal": "{duration} in total",
     "openShot": "Open the clip",
-    "shotsIncluded": "clips in this album",
+    "shotsIncluded": "in this album",
     "creatorRating": "Buyer rating",
     "creatorNoRating": "No ratings yet",
     "origin": "How it was made",
@@ -619,7 +610,6 @@
     "purchasedOn": "Purchased on",
     "frozenNote": "This is the clip list as it stood when you bought it — it does not change if the creator edits the album.",
     "awaitingPayment": "Awaiting payment confirmation",
-    "clips": "clips",
     "downloadsTitle": "Download history",
     "purchasesTitle": "My orders",
     "invoicesTitle": "Tax invoices",
@@ -640,7 +630,6 @@
     "share": "Copy share link",
     "shareHint": "Anyone with the link can view the board",
     "copied": "Link copied",
-    "clips": "clips",
     "makePublic": "Share by link"
   },
   "dash": {
@@ -841,7 +830,7 @@
       "sectionPages": "Long pages",
       "sectionCopy": "Site copy",
       "sectionCopyHint": "Everything a visitor reads: the home page, the sell page, the catalogue, the cart, the account and the emails. Anything you don't edit stays as it is. Dashboard and creator-studio labels are not here.",
-      "strings": "{count} strings",
+      "strings": "Strings: {count}",
       "modified": "Edited: {count}",
       "lastPublished": "Last published {date}",
       "neverEdited": "Nothing edited yet.",
@@ -884,7 +873,7 @@
       "history": "Publish history",
       "historyHint": "Every publish stays here. “Undo” puts every string that publish changed back to what it was before, as a new publish.",
       "noHistory": "Nothing published yet — the site shows the original copy.",
-      "batchCount": "{count} strings",
+      "batchCount": "Strings: {count}",
       "undo": "Undo this publish",
       "undoConfirm": "This puts every string that publish changed back to what it was before, live immediately. Continue?",
       "undone": "Publish undone.",
@@ -1016,7 +1005,7 @@
         "value": "The price is not valid.",
         "percent": "The discount is 1 to {max}%.",
         "fixed": "The bundle price must be below buying them separately ({regular} USD).",
-        "ceiling": "The discount is more than Laqta's share on {count} album(s) — at most {max}% for this bundle.",
+        "ceiling": "The discount is more than Laqta's share on {count} of these albums — at most {max}% for this bundle.",
         "dates": "The end must be after the start and in the future."
       }
     }
@@ -1136,7 +1125,7 @@
     "sampleClaimedSubject": "The free sample is in your library — {order}",
     "sampleClaimedLead": "The Laqta sample,",
     "sampleClaimedHeading": "now in your library.",
-    "sampleClaimedBody": "Hi {name}, we have added the Laqta free sample to your library: {count} clips as original files under a full commercial licence. Every clip links to the album it comes from.",
+    "sampleClaimedBody": "Hi {name}, we have added the Laqta free sample to your library: {count} as original files under a full commercial licence. Every clip links to the album it comes from.",
     "sampleClaimedCta": "Open your library",
     "passwordResetSubject": "Your new password link — Laqta",
     "passwordResetLead": "Forgot your password?",
@@ -1214,10 +1203,94 @@
     "seoDescription": "Clips picked from Laqta albums, as original files under a full commercial licence, free for every signed-in account."
   },
   "count": {
-    "clipOne": "1 clip",
-    "clipTwo": "2 clips",
-    "clipFew": "{count} clips",
-    "clipMany": "{count} clips"
+    "clip": {
+      "zero": "{count} clips",
+      "one": "{count} clip",
+      "two": "{count} clips",
+      "few": "{count} clips",
+      "many": "{count} clips",
+      "other": "{count} clips"
+    },
+    "clipLabel": {
+      "zero": "clips",
+      "one": "clip",
+      "two": "clips",
+      "few": "clips",
+      "many": "clips",
+      "other": "clips"
+    },
+    "album": {
+      "zero": "{count} albums",
+      "one": "{count} album",
+      "two": "{count} albums",
+      "few": "{count} albums",
+      "many": "{count} albums",
+      "other": "{count} albums"
+    },
+    "albumLabel": {
+      "zero": "albums",
+      "one": "album",
+      "two": "albums",
+      "few": "albums",
+      "many": "albums",
+      "other": "albums"
+    },
+    "creator": {
+      "zero": "{count} creators",
+      "one": "{count} creator",
+      "two": "{count} creators",
+      "few": "{count} creators",
+      "many": "{count} creators",
+      "other": "{count} creators"
+    },
+    "creatorLabel": {
+      "zero": "creators",
+      "one": "creator",
+      "two": "creators",
+      "few": "creators",
+      "many": "creators",
+      "other": "creators"
+    },
+    "result": {
+      "zero": "{count} results",
+      "one": "{count} result",
+      "two": "{count} results",
+      "few": "{count} results",
+      "many": "{count} results",
+      "other": "{count} results"
+    },
+    "rating": {
+      "zero": "{count} ratings",
+      "one": "{count} rating",
+      "two": "{count} ratings",
+      "few": "{count} ratings",
+      "many": "{count} ratings",
+      "other": "{count} ratings"
+    },
+    "preview": {
+      "zero": "{count} previews",
+      "one": "{count} preview",
+      "two": "{count} previews",
+      "few": "{count} previews",
+      "many": "{count} previews",
+      "other": "{count} previews"
+    },
+    "zip": {
+      "zero": "{count} preview ZIPs",
+      "one": "{count} preview ZIP",
+      "two": "{count} preview ZIPs",
+      "few": "{count} preview ZIPs",
+      "many": "{count} preview ZIPs",
+      "other": "{count} preview ZIPs"
+    },
+    "search": {
+      "zero": "{count} searches",
+      "one": "{count} search",
+      "two": "{count} searches",
+      "few": "{count} searches",
+      "many": "{count} searches",
+      "other": "{count} searches"
+    }
   },
   "studio": {
     "details": {
@@ -1270,7 +1343,7 @@
       "suggested": "Suggested price:",
       "range": "Recommend a price within:",
       "basis": "Based on the album's clip count now: {count}.",
-      "basisFew": "The album has {count} clips now, below the minimum, so this is priced at the minimum album size. It updates as you add clips.",
+      "basisFew": "The album's clip count is {count} now, below the minimum, so this is priced at the minimum album size. It updates as you add clips.",
       "pickToPrice": "Choose footage type, resolution and quality to see the suggested price.",
       "recommended": "Your recommended price",
       "recommendedNote": "Why this price? (optional)",

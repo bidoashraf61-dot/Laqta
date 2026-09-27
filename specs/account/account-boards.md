@@ -36,6 +36,7 @@ be created and populated by seed data or direct database writes.
   added. The add-to-board flow is a dead end.
 
 ## Invariants
+- Each board's clip count is `countOf('clip', n)` — plain text, no longer an LTR `.numeric` line, which set Arabic words left-to-right (DEV-22).
 - Only the owner's boards (`userId` filter).
 - A board is only reachable by share token when `isPublic` is true; the private
   branch must never render the `/boards/{shareToken}` link.

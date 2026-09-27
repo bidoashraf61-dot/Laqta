@@ -32,7 +32,7 @@ Read-only. `?page=n` is accepted and applied, but no pagination controls are ren
 - The result count reads `countOf('result', total)` («نتيجة واحدة», «٧ نتائج», «٢٤ نتيجة») (DEV-22).
 - Only live albums' ready clips appear.
 - Server-rendered end to end.
-- `BreadcrumbList` JSON-LD is emitted.
+- `BreadcrumbList` JSON-LD is emitted — Home › Footage › the hub, each name in the page's language and each `item` at its own-language address (`/en/…` on the English page) (DEV-35).
 - Every clip carries its album ribbon and `PreviewWatermark`.
 
 ## Verified by

@@ -1,4 +1,5 @@
 import { stripKashida } from '@/lib/arabic'
+import { BCP47, currentLocale } from '@/lib/locale'
 
 /**
  * FAQPage JSON-LD.
@@ -20,7 +21,9 @@ export function FaqSchema({ pairs }: { pairs: Array<{ q: string; a: string }> })
   const json = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    inLanguage: 'ar-SA',
+    // The questions are rendered in the page's language, so the schema says
+    // so (DEV-35) — an English FAQ marked ar-SA contradicts itself.
+    inLanguage: BCP47[currentLocale()],
     mainEntity: pairs.map(({ q, a }) => ({
       '@type': 'Question',
       name: stripKashida(q),

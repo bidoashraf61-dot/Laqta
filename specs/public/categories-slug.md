@@ -32,7 +32,7 @@ Read-only. **No filter rail and no pagination controls** — the page accepts `?
 - The result count reads `countOf('result', total)` (DEV-22).
 - Only live albums' ready clips appear.
 - The page is server-rendered end to end — this is the highest-value organic surface and must not depend on client JS.
-- `BreadcrumbList` JSON-LD is emitted.
+- `BreadcrumbList` JSON-LD is emitted — Home › Footage › the hub, each name in the page's language and each `item` at its own-language address (`/en/…` on the English page) (DEV-35).
 - Every clip carries its album ribbon and `PreviewWatermark`.
 
 ## Verified by

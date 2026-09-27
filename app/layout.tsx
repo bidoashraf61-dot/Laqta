@@ -44,6 +44,8 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'ar_SA',
+      // The other language, so a share card knows a translation exists (DEV-35).
+      alternateLocale: locale === 'en' ? 'ar_SA' : 'en_US',
       siteName: t('brand.name'),
       title,
       description: t('brand.promise'),

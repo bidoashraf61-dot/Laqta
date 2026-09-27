@@ -87,6 +87,16 @@ async function main() {
       const og = attr(head, /<meta property="og:locale" content="([^"]+)"/)
       if (og) report(`${url} — og:locale`, og === (lang === 'en' ? 'en_US' : 'ar_SA'), og)
 
+      // Share data in the page's language (DEV-35): JSON-LD `inLanguage` and
+      // breadcrumb targets used to be Arabic on the English pages.
+      const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n')
+      const langs = [...ld.matchAll(/"inLanguage":"([^"]+)"/g)].map((m) => m[1])
+      if (langs.length) report(`${url} — JSON-LD inLanguage is ${lang}`, langs.every((l) => l.startsWith(lang)), langs.join(','))
+      if (/BreadcrumbList/.test(ld)) {
+        const items = [...ld.matchAll(/"item":"([^"]+)"/g)].map((m) => new URL(m[1]).pathname)
+        report(`${url} — breadcrumbs point at ${lang} pages`, items.every((p) => (lang === 'en') === (p === '/en' || p.startsWith('/en/'))), items.join(' '))
+      }
+
       const title = attr(head, /<title>([^<]*)<\/title>/) ?? ''
       report(`${url} — title in its language`, lang === 'en' ? !ARABIC.test(title) : ARABIC.test(title), title.slice(0, 60))
     }

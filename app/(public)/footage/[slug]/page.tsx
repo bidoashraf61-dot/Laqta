@@ -19,7 +19,7 @@ import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { mediaUrl } from '@/lib/media'
 import { Sparkles, Video } from 'lucide-react'
 import { PageTitle } from '@/components/ui/typography'
-import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
+import { BCP47, currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { auth } from '@/lib/auth'
 import { previewDeliverable } from '@/lib/previews'
@@ -446,7 +446,7 @@ function VideoJsonLd({
     // ISO-8601 duration.
     duration: `PT${Math.floor(seconds / 60)}M${seconds % 60}S`,
     url,
-    inLanguage: 'ar',
+    inLanguage: BCP47[currentLocale()],
   }
   return (
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />

@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { countOf, formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
-import { localeAlternates, ogLocale, pickLocalised } from '@/lib/locale'
+import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { siteOrigin } from '@/lib/site'
 
@@ -174,13 +174,15 @@ function BreadcrumbJsonLd({
   entry,
 }: {
   kind: Kind
-  entry: { slug: string; nameAr: string }
+  entry: { slug: string; nameAr: string; nameEn: string | null }
 }) {
   const data = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: t('nav.home'), item: siteOrigin() },
+      // Every crumb in the page's own language and at its own address (DEV-35):
+      // an English hub used to publish Arabic names pointing at Arabic URLs.
+      { '@type': 'ListItem', position: 1, name: t('nav.home'), item: `${siteOrigin()}${localePath(currentLocale(), '/')}` },
       {
         // The middle crumb points at the SHOTS page, not at `/locations` or
         // `/categories`. Those indexes now 301 to it, and a breadcrumb that
@@ -190,13 +192,13 @@ function BreadcrumbJsonLd({
         '@type': 'ListItem',
         position: 2,
         name: t('nav.footage'),
-        item: `${siteOrigin()}/footage`,
+        item: `${siteOrigin()}${localePath(currentLocale(), '/footage')}`,
       },
       {
         '@type': 'ListItem',
         position: 3,
-        name: entry.nameAr,
-        item: `${siteOrigin()}${BASE[kind]}/${entry.slug}`,
+        name: pickLocalised(entry.nameAr, entry.nameEn),
+        item: `${siteOrigin()}${localePath(currentLocale(), `${BASE[kind]}/${entry.slug}`)}`,
       },
     ],
   }

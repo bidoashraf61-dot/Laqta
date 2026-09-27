@@ -15,7 +15,7 @@ import { getFootageWall, getLandingTrailers, getSeasonalShelf } from '@/lib/cata
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
-import { currentLocale, localeAlternates, localePath, ogLocale } from '@/lib/locale'
+import { BCP47, currentLocale, localeAlternates, localePath, ogLocale } from '@/lib/locale'
 import { siteOrigin } from '@/lib/site'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -138,7 +138,8 @@ function StructuredData() {
         name: t('brand.name'),
         alternateName: 'Laqta',
         description: t('brand.promise'),
-        inLanguage: 'ar-SA',
+        // The language of THIS page (DEV-35) — the English landing is not ar-SA.
+        inLanguage: BCP47[currentLocale()],
         potentialAction: {
           '@type': 'SearchAction',
           target: {

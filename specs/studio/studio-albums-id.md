@@ -3,9 +3,10 @@
 **Route** `/studio/albums/[id]` · **Access** creator (own albums only) or admin (any album) · **Rendering** server, dynamic
 
 ## Purpose
-Build an album: upload its clips, name and order them, pick the cover, see each
-clip's specs and processing state and the album's technical consistency, and — for a
-`draft` or `changes_requested` album — submit it for review.
+Build an album: fill in its **details and recommended price** (DEV-08), upload its
+clips, name and order them, pick the cover, see each clip's specs and processing state and
+the album's technical consistency, and — for a `draft` or `changes_requested` album —
+submit it for review.
 
 ## Data in
 - `Album.findFirst` where `{ id, creatorId }` for a creator, or `{ id }` for an admin. Includes:
@@ -16,6 +17,39 @@ clip's specs and processing state and the album's technical consistency, and —
 - `storageDriver()` (`lib/storage.ts`) — `local` shows the development-storage notice; `maxClipBytes()` (`UPLOAD_MAX_CLIP_BYTES`, default 20 GiB).
 - Side effect: if any clip is `uploaded` (queued but not being encoded — e.g. the server restarted), rendering calls `ingestSoon()` (`lib/ingest.ts`) so the queue drains.
 - `canSubmit(album.id)` (`lib/studio.ts`) — re-reads the album with its clips and their `releaseLinks`.
+- `loadAlbumDetails(album.id)` (`lib/album-details.ts`) — the album's origin/style, resolution, quality, recommended price and note, orientation, permits statement, and its `AlbumTaxonomy` links; every ACTIVE `Taxonomy` row of kinds category, location, theme and tag (names localised server-side); the `PriceBand`s for the calculator; `clipCount`.
+
+## Album details (DEV-08)
+Section «تفاصيل الألبوم» (`#details`), above the consistency panel, rendered by
+`components/studio/album-details-form.tsx`. Editable while `draft` / `changes_requested`;
+otherwise the same fields render disabled under «الألبوم قيد المراجعة أو منشور، فالتفاصيل
+للعرض فقط.» with no save button. Hint: «هذي التفاصيل يبحث بها المشتري ويراجعها فريق لقطة.
+لازم تحفظها قبل ما ترسل الألبوم للمراجعة.»
+
+| Field | Control | Stored as |
+|---|---|---|
+| «نوع اللقطات» * | 4 radio cards: «ذكاء اصطناعي: مشاهد واقعية» / «…رسوم ثلاثية الأبعاد» / «…رسوم ثنائية الأبعاد» / «تصوير حقيقي بالكاميرا» | `origin` (`generated`/`captured`) + `footageStyle` (`live_action`/`animated_3d`/`animated_2d`; filmed = live_action) |
+| «الدقة» * | 3 radio cards 720p / 1080p / 4K | `resolution` (`sd720`/`hd1080`/`uhd4k`) |
+| «جودة الألبوم» * | 3 radio cards «قياسية» / «جيدة» / «استثنائية», hint «تقييمك أنت، ويراجعه فريق لقطة. ويدخل في حساب السعر.» | `qualityLevel` |
+| «اتجاه اللقطات» * | radio «أفقي ١٦:٩» / «عمودي ٩:١٦ (ألبوم عمودي مخصص)» — no `mixed` (D6) | `orientation` |
+| «التصنيف» * | native select of active categories | one `AlbumTaxonomy` (category) |
+| «المواقع» * | checkbox pills, 1–10, hint «كل مدينة أو منطقة تظهر في الألبوم، حتى ١٠.» | `AlbumTaxonomy` (location) |
+| «وقت اليوم» | pills: the `tag` rows `sunrise, golden-hour, blue-hour, sunset, night` (`TIME_OF_DAY_TAGS`) | `AlbumTaxonomy` (tag) |
+| «المناسبة» | pills of active themes, ≤3 | `AlbumTaxonomy` (theme) |
+| «أسلوب اللقطات» | pills: the other tags; tags total ≤12 | `AlbumTaxonomy` (tag) |
+| «حاسبة السعر» | live, client-side (`lib/price-calculator.suggestPrice`): «السعر المقترح: $X», «اقترح سعراً ضمن: $low – $high», and the basis line (`clipCount`; below 30 it says it is priced at the minimum and updates as clips arrive). «اختر نوع اللقطات والدقة والجودة ليظهر السعر المقترح.» until the three are chosen | — |
+| «سعرك المقترح» * | number input (USD, `min`/`max` = the range) | `recommendedPrice` |
+| «لماذا هذا السعر؟ (اختياري)» | textarea ≤500 | `recommendedNote` |
+| «التصاريح» * | radio «لا يحتاج تصاريح: …» / «التصاريح المطلوبة مرفوعة في صفحة التصاريح.» | `permitsDeclaration` (`none_needed`/`attached`) |
+| «حفظ التفاصيل» | `saveAlbumDetailsAction(albumId)` → `lib/album-details.saveAlbumDetails` | Re-checks editability (`editableAlbum`); parses; refuses a recommendation outside `suggestPrice(clipCount, …)`'s range («سعرك المقترح خارج النطاق…»); resolves slugs against ACTIVE taxonomy of the right kind only (a forged category/location is refused); writes the columns + `detailsCompletedAt=now` and replaces the album's category/location/theme/tag links in one transaction; audits `album.details`. Success «حُفظت تفاصيل الألبوم.» |
+
+Under the calculator: «لقطة تعتمد سعرك أو تقترح سعراً آخر، ولا يُنشر الألبوم بسعر مختلف
+قبل موافقتك.» — the counter-offer flow itself is DEV-09b (not built yet).
+
+**Calculator** (owner, 2026-09-27): base from the band for the clip count (count clamped
+to 30–70) × resolution (720p 0.6 · 1080p 1.0 · 4K 1.3) × type (AI live action 1.0 · AI 3D
+0.9 · AI 2D 0.8 · filmed 1.25) × quality (standard 0.9 · good 1.0 · exceptional 1.15),
+clamped to $49–$249 and rounded to whole dollars; the recommendation range is ±15%.
 
 ## Controls
 | Control | Action | Effect |
@@ -49,7 +83,7 @@ Every clip action re-checks ownership and editability server-side (`lib/uploads.
 - **Approved and live** — a success line with the approval date.
 - **Earlier reviews** («المراجعات السابقة») — every decided round before the current one, newest first: decision, submitted and decided dates, and that round's note. Hidden when there is no earlier round; the current round is never repeated here.
 - **Consistency warning** — mixed frame rates, colour profiles or resolutions each render a line inside one warning alert; otherwise a success alert (`studio.consistencyOk`).
-- **Gate closed** — `SubmitButton` is disabled *and* lists every reason: fewer than 30 **ready** clips (`studio.minClips`), more than 70 clips of any state (`studio.maxClips`) — `MIN_ALBUM_CLIPS` / `MAX_ALBUM_CLIPS` in `lib/studio.ts`, matching the public «٣٠ إلى ٧٠ لقطة» promise, a clip still uploading or processing (`studio.clipsProcessing` «لقطات لم تكتمل معالجتها بعد»), a failed clip (`studio.clipsFailed`), missing Arabic or English title, or a clip with `identifiableFaces` and no non-rejected `model` release linked (`studio.modelReleaseMissing`).
+- **Gate closed** — `SubmitButton` is disabled *and* lists every reason: fewer than 30 **ready** clips (`studio.minClips`), more than 70 clips of any state (`studio.maxClips`) — `MIN_ALBUM_CLIPS` / `MAX_ALBUM_CLIPS` in `lib/studio.ts`, matching the public «٣٠ إلى ٧٠ لقطة» promise, a clip still uploading or processing (`studio.clipsProcessing` «لقطات لم تكتمل معالجتها بعد»), a failed clip (`studio.clipsFailed`), missing Arabic or English title, details not saved (`studio.detailsMissing` «املأ تفاصيل الألبوم واحفظها: …»), a recommended price that the current clip count has moved out of range (`studio.priceOutOfRange`), or a clip with `identifiableFaces` and no non-rejected `model` release linked (`studio.modelReleaseMissing`).
 - **Clip header** — «اللقطات» with «{ready} جاهزة من {total}» once there is a clip.
 - **Upload zone** — accepted formats as an isolated Latin run (`.mov · .mp4 — H.264 · H.265 · ProRes`), the per-file cap, and «تُقرأ الدقة ومعدل الإطارات والمدة من الملف نفسه…». On the local driver a warning line «وضع التطوير: الملفات تُحفظ على هذا الجهاز، لا في التخزين السحابي.»
 - **Not editable** — the zone is replaced by «اللقطات لا تُعدَّل والألبوم قيد المراجعة أو منشور.» and the rows have no controls.
@@ -73,4 +107,4 @@ Every clip action re-checks ownership and editability server-side (`lib/uploads.
 - Admin access is read-and-submit on any album by the same code path; the ownership filter is dropped only for `role === 'admin'`.
 
 ## Verified by
-`verify:flows` — a fixture draft album: a real mp4 uploaded through the page's file input reaches «جاهزة», its specs match the file, and the rename form lands (plus the older rejected-album checks on this route). `verify:uploads` — the upload protocol, ingest, gate reasons, totals, cover and delete at the library layer. `audit` and `verify:arabic` still do not visit this parameterised route.
+`verify:pricing` — calculator values, floor/ceiling, the under-30 basis, details refused without a save, an out-of-range recommendation refused, an in-range one landing as columns + 6 taxonomy links, a forged category refused. `verify:flows` — a fixture draft album: a real mp4 uploaded through the page's file input reaches «جاهزة», its specs match the file, and the rename form lands (plus the older rejected-album checks on this route). `verify:uploads` — the upload protocol, ingest, gate reasons, totals, cover and delete at the library layer. `audit` and `verify:arabic` still do not visit this parameterised route.

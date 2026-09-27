@@ -874,5 +874,69 @@
     "clipTwo": "2 clips",
     "clipFew": "{count} clips",
     "clipMany": "{count} clips"
+  },
+  "studio": {
+    "details": {
+      "title": "Album details",
+      "hint": "Buyers search by these details and Laqta's team reviews them. Save them before you send the album for review.",
+      "frozen": "The album is in review or published, so its details are read-only.",
+      "origin": "Footage type",
+      "orientation": "Orientation",
+      "landscape": "Landscape 16:9",
+      "portrait": "Vertical 9:16 (a dedicated vertical album)",
+      "category": "Category",
+      "categoryPick": "Choose a category",
+      "locations": "Locations",
+      "locationsHint": "Every city or region the album shows, up to 10.",
+      "timeOfDay": "Time of day",
+      "themes": "Occasion",
+      "themesHint": "Optional, up to 3 — e.g. Ramadan or National Day.",
+      "style": "Shot style",
+      "permits": "Permits",
+      "permitsNone": "No permits needed: no identifiable real people, no private premises or permit-only sites.",
+      "permitsAttached": "The releases and permits it needs are uploaded on the Releases page.",
+      "save": "Save details",
+      "saved": "Album details saved.",
+      "originRequired": "Choose how the footage was made.",
+      "orientationRequired": "Choose the orientation.",
+      "categoryRequired": "Choose the album's category.",
+      "locationRequired": "Choose at least one location.",
+      "permitsRequired": "Choose what applies to permits.",
+      "tooMany": "Too many chosen: up to 10 locations, 3 occasions and 12 tags.",
+      "type": {
+        "ai_live_action": "AI: live action",
+        "ai_animated_3d": "AI: 3D animation",
+        "ai_animated_2d": "AI: 2D animation",
+        "filmed": "Filmed with a camera"
+      },
+      "resolution": "Resolution",
+      "res": {
+        "sd720": "720p",
+        "hd1080": "1080p",
+        "uhd4k": "4K"
+      },
+      "quality": "Album quality",
+      "qualityHint": "Your own rating, reviewed by Laqta. It feeds the price.",
+      "q": {
+        "standard": "Standard",
+        "good": "Good",
+        "exceptional": "Exceptional"
+      },
+      "priceTitle": "Price calculator",
+      "suggested": "Suggested price:",
+      "range": "Recommend a price within:",
+      "basis": "Based on the album's clip count now: {count}.",
+      "basisFew": "The album has {count} clips now, below the minimum, so this is priced at the minimum album size. It updates as you add clips.",
+      "pickToPrice": "Choose footage type, resolution and quality to see the suggested price.",
+      "recommended": "Your recommended price",
+      "recommendedNote": "Why this price? (optional)",
+      "priceFinal": "Laqta approves your price or proposes another; the album is never published at a different price without your agreement.",
+      "resolutionRequired": "Choose the resolution.",
+      "qualityRequired": "Choose the album's quality.",
+      "priceRequired": "Enter your recommended price.",
+      "priceOutOfRange": "Your recommended price is outside the calculator's range for this album."
+    },
+    "detailsMissing": "Fill in and save the album details: how it was made, orientation, category, location and permits.",
+    "priceOutOfRange": "The clip count changed, so your recommended price is now outside the range. Open the album details and update it."
   }
 }

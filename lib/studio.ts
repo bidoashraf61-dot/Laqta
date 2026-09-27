@@ -5,6 +5,8 @@ import { DEFAULT_LOCALE } from '@/lib/locale'
 import { siteUrl } from '@/lib/site'
 import { addBusinessDays } from '@/lib/utils'
 import { emptyChecklist } from '@/lib/review-checklist'
+import { columnsToType, suggestPrice } from '@/lib/price-calculator'
+import { loadBands } from '@/lib/album-details'
 
 /**
  * Creator-side operations.
@@ -108,6 +110,22 @@ export async function canSubmit(albumId: string): Promise<SubmitCheck> {
   }
   if (!album.titleAr?.trim()) reasons.push('studio.titleArRequired')
   if (!album.titleEn?.trim()) reasons.push('studio.titleEnRequired')
+  // The details form (DEV-08): origin, orientation, category, location and
+  // the permits statement. Saving it is what sets `detailsCompletedAt`.
+  if (!album.detailsCompletedAt || !album.permitsDeclaration) reasons.push('studio.detailsMissing')
+  // The recommendation was checked against the clip count when it was saved;
+  // clips added since can move the range. Re-check against the real count.
+  else if (album.resolution && album.qualityLevel && album.recommendedPrice !== null) {
+    const range = suggestPrice({
+      clipCount: album.clips.length,
+      resolution: album.resolution,
+      type: columnsToType(album.origin, album.footageStyle),
+      quality: album.qualityLevel,
+      bands: await loadBands(),
+    })
+    const price = Number(album.recommendedPrice)
+    if (!range || price < range.low || price > range.high) reasons.push('studio.priceOutOfRange')
+  } else reasons.push('studio.detailsMissing')
 
   const facesWithoutRelease = album.clips.filter(
     (clip) =>

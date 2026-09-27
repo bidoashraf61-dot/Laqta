@@ -15,11 +15,26 @@ deliver an album that passes review the first time.
 | | |
 |---|---|
 | Your share | **70% of every sale** of your album |
-| Price | Set by Laqta at approval, **$49–$249 per album**, based on clip count and quality |
+| Price | **$49–$249 per album.** You recommend a price with the calculator in the studio (clip count × resolution × footage type × quality); Laqta approves it or proposes another, and your album is never published at a different price without your agreement |
 | Payouts | In USD, once your available balance reaches **$100**. Each sale becomes available **30 days** after purchase |
 | Paid to | Bank account (IBAN), Wise or Payoneer — your choice in the studio |
 | Rights | Non-exclusive: you keep your copyright and may sell the clips elsewhere |
 | Deadline | Album delivered by **[date — owner sets in ALB-23]** |
+
+### How the price is worked out
+
+In the studio's album details you choose footage type, resolution and quality;
+the calculator shows a suggested price and the range you can recommend in.
+
+| Factor | Effect on the price |
+|---|---|
+| Clip count | 30–39 clips $79 · 40–49 $119 · 50–59 $159 · 60–70 $199 (the base) |
+| Resolution | 720p ×0.6 · 1080p ×1.0 · 4K ×1.3 |
+| Footage type | AI live action ×1.0 · AI 3D animation ×0.9 · AI 2D animation ×0.8 · filmed with a camera ×1.25 |
+| Quality (your rating, reviewed by Laqta) | standard ×0.9 · good ×1.0 · exceptional ×1.15 |
+
+Example: 50 clips, 4K, AI live action, good → $159 × 1.3 = **$207**. Always
+between $49 and $249.
 
 ## 2. What an album is
 
@@ -41,7 +56,7 @@ we send an album back.
 
 | | Requirement |
 |---|---|
-| Resolution | **1920×1080 minimum**, 4K welcome. Deliver the resolution you actually produced — **no upscaled or soft clips**. One resolution per album |
+| Resolution | **720p, 1080p or 4K** — higher resolution prices higher. Deliver the resolution you actually produced — **no upscaled or soft clips**. One resolution per album |
 | Frame rate | **One** per album: 24, 25 or 30 fps |
 | Colour | **One** look per album. Rec.709 for AI footage; filmed footage may be LOG or Rec.709 — not both. Keep the grade neutral enough for the buyer to regrade |
 | Length | **5–20 seconds** per clip. No 2-second fragments |
@@ -141,6 +156,6 @@ of asking you questions.
    upload clips and any releases.
 6. **Review** — within **3 working days**. Either approved, or returned with
    the reviewer's reasons.
-7. **Live** — Laqta sets the price and publishes. You earn 70% of every sale.
+7. **Live** — at the price you agreed. You earn 70% of every sale.
 
 **Questions:** [contact email — owner adds]

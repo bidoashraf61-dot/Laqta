@@ -8,7 +8,8 @@ import { currentLicenceId } from '@/lib/licence'
 import { getEarnings, submitForReview, MIN_PAYOUT_USD } from '@/lib/studio'
 import { recordAudit } from '@/lib/audit'
 import { actionT } from '@/lib/locale-request'
-import { destroyClip, editableClip, renumberClips } from '@/lib/uploads'
+import { destroyClip, editableAlbum, editableClip, renumberClips } from '@/lib/uploads'
+import { parseAlbumDetailsForm, saveAlbumDetails } from '@/lib/album-details'
 
 type Result = { ok: boolean; message?: string }
 
@@ -24,6 +25,38 @@ async function ownedAlbum(albumId: string) {
     select: { id: true, status: true, creatorId: true },
   })
   return { user, album }
+}
+
+/**
+ * Save the album details form (DEV-08). Only while the album is editable —
+ * an album in review is frozen for the creator (an admin corrects it from the
+ * review page instead, `adminSaveAlbumDetails`).
+ */
+export async function saveAlbumDetailsAction(
+  albumId: string,
+  _state: Result | null,
+  formData: FormData,
+): Promise<Result> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error } = await editableAlbum(user, albumId)
+  if (error === 'not_found') return { ok: false, message: tr('state.notFound') }
+  if (error === 'not_editable') return { ok: false, message: tr('studio.upload.frozen') }
+
+  const parsed = parseAlbumDetailsForm(formData)
+  if (!parsed.ok) return { ok: false, message: tr(parsed.error) }
+  const saved = await saveAlbumDetails(albumId, parsed.input)
+  if (!saved.ok) return { ok: false, message: tr(saved.error) }
+
+  await recordAudit({
+    actorId: user.id,
+    action: 'album.details',
+    entity: 'Album',
+    entityId: albumId,
+    detail: parsed.input,
+  })
+  revalidatePath(`/studio/albums/${albumId}`)
+  return { ok: true, message: tr('studio.details.saved') }
 }
 
 /** Submit an album for review. */

@@ -16,6 +16,9 @@ import { CHECK_KEYS, normaliseChecklist } from '@/lib/review-checklist'
 import { mediaUrl } from '@/lib/media'
 import { storageDriver } from '@/lib/storage'
 import { EDITABLE_STATUSES, maxClipBytes } from '@/lib/uploads'
+import { loadAlbumDetails } from '@/lib/album-details'
+import { AlbumDetailsForm } from '@/components/studio/album-details-form'
+import { saveAlbumDetailsAction } from '@/app/(studio)/studio/actions'
 import { ingestSoon } from '@/lib/ingest'
 import { AlbumClips, type StudioClip } from '@/components/studio/album-clips'
 
@@ -83,6 +86,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
     movement: specLabel('movement', clip.cameraMovement) ?? null,
   }))
   const gate = await canSubmit(album.id)
+  const details = await loadAlbumDetails(album.id)
   const latestReview = album.reviewTasks[0]
   // A rejection leaves the album `delisted`; the review task, not the album
   // status, is what says it was a rejection rather than a later takedown.
@@ -164,6 +168,21 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
             {t('studio.review.approvedBody', { date: formatDate(latestReview.decidedAt) })}
           </AlertDescription>
         </Alert>
+      ) : null}
+
+      {/* Album details (DEV-08) — what the filters, the seasonal shelves and the
+          reviewer read. Required before submission; frozen once submitted. */}
+      {details ? (
+        <section id="details" className="scroll-mt-24">
+          <h2 className="mb-3 text-xl font-bold">{t('studio.details.title')}</h2>
+          <div className="rounded-lg border p-5">
+            <AlbumDetailsForm
+              view={details}
+              action={saveAlbumDetailsAction.bind(null, album.id)}
+              readOnly={!editable}
+            />
+          </div>
+        </section>
       ) : null}
 
       {/* Spec consistency — shown before submission, not discovered by a

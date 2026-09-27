@@ -17,6 +17,9 @@ import { decideReview } from '../lib/admin'
 import { checkout } from '../lib/orders'
 import { CHECK_KEYS, type Checklist } from '../lib/review-checklist'
 import { PRICE_MAX_USD, PRICE_MIN_USD, bandForCount, parseAlbumPrice } from '../lib/price-bands'
+import { suggestPrice } from '../lib/price-calculator'
+import { loadBands, saveAlbumDetails } from '../lib/album-details'
+import { canSubmit } from '../lib/studio'
 import { db } from '../lib/db'
 
 let failures = 0
@@ -54,6 +57,18 @@ async function main() {
     Array.from({ length: 41 }, (_, i) => 30 + i).every((count) => bandForCount(count, bands) !== null),
   )
 
+  // ── The calculator (owner, 2026-09-27) ──────────────────────────────────
+  const calcBands = await loadBands()
+  const example = suggestPrice({ clipCount: 50, resolution: 'uhd4k', type: 'ai_live_action', quality: 'good', bands: calcBands })
+  report('50 clips · 4K · AI live action · good → $207', example?.price === 207, JSON.stringify(example))
+  report('…recommend within ±15%: $176–$238', example?.low === 176 && example?.high === 238)
+  const floor = suggestPrice({ clipCount: 30, resolution: 'sd720', type: 'ai_animated_2d', quality: 'standard', bands: calcBands })
+  report('a cheap mix never goes below $49', floor?.price === 49, String(floor?.price))
+  const ceiling = suggestPrice({ clipCount: 70, resolution: 'uhd4k', type: 'filmed', quality: 'exceptional', bands: calcBands })
+  report('a rich mix never goes above $249', ceiling?.price === 249, String(ceiling?.price))
+  const early = suggestPrice({ clipCount: 5, resolution: 'hd1080', type: 'ai_live_action', quality: 'good', bands: calcBands })
+  report('an album still uploading is priced as 30 clips', early?.price === 79, String(early?.price))
+
   // A throwaway creator, album (45 clips, unpriced) and review task.
   const run = Date.now()
   const user = await db.user.create({ data: { email: `pricing-${run}@laqta.test`, role: 'creator' } })
@@ -76,8 +91,46 @@ async function main() {
     data: { albumId: album.id, status: 'unassigned', checklist: allPass, submittedAt: new Date(), slaDueAt: new Date() },
   })
   const buyer = await db.user.create({ data: { email: `pricing-buyer-${run}@laqta.test` } })
+  const draft = await db.album.create({
+    data: { slug: `pricing-draft-${run}`, creatorId: creator.id, titleAr: 'مسودة', titleEn: 'Draft', priceStandard: 0, clipCount: 45 },
+  })
 
   try {
+    // ── Album details: the recommendation must sit in the calculator's range ─
+    const before = await canSubmit(draft.id)
+    report('an album without details cannot be submitted', before.reasons.includes('studio.detailsMissing'))
+    const details = {
+      type: 'ai_live_action' as const,
+      resolution: 'hd1080' as const,
+      quality: 'good' as const,
+      recommendedNote: null,
+      orientation: 'landscape' as const,
+      permitsDeclaration: 'none_needed' as const,
+      category: 'food-coffee',
+      locations: ['riyadh', 'jeddah'],
+      themes: ['ramadan'],
+      tags: ['night', 'golden-hour'],
+    }
+    const outside = await saveAlbumDetails(draft.id, { ...details, recommendedPrice: 200 })
+    report('a recommendation outside the range is refused', !outside.ok && outside.error === 'studio.details.priceOutOfRange')
+    const inside = await saveAlbumDetails(draft.id, { ...details, recommendedPrice: 125 })
+    const saved = await db.album.findUnique({
+      where: { id: draft.id },
+      include: { taxonomy: { select: { taxonomy: { select: { kind: true, slug: true } } } } },
+    })
+    report('an in-range recommendation saves', inside.ok && Number(saved?.recommendedPrice) === 125)
+    report(
+      'details land as columns and taxonomy links',
+      saved?.origin === 'generated' &&
+        saved?.footageStyle === 'live_action' &&
+        saved?.resolution === 'hd1080' &&
+        saved?.permitsDeclaration === 'none_needed' &&
+        saved?.taxonomy.length === 6,
+      `${saved?.taxonomy.length} links`,
+    )
+    const forged = await saveAlbumDetails(draft.id, { ...details, recommendedPrice: 125, category: 'not-a-category' })
+    report('a forged category is refused', !forged.ok && forged.error === 'studio.details.categoryRequired')
+
     const approve = (price: unknown) =>
       decideReview({ taskId: task.id, reviewerId: admin!.id, checklist: allPass, decision: 'approve', note: '', price: price as string })
 
@@ -116,6 +169,7 @@ async function main() {
     await db.order.deleteMany({ where: { userId: buyer.id } })
     await db.reviewTask.deleteMany({ where: { albumId: album.id } })
     await db.album.delete({ where: { id: album.id } })
+    await db.album.delete({ where: { id: draft.id } })
     await db.user.delete({ where: { id: buyer.id } })
     await db.user.delete({ where: { id: user.id } })
     await db.$disconnect()

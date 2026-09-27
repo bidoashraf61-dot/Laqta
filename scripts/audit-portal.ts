@@ -4,7 +4,7 @@
  *   npm start &  →  npm run audit
  *
  * Drives real Chrome over every route as an admin, at desktop and phone
- * widths, and reports the defect classes that only show up in a browser:
+ * widths, in Arabic and in English (DEV-55), and reports the defect classes that only show up in a browser:
  * script errors, failed requests, dead links, unlabelled controls, images
  * without alt text, broken heading order, horizontal overflow, and RTL
  * breakage from physical CSS properties.
@@ -29,6 +29,8 @@ const ROUTES = [
   '/locations',
   '/locations/alula',
   '/occasions/ramadan',
+  '/blog',
+  '/blog/choosing-establishing-shots',
   '/collections',
   '/collections/saudi-heritage',
   '/creators',
@@ -68,6 +70,7 @@ const ROUTES = [
   '/admin/disputes',
   '/admin/messages',
   '/admin/waitlist',
+  '/admin/blog',
   '/admin/users',
   '/admin/catalogue',
   '/admin/taxonomy',
@@ -251,12 +254,18 @@ async function main() {
     await adminPage.setViewportSize({ width: viewport.width, height: viewport.height })
     await creatorPage.setViewportSize({ width: viewport.width, height: viewport.height })
     console.log(`\n── ${viewport.name} (${viewport.width}px) ──`)
-    for (const route of ROUTES) {
-      const before = findings.length
-      const page = route.startsWith('/studio') ? creatorPage : adminPage
-      await auditRoute(page, route, viewport.name)
-      const count = findings.length - before
-      console.log(`  ${count === 0 ? 'clean' : `${count} finding(s)`}  ${route}`)
+    // Both languages (DEV-55): every route in Arabic, then under /en. Set
+    // AUDIT_LANGS=ar for a quicker Arabic-only pass.
+    const langs = (process.env.AUDIT_LANGS ?? 'ar,en').split(',').map((l) => l.trim()).filter(Boolean)
+    for (const lang of langs) {
+      for (const base of ROUTES) {
+        const route = lang === 'en' ? (base === '/' ? '/en' : `/en${base}`) : base
+        const before = findings.length
+        const page = base.startsWith('/studio') ? creatorPage : adminPage
+        await auditRoute(page, route, viewport.name)
+        const count = findings.length - before
+        console.log(`  ${count === 0 ? 'clean' : `${count} finding(s)`}  ${route}`)
+      }
     }
     await adminPage.close()
     await creatorPage.close()

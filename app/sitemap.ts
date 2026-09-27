@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { localePath } from '@/lib/locale'
 import { siteOrigin } from '@/lib/site'
 import { OCCASION_SLUGS } from '@/lib/occasions'
+import { blogCategories, latestPosts } from '@/lib/blog'
 import { absoluteMediaUrl } from '@/lib/media'
 
 /**
@@ -37,7 +38,7 @@ export const revalidate = 3600
  * the other and drop it. The pairing is the point.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [albums, taxonomy, creators, collections, clips] = await Promise.all([
+  const [albums, taxonomy, creators, collections, clips, posts, blogCats] = await Promise.all([
     db.album.findMany({
       where: { status: 'live' },
       select: { slug: true, updatedAt: true, creator: { select: { handle: true } } },
@@ -90,6 +91,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
       orderBy: [{ albumId: 'asc' }, { orderIndex: 'asc' }],
     }),
+    // The blog (DEV-43): public posts and the categories that hold one.
+    latestPosts(500),
+    blogCategories(),
   ])
 
   /** One source path becomes two entries, each pointing at the other. */
@@ -113,6 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...bilingual('/albums', { changeFrequency: 'daily', priority: 0.9 }),
     ...bilingual('/creators', { changeFrequency: 'weekly', priority: 0.6 }),
     ...bilingual('/sell', { changeFrequency: 'monthly', priority: 0.6 }),
+    ...(posts.length > 0 ? bilingual('/blog', { changeFrequency: 'weekly', priority: 0.6 }) : []),
   ]
 
   const taxonomyRoutes: MetadataRoute.Sitemap = taxonomy.flatMap((entry) =>
@@ -184,6 +189,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     ),
     ...clipRoutes,
+    ...posts.flatMap((post) =>
+      bilingual(`/blog/${post.slug}`, { lastModified: post.updatedAt, changeFrequency: 'monthly', priority: 0.6 }),
+    ),
+    ...blogCats.flatMap((category) => bilingual(`/blog/category/${category.slug}`, { changeFrequency: 'weekly', priority: 0.4 })),
     ...creators.flatMap((creator) =>
       bilingual(`/creators/${creator.handle}`, {
         lastModified: creator.updatedAt,

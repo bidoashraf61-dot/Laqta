@@ -18,7 +18,7 @@ An SEO landing page for one Saudi location (العلا، الدرعية، الر
 | Control | Action | Effect |
 | --- | --- | --- |
 | Breadcrumb "الرئيسية" | Link | `/` |
-| Breadcrumb "المواقع" | Link | `/locations` |
+| Breadcrumb «اللقطات» | Link | `/footage` (the index redirects there anyway; linking direct avoids a 404 prefetch under `/en`, DEV-55) |
 | Clip card | Link | `/footage/{slug}` |
 | Clip card album ribbon | Link | `/albums/{creatorHandle}/{albumSlug}` |
 

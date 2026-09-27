@@ -30,7 +30,7 @@ import bcrypt from 'bcryptjs'
 import { resolveCommission } from '../lib/commission'
 import { emptyChecklist } from '../lib/review-checklist'
 import { addBusinessDays } from '../lib/utils'
-import { demoSeedAllowed, seedLicences, seedPriceBands, seedTaxonomy } from './seed-base'
+import { demoSeedAllowed, seedLicences, seedPriceBands, seedTaxonomy, seedBlogCategories } from './seed-base'
 
 const db = new PrismaClient()
 
@@ -1495,6 +1495,40 @@ async function main() {
     }
   }
   console.log(`  collections — ${SHELVES.length} shelves populated`)
+
+  // Two demo blog posts (DEV-43), one embedding a live album, so /blog and an
+  // article render in every browser gate. Demo seed only.
+  await seedBlogCategories(db)
+  const editing = await db.blogCategory.findUniqueOrThrow({ where: { slug: 'editing' } })
+  const campaigns = await db.blogCategory.findUniqueOrThrow({ where: { slug: 'campaigns' } })
+  const embed = await db.album.findFirst({ where: { status: 'live' }, select: { slug: true, creator: { select: { handle: true } } } })
+  const posts = [
+    {
+      slug: 'choosing-establishing-shots',
+      categoryId: editing.id,
+      titleAr: 'كيف تختار لقطة تأسيسية تفتح بها إعلانك',
+      titleEn: 'How to choose the establishing shot that opens your ad',
+      excerptAr: 'اللقطة الأولى تقول للمشاهد أين هو. ثلاث قواعد تختصر عليك البحث.',
+      excerptEn: 'The first shot tells the viewer where they are. Three rules that shorten the search.',
+      bodyAr: ['## ابدأ من المكان، لا من الجمال', 'اللقطة التأسيسية وظيفتها أن تقول **أين** نحن قبل أي شيء آخر. اختر لقطة يعرف المشاهد السعودي مكانها من أول ثانية.', '- لقطة واسعة، بحركة كاميرا بطيئة', '- ضوء يطابق وقت القصة', '- مدة تكفي لقراءة العنوان فوقها', embed ? `[[album:${embed.creator.handle}/${embed.slug}]]` : '', '> الألبوم الواحد يعطيك لقطات من المكان نفسه وبالضوء نفسه، فتركب مع بعضها بلا تلوين إضافي.', 'تصفّح [الألبومات](/albums) واختر من الموقع الذي تدور فيه قصتك.'].join('\n\n'),
+      bodyEn: ['## Start from the place, not the beauty', 'An establishing shot has one job before any other: to say **where** we are. Choose one a Saudi viewer recognises in the first second.', '- A wide shot, with slow camera movement', '- Light that matches the time of the story', '- Long enough to read the title over it', embed ? `[[album:${embed.creator.handle}/${embed.slug}]]` : '', '> One album gives you shots of the same place in the same light, so they cut together without extra grading.', 'Browse the [albums](/albums) and pick from where your story happens.'].join('\n\n'),
+      publishAt: new Date(Date.now() - 3 * 86_400_000),
+    },
+    {
+      slug: 'planning-a-ramadan-campaign',
+      categoryId: campaigns.id,
+      titleAr: 'جدول حملة رمضان: متى تختار لقطاتك',
+      titleEn: 'A Ramadan campaign calendar: when to choose your footage',
+      excerptAr: 'حملات رمضان تُصنع في شعبان. هذا جدول مختصر من أول فكرة إلى النشر.',
+      excerptEn: "Ramadan campaigns are made in Sha'ban. A short calendar from first idea to launch.",
+      bodyAr: ['## قبل رمضان بشهر', 'الفكرة والسيناريو. اختر اللقطات قبل التصوير أو التوليد الإضافي، فهي تحدد ما تحتاجه فعلاً.', '## قبل رمضان بأسبوعين', 'المونتاج والتلوين والنسخ الرأسية لمنصات التواصل.', 'شوف [لقطات رمضان](/occasions/ramadan).'].join('\n\n'),
+      bodyEn: ['## A month before Ramadan', 'The idea and the script. Choose footage before any extra shooting or generation — it decides what you actually need.', '## Two weeks before', 'Editing, grading, and the vertical cuts for social platforms.', 'See [Ramadan footage](/occasions/ramadan).'].join('\n\n'),
+      publishAt: new Date(Date.now() - 86_400_000),
+    },
+  ]
+  for (const post of posts) {
+    await db.blogPost.upsert({ where: { slug: post.slug }, update: { ...post, status: 'published' }, create: { ...post, status: 'published' } })
+  }
 
   // Demo page text for one hub (DEV-41), so the intro, the FAQ block and its
   // JSON-LD render on /locations/alula in every browser gate.

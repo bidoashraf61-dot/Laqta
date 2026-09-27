@@ -61,7 +61,7 @@ others, which is why they all exist.
 | `npm run verify:hero` | Does the landing film scrub, bounded, without strays? | **yes** |
 | `npm run verify:journeys` | Can a buyer/creator/admin complete their whole job? | **yes** |
 | `npm run verify:flows` | Do dashboard controls actually mutate? | **yes** |
-| `npm run audit` | Any script errors, a11y or RTL defects on any route? | **yes** |
+| `npm run audit` | Any script errors, a11y or RTL defects on any route — at desktop (1440) and phone (390), in Arabic **and** under `/en` (DEV-55; `AUDIT_LANGS=ar` for a quick Arabic-only pass)? | **yes** |
 
 `npm run test` runs unit first (fastest feedback), then the database gates, then
 the browser gates.

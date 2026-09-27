@@ -23,7 +23,9 @@
       "board": "A shared board on Laqta: a set of clips someone picked out for you.",
       "hubLocation": "Stock footage of {name} in edit-ready albums, under one full commercial licence, paid for once.",
       "hubCategory": "{name} stock footage from Saudi Arabia in edit-ready albums, under one full commercial licence, paid for once.",
-      "hubOccasion": "Saudi {name} stock footage in edit-ready albums for your seasonal campaign, under a permanent commercial licence."
+      "hubOccasion": "Saudi {name} stock footage in edit-ready albums for your seasonal campaign, under a permanent commercial licence.",
+      "blog": "The Laqta blog: choosing Saudi footage, building seasonal campaigns and understanding the commercial licence — for creators and agencies.",
+      "blogCategory": "{name} articles from the Laqta blog, for creators and agencies."
     }
   },
   "nav": {
@@ -46,7 +48,8 @@
     "menu": "Menu",
     "close": "Close",
     "skipToContent": "Skip to content",
-    "downloads": "Downloads"
+    "downloads": "Downloads",
+    "blog": "Blog"
   },
   "search": {
     "placeholder": "Search the library… National Day, AlUla, business, Tuwaiq",
@@ -1517,5 +1520,21 @@
     "cta": "Unsubscribe",
     "done": "You're off the list. We won't email you.",
     "invalid": "This link no longer works. To leave the list, write to us from the contact page."
+  },
+  "blog": {
+    "title": "Blog",
+    "lead": "From the Laqta blog,",
+    "bold": "a guide for people making Saudi content.",
+    "intro": "How to choose footage, how to build a seasonal campaign, and what you need to know about the licence — in editing terms, not advertising ones.",
+    "categories": "Blog categories",
+    "all": "All",
+    "empty": "No articles yet",
+    "emptyHint": "The first articles are coming.",
+    "pages": "Blog pages",
+    "newer": "Newer",
+    "older": "Older",
+    "categoryTitle": "{name} articles",
+    "readingTime": "{minutes} min read",
+    "more": "More from the blog"
   }
 }

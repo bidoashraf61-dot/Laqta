@@ -160,6 +160,23 @@ export async function seedTaxonomy(db: Db) {
   )
 }
 
+/**
+ * The blog's categories (DEV-43) — structure, not content, so the production
+ * seed carries them too. A category shows on /blog only once it holds a post.
+ */
+export const BLOG_CATEGORIES: Array<[string, string, string]> = [
+  ['editing', 'دليل المونتاج', 'Editing guide'],
+  ['campaigns', 'مواسم وحملات', 'Seasons and campaigns'],
+  ['licensing', 'الترخيص', 'Licensing'],
+]
+
+export async function seedBlogCategories(db: Db) {
+  for (const [index, [slug, nameAr, nameEn]] of BLOG_CATEGORIES.entries()) {
+    await db.blogCategory.upsert({ where: { slug }, update: { nameAr, nameEn }, create: { slug, nameAr, nameEn, sortOrder: index } })
+  }
+  console.log(`  blog — ${BLOG_CATEGORIES.length} categories`)
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Licences and pricing
 // ─────────────────────────────────────────────────────────────────────────────

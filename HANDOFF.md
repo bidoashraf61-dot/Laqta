@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-11 done — two-factor now enforced for creator and admin)_
+_Last updated: 2026-09-28 (overnight run: 25 portal tasks in six batches — see §33)_
 
 ---
 
@@ -604,3 +604,51 @@ rate limits, CSP, suspended users logged out).
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).
+
+## 33. Overnight run — 2026-09-27/28 (25 portal tasks, six batches)
+
+The owner asked for every "Claude can do now" portal task, one git worktree
+per five tasks, no questions (recommended answers taken; the three asked
+before sleep: **finish** promo codes/boards, custom album → request form,
+Google contact = email only).
+
+| Batch | Branch | Tasks |
+|---|---|---|
+| 1 | `feat/batch1-copy-fixes` | DEV-22, 23, 24, 29, 40 |
+| 2 | `feat/batch2-seo` | DEV-31, 34, 35, 36, 38 |
+| 3 | `feat/batch3-studio-review` | DEV-10, 12, 17, 19 (DEV-11 came from the other session) |
+| 4 | `feat/batch4-ops` | DEV-18, 30, 48, 49, 57 |
+| 5 | `feat/batch5-content` | DEV-41, 42, 45 |
+| 6 | `feat/batch6-blog` | DEV-43, 44, 55 |
+
+Each batch ran the full `npm run verify` on its own build, port and database
+(`laqta_wt`, `laqta_wt4`…`6`, ports 3004–3007) before a `--no-ff` merge.
+
+**New things a session needs to know:**
+- **Daily jobs** (`lib/jobs.ts`): bank-transfer reminders + the operator
+  digest. Nothing runs them until hosting has a cron (`npm run jobs:daily`)
+  or a scheduler POSTs `/api/cron/daily` with `CRON_SECRET` (DEV-14).
+- **New env:** `CRON_SECRET`, `SITE_MODE=prelaunch` (shows the waitlist form),
+  `RESEND_AUDIENCE_ID` (optional waitlist sync), `NEXT_PUBLIC_CONTACT_EMAIL`
+  (Organization JSON-LD). All in `.env.example`.
+- **New tables:** `WaitlistEntry`, `BlogCategory`, `BlogPost`; `Taxonomy`
+  gained `introAr/En` + `faqs`.
+- **Security (DEV-48):** in-process rate limits (`lib/rate-limit.ts`) — one
+  server process assumed; CSP + safety headers in `next.config.mjs`.
+- **`npm run audit` now covers `/en` too** (DEV-55) — roughly twice as long;
+  `AUDIT_LANGS=ar` for a quick pass.
+- **`.media`** is ignored as a file or folder now — a worktree commit once
+  tracked a `.media` symlink, which checked out on `main` as a link to
+  itself (ELOOP). Fixed on `main`.
+- Flaky checks steadied: `verify:production-seed` (sorted counts),
+  `verify:flows` upload (one reload before failing), `verify:money` (prints
+  both amounts).
+
+**Owner still owes:** open the landing page on a real iPhone (last step of
+DEV-55); set `SITE_MODE=prelaunch` before launch if collecting sign-ups;
+`NEXT_PUBLIC_CONTACT_EMAIL`; Resend (DEV-15) and hosting cron (DEV-14).
+
+**Portal tasks still open:** DEV-55 (iPhone step), and those waiting on the
+owner / accounts: DEV-07, 13, 14, 15, 16, 25, 26, 27, 28, 32, 46, 50–54, 56,
+58, 59; DEV-60 after launch.
+

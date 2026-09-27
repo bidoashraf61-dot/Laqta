@@ -19,7 +19,7 @@ An SEO landing page for one category: Arabic metadata, breadcrumb, editorial cop
 | Control | Action | Effect |
 | --- | --- | --- |
 | Breadcrumb "الرئيسية" | Link | `/` |
-| Breadcrumb "الفئات" | Link | `/categories` |
+| Breadcrumb «اللقطات» | Link | `/footage` (the index redirects there anyway; linking direct avoids a 404 prefetch under `/en`, DEV-55) |
 | Clip card | Link | `/footage/{slug}` |
 | Clip card album ribbon | Link | `/albums/{creatorHandle}/{albumSlug}` |
 

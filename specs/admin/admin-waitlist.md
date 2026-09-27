@@ -15,9 +15,9 @@ and from which page; export it; send the launch notice once; push it to Resend.
 
 | Control | Action | Effect |
 | --- | --- | --- |
-| «تنزيل CSV» (plain `<a>`) | `GET /admin/waitlist/export` | `email,language,source,signed_up,consent,unsubscribed,launch_notified` for every row (unsubscribed ones included, marked); `private, no-store`; `AuditLog waitlist.export` |
+| «تنزيل الجدول» (plain `<a>`, CSV) | `GET /admin/waitlist/export` | `email,language,source,signed_up,consent,unsubscribed,launch_notified` for every row (unsubscribed ones included, marked); `private, no-store`; `AuditLog waitlist.export` |
 | «أرسل إشعار الإطلاق» (gold; `window.confirm` «نرسل إشعار الإطلاق لكل من في القائمة ولم يصله بعد (n)؟ ما يُرسل لأحد مرتين.») | `sendLaunchNoticeNow` → `notifyWaitlistOfLaunch()` | Queues `launch.notice` for every member not unsubscribed and not yet notified, each in their language with their unsubscribe link; sets `launchNotifiedAt`; `AuditLog waitlist.launch_notice`; toast «جهّزنا إشعار الإطلاق للإرسال: n.» |
-| «مزامنة مع Resend» (ghost) | `syncWaitlistNow` → `syncWaitlistToResend()` | POSTs new / re-consented / unsubscribed rows to the Resend audience's contacts (`unsubscribed` flag, never a delete); sets `syncedAt`; toast «تمت المزامنة: x من y.». Without the env: «المزامنة مع Resend متوقفة…» |
+| «مزامنة مع قائمة البريد» (ghost; Resend) | `syncWaitlistNow` → `syncWaitlistToResend()` | POSTs new / re-consented / unsubscribed rows to the Resend audience's contacts (`unsubscribed` flag, never a delete); sets `syncedAt`; toast «تمت المزامنة: x من y.». Without the env: «المزامنة مع قائمة مزوّد البريد متوقفة…» |
 
 ## States
 - **Empty** — «ما فيه أحد في القائمة بعد».

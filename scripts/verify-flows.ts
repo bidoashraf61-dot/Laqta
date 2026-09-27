@@ -674,6 +674,47 @@ async function main() {
     await page.context().close()
   }
 
+  // ── Admin: write a blog post, publish it, schedule another (DEV-44) ─────
+  {
+    const db = new PrismaClient()
+    const slug = `verify-post-${Date.now()}`
+    const page = await adminContext.newPage()
+    const errors = watchErrors(page)
+    try {
+      await page.goto(`${BASE}/admin/blog`, { waitUntil: 'networkidle' })
+      await page.getByRole('button', { name: 'مقال جديد' }).click()
+      await page.waitForURL((url) => /\/admin\/blog\/[^/]+$/.test(url.pathname), { timeout: 15_000 }).catch(() => {})
+      await page.fill('input[name="titleAr"]', 'مقال اختبار')
+      await page.fill('input[name="slug"]', slug)
+      await page.fill('textarea[name="bodyAr"]', '## عنوان\n\nفقرة **مهمة**.')
+      await page.getByText('فقرة', { exact: false }).first().waitFor({ timeout: 5_000 }).catch(() => {})
+      report('the editor previews the body as it is typed', (await page.locator('section h2', { hasText: 'عنوان' }).count()) > 0)
+      await page.getByRole('button', { name: 'انشر الآن' }).click()
+      await page.getByText('نُشر المقال.').waitFor({ timeout: 10_000 }).catch(() => {})
+      const post = await db.blogPost.findUnique({ where: { slug } })
+      report('publishing from the editor makes the post public', post?.status === 'published' && Boolean(post?.publishAt))
+      const live = await fetch(`${BASE}/blog/${slug}`, { redirect: 'manual' })
+      report('the published post answers on /blog', live.status === 200, String(live.status))
+
+      const future = new Date(Date.now() + 2 * 86_400_000)
+      const pad = (n: number) => String(n).padStart(2, '0')
+      await page.fill('input[name="publishAt"]', `${future.getUTCFullYear()}-${pad(future.getUTCMonth() + 1)}-${pad(future.getUTCDate())}T10:00`)
+      await page.getByRole('button', { name: 'جدوِل' }).click()
+      await page.getByText('جُدول المقال', { exact: false }).waitFor({ timeout: 10_000 }).catch(() => {})
+      const scheduled = await db.blogPost.findUnique({ where: { slug } })
+      // The body, not the status: this app answers a streamed notFound() with
+      // 200 site-wide (a known issue), so the test asks whether the post shows.
+      const hiddenHtml = await (await fetch(`${BASE}/blog/${slug}`, { redirect: 'manual' })).text()
+      const shown = hiddenHtml.includes('"@type":"Article"')
+      report('a post scheduled for later is hidden until then', scheduled?.status === 'scheduled' && !shown, `${scheduled?.status} ${shown ? 'still shown' : 'hidden'}`)
+      report('no errors on the blog editor', errors.length === 0, errors.slice(0, 2).join(' | '))
+    } finally {
+      await db.blogPost.deleteMany({ where: { OR: [{ slug }, { slug: { startsWith: 'draft-' }, titleAr: 'مقال اختبار' }] } }).catch(() => {})
+      await page.close()
+      await db.$disconnect()
+    }
+  }
+
   // ── Buyer: add a clip to a new board, share it, open it, remove, delete ─
   //
   // DEV-49: «أضف للوح» on the clip page used to land on a list that ignored

@@ -120,6 +120,10 @@ npm run media:previews -- --album <album-slug>          # or --clip, --limit, --
 # 4. Push everything, and point the DB at it
 npm run media:upload -- --dry-run                        # look first
 npm run media:upload                                     # hero + previews + posters + trailers
+# The hero film keys are versioned (hero/hero-web-v2.mp4, hero-web-m-v2.mp4 — DEV-39)
+# and uploaded with Cache-Control: max-age=1y, immutable. A new encode = a new name
+# (bump MEDIA_KEYS in lib/media.ts and the file names in scripts/media-upload.ts).
+# Previews, posters and trailers keep stable names and a 1-day cache.
 ```
 
 - Previews: 720p short side, H.264 High, yuv420p, `+faststart`, no audio,

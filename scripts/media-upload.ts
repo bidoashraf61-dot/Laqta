@@ -9,7 +9,7 @@ import { MEDIA_KEYS, mediaCdnConfigured } from '../lib/media'
  * the database at it.
  *
  * What goes up (all into `S3_MEDIA_BUCKET`, served by CloudFront):
- *   · the hero film — `public/hero/vid/hero-web.mp4` and `hero-web-m.mp4`
+ *   · the hero film — `public/hero/vid/hero-web-v2.mp4` and `hero-web-m-v2.mp4`
  *     → `hero/…` (the app reads them via `lib/media.ts#heroFilmUrl`)
  *   · every preview and poster `npm run media:previews` made
  *     → `previews/<clip>.mp4`, `posters/<clip>.jpg`
@@ -75,8 +75,8 @@ async function collect(): Promise<Item[]> {
   if (!flags['skip-hero']) {
     const heroDir = join(process.cwd(), 'public/hero/vid')
     for (const [local, key] of [
-      ['hero-web.mp4', MEDIA_KEYS.heroDesktop],
-      ['hero-web-m.mp4', MEDIA_KEYS.heroMobile],
+      ['hero-web-v2.mp4', MEDIA_KEYS.heroDesktop],
+      ['hero-web-m-v2.mp4', MEDIA_KEYS.heroMobile],
     ] as const) {
       const file = join(heroDir, local)
       if (existsSync(file)) items.push({ file, key, contentType: 'video/mp4' })
@@ -191,10 +191,14 @@ async function main() {
             Body: createReadStream(item.file),
             ContentLength: size,
             ContentType: item.contentType,
-            // Keys are stable names that a re-encode overwrites, so not
-            // `immutable`: a day at the edge, then revalidate. After replacing
-            // a file, invalidate `/<key>` on the distribution to see it now.
-            CacheControl: 'public, max-age=86400',
+            // The hero film has versioned names (DEV-39: a new encode is a new
+            // key), so it is cached for a year. Previews, posters and trailers
+            // are stable names a re-encode overwrites: a day at the edge, then
+            // revalidate — invalidate `/<key>` on the distribution to see a
+            // replacement now.
+            CacheControl: item.key.startsWith('hero/')
+              ? 'public, max-age=31536000, immutable'
+              : 'public, max-age=86400',
           }),
         )
         uploaded++

@@ -102,6 +102,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         {/* Sets html.dark before first paint. Anything React renders is too
             late — the page would paint paper and repaint ink. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* The two faces nearly every page paints first — body text and the
+            page title (DEV-39). Preloaded so they arrive with the HTML instead
+            of after the stylesheet is parsed; the other thirteen load on
+            demand. `crossOrigin` is required for font preloads to be reused. */}
+        <link rel="preload" href="/fonts/thmanyah/thmanyahsans-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/thmanyah/thmanyahserifdisplay-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body className="min-h-dvh bg-background font-sans text-foreground">
         {/* The owner's edited copy (DEV-64b) reaches client components here;

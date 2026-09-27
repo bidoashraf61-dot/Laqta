@@ -281,10 +281,24 @@ export function HeroCinematic() {
           as a scrub, then the sticky stage releases and the sections begin. */}
       <div ref={wrapRef} className="relative h-[300vh]">
         <div className="sticky top-0 flex h-dvh items-center overflow-hidden">
+          {/* The first frame as a picture, under the video (DEV-39). A `poster`
+              attribute cannot vary by screen, so phones downloaded the 157 KB
+              desktop still; this serves them the 27 KB one. Painted first and
+              fetched at high priority — it is the page's largest element until
+              the film has a frame, and the video paints over it once it does. */}
+          <picture>
+            <source media="(max-width: 860px)" srcSet="/hero/00-window-NIGHT-m.jpg" />
+            <img
+              src="/hero/00-window-NIGHT.jpg"
+              alt=""
+              fetchPriority="high"
+              decoding="async"
+              className="absolute inset-0 -z-10 size-full object-cover"
+            />
+          </picture>
           <video
             ref={videoRef}
             className="absolute inset-0 -z-10 size-full object-cover"
-            poster="/hero/00-window-NIGHT.jpg"
             muted
             playsInline
             /*

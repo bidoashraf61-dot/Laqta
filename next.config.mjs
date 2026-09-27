@@ -31,6 +31,23 @@ const nextConfig = {
    * sitemap.ts calls them "the main organic differentiator against the global
    * libraries".
    */
+  /**
+   * Browser caching for the heavy static files (DEV-39). Without these, Next
+   * serves `public/` with `max-age=0`, so every visit re-downloaded the hero
+   * film, its stills and fifteen font files.
+   *
+   * A year and `immutable`: these names never change content. The fonts and
+   * the hero stills are final; the hero film has versioned names
+   * (`hero-web-v2.mp4` — lib/media.ts#MEDIA_KEYS). To replace any of them,
+   * give the new file a new name.
+   */
+  async headers() {
+    const year = [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }]
+    return [
+      { source: '/fonts/:path*', headers: year },
+      { source: '/hero/:path*', headers: year },
+    ]
+  },
   async redirects() {
     return [
       { source: '/locations', destination: '/footage', permanent: true },

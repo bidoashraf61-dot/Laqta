@@ -7,7 +7,8 @@ import { FaqSchema } from '@/components/catalogue/faq-schema'
  * The landing FAQ.
  *
  * The leftover objections a buyer carries to checkout — unit of sale, licence
- * scope, formats, clearance, delivery — answered plainly right before the
+ * scope, delivery, AI or filmed, news use, team use, vertical footage, custom
+ * subjects (DEV-24) — answered plainly right before the
  * final calls to action. A definition list, matching the sell page, so the
  * pattern stays one thing across the site.
  *
@@ -18,7 +19,7 @@ import { FaqSchema } from '@/components/catalogue/faq-schema'
  * digits (١ ٢ ٣ in Arabic, 1 2 3 in English), and it
  * lives inside the `<dt>` so a screen reader announces it with the question.
  */
-const FAQS = ['faq1', 'faq2', 'faq3', 'faq4', 'faq5'] as const
+const FAQS = ['faq1', 'faq2', 'faq3', 'faq4', 'faq5', 'faq6', 'faq7', 'faq8', 'faq9', 'faq10'] as const
 
 /**
  * The reader's own digits — NOT `formatNumber`, which forces Latin on purpose

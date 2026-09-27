@@ -1,8 +1,25 @@
-# لقطة — الجزء 4 من 10
+# لقطة — الجزء 4 من 18
 
-هذا الجزء فيه **114 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **106 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## cart
+> سلة الشراء
+
+- `cart.title` :: سلتك   ⟂ EN: Cart
+- `cart.empty` :: سلتك فاضية   ⟂ EN: Your cart is empty
+- `cart.emptyHint` :: تصفّح الألبومات وأضف اللي تحتاجه لمشروعك.   ⟂ EN: Browse the albums and add what your project needs.
+- `cart.unavailable` :: أحد الألبومات لم يعد متاحاً   ⟂ EN: One of the albums is no longer available
+- `cart.remove` :: حذف   ⟂ EN: Remove
+- `cart.added` :: أُضيف إلى سلتك   ⟂ EN: Added to your cart
+- `cart.subtotal` :: المجموع الفرعي   ⟂ EN: Subtotal
+- `cart.vat` :: ضريبة القيمة المضافة   ⟂ EN: VAT
+- `cart.total` :: الإجمالي   ⟂ EN: Total
+- `cart.checkout` :: إتمام الشراء   ⟂ EN: Checkout
+- `cart.continueShopping` :: تصفّح الألبومات   ⟂ EN: Keep browsing
+- `cart.licenceTier` :: الترخيص   ⟂ EN: Licence
+- `cart.bundleSaving` :: توفير الحزمة   ⟂ EN: Bundle saving
 
 ## checkout
 > إتمام الشراء
@@ -19,12 +36,9 @@
 - `checkout.city` :: المدينة   ⟂ EN: City
 - `checkout.paymentMethod` :: وسيلة الدفع   ⟂ EN: Payment method
 - `checkout.methodBankTransfer` :: تحويل بنكي / أمر شراء   ⟂ EN: Bank transfer / purchase order
-- `checkout.methodCard` :: بطاقة (مدى أو ائتمانية)   ⟂ EN: Card (mada or credit)
+- `checkout.methodCard` :: بطاقة ائتمانية أو مدينة   ⟂ EN: Credit or debit card
 - `checkout.methodApplePay` :: Apple Pay   ⟂ EN: Apple Pay
-- `checkout.methodMada` :: مدى   ⟂ EN: mada
-- `checkout.methodTabby` :: تابي   ⟂ EN: Tabby
-- `checkout.methodTamara` :: تمارا   ⟂ EN: Tamara
-- `checkout.gatewayPending` :: الدفع بالبطاقة قيد التفعيل. استخدم التحويل البنكي حالياً.   ⟂ EN: Card payment is being switched on. Use bank transfer for now.
+- `checkout.gatewayPending` :: وسيلة الدفع هذي مو متاحة. اختر وحدة من الوسائل المعروضة.   ⟂ EN: That payment method is not available. Choose one of the methods shown.
 - `checkout.bankTransferInstructions` :: نرسل لك بيانات التحويل والفاتورة، ويُفتح التحميل فور تأكيد التحويل.   ⟂ EN: We'll send you the transfer details and the invoice. Downloads open as soon as the transfer is confirmed.
 - `checkout.placeOrder` :: تأكيد الطلب   ⟂ EN: Confirm the order
 - `checkout.review` :: راجع طلبك   ⟂ EN: Review your order
@@ -33,6 +47,27 @@
 - `checkout.successPaid` :: اكتمل الدفع — التحميل متاح الآن   ⟂ EN: Paid — you can download now
 - `checkout.goToLibrary` :: افتح مكتبتك   ⟂ EN: Open my library
 - `checkout.orderNumber` :: رقم الطلب   ⟂ EN: Order number
+- `checkout.gatewayError` :: ما قدرنا نفتح صفحة الدفع الآن. جرّب مرة ثانية، أو اختر التحويل البنكي.   ⟂ EN: We couldn't open the payment page just now. Try again, or choose bank transfer.
+- `checkout.redirectNote` :: تكمل الدفع في صفحة دفع آمنة، وترجع هنا أول ما تخلص.   ⟂ EN: You'll pay on a secure payment page, then come straight back here.
+- `checkout.continueToPayment` :: المتابعة للدفع   ⟂ EN: Continue to payment
+- `checkout.redirecting` :: ننقلك لصفحة الدفع…   ⟂ EN: Taking you to the payment page…
+- `checkout.returnTitle` :: حالة الدفع   ⟂ EN: Payment status
+- `checkout.returnPaidTitle` :: تم الدفع   ⟂ EN: Payment received
+- `checkout.returnPaidBody` :: طلبك مدفوع، وألبوماتك جاهزة للتحميل في مكتبتك.   ⟂ EN: Your order is paid, and your albums are ready to download in your library.
+- `checkout.returnPendingTitle` :: نتأكد من الدفع   ⟂ EN: Confirming your payment
+- `checkout.returnPendingBody` :: رجعت من صفحة الدفع، وننتظر تأكيد البنك. تتحدّث هذه الصفحة وحدها خلال ثوانٍ.   ⟂ EN: You're back from the payment page and we're waiting for the bank to confirm. This page updates by itself in a few seconds.
+- `checkout.returnSlowBody` :: التأكيد أخذ وقت أطول من المعتاد. ما تحتاج تدفع مرة ثانية؛ حالة الطلب تظهر في مشترياتك أول ما يوصل.   ⟂ EN: Confirmation is taking longer than usual. There's no need to pay again — the order's status will show in your purchases as soon as it arrives.
+- `checkout.returnFailedTitle` :: ما اكتمل الدفع   ⟂ EN: The payment didn't go through
+- `checkout.returnFailedBody` :: ألبوماتك باقية في سلتك. تقدر تحاول مرة ثانية، أو تختار التحويل البنكي.   ⟂ EN: Your albums are still in your cart. You can try again, or choose bank transfer.
+- `checkout.returnUnknownTitle` :: ما لقينا هذا الطلب   ⟂ EN: We couldn't find this order
+- `checkout.returnUnknownBody` :: حالة كل طلباتك موجودة في مشترياتك.   ⟂ EN: The status of every order you have placed is in your purchases.
+- `checkout.backToCart` :: ارجع للسلة   ⟂ EN: Back to cart
+- `checkout.viewPurchases` :: افتح مشترياتي   ⟂ EN: Open my purchases
+- `checkout.promoTitle` :: كود الخصم   ⟂ EN: Promo code
+- `checkout.promoApply` :: تطبيق   ⟂ EN: Apply
+- `checkout.promoRemove` :: إزالة الكود   ⟂ EN: Remove code
+- `checkout.promoDiscount` :: خصم الكود   ⟂ EN: Code discount
+- `checkout.promoNewTotal` :: الإجمالي بعد الخصم   ⟂ EN: Total after discount
 
 ## request
 > طلب لقطة غير موجودة في المكتبة
@@ -47,12 +82,12 @@
 - `request.received` :: وصلنا طلبك، ونرد عليك بالبريد.   ⟂ EN: We've got your request, and we'll reply by email.
 - `request.invalid` :: اكتب وصفاً أوضح، وبريداً إلكترونياً صحيحاً.   ⟂ EN: Write a clearer description and a valid email.
 - `request.adminTitle` :: طلبات اللقطات   ⟂ EN: Footage requests
-- `request.adminHint` :: ما طلبه المشترون ولا يوجد في الكتالوج — أقصر قائمة لما يستحق الإنتاج.   ⟂ EN: What buyers asked for and the catalogue doesn't have yet — the shortest list of what's worth producing.
+- `request.adminHint` :: ما طلبه المشترون وما لقوه في الكتالوج — أقصر قائمة لما يستحق الإنتاج.   ⟂ EN: What buyers asked for and the catalogue doesn't have yet — the shortest list of what's worth producing.
 - `request.colBrief` :: الطلب   ⟂ EN: Request
 - `request.colEmail` :: البريد   ⟂ EN: Email
 - `request.colDate` :: التاريخ   ⟂ EN: Date
 - `request.colStatus` :: الحالة   ⟂ EN: Status
-- `request.empty` :: لا توجد طلبات بعد.   ⟂ EN: No requests yet.
+- `request.empty` :: ما فيه طلبات بعد.   ⟂ EN: No requests yet.
 
 ## review
 > تقييمات المشترين للألبومات
@@ -69,9 +104,8 @@
 - `review.signInFirst` :: سجّل دخولك لتضيف تقييمك.   ⟂ EN: Sign in to leave a review.
 - `review.invalid` :: اختر تقييماً من ١ إلى ٥.   ⟂ EN: Choose a rating from 1 to 5.
 - `review.outOf` :: من ٥   ⟂ EN: out of 5
-- `review.count` :: تقييم   ⟂ EN: reviews
 - `review.verified` :: مشترٍ موثّق   ⟂ EN: Verified buyer
-- `review.ratingSummary` :: {value} من ٥ · {count} تقييم   ⟂ EN: {value} out of 5 · {count} ratings
+- `review.ratingSummary` :: {value} من ٥ · {count}   ⟂ EN: {value} out of 5 · {count}
 
 ## boards
 > الألواح: قوائم لقطات يجمعها المشتري ويشاركها
@@ -84,7 +118,6 @@
 - `boards.share` :: انسخ رابط المشاركة   ⟂ EN: Copy share link
 - `boards.shareHint` :: أي شخص عنده الرابط يقدر يشوف اللوح   ⟂ EN: Anyone with the link can view the board
 - `boards.copied` :: نسخنا الرابط   ⟂ EN: Link copied
-- `boards.clips` :: لقطة   ⟂ EN: clips
 - `boards.makePublic` :: شارك برابط   ⟂ EN: Share by link
 
 ## media
@@ -93,51 +126,10 @@
 - `media.play` :: تشغيل   ⟂ EN: Play
 - `media.pause` :: إيقاف مؤقت   ⟂ EN: Pause
 - `media.muted` :: بلا صوت   ⟂ EN: Muted
+- `media.mute` :: اكتم الصوت   ⟂ EN: Mute
+- `media.unmute` :: شغّل الصوت   ⟂ EN: Unmute
 - `media.showreelLead` :: كل اللقطات،   ⟂ EN: Every shot,
 - `media.showreelBold` :: في دقيقة واحدة.   ⟂ EN: in one minute.
 - `media.showreelAlt` :: عرض مجمّع للقطات من الكتالوج   ⟂ EN: Showreel cut from footage across the catalogue
 - `media.trailerAlt` :: تريلر ألبوم {album}   ⟂ EN: Trailer for the album {album}
 - `media.trailerTitle` :: تريلر الألبوم   ⟂ EN: Album trailer
-
-## account
-> حساب المشتري وبياناته وتوثيق البريد والجوال
-
-- `account.profileTitle` :: بياناتك   ⟂ EN: Your details
-- `account.profileName` :: الاسم الكامل   ⟂ EN: Name
-- `account.profileEmail` :: البريد الإلكتروني   ⟂ EN: Email
-- `account.profilePhone` :: رقم الجوال   ⟂ EN: Mobile
-- `account.profileCountry` :: الدولة   ⟂ EN: Country
-- `account.profileMember` :: عضو منذ   ⟂ EN: Member since
-- `account.profileNotSet` :: لم يُضف   ⟂ EN: Not added
-- `account.profileEdit` :: تعديل بياناتك   ⟂ EN: Edit your details
-- `account.profileVerified` :: موثّق   ⟂ EN: Verified
-- `account.profileUnverified` :: غير موثّق   ⟂ EN: Unverified
-- `account.hubLibraryBody` :: كل ألبوم اشتريته، جاهز للتحميل بجودته الأصلية.   ⟂ EN: Every album you have bought, ready to download at original quality.
-- `account.hubBoardsBody` :: اجمع اللقطات قبل الشراء، وشاركها مع فريقك.   ⟂ EN: Gather clips before you buy, and share them with your team.
-- `account.hubPurchasesBody` :: طلباتك وفواتيرها الضريبية، وحالة كل دفعة.   ⟂ EN: Your orders and tax invoices, and the status of every payment.
-- `account.hubDownloadsBody` :: ما حمّلته، ومتى، ومن أي ألبوم.   ⟂ EN: What you downloaded, when, and from which album.
-- `account.hubSecurityBody` :: كلمة المرور والتحقق بخطوتين.   ⟂ EN: Your password and two-factor authentication.
-- `account.profileSaved` :: حفظنا بياناتك.   ⟂ EN: Your details have been saved.
-- `account.profileInvalid` :: راجع الحقول: الاسم مطلوب، والبريد لازم يكون صحيحاً.   ⟂ EN: Check the fields: a name is required, and the email must be valid.
-- `account.profileEmailTaken` :: هذا البريد مسجّل في حساب آخر.   ⟂ EN: That email is already used by another account.
-- `account.profilePhoneTaken` :: هذا الرقم مسجّل في حساب آخر.   ⟂ EN: That number is already used by another account.
-- `account.profileEmailHint` :: بريدك هو وسيلة دخولك. إذا غيّرته، تحتاج توثيقه من جديد.   ⟂ EN: Your email is how you sign in. If you change it, you'll need to verify it again.
-- `account.profilePhoneHint` :: تدخل به برمز لمرة واحدة. إذا غيّرته، تحتاج توثيقه من جديد.   ⟂ EN: You sign in with it using a one-time code. If you change it, you'll need to verify it again.
-- `account.profileCountryNone` :: أفضّل ألا أذكر   ⟂ EN: Prefer not to say
-- `account.profileCredentialWarning` :: بريدك وجوالك هما وسيلة دخولك. تغيير أي منهما يلغي توثيقه حتى تؤكده من جديد، فتأكد أنه يستقبل الرسائل قبل الحفظ.   ⟂ EN: Your email and mobile are how you sign in. Changing either clears its verification until you confirm it again — make sure you can still receive on it before saving.
-- `account.verifySendEmail` :: أرسل رابط التوثيق   ⟂ EN: Send verification link
-- `account.verifySendCode` :: أرسل رمز التوثيق   ⟂ EN: Send verification code
-- `account.verifyConfirm` :: تأكيد   ⟂ EN: Confirm
-- `account.verifyCodeLabel` :: رمز التوثيق   ⟂ EN: Verification code
-- `account.verifyEmailSent` :: أرسلنا رابط التوثيق إلى بريدك. الرابط صالح لثلاثين دقيقة.   ⟂ EN: We sent a verification link to your email. It is valid for thirty minutes.
-- `account.verifyCodeSent` :: أرسلنا رمزاً إلى جوالك. الرمز صالح لعشر دقائق.   ⟂ EN: We sent a code to your mobile. It is valid for ten minutes.
-- `account.verifyEmailNotConfigured` :: خدمة البريد غير مفعّلة بعد. استخدم هذا الرابط لتوثيق بريدك:   ⟂ EN: Email delivery is not configured yet. Use this link to verify your address:
-- `account.verifyCodeNotConfigured` :: خدمة الرسائل غير مفعّلة بعد. هذا هو رمزك:   ⟂ EN: SMS delivery is not configured yet. Here is your code:
-- `account.verifyCodeInvalid` :: الرمز أرقام فقط.   ⟂ EN: The code is digits only.
-- `account.verifyCodeWrong` :: الرمز غير صحيح أو انتهت صلاحيته. اطلب رمزاً جديداً.   ⟂ EN: That code is wrong or has expired. Ask for a new one.
-- `account.verifyNoEmail` :: ما فيه بريد على حسابك. أضفه أولاً من تعديل بياناتك.   ⟂ EN: There is no email on your account. Add one first from Edit your details.
-- `account.verifyNoPhone` :: ما فيه رقم جوال على حسابك. أضفه أولاً من تعديل بياناتك.   ⟂ EN: There is no mobile on your account. Add one first from Edit your details.
-- `account.verifyAlready` :: هذه الوسيلة موثّقة أصلاً.   ⟂ EN: This is already verified.
-- `account.verifiedEmail` :: وثّقنا بريدك الإلكتروني.   ⟂ EN: Your email address is verified.
-- `account.verifiedFailed` :: رابط التوثيق غير صالح أو انتهت صلاحيته. اطلب رابطاً جديداً.   ⟂ EN: That verification link is invalid or has expired. Ask for a new one.
-- `account.verifyTitle` :: توثيق وسائل الدخول   ⟂ EN: Verify your sign-in details

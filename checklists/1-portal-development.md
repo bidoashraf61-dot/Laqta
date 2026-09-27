@@ -63,7 +63,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT; **D7: keep 15% until BIZ-03 answers**); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
 - [x] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min — done 2026-09-27 (mada/Tabby/Tamara removed as payment methods and as copy; the «الدفع بالبطاقة قيد التفعيل» note is gone — bank-transfer-only checkout just shows bank transfer; the forged-method refusal reworded; `verify:payments` checks both)
 - [ ] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days
-- [ ] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day
+- [x] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day — done 2026-09-27 (both writer briefs rewritten to D1–D10: 30–70 clips, $49–$249 set at review, AI + filmed and never «تصوير» for AI, resolution per album, «ترخيص دائم» not ownership, no refund copy, no mada/Tabby/Tamara, plural rules now in code; `gemini/` re-exported from today's copy (18 parts); the August website draft and the two old reviews marked superseded)
 - [ ] **DEV-32** Contact details shown on `/contact` and in site data — 🤖 · 30 min · *needs BIZ-10*
 
 ### SEO fixes

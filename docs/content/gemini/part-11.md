@@ -1,0 +1,149 @@
+# لقطة — الجزء 11 من 18
+
+هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
+طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## dash
+> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
+
+- `dash.cityAr` :: المدينة بالعربية   ⟂ EN: City (Arabic)
+- `dash.cityEn` :: المدينة بالإنجليزية   ⟂ EN: City (English)
+- `dash.mail` :: البريد الإلكتروني   ⟂ EN: Email
+- `dash.mailReady` :: خدمة البريد مفعّلة وتُرسل الرسائل.   ⟂ EN: Mail delivery is configured and sending.
+- `dash.mailNotConfigured` :: لم يُربط مزوّد بريد بعد. الرسائل تنتظر في الطابور ولا تُرسل.   ⟂ EN: No mail provider is connected. Messages are queued and not sent.
+- `dash.mailPending` :: بانتظار الإرسال   ⟂ EN: Pending
+- `dash.mailSent` :: أُرسلت   ⟂ EN: Sent
+- `dash.mailFailed` :: تعذّر إرسالها   ⟂ EN: Failed
+- `dash.messagesTitle` :: رسائل التواصل
+- `dash.messagesHint` :: ما وصل من نموذج صفحة التواصل. الرسالة محفوظة هنا حتى لو لم يصل بريد التنبيه.
+- `dash.messagesEmpty` :: ما فيه رسائل هنا.
+- `dash.messagesOpen` :: بانتظار الرد
+- `dash.messagesHandled` :: تمت معالجتها
+- `dash.messagesMarkHandled` :: تمت المعالجة
+- `dash.messagesReopen` :: أعد فتحها
+- `dash.messagesReply` :: رد بالبريد
+- `dash.messagesNoTopic` :: بلا موضوع
+- `dash.messagesMailed` :: أُرسل التنبيه بالبريد
+- `dash.messagesNotMailed` :: لم يُرسل تنبيه بالبريد
+- `dash.messagesWroteIn` :: لغة الزائر
+- `dash.messagesHandledOn` :: عولجت في
+- `dash.gatewayRef` :: المرجع
+- `dash.settledVia` :: تأكيد الدفع
+- `dash.settledWebhook` :: تلقائي من بوابة الدفع
+- `dash.settledManual` :: يدوي من الإدارة
+- `dash.gatewayFlag` :: إشعار من بوابة الدفع يحتاج مراجعة
+- `dash.gatewayOutcome_amount_mismatch` :: المبلغ أو العملة لا تطابق الطلب، ولم يُعتمد الدفع
+- `dash.gatewayOutcome_integration_mismatch` :: وصل الدفع من تكامل غير معروف، ولم يُعتمد
+- `dash.gatewayOutcome_reversed_at_gateway` :: استُرجع أو أُلغي في بوابة الدفع
+- `dash.gatewayOutcome_order_not_pending` :: وصل دفع لطلب ليس بانتظار الدفع
+- `dash.gatewayCardPendingHint` :: دفع بالبطاقة: يتأكد تلقائياً عند وصول إشعار بوابة الدفع. لا تؤكّده يدوياً قبل مراجعة لوحة بوابة الدفع.
+- `dash.sampleTitle` :: العيّنة المجانية
+- `dash.sampleHint` :: لقطات تختارها من الألبومات المنشورة، يأخذها كل حساب مسجّل مجاناً مرة واحدة. التعديل هنا يغيّر ما يأخذه القادمون فقط؛ من أخذها يحتفظ بنسخته.
+- `dash.sampleNav` :: العيّنة المجانية
+- `dash.sampleNavHint` :: اختر لقطات العيّنة المجانية وانشرها.
+- `dash.sampleTitleRequired` :: العنوان العربي مطلوب.
+- `dash.sampleClipNotLive` :: هذه اللقطة في ألبوم غير منشور.
+- `dash.sampleNeedsClips` :: أضف لقطة واحدة على الأقل من ألبوم منشور قبل النشر.
+- `dash.samplePublished` :: منشورة
+- `dash.sampleDraft` :: غير منشورة
+- `dash.samplePublish` :: انشر العيّنة
+- `dash.sampleUnpublish` :: أوقف النشر
+- `dash.sampleClaims` :: عدد من أخذها
+- `dash.sampleStatus` :: الحالة
+- `dash.sampleDetails` :: البيانات
+- `dash.sampleTitleField` :: العنوان
+- `dash.sampleChosen` :: اللقطات المختارة
+- `dash.sampleEmpty` :: ما اخترت لقطات بعد. اختر ألبوماً من الأسفل وأضف منه.
+- `dash.sampleAdd` :: أضف لقطات
+- `dash.samplePickAlbum` :: اختر ألبوماً منشوراً لعرض لقطاته.
+- `dash.sampleAddClip` :: أضف
+- `dash.sampleAdded` :: مضافة
+- `dash.sampleRemove` :: احذف
+- `dash.sampleUp` :: أعلى
+- `dash.sampleDown` :: أسفل
+- `dash.sampleMakeCover` :: اجعلها الغلاف
+- `dash.sampleIsCover` :: الغلاف
+- `dash.sampleNotLive` :: ألبومها غير منشور، فلا تُعطى
+- `dash.sampleOpenPublic` :: افتح الصفحة العامة
+- `dash.releaseDocument` :: المستند
+- `dash.releaseDocAttach` :: إرفاق المستند
+- `dash.releaseDocReplace` :: استبدال
+- `dash.releaseDocRemove` :: إزالة
+- `dash.releaseDocRemoveConfirm` :: إزالة المستند من هذا التصريح؟
+- `dash.releaseDocOpen` :: عرض
+- `dash.releaseDocNone` :: لم يُرفق المستند بعد. المراجع لا يعتمد تصريحاً بلا نسخة منه.
+- `dash.releaseDocFormats` :: الصيغ المقبولة
+- `dash.releaseDocMax` :: الحد الأقصى
+- `dash.releaseDocLocked` :: اعتُمد هذا التصريح، فلا يُستبدل مستنده.
+- `dash.releaseDocRejectedHint` :: استبدال المستند يعيد التصريح إلى المراجعة.
+- `dash.releaseDocUploaded` :: أُرفق المستند.
+- `dash.releaseDocRemoved` :: أُزيل المستند.
+- `dash.releaseDocUploading` :: جارٍ الرفع
+- `dash.releaseDocRefuseType` :: نوع الملف غير مقبول — ارفع مستنداً أو صورة ممسوحة.
+- `dash.releaseDocRefuseSize` :: الملف أكبر من الحد المسموح.
+- `dash.releaseDocAfterCreate` :: بعد الإضافة، أرفق نسخة المستند من بطاقة التصريح.
+- `dash.usersTitle` :: المستخدمون
+- `dash.usersHint` :: ابحث عن أي حساب بالبريد أو الاسم أو رقم الجوال، ثم افتحه لترى طلباته ومكتبته ورسائله.
+- `dash.searchUsers` :: بريد أو اسم أو رقم جوال
+- `dash.noUsers` :: لا حساب يطابق البحث
+- `dash.colUser` :: المستخدم
+- `dash.colRole` :: الدور
+- `dash.colJoined` :: انضم في
+- `dash.colOrders` :: الطلبات
+- `dash.userActive` :: نشط
+- `dash.userSuspended` :: موقوف
+- `dash.userPendingVerification` :: بانتظار التحقق
+- `dash.userProfile` :: الحساب
+- `dash.userName` :: الاسم
+- `dash.userEmail` :: البريد
+- `dash.userPhone` :: الجوال
+- `dash.userCountry` :: البلد
+- `dash.userLocale` :: لغة الواجهة
+- `dash.userTwoFactor` :: التحقق بخطوتين
+- `dash.userTwoFactorOn` :: مفعّل
+- `dash.userTwoFactorOff` :: غير مفعّل
+- `dash.userBilling` :: جهة الفوترة
+- `dash.billingIndividual` :: فرد
+- `dash.billingBusiness` :: منشأة
+- `dash.notSet` :: غير مسجّل
+- `dash.verified` :: موثّق
+- `dash.unverified` :: غير موثّق
+- `dash.suspendUser` :: إيقاف الحساب
+- `dash.suspendUserConfirm` :: إيقاف هذا الحساب؟ لن يستطيع صاحبه الدخول حتى تعيد تفعيله.
+- `dash.reactivateUser` :: إعادة تفعيل الحساب
+- `dash.userSuspendedDone` :: أُوقف الحساب
+- `dash.userReactivatedDone` :: أُعيد تفعيل الحساب
+- `dash.cannotSuspendAdmin` :: حساب المدير لا يُوقف من هنا.
+- `dash.userSuspendHint` :: الإيقاف يمنع أي دخول جديد فورًا، والجلسة المفتوحة الآن تبقى حتى تنتهي صلاحيتها.
+- `dash.userOrders` :: الطلبات
+- `dash.userOrdersEmpty` :: لا طلبات على هذا الحساب
+- `dash.openInOrders` :: افتح في الطلبات
+- `dash.userLibrary` :: المكتبة
+- `dash.userLibraryEmpty` :: لا ألبومات في مكتبته
+- `dash.userLibraryHint` :: ما يملكه يُقرأ من لقطة الطلب وقت الشراء. لا سحب ملكية من هنا: الاسترداد من صفحة الطلبات يسحبها مع المبلغ.
+- `dash.entitlementRevoked` :: سُحبت
+- `dash.entitlementSample` :: العيّنة المجانية
+- `dash.userMessages` :: رسائل التواصل
+- `dash.userMessagesEmpty` :: لم تصلنا رسالة من هذا البريد
+- `dash.userMessagesHint` :: الرسائل تُطابَق بالبريد، لأن نموذج التواصل لا يتطلب حسابًا.
+- `dash.userComps` :: المعاينات التي حمّلها
+- `dash.userCompsEmpty` :: لم يحمّل معاينات
+- `dash.compZip` :: الألبوم كاملًا
+- `dash.compClip` :: لقطة واحدة
+- `dash.userSample` :: العيّنة المجانية
+- `dash.sampleClaimedOn` :: استلمها في
+- `dash.sampleNotClaimed` :: لم يستلمها
+- `dash.userCreator` :: حساب صانع محتوى
+- `dash.openCreator` :: افتح في صنّاع المحتوى
+- `dash.viewAs` :: عرض الموقع كهذا المستخدم
+- `dash.viewAsHint` :: يفتح الموقع كما يراه هو، للقراءة فقط: لا شراء ولا تحميل ولا تعديل. تنتهي الجلسة وحدها بعد {minutes} دقيقة، وتُسجَّل بدايتها ونهايتها في سجل التدقيق.
+- `dash.viewAsReason` :: سبب العرض
+- `dash.viewAsReasonHint` :: ما الذي تتحقق منه؟ مثل: يقول العميل إن الألبوم لا يظهر في مكتبته.
+- `dash.viewAsTicket` :: مرجع الرسالة أو التذكرة (اختياري)
+- `dash.viewAsStart` :: ابدأ العرض
+- `dash.viewAsReasonRequired` :: اكتب سببًا، فلا عرض بلا سبب.
+- `dash.viewAsRefusedAdmin` :: حسابات المديرين لا تُعرض.
+- `dash.viewAsRefusedCreator` :: حسابات صنّاع المحتوى لا تُعرض: فيها بيانات الدفع ومحمية بالتحقق بخطوتين.
+- `dash.viewAsRefusedSelf` :: لا تعرض حسابك أنت.
+- `dash.viewAsHistory` :: جلسات العرض

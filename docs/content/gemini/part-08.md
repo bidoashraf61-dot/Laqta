@@ -1,149 +1,45 @@
-# لقطة — الجزء 8 من 10
+# لقطة — الجزء 8 من 18
 
-هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **36 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
-## dash
-> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
+## studio
+> استوديو صانع المحتوى — نبرة عملية مختصرة
 
-- `dash.assignedTo` :: مُسنَد إلى
-- `dash.creatorsTitle` :: صنّاع المحتوى
-- `dash.creatorsHint` :: اعتماد الطلبات، وضبط العمولة، وإيقاف الحسابات.
-- `dash.creatorPending` :: بانتظار الاعتماد
-- `dash.creatorApproved` :: معتمد
-- `dash.creatorSuspended` :: موقوف
-- `dash.creatorRejected` :: مرفوض
-- `dash.approveCreator` :: اعتماد   ⟂ EN: Approve creator
-- `dash.suspendCreator` :: إيقاف
-- `dash.reinstateCreator` :: إعادة تفعيل
-- `dash.tier` :: الشريحة
-- `dash.commissionOverride` :: عمولة مخصّصة
-- `dash.commissionOverrideHint` :: اتركه فارغاً لاستخدام نسبة الشريحة.
-- `dash.lifetimeGmv` :: إجمالي المبيعات
-- `dash.noCreators` :: لا يوجد صنّاع محتوى
-- `dash.disputesTitle` :: الشكاوى والبلاغات
-- `dash.disputesHint` :: بلاغات حقوق النشر وطلبات الإزالة. تعطيل المحتوى إجراء فوري وقابل للتراجع.
-- `dash.disputeDmca` :: بلاغ حقوق نشر
-- `dash.disputeIp` :: نزاع ملكية
-- `dash.disputeTakedown` :: طلب إزالة
-- `dash.disputeComplaint` :: شكوى محتوى
-- `dash.disputeOpen` :: مفتوح
-- `dash.disputeInvestigating` :: قيد الفحص
-- `dash.disputeDisabled` :: المحتوى معطّل
-- `dash.disputeResolved` :: مغلق
-- `dash.disputeRejected` :: مرفوض
-- `dash.disableContent` :: تعطيل المحتوى
-- `dash.restoreContent` :: إعادة النشر
-- `dash.resolveDispute` :: إغلاق البلاغ
-- `dash.claimant` :: مقدّم البلاغ
-- `dash.resolution` :: قرار الإغلاق
-- `dash.noDisputes` :: لا توجد بلاغات
-- `dash.catalogueTitle` :: الكتالوج
-- `dash.catalogueHint` :: كل الألبومات المنشورة. أوقف أو اسحب ألبوماً دون المرور بقائمة المراجعة.
-- `dash.pauseAlbum` :: إيقاف مؤقت
-- `dash.resumeAlbum` :: إعادة النشر
-- `dash.delistAlbum` :: سحب من الكتالوج
-- `dash.priceBands` :: شرائح الأسعار
-- `dash.priceBandsHint` :: السعر يُشتق من عدد اللقطات. تعديل الشريحة يسري على الألبومات الجديدة فقط.
-- `dash.bandRange` :: عدد اللقطات
-- `dash.bandPrice` :: سعر الألبوم   ⟂ EN: Album price
-- `dash.taxonomyTitle` :: التصنيفات والمواقع
-- `dash.taxonomyHint` :: التصنيفات والمواقع والوسوم ومرادفاتها. المرادفات هي ما يجعل البحث العربي يجد المحتوى الموسوم بالإنجليزية.
-- `dash.kindCategory` :: تصنيف
-- `dash.kindLocation` :: موقع
-- `dash.kindTag` :: وسم
-- `dash.kindTheme` :: موضوع
-- `dash.addTerm` :: إضافة مصطلح
-- `dash.termAr` :: الاسم بالعربية
-- `dash.termEn` :: الاسم بالإنجليزية
-- `dash.termSlug` :: المعرّف
-- `dash.termSynonyms` :: المرادفات (افصل بفاصلة)
-- `dash.termParent` :: التصنيف الأعلى
-- `dash.termNone` :: لا شيء
-- `dash.termAlbums` :: ألبوم
-- `dash.noTerms` :: لا توجد مصطلحات
-- `dash.merchandisingTitle` :: واجهة الموقع
-- `dash.merchandisingHint` :: ما يظهر في الصفحة الرئيسية: البانر، والألبومات المميّزة، والمجموعات — دون تعديل الكود.
-- `dash.slots` :: الخانات
-- `dash.slotActive` :: مفعّلة
-- `dash.slotInactive` :: متوقفة
-- `dash.slotWindow` :: فترة العرض
-- `dash.collections` :: المجموعات
-- `dash.collectionPublished` :: منشورة
-- `dash.collectionDraft` :: مسودة
-- `dash.collectionFeatured` :: مميّزة
-- `dash.featureToggle` :: تمييز
-- `dash.publishToggle` :: نشر
-- `dash.sortOrder` :: الترتيب
-- `dash.noSlots` :: لا توجد خانات معرّفة
-- `dash.slotTitle` :: العنوان
-- `dash.slotSubtitle` :: النص الفرعي
-- `dash.slotCta` :: نص الزر
-- `dash.slotLink` :: رابط الوجهة
-- `dash.slotMedia` :: رابط الصورة أو الفيديو
-- `dash.ordersTitle` :: الطلبات
-- `dash.ordersHint` :: كل عمليات الشراء، والاسترجاع، والفواتير الضريبية.
-- `dash.orderPaid` :: مدفوع
-- `dash.orderPending` :: بانتظار الدفع
-- `dash.orderFailed` :: فشل الدفع
-- `dash.orderRefunded` :: مسترجع
-- `dash.orderPartial` :: استرجاع جزئي
-- `dash.orderItems` :: بنود الطلب
-- `dash.buyer` :: المشتري
-- `dash.refund` :: استرجاع
-- `dash.refundReason` :: سبب الاسترجاع
-- `dash.refundPolicy` :: الأساس النظامي
-- `dash.refundHint` :: تُعكس العمولة بالنسبة المجمّدة لحظة الشراء، لا بالنسبة الحالية.
-- `dash.basisTechnical` :: خلل تقني في الملف
-- `dash.basisLicence` :: الترخيص لا يطابق الاستخدام
-- `dash.basisDuplicate` :: شراء مكرّر
-- `dash.basisGoodwill` :: استرجاع ودّي
-- `dash.orderNumber` :: رقم الطلب
-- `dash.paymentMethod` :: وسيلة الدفع
-- `dash.remaining` :: المتبقّي
-- `dash.refundedAmount` :: المسترجع
-- `dash.payoutRef` :: المرجع البنكي
-- `dash.confirmPaid` :: تأكيد التحويل
-- `dash.noOrders` :: لا توجد طلبات
-- `dash.payoutQueueTitle` :: طلبات التحويل
-- `dash.payoutQueueHint` :: اعتمد الطلبات ثم صدّرها كدفعة واحدة لكل قناة.
-- `dash.approvePayout` :: اعتماد
-- `dash.markPaid` :: تأكيد التحويل
-- `dash.runs` :: الدفعات
-- `dash.noPayoutRequests` :: لا توجد طلبات تحويل
-- `dash.promosTitle` :: أكواد الخصم
-- `dash.promosHint` :: أكواد ترويجية بنسبة أو بمبلغ ثابت، بحد أقصى للاستخدام وفترة صلاحية.
-- `dash.promoCode` :: الكود
-- `dash.promoKind` :: النوع
-- `dash.promoPercent` :: نسبة مئوية
-- `dash.promoFixed` :: مبلغ ثابت
-- `dash.promoValue` :: القيمة
-- `dash.promoRedemptions` :: الاستخدامات
-- `dash.promoLimit` :: الحد الأقصى
-- `dash.promoWindow` :: فترة الصلاحية
-- `dash.promoMinOrder` :: الحد الأدنى للطلب
-- `dash.promoActive` :: مفعّل
-- `dash.promoInactive` :: متوقف
-- `dash.newPromo` :: كود جديد
-- `dash.noPromos` :: لا توجد أكواد
-- `dash.platformSettings` :: إعدادات المنصّة
-- `dash.platformSettingsHint` :: الأرقام التي تحكم التشغيل: مهلة المراجعة، ومدة الحجز، والحد الأدنى للتحويل، والضريبة، ونسب العمولة.
-- `dash.reviewSla` :: مهلة المراجعة (أيام عمل)
-- `dash.holdDays` :: مدة حجز الأرباح (أيام)
-- `dash.minPayout` :: الحد الأدنى للتحويل
-- `dash.vatRate` :: نسبة ضريبة القيمة المضافة
-- `dash.commissionTiers` :: نسب العمولة
-- `dash.settingsReadOnly` :: هذه القيم مثبّتة في الكود حالياً وتظهر هنا للمراجعة.
-- `dash.auditTrail` :: سجل الإجراءات
-- `dash.auditAction` :: الإجراء
-- `dash.auditActor` :: المنفِّذ
-- `dash.storage` :: التخزين السحابي
-- `dash.licenceCurrent` :: نسخة الترخيص السارية
-- `dash.cityAr` :: المدينة بالعربية   ⟂ EN: City (Arabic)
-- `dash.cityEn` :: المدينة بالإنجليزية   ⟂ EN: City (English)
-- `dash.mail` :: البريد الإلكتروني   ⟂ EN: Email
-- `dash.mailReady` :: خدمة البريد مفعّلة وتُرسل الرسائل.   ⟂ EN: Mail delivery is configured and sending.
-- `dash.mailNotConfigured` :: لم يُربط مزوّد بريد بعد. الرسائل تنتظر في الطابور ولا تُرسل.   ⟂ EN: No mail provider is connected. Messages are queued and not sent.
-- `dash.mailPending` :: بانتظار الإرسال   ⟂ EN: Pending
-- `dash.mailSent` :: أُرسلت   ⟂ EN: Sent
+- `studio.details.saved` :: حُفظت تفاصيل الألبوم.   ⟂ EN: Album details saved.
+- `studio.details.originRequired` :: اختر كيف صُنعت اللقطات.   ⟂ EN: Choose how the footage was made.
+- `studio.details.orientationRequired` :: اختر اتجاه اللقطات.   ⟂ EN: Choose the orientation.
+- `studio.details.categoryRequired` :: اختر تصنيف الألبوم.   ⟂ EN: Choose the album's category.
+- `studio.details.locationRequired` :: اختر موقعاً واحداً على الأقل.   ⟂ EN: Choose at least one location.
+- `studio.details.permitsRequired` :: اختر ما ينطبق على التصاريح.   ⟂ EN: Choose what applies to permits.
+- `studio.details.tooMany` :: اخترت أكثر من المسموح: حتى ١٠ مواقع، و٣ مناسبات، و١٢ وسماً.   ⟂ EN: Too many chosen: up to 10 locations, 3 occasions and 12 tags.
+- `studio.details.type.ai_live_action` :: ذكاء اصطناعي: مشاهد واقعية   ⟂ EN: AI: live action
+- `studio.details.type.ai_animated_3d` :: ذكاء اصطناعي: رسوم ثلاثية الأبعاد   ⟂ EN: AI: 3D animation
+- `studio.details.type.ai_animated_2d` :: ذكاء اصطناعي: رسوم ثنائية الأبعاد   ⟂ EN: AI: 2D animation
+- `studio.details.type.filmed` :: تصوير حقيقي بالكاميرا   ⟂ EN: Filmed with a camera
+- `studio.details.resolution` :: الدقة   ⟂ EN: Resolution
+- `studio.details.res.sd720` :: 720p   ⟂ EN: 720p
+- `studio.details.res.hd1080` :: 1080p   ⟂ EN: 1080p
+- `studio.details.res.uhd4k` :: 4K   ⟂ EN: 4K
+- `studio.details.quality` :: جودة الألبوم   ⟂ EN: Album quality
+- `studio.details.qualityHint` :: تقييمك أنت، ويراجعه فريق لقطة. ويدخل في حساب السعر.   ⟂ EN: Your own rating, reviewed by Laqta. It feeds the price.
+- `studio.details.q.standard` :: قياسية   ⟂ EN: Standard
+- `studio.details.q.good` :: جيدة   ⟂ EN: Good
+- `studio.details.q.exceptional` :: استثنائية   ⟂ EN: Exceptional
+- `studio.details.priceTitle` :: حاسبة السعر   ⟂ EN: Price calculator
+- `studio.details.suggested` :: السعر المقترح:   ⟂ EN: Suggested price:
+- `studio.details.range` :: اقترح سعراً ضمن:   ⟂ EN: Recommend a price within:
+- `studio.details.basis` :: محسوب على عدد لقطات الألبوم الآن: {count}.   ⟂ EN: Based on the album's clip count now: {count}.
+- `studio.details.basisFew` :: عدد لقطات الألبوم الآن {count}، أقل من الحد الأدنى، فالسعر محسوب على الحد الأدنى للألبوم ويتحدّث مع كل لقطة تضيفها.   ⟂ EN: The album's clip count is {count} now, below the minimum, so this is priced at the minimum album size. It updates as you add clips.
+- `studio.details.pickToPrice` :: اختر نوع اللقطات والدقة والجودة ليظهر السعر المقترح.   ⟂ EN: Choose footage type, resolution and quality to see the suggested price.
+- `studio.details.recommended` :: سعرك المقترح   ⟂ EN: Your recommended price
+- `studio.details.recommendedNote` :: لماذا هذا السعر؟ (اختياري)   ⟂ EN: Why this price? (optional)
+- `studio.details.priceFinal` :: لقطة تعتمد سعرك أو تقترح سعراً آخر، ولا يُنشر الألبوم بسعر مختلف قبل موافقتك.   ⟂ EN: Laqta approves your price or proposes another; the album is never published at a different price without your agreement.
+- `studio.details.resolutionRequired` :: اختر دقة اللقطات.   ⟂ EN: Choose the resolution.
+- `studio.details.qualityRequired` :: اختر جودة الألبوم.   ⟂ EN: Choose the album's quality.
+- `studio.details.priceRequired` :: اكتب سعرك المقترح.   ⟂ EN: Enter your recommended price.
+- `studio.details.priceOutOfRange` :: سعرك المقترح خارج النطاق الذي تحسبه الحاسبة لهذا الألبوم.   ⟂ EN: Your recommended price is outside the calculator's range for this album.
+- `studio.details.proposal` :: لقطة اقترحت {price}. خانة سعرك فيها هذا السعر: احفظ التفاصيل لتقبله، أو اقترح سعراً ضمن النطاق.   ⟂ EN: Laqta proposed {price}. It is in your price field: save the details to accept it, or recommend a price within the range.
+- `studio.detailsMissing` :: املأ تفاصيل الألبوم واحفظها: نوع اللقطات، والاتجاه، والتصنيف، والموقع، والتصاريح.   ⟂ EN: Fill in and save the album details: how it was made, orientation, category, location and permits.
+- `studio.priceOutOfRange` :: تغيّر عدد اللقطات فصار سعرك المقترح خارج النطاق. افتح تفاصيل الألبوم وحدّث السعر.   ⟂ EN: The clip count changed, so your recommended price is now outside the range. Open the album details and update it.

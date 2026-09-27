@@ -1,5 +1,7 @@
 # لقطة — محتوى الموقع بالكامل للمراجعة اللغوية
 
+> ⚠️ **Historical record (2026-09-27, DEV-31).** A review of the copy as it stood then; it quotes old strings (10–24 clips, refunds, «مصوّر»). Do not copy from it — the current rules are in `content-brief-for-writer-ar.md`.
+
 > **إلى المحرّر:** هذا ملف مرجعي كامل لكل نص عربي في الموقع.
 > اقرأ الموجز أولاً — فهم النموذج التجاري ونبرة الصوت شرط لأي تعديل.
 > ثم أعد الملف **بنفس البنية ونفس المفاتيح** مع النص المحسّن فقط.

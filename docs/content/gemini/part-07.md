@@ -1,149 +1,149 @@
-# لقطة — الجزء 7 من 10
+# لقطة — الجزء 7 من 18
 
 هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
-## dash
-> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
+## studio
+> استوديو صانع المحتوى — نبرة عملية مختصرة
 
-- `dash.sectionOverview` :: نظرة عامة
-- `dash.sectionContent` :: المحتوى
-- `dash.sectionMoney` :: المالية
-- `dash.sectionSettings` :: الإعدادات
-- `dash.sectionOperations` :: التشغيل
-- `dash.sectionCatalogue` :: الكتالوج
-- `dash.overview` :: الملخّص
-- `dash.analytics` :: التحليلات
-- `dash.payouts` :: التحويلات
-- `dash.settings` :: الإعدادات
-- `dash.merchandising` :: واجهة الموقع
-- `dash.promos` :: أكواد الخصم
-- `dash.viewSite` :: عرض الموقع
-- `dash.expand` :: توسيع القائمة
-- `dash.collapse` :: طي القائمة
-- `dash.range7` :: ٧ أيام
-- `dash.range30` :: ٣٠ يوماً
-- `dash.range90` :: ٩٠ يوماً
-- `dash.rangeLabel` :: الفترة
-- `dash.vsPrevious` :: مقارنة بالفترة السابقة
-- `dash.views` :: المشاهدات
-- `dash.purchases` :: المبيعات
-- `dash.revenue` :: الإيرادات
-- `dash.conversion` :: نسبة التحويل
-- `dash.cartAdds` :: إضافات السلة
-- `dash.boardAdds` :: إضافات الألواح
-- `dash.trendViews` :: المشاهدات يومياً
-- `dash.trendRevenue` :: الإيرادات يومياً
-- `dash.trendPurchases` :: المبيعات يومياً
-- `dash.funnel` :: من المشاهدة إلى الشراء
-- `dash.topAlbums` :: الأعلى أداءً
-- `dash.noData` :: لا توجد بيانات في هذه الفترة
-- `dash.noDataHint` :: ستظهر الأرقام هنا فور أول مشاهدة أو عملية بيع.
-- `dash.welcome` :: أهلاً، {name}
-- `dash.todayIs` :: ملخّص الأيام الـ{days} الأخيرة
-- `dash.needsAttention` :: يحتاج انتباهك
-- `dash.allClear` :: لا يوجد ما يحتاج تدخلاً الآن
-- `dash.quickActions` :: إجراءات سريعة
-- `dash.newAlbumHint` :: ابدأ بالعنوان والوصف واختر الشريحة. تُضاف اللقطات بعد الإنشاء.
-- `dash.albumTitleAr` :: عنوان الألبوم بالعربية
-- `dash.albumTitleEn` :: عنوان الألبوم بالإنجليزية
-- `dash.albumDescAr` :: الوصف بالعربية
-- `dash.albumDescEn` :: الوصف بالإنجليزية
-- `dash.albumTier` :: الشريحة
-- `dash.albumTierHint` :: الشريحة تحدّد السعر تلقائياً حسب عدد اللقطات — لا تُدخل سعراً يدوياً.
-- `dash.create` :: إنشاء
-- `dash.albumsManager` :: إدارة الألبومات
-- `dash.albumsManagerHint` :: كل ألبوماتك وحالتها وسعرها في مكان واحد.
-- `dash.filterAll` :: الكل
-- `dash.searchAlbums` :: ابحث في ألبوماتك
-- `dash.searchCreators` :: ابحث باسم صانع المحتوى أو المعرّف   ⟂ EN: Search by creator name or handle
-- `dash.searchOrders` :: ابحث برقم الطلب أو بريد المشتري
-- `dash.column` :: العمود
-- `dash.colAlbum` :: الألبوم
-- `dash.colStatus` :: الحالة
-- `dash.colClips` :: اللقطات
-- `dash.colPrice` :: السعر
-- `dash.colUpdated` :: آخر تحديث
-- `dash.colViews` :: المشاهدات
-- `dash.colSales` :: المبيعات
-- `dash.colRevenue` :: الإيرادات
-- `dash.colCreator` :: صانع المحتوى   ⟂ EN: Creator
-- `dash.colDate` :: التاريخ
-- `dash.colAmount` :: المبلغ
-- `dash.colStatusShort` :: الحالة
-- `dash.openAlbum` :: فتح
-- `dash.rowsCount` :: {count} صف
-- `dash.releasesTitle` :: التصاريح والتراخيص
-- `dash.releasesHint` :: تصاريح النماذج والمواقع والتصوير. اللقطات التي فيها وجوه واضحة لا تُنشر بدون تصريح نموذج.
-- `dash.releaseModel` :: تصريح نموذج
-- `dash.releaseProperty` :: تصريح موقع
-- `dash.releasePermit` :: تصريح تصوير
-- `dash.releasePending` :: قيد التحقق
-- `dash.releaseVerified` :: موثّق
-- `dash.releaseRejected` :: مرفوض
-- `dash.releaseAuthority` :: الجهة المُصدِرة
-- `dash.releaseSubject` :: الاسم / الجهة
-- `dash.releaseValidity` :: مدة السريان
-- `dash.releaseClips` :: لقطات مرتبطة
-- `dash.noReleases` :: لا توجد تصاريح بعد
-- `dash.addRelease` :: إضافة تصريح
-- `dash.releaseType` :: نوع التصريح
-- `dash.releaseRef` :: الرقم المرجعي
-- `dash.releaseNotes` :: ملاحظات
-- `dash.validFrom` :: ساري من
-- `dash.validTo` :: ساري حتى
-- `dash.releaseFileNote` :: سجّل بيانات التصريح الآن؛ إرفاق نسخة المستند يتطلب تفعيل التخزين السحابي.
-- `dash.linkClips` :: ربط اللقطات
-- `dash.linkClipsHint` :: اختر اللقطات التي يغطّيها هذا التصريح. اللقطات التي فيها وجوه واضحة لا تُنشر بدون تصريح نموذج.
-- `dash.noLinkableClips` :: لا توجد لقطات قابلة للربط
-- `dash.saveLinks` :: حفظ الروابط
-- `dash.linkedCount` :: {count} لقطة مرتبطة
-- `dash.payoutsHint` :: اطلب تحويل رصيدك المتاح. يُراجع الطلب ثم يُحوَّل عبر القناة المسجّلة في إعداداتك.
-- `dash.payoutRequested` :: أُرسل الطلب
-- `dash.payoutMethod` :: طريقة التحويل
-- `dash.payoutAmount` :: المبلغ
-- `dash.payoutNet` :: الصافي بعد الاستقطاع
-- `dash.payoutHistory` :: سجل التحويلات
-- `dash.noPayouts` :: لا توجد تحويلات بعد
-- `dash.statusRequested` :: بانتظار المراجعة
-- `dash.statusApproved` :: معتمد
-- `dash.statusProcessing` :: قيد التنفيذ
-- `dash.statusPaid` :: حُوّل
-- `dash.statusFailed` :: تعذّر
-- `dash.methodIban` :: تحويل بنكي (IBAN)
-- `dash.methodPayoneer` :: Payoneer
-- `dash.methodWise` :: Wise
-- `dash.belowMinimum` :: الحد الأدنى للتحويل {amount}
-- `dash.nothingAvailable` :: لا يوجد رصيد متاح للسحب الآن
-- `dash.profile` :: الملف التعريفي
-- `dash.profileHint` :: هذا ما يراه المشترون في صفحتك العامة.
-- `dash.displayNameAr` :: الاسم المعروض بالعربية
-- `dash.displayNameEn` :: الاسم المعروض بالإنجليزية
-- `dash.handle` :: المعرّف
-- `dash.handleHint` :: يظهر في رابط صفحتك
-- `dash.bioAr` :: نبذة بالعربية
-- `dash.bioEn` :: نبذة بالإنجليزية
-- `dash.country` :: الدولة
-- `dash.showreel` :: رابط الشوريل
-- `dash.payoutSettings` :: بيانات التحويل
-- `dash.payoutSettingsHint` :: تُجمَّد هذه البيانات لحظة اعتماد كل تحويل، فتغييرها لاحقاً لا يؤثّر على تحويل قيد التنفيذ.
-- `dash.iban` :: رقم IBAN
-- `dash.bankName` :: اسم البنك
-- `dash.beneficiary` :: اسم المستفيد
-- `dash.payoneerEmail` :: بريد Payoneer
-- `dash.wiseEmail` :: بريد Wise
-- `dash.taxResidency` :: الإقامة الضريبية
-- `dash.saved` :: حُفظ
-- `dash.commissionShare` :: حصّتك من كل عملية بيع
-- `dash.tierStandard` :: قياسي   ⟂ EN: Standard
-- `dash.tierSilver` :: فضي   ⟂ EN: Silver
-- `dash.tierGold` :: ذهبي   ⟂ EN: Gold
-- `dash.tierHint` :: ترتفع حصّتك تلقائياً مع إجمالي مبيعاتك.
-- `dash.exclusive` :: حصري   ⟂ EN: Exclusive
-- `dash.queueTitle` :: قائمة المراجعة
-- `dash.queueHint` :: الألبومات المنتظرة قرارك، مرتّبة بالموعد النهائي.
-- `dash.queueEmpty` :: القائمة فارغة — لا يوجد ما يُراجع
-- `dash.overdue` :: متأخر
-- `dash.dueToday` :: مستحق اليوم
-- `dash.unassigned` :: غير مُسنَد
+- `studio.title` :: الاستوديو
+- `studio.albums` :: ألبوماتي
+- `studio.earnings` :: الأرباح
+- `studio.releases` :: التصاريح
+- `studio.demand` :: طلبات المشترين
+- `studio.demandHint` :: ما بحث عنه المشترون ولم يجدوه في المكتبة — قائمة جاهزة لألبومك القادم.
+- `studio.newAlbum` :: ألبوم جديد
+- `studio.draft` :: مسودة
+- `studio.inReview` :: قيد المراجعة
+- `studio.changesRequested` :: مطلوب تعديل
+- `studio.live` :: منشور
+- `studio.paused` :: متوقف مؤقتاً
+- `studio.delisted` :: مسحوب
+- `studio.submit` :: أرسل للمراجعة
+- `studio.submitted` :: أُرسل للمراجعة
+- `studio.cannotSubmit` :: تعذّر الإرسال
+- `studio.minClips` :: الألبوم يحتاج ٣٠ لقطة على الأقل
+- `studio.maxClips` :: الحد الأعلى ٧٠ لقطة للألبوم الواحد
+- `studio.notAccepted` :: لم يُقبل
+- `studio.review.title` :: المراجعة
+- `studio.review.inReviewBody` :: أرسلت الألبوم للمراجعة في {date}. يصلك القرار على بريدك.
+- `studio.review.changesBody` :: عدّل ما طلبه المراجع، ثم أرسل الألبوم من جديد.
+- `studio.review.rejectedTitle` :: لم يُقبل هذا الألبوم
+- `studio.review.rejectedBody` :: إذا عندك سؤال عن القرار، ردّ على رسالة القرار في بريدك أو راسلنا من صفحة التواصل.
+- `studio.review.approvedBody` :: قُبل الألبوم في {date}، وهو منشور الآن.
+- `studio.review.reviewerNote` :: ملاحظة المراجع
+- `studio.review.failedChecks` :: فحوص لم يجتزها الألبوم
+- `studio.review.history` :: المراجعات السابقة
+- `studio.review.submittedOn` :: أُرسل في {date}
+- `studio.review.decidedOn` :: القرار في {date}
+- `studio.review.pending` :: بانتظار القرار
+- `studio.review.decision.approve` :: قُبل
+- `studio.review.decision.request_changes` :: طُلب تعديل
+- `studio.review.decision.reject` :: لم يُقبل
+- `studio.review.check.technical` :: التناسق التقني
+- `studio.review.check.duplicate` :: خلوّه من التكرار
+- `studio.review.check.metadata` :: دقة البيانات باللغتين
+- `studio.review.check.releases` :: اكتمال التصاريح
+- `studio.review.check.coherence` :: ترابط الألبوم حول موضوع واحد
+- `studio.review.check.quality` :: مستوى الجودة
+- `studio.review.check.cultural` :: الملاءمة الثقافية والتنظيمية
+- `studio.review.check.thirdPartyIp` :: خلوّه من شعارات الغير وحقوقهم
+- `studio.review.proposedPrice` :: سعر لقطة المقترح:   ⟂ EN: Laqta's proposed price:
+- `studio.review.proposedPriceAction` :: راجعه في تفاصيل الألبوم   ⟂ EN: Review it in the album details
+- `studio.titleArRequired` :: العنوان العربي مطلوب
+- `studio.titleEnRequired` :: العنوان الإنجليزي مطلوب
+- `studio.modelReleaseMissing` :: لقطات فيها وجوه واضحة بلا تصريح نموذج
+- `studio.albumMissing` :: الألبوم غير موجود
+- `studio.consistencyTitle` :: فحص التناسق
+- `studio.mixedFrameRate` :: معدلات إطارات مختلفة داخل الألبوم
+- `studio.mixedProfile` :: ملفات لونية مختلفة داخل الألبوم
+- `studio.mixedResolution` :: دقة مختلفة بين اللقطات
+- `studio.consistencyWhy` :: التفاوت داخل الألبوم أول ما يجعل المشتري يترك لقطاته ولا يستخدمها.
+- `studio.consistencyOk` :: المواصفات متناسقة
+- `studio.available` :: المتاح للسحب
+- `studio.held` :: الأرباح المحجوزة
+- `studio.lifetime` :: إجمالي الأرباح
+- `studio.requestPayout` :: اطلب السحب
+- `studio.holdExplain` :: تُحجز أرباح كل عملية بيع ٣٠ يوماً من تاريخها، ثم تصبح قابلة للسحب.
+- `studio.ledger` :: كشف الحساب
+- `studio.entrySale` :: بيع
+- `studio.entryPayout` :: تحويل
+- `studio.entryRefund` :: استرجاع
+- `studio.entryAdjustment` :: تسوية
+- `studio.entryWithholding` :: استقطاع ضريبي
+- `studio.clips` :: اللقطات
+- `studio.uploadHint` :: بدون التخزين السحابي تبقى ملفات المبدعين ومستنداتهم على هذا الخادم وحده، ولا تصلح للنشر.
+- `studio.noAlbums` :: ما عندك ألبومات بعد
+- `studio.clipsProcessing` :: لقطات لم تكتمل معالجتها بعد
+- `studio.clipsFailed` :: لقطات تعذّرت معالجتها — احذفها أو ارفعها من جديد
+- `studio.upload.title` :: رفع اللقطات
+- `studio.upload.drop` :: اسحب ملفات الفيديو إلى هنا، أو
+- `studio.upload.choose` :: اختر ملفات
+- `studio.upload.formats` :: الصيغ المقبولة
+- `studio.upload.maxSize` :: الحد الأقصى للملف
+- `studio.upload.specsFromFile` :: تُقرأ الدقة ومعدل الإطارات والمدة من الملف نفسه، وتُجهَّز معاينة بعلامة لقطة المائية تلقائياً.
+- `studio.upload.devDriver` :: وضع التطوير: الملفات تُحفظ على هذا الجهاز، لا في التخزين السحابي.
+- `studio.upload.frozen` :: اللقطات لا تُعدَّل والألبوم قيد المراجعة أو منشور.
+- `studio.upload.readyCount` :: {ready} جاهزة من {total}
+- `studio.upload.status.uploading` :: جارٍ الرفع
+- `studio.upload.status.uploaded` :: بانتظار المعالجة
+- `studio.upload.status.probing` :: تُقرأ المواصفات
+- `studio.upload.status.transcoding` :: تُجهَّز المعاينة
+- `studio.upload.status.ready` :: جاهزة
+- `studio.upload.status.failed` :: تعذّرت المعالجة
+- `studio.upload.error.codec` :: ترميز الفيديو غير مقبول. المقبول:
+- `studio.upload.error.container` :: صيغة الملف غير مقبولة.
+- `studio.upload.error.probe` :: تعذّرت قراءة الملف كفيديو — تأكد أنه سليم.
+- `studio.upload.error.preview` :: تعذّر تجهيز المعاينة — احذف اللقطة وارفعها من جديد.
+- `studio.upload.error.missing` :: لم يصل الملف كاملاً — احذف اللقطة وارفعها من جديد.
+- `studio.upload.error.size` :: الملف أكبر من الحد المسموح.
+- `studio.upload.refuse.type` :: نوع الملف غير مقبول.
+- `studio.upload.refuse.size` :: الملف أكبر من الحد المسموح.
+- `studio.upload.refuse.too_many` :: وصل الألبوم إلى حده الأعلى، ٧٠ لقطة.
+- `studio.upload.refuse.not_editable` :: اللقطات لا تُعدَّل والألبوم قيد المراجعة أو منشور.
+- `studio.upload.refuse.generic` :: تعذّر الرفع — تحقق من الاتصال وحاول مرة أخرى.
+- `studio.upload.interrupted` :: توقف الرفع قبل أن يكتمل.
+- `studio.upload.resume` :: استئناف الرفع
+- `studio.upload.resumeHint` :: اختر الملف نفسه ليكمل الرفع من حيث توقف.
+- `studio.upload.resumeMismatch` :: هذا ليس الملف الذي بدأت رفعه.
+- `studio.upload.retry` :: أعد المحاولة
+- `studio.upload.cancel` :: إلغاء
+- `studio.upload.dismiss` :: إخفاء
+- `studio.upload.rename` :: تعديل العنوان
+- `studio.upload.titleAr` :: العنوان بالعربية
+- `studio.upload.titleEn` :: العنوان بالإنجليزية
+- `studio.upload.save` :: حفظ
+- `studio.upload.moveUp` :: تقديم اللقطة
+- `studio.upload.moveDown` :: تأخير اللقطة
+- `studio.upload.makeCover` :: اجعلها الغلاف
+- `studio.upload.cover` :: الغلاف
+- `studio.upload.coverSet` :: صارت هذه اللقطة غلاف الألبوم.
+- `studio.upload.coverNotReady` :: الغلاف يكون من لقطة جاهزة.
+- `studio.upload.delete` :: حذف اللقطة
+- `studio.upload.deleteConfirm` :: حذف «{title}» نهائياً؟ يُحذف الملف الأصلي ومعاينته معه.
+- `studio.upload.deleted` :: حُذفت اللقطة.
+- `studio.upload.sold` :: لا تُحذف لقطة من ألبوم بيع من قبل — راسلنا من صفحة التواصل.
+- `studio.upload.empty` :: لا لقطات في الألبوم بعد
+- `studio.upload.emptyBody` :: ارفع من ٣٠ إلى ٧٠ لقطة حول موضوع واحد.
+- `studio.upload.specsPending` :: المواصفات بعد المعالجة
+- `studio.upload.position` :: اللقطة {n}
+- `studio.details.title` :: تفاصيل الألبوم   ⟂ EN: Album details
+- `studio.details.hint` :: هذي التفاصيل يبحث بها المشتري ويراجعها فريق لقطة. لازم تحفظها قبل ما ترسل الألبوم للمراجعة.   ⟂ EN: Buyers search by these details and Laqta's team reviews them. Save them before you send the album for review.
+- `studio.details.frozen` :: الألبوم قيد المراجعة أو منشور، فالتفاصيل للعرض فقط.   ⟂ EN: The album is in review or published, so its details are read-only.
+- `studio.details.origin` :: نوع اللقطات   ⟂ EN: Footage type
+- `studio.details.orientation` :: اتجاه اللقطات   ⟂ EN: Orientation
+- `studio.details.landscape` :: أفقي ١٦:٩   ⟂ EN: Landscape 16:9
+- `studio.details.portrait` :: عمودي ٩:١٦ (ألبوم عمودي مخصص)   ⟂ EN: Vertical 9:16 (a dedicated vertical album)
+- `studio.details.category` :: التصنيف   ⟂ EN: Category
+- `studio.details.categoryPick` :: اختر تصنيفاً   ⟂ EN: Choose a category
+- `studio.details.locations` :: المواقع   ⟂ EN: Locations
+- `studio.details.locationsHint` :: كل مدينة أو منطقة تظهر في الألبوم، حتى ١٠.   ⟂ EN: Every city or region the album shows, up to 10.
+- `studio.details.timeOfDay` :: وقت اليوم   ⟂ EN: Time of day
+- `studio.details.themes` :: المناسبة   ⟂ EN: Occasion
+- `studio.details.themesHint` :: اختياري، حتى ٣. مثل رمضان أو اليوم الوطني.   ⟂ EN: Optional, up to 3 — e.g. Ramadan or National Day.
+- `studio.details.style` :: أسلوب اللقطات   ⟂ EN: Shot style
+- `studio.details.permits` :: التصاريح   ⟂ EN: Permits
+- `studio.details.permitsNone` :: لا يحتاج تصاريح: ما فيه وجوه واضحة لأشخاص حقيقيين، ولا أماكن خاصة أو مواقع تشترط تصريحاً.   ⟂ EN: No permits needed: no identifiable real people, no private premises or permit-only sites.
+- `studio.details.permitsAttached` :: التصاريح المطلوبة مرفوعة في صفحة التصاريح.   ⟂ EN: The releases and permits it needs are uploaded on the Releases page.
+- `studio.details.save` :: حفظ التفاصيل   ⟂ EN: Save details

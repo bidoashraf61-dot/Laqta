@@ -1,5 +1,7 @@
 # مراجعة المحتوى العربي — المدير الإبداعي · ٢٠٢٦-٠٩-٢٣
 
+> ⚠️ **Historical record (2026-09-27, DEV-31).** The 23 September polish pass; some before/after lines are since superseded. Current rules: `content-brief-for-writer-ar.md`.
+
 مراجعة سطراً بسطر لكل نصوص الموقع العربية (1057 سطراً: `messages/ar.json` والصفحات القانونية)،
 وفق موجز `docs/content/content-brief-gemini.md`. تغيّر **288 نصاً** في الواجهة و**8 فقرات** في الصفحات،
 وبقي الباقي كما هو لأنه سليم. طُبّقت بـ `npm run content:import`، الذي يتحقق من المفاتيح

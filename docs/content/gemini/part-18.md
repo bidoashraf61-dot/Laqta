@@ -1,0 +1,56 @@
+# لقطة — الجزء 18 من 18
+
+هذا الجزء فيه **39 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
+طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## doc.contentPolicy
+> سياسة المحتوى
+
+- `doc.contentPolicy.1.heading` :: ما الذي نقبله   ⟂ EN: What we accept
+- `doc.contentPolicy.1.body.1` :: لقطات سعودية بدقة 720p أو 1080p أو 4K، تُذكر دقة كل ألبوم عليه وتنعكس على سعره، ضمن ألبومات متناسقة من ٣٠ إلى ٧٠ لقطة حول موضوع واحد. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.   ⟂ EN: Saudi footage at 720p, 1080p or 4K — the resolution is stated on each album and reflected in its price — in coherent albums of 30 to 70 clips around one subject. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.
+- `doc.contentPolicy.2.heading` :: التصاريح شرط للنشر   ⟂ EN: Clearance is a condition of publication
+- `doc.contentPolicy.2.body.1` :: لا يُنشر ألبوم فيه وجه واضح بلا تصريح نموذج. ولا تُنشر لقطة صُوّرت في موقع يشترط تصريح تصوير — العلا، والدرعية، ونيوم، والبحر الأحمر، وما يماثلها — دون إرفاق التصريح ورقمه المرجعي.   ⟂ EN: No album is published with an identifiable face in it and no model release. Nor is a clip published that was filmed at a location requiring a filming permit — AlUla, Diriyah, NEOM, the Red Sea and the like — without the permit and its reference number attached.
+- `doc.contentPolicy.2.body.2` :: التصريح يُراجَع من فريق المنصّة قبل النشر، ولا يكفي إقرار الصانع وحده.   ⟂ EN: The permit is checked by the platform team before publication; the creator's own declaration is not enough on its own.
+- `doc.contentPolicy.3.heading` :: الملاءمة الثقافية   ⟂ EN: Cultural fit
+- `doc.contentPolicy.3.body.1` :: نراجع كل ألبوم من زاوية ملاءمته للسياق السعودي: احترام الأماكن المقدّسة، وعدم استخدام الرموز الدينية أو الوطنية في سياق تجاري غير لائق، واحترام خصوصية الأشخاص في الأماكن العامة.   ⟂ EN: We review every album for how well it fits the Saudi context: respect for holy places, no use of religious or national symbols in an unbecoming commercial context, and respect for people's privacy in public places.
+- `doc.contentPolicy.3.body.2` :: هذا فحص إلزامي لا يجوز تجاوزه في المراجعة، لأنه مصدر مسؤولية مباشرة على المنصّة وعلى المشتري معاً.   ⟂ EN: This check is mandatory and cannot be skipped in review, because it is a direct source of liability for the platform and the buyer alike.
+- `doc.contentPolicy.4.heading` :: التكرار والمحتوى المنقول   ⟂ EN: Duplication and lifted material
+- `doc.contentPolicy.4.body.1` :: نقارن البصمة البصرية لكل لقطة جديدة بالكتالوج القائم. التطابق لا يعني الرفض تلقائياً — قد يعيد الصانع إدراج مادته الخاصة في ألبوم جديد — لكنه يُعرض على مراجع بشري قبل أي قرار.   ⟂ EN: We compare the visual fingerprint of every new clip against the existing catalogue. A match is not an automatic rejection — a creator may be relisting their own material in a new album — but it goes to a human reviewer before any decision.
+- `doc.contentPolicy.5.heading` :: ما لا نقبله   ⟂ EN: What we do not accept
+- `doc.contentPolicy.5.list.1` :: مادة لا يملك رافعها حقوقها كاملة.   ⟂ EN: Material whose uploader does not hold the full rights to it.
+- `doc.contentPolicy.5.list.2` :: لقطات مولّدة بالذكاء الاصطناعي معروضة على أنها تصوير حقيقي.   ⟂ EN: AI-generated footage presented as if it were filmed.
+- `doc.contentPolicy.5.list.3` :: محتوى يخالف أنظمة المملكة أو يسيء لأفراد أو جهات.   ⟂ EN: Content that breaches the laws of the Kingdom or reflects badly on individuals or bodies.
+- `doc.contentPolicy.5.list.4` :: لقطات مأخوذة من إنتاج تجاري لجهة أخرى دون إذنها.   ⟂ EN: Footage taken from someone else's commercial production without their permission.
+- `doc.contentPolicy.6.heading` :: العلامة المائية والمعاينة   ⟂ EN: Watermarking and previews
+- `doc.contentPolicy.6.body.1` :: كل لقطة تُرفع إلى المنصّة تُعرض للجمهور بعلامة مائية تلقائياً — على كل مصغّرة وكل معاينة وكل مشغّل، دون استثناء ودون خطوة إضافية من الصانع. المعاينة تُعرّف باللقطة دون أن تسلّم نسخة صالحة للاستخدام.   ⟂ EN: Every clip uploaded to Laqta is shown publicly with an automatic watermark — on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview shows what the clip is without handing over a usable copy.
+- `doc.contentPolicy.6.body.2` :: الملف الأصلي بالدقة الكاملة وبلا علامة مائية لا يُسلَّم إلا للمشتري بعد إتمام الدفع. هذا يحمي حق الصانع ويجعل المعاينة آمنة للعرض في كل مكان.   ⟂ EN: The original file, at full resolution and without a watermark, is delivered only to the buyer once payment completes. This protects the creator's rights and makes previews safe to show anywhere.
+- `doc.contentPolicy.6.body.3` :: يقدر المستخدم المسجّل أن يحمّل معاينة بدقة 720p عليها علامة مائية، للقطة واحدة أو لألبوم كامل، ليجرّبها في مونتاجه. العلامة المائية ثابتة في الملف، والمعاينة غير مرخّصة للنشر.   ⟂ EN: A signed-in visitor may download a watermarked 720p preview, of one clip or of a whole album, to test it in their own edit. The watermark stays burnt into that file, and it is not licensed for published work.
+- `doc.contentPolicy.7.heading` :: البلاغات والإزالة   ⟂ EN: Reports and takedowns
+- `doc.contentPolicy.7.body.1` :: لأي صاحب حق أن يتقدّم ببلاغ. نعطّل المحتوى محل البلاغ فور تقييمه تقييماً أولياً جادّاً، ثم نمنح الصانع فرصة الرد. التعطيل إجراء قابل للتراجع بطبيعته، ولهذا نلجأ إليه سريعاً بدل الانتظار.   ⟂ EN: Any rights holder may file a report. We disable the reported content as soon as we have made a serious initial assessment, then give the creator a chance to respond. Disabling is reversible by nature, which is why we do it quickly rather than waiting.
+
+## doc.about
+> عن لقطة
+
+- `doc.about.1.heading` :: لماذا وُجدت لقطة   ⟂ EN: Why Laqta exists
+- `doc.about.1.body.1` :: ابحث عن «الرياض» في أي مكتبة لقطات عالمية وستجد الأفق نفسه من الطائرة، ومشاهد لا تعرف الفرق بين حيّ وحيّ. المشكلة ليست السعر، بل أن من جمع تلك اللقطات لم يكن يعرف المكان.   ⟂ EN: Search for “Riyadh” in any global footage library and you will find the same skyline from a plane, and scenes that cannot tell one district from another. The problem is not the price — it is that whoever assembled that library did not know the place.
+- `doc.about.1.body.2` :: لقطة مكتبة لقطات سعودية: تُراجَع قبل النشر، ومفهرسة بأسماء الأماكن كما ينطقها أهلها — لا كما تُترجم آلياً.   ⟂ EN: Laqta is a Saudi footage library: reviewed before publication, and indexed under place names as the people who live there say them — not as a machine translates them.
+- `doc.about.2.heading` :: ما الذي يميّز الفهرسة   ⟂ EN: What makes the indexing different
+- `doc.about.2.body.1` :: البحث العربي هنا ليس ترجمة للبحث الإنجليزي. «العلا» و«AlUla» و«العُلا» كلها تصل إلى المادة نفسها، وكذلك اختلافات الهمزة والألف المقصورة والتاء المربوطة. الفهرس مبني على طبقة مرادفات يحرّرها فريق المنصّة، لا على مطابقة نصية.   ⟂ EN: Arabic search here is not a translation of English search. “العلا”, “AlUla” and “العُلا” all reach the same material, and so do variations of hamza, alef maqsura and teh marbuta. The index is built on a synonym layer the platform team edits, not on text matching.
+- `doc.about.3.heading` :: نموذج العمل   ⟂ EN: The business model
+- `doc.about.3.body.1` :: تشتري الألبوم مرة واحدة وتملك ترخيصه للأبد. لا اشتراك، ولا رصيد ينتهي آخر الشهر، ولا مفاجآت عند التجديد. تصلك فاتورة ضريبية عن كل عملية.   ⟂ EN: You buy the album once and own its licence forever. No subscription, no allowance expiring at the end of the month, no surprises at renewal. A tax invoice comes with every purchase.
+- `doc.about.3.body.2` :: يحتفظ صانع المحتوى بحقوق مادته، ويأخذ حصّة من كل عملية بيع ترتفع مع إجمالي مبيعاته. تُحجز أرباح كل عملية ثلاثين يوماً، ثم تصبح قابلة للسحب.   ⟂ EN: The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days, then become withdrawable.
+- `doc.about.4.heading` :: المراجعة   ⟂ EN: Review
+- `doc.about.4.body.1` :: كل ألبوم يمرّ على مراجع بشري قبل النشر: تناسق المواصفات، واكتمال التصاريح، والملاءمة الثقافية، والتكرار مع الكتالوج القائم. مهلتنا المعلنة ثلاثة أيام عمل.   ⟂ EN: Every album goes to a human reviewer before publication: matching specifications, complete clearances, cultural fit, and duplication against the existing catalogue. Our stated turnaround is three business days.
+
+## doc.contact
+> تواصل معنا
+
+- `doc.contact.1.heading` :: الدعم   ⟂ EN: Support
+- `doc.contact.1.body.1` :: لأي سؤال عن طلب، أو ترخيص، أو ملف لا يعمل كما ينبغي، اكتب لنا من النموذج في هذه الصفحة. اذكر رقم الطلب إن كان سؤالك متعلقاً بعملية شراء — يختصر ذلك المراسلة كلها.   ⟂ EN: For any question about an order, a licence, or a file that is not behaving as it should, write to us using the form on this page. Quote the order number if your question is about a purchase — it saves the entire back-and-forth.
+- `doc.contact.2.heading` :: صنّاع المحتوى   ⟂ EN: Creators
+- `doc.contact.2.body.1` :: إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة «بِع لقطاتك». أسئلة الشراكات والحصرية تصلنا من هذا النموذج أيضاً.   ⟂ EN: If you make Saudi material and want to list it, start from the “Sell your footage” page. Partnership and exclusivity questions come through this form too.
+- `doc.contact.3.heading` :: بلاغات الحقوق   ⟂ EN: Rights reports
+- `doc.contact.3.body.1` :: لأي صاحب حق أن يتقدّم ببلاغ إزالة. اذكر ما يثبت صفتك، ورابط المادة محل البلاغ، ووصفاً محدّداً للقطات المعنية. نعالج البلاغات الجادة فور تقييمها.   ⟂ EN: Any rights holder may file a takedown report. Include proof of your standing, a link to the material in question, and a specific description of the clips concerned. We act on serious reports as soon as we have assessed them.
+- `doc.contact.4.heading` :: الشركات والجهات الحكومية   ⟂ EN: Companies and government bodies
+- `doc.contact.4.body.1` :: للحسابات المؤسسية، والفوترة بأمر شراء، والاتفاقيات على مستوى المنظمة، تواصل معنا وسنجهّز لك عرضاً.   ⟂ EN: For organisational accounts, invoicing against a purchase order, and organisation-wide agreements, get in touch and we will put together a proposal.

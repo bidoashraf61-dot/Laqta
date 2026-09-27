@@ -39,6 +39,7 @@ Page head is the site standard two-cut composition: `Headline` h1 (Sans Light le
 Hidden honeypot field `website` (off-screen, `aria-hidden`, `tabIndex=-1`): if filled, the action returns success and stores nothing.
 
 ## States
+- **Sent (DEV-30)** — besides the operator email, the sender gets «وصلتنا رسالتك» (`contact.received`) in the page's language, quoting their message.
 - **Idle** — form, empty. With no channel values set the page is head + form + guidance, complete on its own; each value that is set adds its line (direct row appears when WhatsApp or email is set; company footer when any of name/address/CR is set).
 - **Submitting** — button disabled with spinner and «جارٍ الإرسال…» / "Sending…"; form `aria-busy`.
 - **Validation error** — zod errors come back as message keys per field, rendered under the field (`aria-invalid`, `aria-describedby`), a summary line beside the button (`role=alert`), and focus moves to the first invalid field. Everything typed is kept (`onSubmit` + controlled fields — not `<form action>`, which resets the form).

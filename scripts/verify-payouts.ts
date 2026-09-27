@@ -171,6 +171,10 @@ async function main() {
       toCents(single.balanceAfter) === toCents(beforeG?.balanceAfter ?? 0) - 4000,
     )
     check('single mark-paid twice is a no-op', (await markPayoutPaid(G.id, 'SOLO-REF')) === false && (await ledgerFor(G.id)).length === 1)
+    // DEV-30: «حوّلنا أرباحك», once per payout, with the net amount.
+    const paidMail = await db.mailOutbox.findMany({ where: { template: 'payout.paid', payload: { path: ['payoutId'], equals: G.id } } })
+    check('paying a payout queues one «حوّلنا أرباحك» email', paidMail.length === 1, String(paidMail.length))
+    await db.mailOutbox.deleteMany({ where: { id: { in: paidMail.map((row) => row.id) } } })
 
     // ── Pay the run ──────────────────────────────────────────────────────
     const beforeA = await db.creatorLedger.findFirst({ where: { creatorId: ibanCreator.id }, orderBy: { createdAt: 'desc' } })

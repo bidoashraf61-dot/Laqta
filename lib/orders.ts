@@ -7,7 +7,7 @@ import { resolveCommission, vatOn } from '@/lib/commission'
 import { bundledCommission, bundleLines, resolveBundles } from '@/lib/bundles'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
 import { drainSoon } from '@/lib/outbox'
-import { attachCertificates, notifyOrderPaid, notifyOrderPlaced } from '@/lib/notifications'
+import { attachCertificates, notifyCreatorSales, notifyOrderPaid, notifyOrderPlaced } from '@/lib/notifications'
 import { generateCertificate } from '@/lib/certificate'
 import { DEFAULT_LOCALE, isLocale } from '@/lib/locale'
 import { getPublicSample, sampleManifest, type SampleManifestClip } from '@/lib/sample'
@@ -460,6 +460,8 @@ export async function settleOrder(
      * attached below once it exists, and only then is the drain asked to run.
      */
     outboxId = await notifyOrderPaid(orderId, { client: tx, drain: false })
+    // «وصلك بيع جديد» to each creator in the order (DEV-30), same transaction.
+    await notifyCreatorSales(orderId, tx)
     return true
   })
 

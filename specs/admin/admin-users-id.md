@@ -81,6 +81,7 @@ audited, expiring support impersonation).
   time, reason, admin email, ticket ref. Empty: «لم يُعرض هذا الحساب من قبل».
 
 ## States
+- **Made a creator (DEV-30)** — «اجعله صانع محتوى» also queues «صرت صانع محتوى على لقطة» (`creator.added`) to the account: the 2FA step and the sign-out/in note.
 - **Empty sections** — each panel has its own line: «لا طلبات على هذا الحساب», «لا
   ألبومات في مكتبته», «لم يحمّل معاينات», «لم تصلنا رسالة من هذا البريد», «لم
   يستلمها» (sample).

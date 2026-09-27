@@ -39,6 +39,19 @@ export const TEMPLATES = [
   'review.queued',
   'contact.message',
   'auth.passwordReset',
+  // DEV-30
+  'auth.verifyEmail',
+  'creator.sale',
+  'creator.added',
+  'payout.paid',
+  'order.paymentFailed',
+  'order.paymentPending',
+  'order.transferReminder',
+  'contact.received',
+  'request.received',
+  'launch.notice',
+  // DEV-57
+  'operator.digest',
 ] as const
 
 export type TemplateName = (typeof TEMPLATES)[number]
@@ -89,7 +102,14 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
 
   const message = (
     parts: Pick<Message, 'subject' | 'lead' | 'heading' | 'blocks'> & {
-      footer: 'footerBuyer' | 'footerCreator' | 'footerOperator' | 'footerAccount'
+      footer:
+        | 'footerBuyer'
+        | 'footerCreator'
+        | 'footerOperator'
+        | 'footerAccount'
+        | 'footerContact'
+        | 'footerRequest'
+        | 'footerWaitlist'
       replyTo?: string
     },
   ): Rendered =>
@@ -335,6 +355,207 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
           { kind: 'note', text: tr('email.passwordResetIgnore') },
         ],
         footer: 'footerAccount',
+      })
+    }
+
+    /* ── DEV-30 ─────────────────────────────────────────────────────────── */
+
+    /*
+     * «أكّد بريدك الإلكتروني». Was a bare Arabic text message built in
+     * lib/mail.ts; now a template, in the reader's language, like the reset.
+     * Sent directly (not queued) — see lib/mail.ts#issueEmailVerification.
+     */
+    case 'auth.verifyEmail': {
+      const minutes = iso(new Intl.NumberFormat(BCP47[locale]).format(Number(raw(payload, 'minutes')) || 60))
+      return message({
+        subject: tr('email.verifyEmailSubject'),
+        lead: tr('email.verifyEmailLead'),
+        heading: tr('email.verifyEmailHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.verifyEmailBody') },
+          { kind: 'button', label: tr('email.verifyEmailCta'), url: raw(payload, 'verifyUrl') },
+          { kind: 'note', text: tr('email.verifyEmailExpiry', { minutes }) },
+          { kind: 'note', text: tr('email.verifyEmailIgnore') },
+        ],
+        footer: 'footerAccount',
+      })
+    }
+
+    /* A creator's albums sold — one message per creator per order. */
+    case 'creator.sale':
+      return message({
+        subject: tr('email.creatorSaleSubject'),
+        lead: tr('email.creatorSaleLead'),
+        heading: tr('email.creatorSaleHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.creatorSaleBody') },
+          { kind: 'list', items: titles(payload) },
+          { kind: 'details', rows: [{ label: tr('email.labelEarnings'), value: money('earnings') }] },
+          { kind: 'note', text: tr('email.creatorSaleHold') },
+          { kind: 'button', label: tr('email.creatorSaleCta'), url: raw(payload, 'earningsUrl') },
+        ],
+        footer: 'footerCreator',
+      })
+
+    case 'creator.added':
+      return message({
+        subject: tr('email.creatorAddedSubject'),
+        lead: tr('email.creatorAddedLead'),
+        heading: tr('email.creatorAddedHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.creatorAddedBody') },
+          { kind: 'button', label: tr('email.creatorAddedCta'), url: raw(payload, 'studioUrl') },
+          { kind: 'note', text: tr('email.creatorAddedSignIn') },
+        ],
+        footer: 'footerCreator',
+      })
+
+    case 'payout.paid': {
+      const amount = iso(money('amount'))
+      const methodKey = { iban: 'methodIban', payoneer: 'methodPayoneer', wise: 'methodWise' }[raw(payload, 'method')]
+      const method = methodKey ? tr(`email.${methodKey}`) : raw(payload, 'method')
+      return message({
+        subject: tr('email.payoutPaidSubject', { amount }),
+        lead: tr('email.payoutPaidLead'),
+        heading: tr('email.payoutPaidHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.payoutPaidBody', { amount, method: iso(method) }) },
+          {
+            kind: 'details',
+            rows: [
+              { label: tr('email.labelAmount'), value: money('amount') },
+              { label: tr('email.labelMethod'), value: method, ltr: false },
+              ...(raw(payload, 'reference') ? [{ label: tr('email.labelReference'), value: raw(payload, 'reference') }] : []),
+            ],
+          },
+          { kind: 'button', label: tr('email.payoutPaidCta'), url: raw(payload, 'payoutsUrl') },
+        ],
+        footer: 'footerCreator',
+      })
+    }
+
+    case 'order.paymentFailed':
+      return message({
+        subject: tr('email.paymentFailedSubject', { order }),
+        lead: tr('email.paymentFailedLead'),
+        heading: tr('email.paymentFailedHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.paymentFailedBody', { order }) },
+          { kind: 'button', label: tr('email.paymentFailedCta'), url: raw(payload, 'cartUrl') },
+        ],
+        footer: 'footerBuyer',
+      })
+
+    case 'order.paymentPending':
+      return message({
+        subject: tr('email.paymentPendingSubject', { order }),
+        lead: tr('email.paymentPendingLead'),
+        heading: tr('email.paymentPendingHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.paymentPendingBody', { order }) },
+          { kind: 'button', label: tr('email.orderPlacedCta'), url: raw(payload, 'orderUrl') },
+        ],
+        footer: 'footerBuyer',
+      })
+
+    /* Sent once, by the daily job, for a bank-transfer order still unpaid. */
+    case 'order.transferReminder': {
+      const bank = [
+        { label: tr('email.labelBank'), value: raw(payload, 'bankName') },
+        { label: tr('email.labelAccountName'), value: raw(payload, 'bankAccountName') },
+        { label: tr('email.labelIban'), value: raw(payload, 'bankIban') },
+        { label: tr('email.labelSwift'), value: raw(payload, 'bankSwift') },
+      ].filter((row) => row.value)
+      return message({
+        subject: tr('email.transferReminderSubject', { order }),
+        lead: tr('email.transferReminderLead'),
+        heading: tr('email.transferReminderHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.transferReminderBody', { name: str(payload, 'name'), order }) },
+          {
+            kind: 'details',
+            rows: [
+              { label: tr('email.labelOrder'), value: raw(payload, 'orderNumber') },
+              { label: tr('email.labelAmountDue'), value: money('total') },
+              { label: tr('email.labelReference'), value: raw(payload, 'reference') },
+              ...bank,
+            ],
+          },
+          { kind: 'button', label: tr('email.orderPlacedCta'), url: raw(payload, 'orderUrl') },
+        ],
+        footer: 'footerBuyer',
+      })
+    }
+
+    /* The visitor's copy of what they sent through /contact. */
+    case 'contact.received':
+      return message({
+        subject: tr('email.contactReceivedSubject'),
+        lead: tr('email.contactReceivedLead'),
+        heading: tr('email.contactReceivedHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.contactReceivedBody', { name: str(payload, 'name') }) },
+          { kind: 'quote', text: raw(payload, 'message') },
+          { kind: 'note', text: tr('email.contactReceivedNote') },
+        ],
+        footer: 'footerContact',
+      })
+
+    case 'request.received':
+      return message({
+        subject: tr('email.requestReceivedSubject'),
+        lead: tr('email.requestReceivedLead'),
+        heading: tr('email.requestReceivedHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.requestReceivedBody') },
+          { kind: 'quote', text: raw(payload, 'brief') },
+        ],
+        footer: 'footerRequest',
+      })
+
+    case 'launch.notice':
+      return message({
+        subject: tr('email.launchSubject'),
+        lead: tr('email.launchLead'),
+        heading: tr('email.launchHeading'),
+        blocks: [
+          { kind: 'p', text: tr('email.launchBody') },
+          { kind: 'button', label: tr('email.launchCta'), url: raw(payload, 'albumsUrl') },
+          { kind: 'note', text: tr('email.launchSample') },
+          ...(raw(payload, 'unsubscribeUrl')
+            ? [{ kind: 'note' as const, text: tr('email.launchUnsubscribe', { url: raw(payload, 'unsubscribeUrl') }) }]
+            : []),
+        ],
+        footer: 'footerWaitlist',
+      })
+
+    /* ── DEV-57: the operator's morning summary ─────────────────────────── */
+    case 'operator.digest': {
+      const n = (key: string) => Number(raw(payload, key)) || 0
+      const count = (key: string) => new Intl.NumberFormat(`${BCP47[locale]}-u-nu-latn`).format(n(key))
+      const rows = [
+        { label: tr('email.digestReview'), value: count('reviewQueue') },
+        ...(n('reviewOverdue') ? [{ label: tr('email.digestReviewLate'), value: count('reviewOverdue') }] : []),
+        { label: tr('email.digestTransfers'), value: count('unsettledTransfers') },
+        ...(raw(payload, 'oldestTransfer') ? [{ label: tr('email.digestTransfersOldest'), value: raw(payload, 'oldestTransfer') }] : []),
+        { label: tr('email.digestPayouts'), value: count('payoutRequests') },
+        { label: tr('email.digestMessages'), value: count('openMessages') },
+        { label: tr('email.digestRequests'), value: count('newRequests') },
+        { label: tr('email.digestMail'), value: count('failedMail') },
+      ]
+      const nothing = ['reviewQueue', 'unsettledTransfers', 'payoutRequests', 'openMessages', 'newRequests', 'failedMail'].every(
+        (key) => n(key) === 0,
+      )
+      return message({
+        subject: tr('email.digestSubject', { date: str(payload, 'date') }),
+        lead: tr('email.digestLead'),
+        heading: tr('email.digestHeading'),
+        blocks: [
+          { kind: 'p', text: nothing ? tr('email.digestAllClear') : tr('email.digestBody', { time: str(payload, 'time') }) },
+          { kind: 'details', rows },
+          { kind: 'button', label: tr('email.digestCta'), url: raw(payload, 'adminUrl') },
+        ],
+        footer: 'footerOperator',
       })
     }
 

@@ -408,6 +408,37 @@ async function idempotency() {
     const contact = await db.mailOutbox.findFirst({ where: { template: 'contact.message', toEmail: operator } })
     if (!contact) fail('notifyContactMessage queued nothing for MAIL_OPERATOR_TO')
     else pass('notifyContactMessage queues one message to MAIL_OPERATOR_TO')
+
+    // ── DEV-30 / DEV-57 ──────────────────────────────────────────────────
+    const { notifyContactReceived, notifyPaymentStatus } = await import('../lib/notifications')
+    const { sendTransferReminders, sendOperatorDigest } = await import('../lib/jobs')
+
+    await notifyContactReceived({ name: 'Visitor', email, message: 'Hi', locale: 'en' })
+    const ack = await db.mailOutbox.findFirst({ where: { template: 'contact.received', toEmail: email } })
+    if (ack?.locale !== 'en') fail('the contact acknowledgement was not queued in the sender\'s language')
+    else pass('the sender gets an acknowledgement, in their language')
+
+    const card = await make('D')
+    await notifyPaymentStatus(card.id, 'failed')
+    await notifyPaymentStatus(card.id, 'failed')
+    if ((await rows('order.paymentFailed', card.orderNumber)) !== 1) fail('a declined card did not queue exactly one email')
+    else pass('a declined card → one «ما تمّ الدفع» email, however often the gateway says so')
+
+    const stale = await make('E')
+    await db.order.update({ where: { id: stale.id }, data: { createdAt: new Date(Date.now() - 4 * 86_400_000) } })
+    await sendTransferReminders()
+    await sendTransferReminders()
+    if ((await rows('order.transferReminder', stale.orderNumber)) !== 1) fail('the transfer reminder was not queued exactly once')
+    else pass('a bank transfer unpaid after three days gets one reminder, however often the job runs')
+    if ((await rows('order.transferReminder', placed.orderNumber)) !== 0) fail('a fresh order was reminded')
+    else pass('…and a fresh one gets none')
+
+    const day = new Date('2099-01-01T05:00:00Z')
+    await sendOperatorDigest(day)
+    await sendOperatorDigest(day)
+    const digests = await db.mailOutbox.count({ where: { template: 'operator.digest', toEmail: operator } })
+    if (digests !== 1) fail(`the digest ran twice on one day and queued ${digests}`)
+    else pass('the operator digest is queued once a day, to MAIL_OPERATOR_TO')
   } finally {
     await db.mailOutbox.deleteMany({ where: { toEmail: { in: [email, operator] } } })
     await db.invoice.deleteMany({ where: { orderId: { in: orders } } })

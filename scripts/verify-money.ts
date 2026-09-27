@@ -85,6 +85,18 @@ async function main() {
   const drift = Math.abs((ledgerRow?.availableAt?.getTime() ?? 0) - expectedRelease)
   report('sale is held for the payout window', drift < 60_000, `${holdDays} days`)
 
+  // DEV-30: the creator hears about the sale — once, with what they earned.
+  const orderNumber = (await db.order.findUniqueOrThrow({ where: { id: result.orderId }, select: { orderNumber: true } })).orderNumber
+  const saleMail = await db.mailOutbox.findMany({
+    where: { template: 'creator.sale', payload: { path: ['saleKey'], equals: `${orderNumber}:${album.creatorId}` } },
+  })
+  report('settling queues one «بيع جديد» email to the creator', saleMail.length === 1, String(saleMail.length))
+  report(
+    '…carrying the frozen creator net',
+    Math.abs(Number((saleMail[0]?.payload as { earnings?: number })?.earnings ?? -1) - Number(item.creatorNetAmount)) < 0.005,
+  )
+  await db.mailOutbox.deleteMany({ where: { id: { in: saleMail.map((row) => row.id) } } })
+
   const earningsBefore = await getEarnings(album.creatorId)
   report(
     'held money is not counted as available',

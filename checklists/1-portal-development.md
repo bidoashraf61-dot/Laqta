@@ -63,7 +63,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-27** ⛔ Licence certificate: real licence text (today 2 sentences), singular labels, licensor company line, drop "(optional)" — 🤝 · ½ day · *needs BIZ-02*
 - [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT; **D7: keep 15% until BIZ-03 answers**); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
 - [x] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min — done 2026-09-27 (mada/Tabby/Tamara removed as payment methods and as copy; the «الدفع بالبطاقة قيد التفعيل» note is gone — bank-transfer-only checkout just shows bank transfer; the forged-method refusal reworded; `verify:payments` checks both)
-- [ ] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days
+- [x] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days — done 2026-09-27 (9 templates, AR + EN, all in the registry: verify-email in the reader's language; creator sale + payout paid inside their transactions; card failed/pending from the Paymob webhook; bank-transfer reminder after 3 days by the daily job; contact + request acknowledgements; creator welcome with the 2FA step; launch notice ready for the waitlist (DEV-45). Each sends once. **Owner:** nothing leaves until Resend is on (DEV-15), and the daily job needs the server's cron (DEV-14))
 - [x] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day — done 2026-09-27 (both writer briefs rewritten to D1–D10: 30–70 clips, $49–$249 set at review, AI + filmed and never «تصوير» for AI, resolution per album, «ترخيص دائم» not ownership, no refund copy, no mada/Tabby/Tamara, plural rules now in code; `gemini/` re-exported from today's copy (18 parts); the August website draft and the two old reviews marked superseded)
 - [ ] **DEV-32** Contact details shown on `/contact` and in site data — 🤖 · 30 min · *needs BIZ-10*
 
@@ -97,7 +97,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-54** Emails land in the inbox (Gmail + Outlook, Arabic + English) — 🤝 · 1 hr
 - [ ] **DEV-55** Phone + desktop pass of every page in both languages; landing on a real iPhone — 🤖 · ½ day
 - [ ] **DEV-56** Restore a database backup once — 🤝 · 1 hr
-- [ ] **DEV-57** Operator daily digest email (queue, unsettled transfers, failed mail, messages) — 🤖 · 1 day
+- [x] **DEV-57** Operator daily digest email (queue, unsettled transfers, failed mail, messages) — 🤖 · 1 day — done 2026-09-27 (Arabic morning email to MAIL_OPERATOR_TO: review queue + overdue, unconfirmed transfers + oldest, payout requests, open messages, new footage requests, failed mail; once a day via `npm run jobs:daily` or `POST /api/cron/daily` with `CRON_SECRET`)
 
 ## M6 — Live
 

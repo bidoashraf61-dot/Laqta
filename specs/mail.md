@@ -16,7 +16,8 @@ refresh a dashboard.
 | Piece | File | Notes |
 |---|---|---|
 | Driver + verification tokens | `lib/mail.ts` | `resend` driver (plain `fetch`) + honest local driver; `isMailConfigured()` / `mailConfigured` |
-| Events → messages | `lib/notifications.ts` | `notifyOrderPlaced`, `notifyOrderPaid`, `attachCertificates`, `notifyAlbumDecision`, `notifyContactMessage`, `operatorAddress` |
+| Events → messages | `lib/notifications.ts` | `notifyOrderPlaced`, `notifyOrderPaid`, `attachCertificates`, `notifyAlbumDecision`, `notifyContactMessage`, `operatorAddress`; DEV-30: `notifyCreatorSales`, `notifyPayoutPaid`, `notifyPaymentStatus`, `notifyContactReceived`, `notifyRequestReceived`, `notifyCreatorAdded` |
+| Daily jobs | `lib/jobs.ts` | `sendTransferReminders`, `sendOperatorDigest`, `sendLaunchNotice`, `runDailyJobs` (then a drain). Run by `npm run jobs:daily` (cron `0 7 * * *`) or `POST /api/cron/daily` with `CRON_SECRET` ([spec](api/cron-daily.md)) |
 | Password reset | `lib/password-reset.ts` | `requestPasswordReset` enqueues `auth.passwordReset` itself (token and message in one transaction) |
 | Outbox (queue, drain, retry) | `lib/outbox.ts` | `enqueue(tx, …)`, `drain()`, `drainSoon()` |
 | Templates | `emails/registry.ts` | Pure `(locale, payload)` → blocks |
@@ -75,6 +76,16 @@ to the server console and returns `false`; `drain` returns early with a
 | `review.queued` | `submitForReview` | Operator (`operatorAddress()`) | Album, creator, button → `/admin/review` |
 | `auth.passwordReset` | `/forgot-password` → `requestReset` → `requestPasswordReset`, only for an active account and only inside the rate limits | The account (`User.email`, in `User.locale`) | Two-cut «نسيت كلمة المرور؟ / اختر وحدة جديدة من هنا.», one gold button → `/reset-password?token=…` (recipient's locale), "works once, expires in 30 minutes, a newer link stops this one", "every device is signed out after", "didn't ask? ignore it". Footer `footerAccount`. Not idempotency-keyed — each request is its own event; the rate limit is the brake. |
 | `contact.message` | `sendContactMessage` stores a `ContactMessage` row first, then `notifyContactMessage(input)`; a mail failure never loses the message (it is in `/admin/messages`) and `mailDelivered` records whether it was queued | Operator (`operatorAddress()`) | Name, email, subject, sender's language, the message; **Reply-To is the visitor** |
+| `auth.verifyEmail` (DEV-30) | `/account/profile` «تأكيد البريد» → `sendEmailVerification` → `issueEmailVerification(userId, email, origin, locale)` — rendered through the registry and **sent directly** (not queued: the mail is the operation, and the page shows the dev link when no provider is set) | The account, in the page's language | «خطوة وحدة، / أكّد بريدك الإلكتروني.», button → `/[en/]account/verify-email?token=…`, "works once, expires in 30 minutes", "didn't ask? ignore it". Footer `footerAccount` |
+| `creator.sale` (DEV-30) | `settleOrder()` → `notifyCreatorSales(orderId, tx)` inside the settlement transaction, right after the receipt; lines with `creatorNetAmount > 0` only (never the free sample) | Each creator in the order (their `User.email`/`locale`), once per order — key `saleKey = "<orderNumber>:<creatorId>"` | «خبر حلو، / وصلك بيع جديد.», their album titles, «أرباحك من هذا البيع» = the frozen `creatorNetAmount` sum, "shows on your earnings page, withdrawable once the holding period ends" (no number), button → `/studio/earnings` |
+| `creator.added` (DEV-30) | `makeCreator` (`/admin/users/[id]`) and `approveCreator` → `notifyCreatorAdded(creatorId)` | The new creator, once per creator id | «أهلاً بك، / الاستوديو مفتوح لك.», "turn on two-step verification on the security page first", "signed in now? sign out and back in", button → `/studio` |
+| `payout.paid` (DEV-30) | `postPayoutPaid()` (both the single mark-paid and a paid run) → `notifyPayoutPaid(payoutId, tx)`, in the same transaction as the ledger row | The creator, once per payout (`payoutId`) | «تم التحويل، / أرباحك في طريقها لك.», amount (net) and method (تحويل بنكي / Payoneer / Wise), the reference, button → `/studio/payouts` |
+| `order.paymentFailed` / `order.paymentPending` (DEV-30) | The Paymob webhook (`lib/paymob-callback.ts`) on `failed` / `pending` → `notifyPaymentStatus(orderId, state)`; only while the order is `pending`; once per order and state | Buyer | Failed: «رُفضت عملية البطاقة… وما انخصم منك شي», button → `/cart`. Pending: "being processed; receipt as soon as it clears", button → `/account/purchases` |
+| `order.transferReminder` (DEV-30) | The daily job `sendTransferReminders()` (`lib/jobs.ts`): a `bank_transfer` order still `pending` 3 days after it was placed; once per order number | Buyer | The order, amount due, reference and bank rows (from `BANK_*`), "already sent it? ignore this", button → `/account/purchases` |
+| `contact.received` (DEV-30) | `sendContactMessage` after the operator email → `notifyContactReceived` | The visitor, in the page's language | «شكراً، / رسالتك وصلتنا.», their message quoted, "no need to send it again". Footer `footerContact` |
+| `request.received` (DEV-30) | `requestFootage` after the row is stored → `notifyRequestReceived` | The requester, in the page's language | «سجّلنا طلبك.», "we'll pass it to creators and write if an album is made", their brief quoted. Footer `footerRequest` |
+| `launch.notice` (DEV-30) | `sendLaunchNotice(recipients)` (`lib/jobs.ts`) — called for the waitlist (DEV-45); once per address | Each waitlist address, in its language | «وعدناك، / ولقطة صارت متاحة.», what Laqta is, button → `/albums`, the free sample, and the unsubscribe link when one is given. Footer `footerWaitlist` |
+| `operator.digest` (DEV-57) | The daily job `sendOperatorDigest()`; once per date | Operator (`operatorAddress()`), Arabic | «صباح الخير، / هذا ما ينتظرك اليوم.»: albums awaiting review (and overdue), unconfirmed bank transfers (and the oldest), payout requests, open contact messages, footage requests from the last day, failed mail — or «ما فيه شي ينتظرك اليوم.»; button → `/admin` |
 
 `reject` used to be deliberately silent. It is now told: a creator whose album
 turns "delisted" with no message learns it from a status chip with no reason,
@@ -191,7 +202,8 @@ say different things.
 | `MAIL_API_KEY` | Resend API key (`re_…`), sending access |
 | `MAIL_FROM` | Sender on a verified domain, e.g. `لقطة <orders@mail.laqta.sa>` |
 | `MAIL_REPLY_TO` | Default Reply-To for buyer and creator mail |
-| `MAIL_OPERATOR_TO` | Operator inbox: review queue + contact form (`OPERATOR_EMAIL` still read as fallback) |
+| `MAIL_OPERATOR_TO` | Operator inbox: review queue, contact form, the daily digest (`OPERATOR_EMAIL` still read as fallback) |
+| `CRON_SECRET` | Bearer token for `POST /api/cron/daily`; empty = the URL is shut (503) |
 | `SITE_ORIGIN` | Origin for every link in mail — and every other absolute URL (sitemap, robots, canonical/OG, JSON-LD, Paymob callbacks, verification link) via `siteOrigin()`. Set together with `AUTH_URL` to the same value; falls back to `AUTH_URL` then `NEXTAUTH_URL`; a mismatch is warned; in production with neither set, the build/server throws instead of linking to localhost (DEV-40) |
 | `BANK_NAME`, `BANK_ACCOUNT_NAME`, `BANK_IBAN`, `BANK_SWIFT` | Quoted in `order.placed` |
 
@@ -241,7 +253,12 @@ say different things.
 - against the database: `notifyOrderPlaced` twice → one row, in the buyer's
   stored locale; two concurrent `settleOrder` calls → one receipt and one
   invoice; `notifyOrderPaid` afterwards → the same row; no receipt for an
-  unpaid order; `notifyContactMessage` → one row to `MAIL_OPERATOR_TO`.
+  unpaid order; `notifyContactMessage` → one row to `MAIL_OPERATOR_TO`;
+  (DEV-30/57) the contact acknowledgement in the sender's language; a declined
+  card twice → one email; a transfer reminder once for a 4-day-old order and
+  none for a fresh one, however often the job runs; one digest per date.
+  `verify:money` checks the `creator.sale` email (once, with the frozen net);
+  `verify:payouts` checks `payout.paid` (once per payout).
   The gate blanks the `MAIL_*` variables first and uses `.test` addresses, so
   it never sends real mail.
 
@@ -255,14 +272,13 @@ address or a limited request.
 ## Open
 
 - **Nothing reaches a human until the owner completes the Resend setup above.**
-- Email verification (`issueEmailVerification` in `lib/mail.ts`) still sends a
-  plain Arabic-only text message written inline, not through the registry.
 - `album.priced` is written but not fired (Spec B).
 - No bounce/complaint webhook from Resend yet: a hard bounce is only seen as a
   failed send when Resend rejects synchronously.
-- There is no scheduled drain: rows drain after the request that queued
-  something (`drainSoon`). A row left pending while no provider was configured
-  goes out with the next message queued after one is.
+- The daily job drains the outbox once a day (`runDailyJobs`); otherwise rows
+  drain after the request that queued something (`drainSoon`). **The daily job
+  only runs once the server's cron (or a scheduler + `CRON_SECRET`) is set up —
+  part of hosting (DEV-14).**
 
 - `album.changes` (2026-09-27, DEV-09b): when the review round carried a proposed price, the payload has `proposedPrice` + `currency` and the body adds «واقترحنا سعراً للألبوم: {price}. تلقاه في تفاصيل الألبوم، واحفظه لتقبله أو اقترح غيره.» after the reviewer's note.
 - `order.confirmed` (2026-09-27, DEV-63): when the order used a promo code the totals add «خصم الكود {code}» −amount before the subtotal (the subtotal is already after it); payload `discountAmount`, `promoCode`.

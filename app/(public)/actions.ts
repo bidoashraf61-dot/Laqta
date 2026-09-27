@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { createHash } from 'node:crypto'
 import { requestLocale } from '@/lib/locale-request'
-import { notifyContactMessage } from '@/lib/notifications'
+import { notifyContactMessage, notifyContactReceived, notifyRequestReceived } from '@/lib/notifications'
 import { CONTACT_TOPICS } from '@/content/contact'
 import { translate } from '@/lib/i18n'
 
@@ -88,6 +88,8 @@ export async function requestFootage(
     // A storage failure must not read to the visitor as "your request was bad".
     return { ok: false, messageKey: 'auth.somethingWentWrong' }
   }
+  // «وصلنا طلبك» in the page's language (DEV-30). Never fails the request.
+  await notifyRequestReceived({ email: parsed.data.email, brief: parsed.data.brief, locale: await requestLocale() })
 
   return { ok: true, messageKey: 'request.received' }
 }
@@ -263,6 +265,8 @@ export async function sendContactMessage(formData: FormData): Promise<ContactRes
   if (delivered) {
     await db.contactMessage.update({ where: { id }, data: { mailDelivered: true } }).catch(() => {})
   }
+  // The sender's own copy, in the page's language (DEV-30).
+  await notifyContactReceived({ name, email: replyTo, message, locale })
 
   return { ok: true }
 }

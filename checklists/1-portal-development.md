@@ -71,7 +71,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-34** Sitemap sends theme/tag terms to `/collections/…` which 404 — fix; add clip pages; video sitemap — 🤖 · ½ day
 - [ ] **DEV-35** English pages carry Arabic in share data (`ar_SA`, `inLanguage`, breadcrumbs) — make locale-aware — 🤖 · 2 hrs
 - [ ] **DEV-36** Structured data: VideoObject `uploadDate` + AI-origin marker; Product image/brand; Organization address/contact; album share image = cover — 🤖 · ½ day
-- [ ] **DEV-37** Hide private pages from Google in English too (`/en/account`, `/en/studio`, `/en/admin`, `/checkout`, `/boards`); noindex empty hubs — 🤖 · 1 hr
+- [x] **DEV-37** Hide private pages from Google in English too (`/en/account`, `/en/studio`, `/en/admin`, `/checkout`, `/boards`); noindex empty hubs — 🤖 · 1 hr — done 2026-09-27 in DEV-33 (robots.txt disallows the private pages under `/en` too, plus checkout and password pages)
 - [ ] **DEV-38** Missing page descriptions (~10 routes) + natural English hub titles ("Riyadh stock footage") — 🤖 · 2 hrs
 - [x] **DEV-39** ⛔ Page speed: hero film is 31 MB and never cached — lighter encode, long cache headers, phone poster; preload fonts, cache them — 🤖 · 1 day — done 2026-09-27 (film 31 → 13 MB desktop, 12 → 7.5 MB phone, same look; versioned names cached 1 year; `/hero` and `/fonts` immutable; phone poster 27 KB via `<picture>`; 2 fonts preloaded)
 - [ ] **DEV-40** `SITE_ORIGIN` / `AUTH_URL` set together so links never fall back to localhost — 🤖 · 30 min
@@ -86,7 +86,7 @@ album's price, and no way to edit site wording without a developer.
 
 ## M5 — Rehearsal · by 21 Nov
 
-- [ ] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day
+- [x] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day — done 2026-09-27 (`npm run db:seed:production` with ADMIN_EMAIL/ADMIN_PASSWORD; shared real data in `prisma/seed-base.ts`; demo seed refuses non-local databases; demo seed's missing-licence bug fixed; `verify:production-seed`)
 - [ ] **DEV-48** Security: suspended users logged out at once; rate limits on sign-in, sign-up, checkout; Content-Security-Policy — 🤖 · 1 day
 - [ ] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day
 - [ ] **DEV-50** Sentry error reporting wired — 🤖 · ½ day · *needs BIZ-08*

@@ -521,7 +521,24 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - **Rule:** never overwrite a file in `public/hero` or `public/fonts` under
   the same name — browsers keep them a year. New content = new file name.
 
-## 30. Session — 2026-09-27 (DEV-11)
+## 30. Session — 2026-09-27 (DEV-47)
+
+- **DEV-47 done — production seed.** `npm run db:seed:production` with
+  `ADMIN_EMAIL` and `ADMIN_PASSWORD` (≥12 chars, never printed): the Saudi
+  taxonomy + search synonyms, licence `commercial-v1`, the 4 price bands, one
+  admin. No albums, creators, orders, reviews, collections or stats. Re-runnable;
+  refuses a demo password/email and a database that holds demo accounts.
+  Shared real data moved to `prisma/seed-base.ts`.
+- The **demo** seed (`npm run db:seed`) now refuses any non-local database
+  (override `SEED_DEMO=1`), and no longer creates two albums without a
+  licence (checked on a fresh database).
+- New gate `npm run verify:production-seed` (throwaway database, 17 checks).
+- **Found:** two-step sign-in was described as required for admin and
+  creators but not enforced — **fixed in DEV-11 (§31).**
+- Owner, at launch: run the production seed against the production database
+  (DEV-58), sign in, enable 2FA at `/account/security`.
+
+## 31. Session — 2026-09-27 (DEV-11)
 
 - **DEV-11 done — two-factor is now enforced**, as the Terms, the security
   page and the README already claimed. A creator or admin without 2FA still
@@ -551,15 +568,30 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - The demo 2FA secrets are public (the repo is public), like the demo
   password — harmless for dev data, but never run `prisma/seed.ts` on production.
 
-## 31. Where to pick up
+## 32. Where to pick up (status saved 2026-09-27, end of session)
 
-Next ⛔ with no dependency: **DEV-47** (production seed — real taxonomy,
-bands, licence, admin; no demo albums). Fold in two findings: the dev seed
-creates 2 albums without a licence (task chip raised), and `Album.origin`
-defaults to `captured` — make the production path always set it. Quick
-non-⛔ one: DEV-22 (clip-count grammar). The remaining ⛔ tasks wait on the owner's
-accounts: BIZ-02/03 (lawyer, accountant → DEV-26/27/28), BIZ-04 (Paymob),
-BIZ-06/13 (AWS, Resend → DEV-15/16), BIZ-07 (hosting → DEV-14).
+**Open tasks:** 140 across the four lists (20 ⛔). Portal: **46 open** —
+- **25 Claude can do now:** DEV-10, 12, 17, 18, 19, 22, 23, 24, 29, 30,
+  31, 34, 35, 36, 38, 40, 41, 42, 43, 44, 45, 48, 49, 55, 57.
+  DEV-11 (2FA) is done and merged (§31). DEV-35 is partly done (DEV-33 fixed og:locale
+  and canonicals; breadcrumbs / `inLanguage` in JSON-LD remain).
+- **19 wait on the owner / accounts:** DEV-07, 13, 14, 15, 16, 25, 26, 27, 28,
+  32, 46, 50, 51, 52, 53, 54, 56, 58, 59.
+- **1 after launch:** DEV-60 (daily checks, first two weeks).
+
+**Suggested next:** DEV-22 (clip-count grammar), then DEV-29 (remove
+"being activated" payment labels), DEV-34 (sitemap 404s), DEV-48 (security:
+rate limits, CSP, suspended users logged out).
+
+**Session setup that bit this session:**
+- After an app restart the local DB is down: `npm run db:start` (background).
+- The shell loses `.env`: `set -a; . ./.env; set +a` before gates.
+- Another chat's `npm start` may hold :3000 — run gates against a separate
+  build (copy to the scratchpad, `next build`, `next start -p 3002` via the
+  `laqta-build-3002` launch config) with `VERIFY_BASE_URL=http://localhost:3002`.
+- `verify:flows` "uploaded clip reaches «جاهزة»" is flaky — rerun once.
+- Owner is fine with Claude creating git worktrees itself for independent
+  tasks run in parallel (ask first which tasks).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

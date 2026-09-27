@@ -172,6 +172,7 @@ export async function applyImpersonationStart(token: Token, impersonationId: str
       name: (token.name as string | null) ?? null,
       email: (token.email as string | null) ?? null,
       picture: (token.picture as string | null) ?? null,
+      ...(typeof token.tfa === 'boolean' ? { twoFactorEnabled: token.tfa } : {}),
     },
   }
   token.impersonatedBy = row.adminId
@@ -183,6 +184,7 @@ export async function applyImpersonationStart(token: Token, impersonationId: str
   token.name = target.name
   token.email = target.email
   token.picture = target.image
+  token.tfa = target.twoFactorEnabled
   return token
 }
 

@@ -22,6 +22,8 @@
  * Adding a route? Put it in ROUTES.
  */
 
+import { codeFor } from './two-factor-fixture.mjs'
+
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
 
 /** Latin that is correct even outside an island — proper nouns and codes. */
@@ -152,6 +154,8 @@ async function adminJar(): Promise<Jar> {
       csrfToken,
       email: 'admin@laqta.sa',
       password: 'Laqta!2026',
+      // 2FA is mandatory for admin — the seeded account is enrolled.
+      totp: (await codeFor('admin@laqta.sa')) ?? '',
       callbackUrl: `${BASE}/`,
     }),
   })

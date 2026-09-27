@@ -27,8 +27,8 @@ built but shut until an SMS provider exists (`phoneSignInEnabled()` in
 | Control | Action | Effect |
 |---|---|---|
 | Tab «البريد الإلكتروني» / «رمز الجوال» | client `Tabs` state | **Rendered only when `phoneEnabled`** (the page passes `phoneSignInEnabled()`). Otherwise the email form renders on its own. When shown, email is the default tab; phone is not hidden behind "other methods". |
-| Email form → «تسجيل الدخول» | `signInWithEmail(formData)` (`app/(public)/sign-in/actions.ts`) | Zod-validates `{ email, password, totp? }`, lowercases the email, calls Auth.js `signIn('email', { redirect: false })`. On success the client does `router.push(redirectTo)` + `router.refresh()`. |
-| TOTP field «التحقق بخطوتين» | same `signInWithEmail`, resubmitted with `totp` | Rendered only after the action returns `status: 'two_factor'`. 6 digits, `dir="ltr"`, `.numeric`, `autoFocus`. |
+| Email form → «تسجيل الدخول» | `signInWithEmail(formData)` (`app/(public)/sign-in/actions.ts`) | Zod-validates `{ email, password, totp? }`, lowercases the email, calls Auth.js `signIn('email', { redirect: false })` — passing `totp` **only when one was typed** (an absent key is posted by Auth.js as the string `"undefined"`, which read as a wrong code and refused every enrolled account). On success the client does `router.push(redirectTo)` + `router.refresh()`. Email and password are **controlled** inputs so they survive the form action's reset. |
+| TOTP field «التحقق بخطوتين» | same `signInWithEmail`, resubmitted with `totp` | Rendered only after the action returns `status: 'two_factor'`, under the still-filled email and password. 6 digits, `dir="ltr"`, `.numeric`, `autoFocus`. |
 | Phone form → «إرسال الرمز» | `requestPhoneCode(formData)` | Phone tab only. Returns `auth.phoneUnavailable` «الدخول برمز الجوال غير متاح حالياً. ادخل ببريدك الإلكتروني.» while the rail is shut. Otherwise requires ≥6 digits, normalises via `normalisePhone`, calls `issueOtp(phone)` (code goes out by SMS). Returns `{ phone }` — never the code. |
 | Code form → «تحقق» | `signInWithPhone(formData)` | Calls Auth.js `signIn('phone', { phone, code, redirect: false })`. The provider's `authorize` returns `null` while the rail is shut, whatever the code. |
 | «تغيير الرقم» | client state reset | Clears `sentTo`, returns to the number step. Does not invalidate the issued OTP. |
@@ -53,6 +53,9 @@ step, not on the send-code step.
   match on `error.message`, and returns `status: 'two_factor'`. The password is
   verified *before* this throw, so an attacker with the wrong password never
   learns the account carries 2FA.
+- **Creator/admin not enrolled** — signs in without a code (there is nothing to
+  ask for), then `/admin*` and `/studio*` hold them on `/account/security` until
+  they enrol. See [`guard-model.md`](./guard-model.md).
 - **Error (phone rail)** — bad/expired/exhausted/replayed code returns
   `auth.invalidCode` → «الرمز غير صحيح أو منتهي الصلاحية».
 - **Phone rail shut** (today) — no tabs, email form only. There is no dev-code
@@ -93,7 +96,9 @@ replay/wrong-code in-process; TOTP
 accept/reject, the full guard matrix), `verify:arabic` (`/sign-in` is in the
 route list, plus the `/en/sign-in → /sign-in` redirect case), `audit`
 (real Chrome pass at desktop + phone), `verify:flows` and `audit` both use
-`/sign-in` as their login step.
+`/sign-in` as their login step — the seeded creator and admin are enrolled, so
+those gates also type the TOTP code (`scripts/two-factor-fixture.mjs#submitSignIn`),
+which exercises the challenge step in real Chrome.
 
 ## Heading level
 

@@ -19,6 +19,7 @@ import { issueOtp, consumeOtp, phoneSignInEnabled } from '../lib/otp'
 import { normalisePhone } from '../lib/auth'
 import { generateToken, generateSecret, verifyToken } from '../lib/totp'
 import { db } from '../lib/db'
+import { codeFor } from './two-factor-fixture.mjs'
 import {
   requestPasswordReset,
   resetPassword,
@@ -200,8 +201,15 @@ async function main() {
     ],
   ]
 
+  // Creator and admin are enrolled in 2FA by the seed (it is mandatory), so
+  // they sign in with the code, as a person would.
   for (const [address, role, expectations] of matrix) {
-    const { jar, session } = await signIn('email', { email: address, password: 'Laqta!2026' })
+    const code = await codeFor(address)
+    const { jar, session } = await signIn('email', {
+      email: address,
+      password: 'Laqta!2026',
+      ...(code ? { totp: code } : {}),
+    })
     report(`${role} signs in`, session.user?.role === role, `got ${session.user?.role}`)
     for (const [path, expected] of Object.entries(expectations)) {
       const actual = await probe(jar, path)
@@ -209,10 +217,122 @@ async function main() {
     }
   }
 
+  await mandatoryTwoFactor()
   await passwordReset()
 
   console.log(failures === 0 ? '\nAll auth checks passed.' : `\n${failures} check(s) failed.`)
   process.exitCode = failures === 0 ? 0 : 1
+}
+
+/** Where a guarded path sent this session: the redirect target, or the outcome. */
+async function landing(jar: Jar, path: string) {
+  const response = await fetch(`${BASE}${path}`, { headers: { Cookie: cookieHeader(jar) }, redirect: 'manual' })
+  const location = response.headers.get('location')
+  if (location) return new URL(location, BASE).pathname + new URL(location, BASE).search
+  const body = await response.text()
+  // The layout lock streams its redirect inside a 200 (see probe()).
+  const streamed = body.match(/NEXT_REDIRECT;[a-z]+;([^;"\\]+)/)
+  if (streamed) return `layout→${streamed[1]}`
+  return response.ok ? 'allowed' : `http ${response.status}`
+}
+
+/**
+ * Two-factor is mandatory for creator and admin (lib/two-factor.ts): an
+ * unenrolled one signs in, but /admin and /studio send them to
+ * /account/security, in the language they were reading, remembering where
+ * they were going. Throwaway accounts on `.test`, deleted afterwards.
+ */
+async function mandatoryTwoFactor() {
+  console.log('\nMandatory two-factor')
+
+  const run = `${Date.now()}${Math.floor(Math.random() * 1000)}`
+  const passwordHash = await bcrypt.hash('Laqta!2026', 10)
+  const admin = await db.user.create({
+    data: { email: `tfa-admin-${run}@laqta.test`, name: 'TFA Admin', role: 'admin', passwordHash, locale: 'ar' },
+  })
+  const creatorUser = await db.user.create({
+    data: { email: `tfa-creator-${run}@laqta.test`, name: 'TFA Creator', role: 'creator', passwordHash, locale: 'ar' },
+  })
+  const creator = await db.creator.create({
+    data: {
+      userId: creatorUser.id,
+      handle: `tfa-${run}`.slice(0, 30),
+      displayNameAr: 'صانع تجريبي',
+      displayNameEn: 'TFA Creator',
+      status: 'approved',
+    },
+  })
+  const secret = generateSecret()
+
+  try {
+    // ── Unenrolled: signs in, held on the enrolment page ────────────────────
+    const a = await signIn('email', { email: admin.email!, password: 'Laqta!2026' })
+    report('an unenrolled admin still signs in', a.session.user?.role === 'admin')
+    report(
+      '  …and the session says 2FA is off',
+      (a.session.user as { twoFactorEnabled?: boolean } | undefined)?.twoFactorEnabled === false,
+    )
+    const holds: Array<[string, string]> = [
+      ['/admin', '/account/security?next=%2Fadmin'],
+      ['/admin/orders?status=paid', '/account/security?next=%2Fadmin%2Forders%3Fstatus%3Dpaid'],
+      ['/studio', '/account/security?next=%2Fstudio'],
+      ['/en/admin', '/en/account/security?next=%2Fen%2Fadmin'],
+      ['/en/studio/albums', '/en/account/security?next=%2Fen%2Fstudio%2Falbums'],
+    ]
+    for (const [path, expected] of holds) {
+      const actual = await landing(a.jar, path)
+      report(`  admin ${path} → ${expected.split('?')[0]}`, actual === expected, actual)
+    }
+    report('  /account/security stays open', (await landing(a.jar, '/account/security')) === 'allowed')
+    report('  /en/account/security stays open', (await landing(a.jar, '/en/account/security')) === 'allowed')
+    report('  /account stays open', (await landing(a.jar, '/account')) === 'allowed')
+    report('  sign-out stays open', (await fetch(`${BASE}/api/auth/signout`, { headers: { Cookie: cookieHeader(a.jar) } })).ok)
+
+    const page = await fetch(`${BASE}/account/security?next=%2Fadmin`, { headers: { Cookie: cookieHeader(a.jar) } }).then((r) => r.text())
+    report('  the page says why (the 2FA notice)', page.includes('data-two-factor="required"'))
+    const english = await fetch(`${BASE}/en/account/security?next=%2Fen%2Fadmin`, { headers: { Cookie: cookieHeader(a.jar) } }).then((r) => r.text())
+    report('  …in English under /en', english.includes('data-two-factor="required"') && english.includes('Turn on two-factor'))
+
+    const c = await signIn('email', { email: creatorUser.email!, password: 'Laqta!2026' })
+    report('an unenrolled creator → /studio is sent to enrol', (await landing(c.jar, '/studio')) === '/account/security?next=%2Fstudio')
+    const upload = await fetch(`${BASE}/api/studio/uploads/not-a-clip`, { headers: { Cookie: cookieHeader(c.jar) } })
+    report(
+      '  …and the studio upload API refuses them (outside middleware)',
+      upload.status === 403 && ((await upload.json()) as { error?: string }).error === 'two_factor_required',
+      String(upload.status),
+    )
+
+    // ── Enrolled: through ───────────────────────────────────────────────────
+    await db.user.update({ where: { id: admin.id }, data: { twoFactorEnabled: true, twoFactorSecret: secret } })
+    // A cookie from before the enrolment still says `false`; the session
+    // endpoint re-issues it from the database, as the page's «المتابعة» does.
+    const stale = await landing(a.jar, '/admin')
+    report('a cookie from before enrolling is still held (by its claim)', stale.startsWith('/account/security'), stale)
+    const held = await fetch(`${BASE}/account/security?next=%2Fadmin`, { headers: { Cookie: cookieHeader(a.jar) } }).then((r) => r.text())
+    report('  …and the page offers «المتابعة» instead of the notice', held.includes('data-two-factor="ready"') && !held.includes('data-two-factor="required"'))
+    // «المتابعة» only ever leads to a dashboard: an off-site or non-dashboard
+    // `next` gets no button at all (safeDashboardReturn).
+    for (const next of ['https%3A%2F%2Fevil.example', '%2F%2Fevil.example', '%2Faccount%2Flibrary']) {
+      const body = await fetch(`${BASE}/account/security?next=${next}`, { headers: { Cookie: cookieHeader(a.jar) } }).then((r) => r.text())
+      report(`  a next of ${decodeURIComponent(next)} gets no «المتابعة»`, !body.includes('data-two-factor="ready"'))
+    }
+    absorb(a.jar, await fetch(`${BASE}/api/auth/session`, { headers: { Cookie: cookieHeader(a.jar) } }))
+    report('  …a refreshed session opens /admin', (await landing(a.jar, '/admin')) === 'allowed')
+
+    const fresh = await signIn('email', { email: admin.email!, password: 'Laqta!2026', totp: generateToken(secret) })
+    report('an enrolled admin signs in with the code', fresh.session.user?.role === 'admin')
+    report('  …and /admin opens', (await landing(fresh.jar, '/admin')) === 'allowed')
+
+    // ── The layout lock: the database, not the cookie ───────────────────────
+    // 2FA taken away after sign-in (an operator reset): the cookie still says
+    // enrolled, middleware lets it pass, and the layout sends it to enrol.
+    await db.user.update({ where: { id: admin.id }, data: { twoFactorEnabled: false, twoFactorSecret: null } })
+    const locked = await landing(fresh.jar, '/admin')
+    report('2FA removed mid-session: the layout sends /admin to enrol', locked.startsWith('layout→/account/security'), locked)
+  } finally {
+    await db.creator.delete({ where: { id: creator.id } }).catch(() => {})
+    await db.user.deleteMany({ where: { id: { in: [admin.id, creatorUser.id] } } })
+  }
 }
 
 /** The plaintext token from the newest queued reset message for this address. */

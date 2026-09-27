@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { twoFactorOwed } from '@/lib/two-factor'
 
 /**
  * The session check for JSON route handlers under `/api/studio`.
@@ -17,6 +18,11 @@ export async function studioActor() {
   }
   if (user.role !== 'creator' && user.role !== 'admin') {
     return { actor: null, response: NextResponse.json({ error: 'forbidden' }, { status: 403 }) }
+  }
+  // Mandatory two-factor: the studio pages hold an unenrolled creator on
+  // /account/security, and these routes sit outside middleware, so say it here.
+  if (twoFactorOwed(user)) {
+    return { actor: null, response: NextResponse.json({ error: 'two_factor_required' }, { status: 403 }) }
   }
   return { actor: user, response: null }
 }

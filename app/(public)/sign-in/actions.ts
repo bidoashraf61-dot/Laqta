@@ -51,7 +51,11 @@ export async function signInWithEmail(formData: FormData): Promise<AuthActionRes
     await signIn('email', {
       email: parsed.data.email.toLowerCase(),
       password: parsed.data.password,
-      totp: parsed.data.totp,
+      // Only when typed. Auth.js posts these as a form body, and an undefined
+      // value arrives as the string "undefined" — which `authorize` took for a
+      // wrong code, so an enrolled account was refused with «بيانات الدخول غير
+      // صحيحة» instead of being asked for the code.
+      ...(parsed.data.totp ? { totp: parsed.data.totp } : {}),
       redirect: false,
     })
   } catch (error) {

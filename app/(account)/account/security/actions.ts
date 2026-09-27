@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { requireUser } from '@/lib/auth'
+import { requireUser, unstable_update } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { recordAudit } from '@/lib/audit'
 import { generateSecret, otpauthUri, verifyToken, twoFactorRequired } from '@/lib/totp'
@@ -58,7 +58,10 @@ export async function confirmTwoFactor(
     entityId: sessionUser.id,
   })
 
-  revalidatePath('/[locale]/account/security', 'page')
+  // Re-issue the session cookie with the new claim, so middleware stops
+  // holding this creator or admin on this page (lib/two-factor.ts).
+  await unstable_update({})
+  revalidatePath('/account/security')
   return { ok: true, messageKey: 'security.enabledToast' }
 }
 
@@ -82,6 +85,19 @@ export async function disableTwoFactor(): Promise<{ ok: boolean; messageKey: str
     entityId: sessionUser.id,
   })
 
-  revalidatePath('/[locale]/account/security', 'page')
+  revalidatePath('/account/security')
   return { ok: true, messageKey: 'security.disabledToast' }
+}
+
+/**
+ * «المتابعة» for an account that enrolled in ANOTHER browser: the database says
+ * enrolled, but this browser's cookie still carries `tfa: false`, so middleware
+ * would send every dashboard click straight back here. Re-issuing the cookie
+ * from the database ends that loop. Changes nothing but the caller's own
+ * session.
+ */
+export async function refreshTwoFactorSession(): Promise<{ ok: boolean }> {
+  await requireUser()
+  await unstable_update({})
+  return { ok: true }
 }

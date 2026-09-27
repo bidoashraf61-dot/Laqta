@@ -196,7 +196,12 @@
     "enterCodeToEnable": "Enter the code to confirm",
     "enabledToast": "Two-factor authentication is on",
     "disabledToast": "Two-factor authentication is off",
-    "invalidToken": "That code isn't right"
+    "invalidToken": "That code isn't right",
+    "requiredTitle": "Turn on two-factor to continue",
+    "requiredBody": "The admin dashboard and the creator studio stay closed until two-factor authentication is on for your account. Turn it on here and we'll take you back to where you were.",
+    "readyTitle": "Two-factor authentication is on",
+    "readyBody": "Your account is ready. Carry on to the page you were heading to.",
+    "continue": "Continue"
   },
   "landing": {
     "heroLabel": "Saudi video footage library",

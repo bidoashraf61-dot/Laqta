@@ -21,7 +21,7 @@ import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
 import { requestLocale } from '@/lib/locale-request'
-import { mediaUrl } from '@/lib/media'
+import { absoluteMediaUrl, digitalSourceType, mediaUrl } from '@/lib/media'
 import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { previewDeliverable } from '@/lib/previews'
 import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
@@ -105,7 +105,8 @@ export async function generateMetadata({
       locale: ogLocale(),
       title: pickLocalised(album.titleAr, album.titleEn),
       description: pickLocalised(album.descriptionAr, album.descriptionEn) ?? '',
-      images: [mediaUrl(album.clips[0]?.thumbnailKeys[0])].filter((url): url is string => !!url),
+      // The album's chosen cover (DEV-36), not whichever clip sorts first.
+      images: [coverPoster(album)].filter((url): url is string => !!url),
     },
   }
 }
@@ -188,6 +189,7 @@ export default async function AlbumPage({
     <div className="container-tight py-16">
       <ProductJsonLd
         album={album}
+        image={coverPoster(album)}
         priceStandard={priceStandard}
         url={`${siteOrigin()}${localePath(currentLocale(), `/albums/${creatorHandle}/${slug}`)}`}
       />
@@ -526,12 +528,27 @@ function Spec({ label, value, numeric }: { label: string; value: string; numeric
   )
 }
 
+/**
+ * The album's cover poster as an absolute URL: the clip the creator chose as
+ * cover, else the first clip. Used for the share card and Product JSON-LD.
+ */
+function coverPoster(album: {
+  coverClipId: string | null
+  clips: Array<{ id: string; thumbnailKeys: string[] }>
+}): string | null {
+  const cover = album.clips.find((clip) => clip.id === album.coverClipId) ?? album.clips[0]
+  return absoluteMediaUrl(cover?.thumbnailKeys[0])
+}
+
 function ProductJsonLd({
   album,
+  image,
   priceStandard,
   url,
 }: {
+  image: string | null
   album: {
+    origin: 'captured' | 'generated'
     titleAr: string
     titleEn: string
     descriptionAr: string | null
@@ -549,6 +566,14 @@ function ProductJsonLd({
     name: pickLocalised(album.titleAr, album.titleEn),
     description: pickLocalised(album.descriptionAr, album.descriptionEn) ?? undefined,
     url,
+    // DEV-36: Google's Product rich result needs an image; the brand is Laqta.
+    ...(image ? { image: [image] } : {}),
+    brand: { '@type': 'Brand', name: t('brand.name') },
+    additionalProperty: {
+      '@type': 'PropertyValue',
+      name: 'digitalSourceType',
+      value: digitalSourceType(album.origin),
+    },
     offers: {
       '@type': 'Offer',
       price: priceStandard,

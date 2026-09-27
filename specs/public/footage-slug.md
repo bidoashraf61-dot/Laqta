@@ -49,7 +49,7 @@ Read-only apart from navigation — this route calls no server action.
 - `Clip.masterKey` and `Clip.proxyKey` (the clean editing copy) must not be selected or referenced by any catalogue query.
 - Every preview surface (player, still, album grid) carries a watermark; `npm run media:previews` also burns «لقطة · معاينة» into the preview file itself. The `catalogue.previewWatermarked` badge states it in words.
 - Latin spec values (codec, camera, colour profile) are wrapped in `.ltr-island`; numeric values in `.numeric`.
-- `VideoObject` JSON-LD is emitted server-side; the page must stay crawlable. `inLanguage` is the page's language (`ar-SA` / `en`, DEV-35).
+- `VideoObject` JSON-LD is emitted server-side; the page must stay crawlable. `inLanguage` is the page's language (`ar-SA` / `en`, DEV-35). Carries `uploadDate` (the clip's `createdAt`), absolute `thumbnailUrl`s, and the AI-origin marker: `additionalProperty` `digitalSourceType` (IPTC `trainedAlgorithmicMedia` / `digitalCapture`) plus a `genre` of "AI-generated stock footage" or "Stock footage" (DEV-36).
 
 ## Verified by
 `verify:arabic` (via `/footage/alula-01`), `audit`. Resolver rules unit-tested in `tests/unit/media.test.ts`. The player was checked by hand in a browser on 2026-09-24 (plays the clip's own `previewKey`).

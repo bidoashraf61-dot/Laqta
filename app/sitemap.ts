@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { localePath } from '@/lib/locale'
 import { siteOrigin } from '@/lib/site'
-import { mediaUrl } from '@/lib/media'
+import { absoluteMediaUrl } from '@/lib/media'
 
 /**
  * Revalidate hourly.
@@ -124,12 +124,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   )
 
-  /** An absolute URL for a media key, or undefined — "/"-rooted keys are ours. */
-  const absoluteMedia = (key: string | null | undefined) => {
-    const url = mediaUrl(key)
-    if (!url) return undefined
-    return url.startsWith('/') ? `${siteOrigin()}${url}` : url
-  }
+  const absoluteMedia = (key: string | null | undefined) => absoluteMediaUrl(key) ?? undefined
 
   /**
    * The video sitemap block for one clip in one language. Google requires a

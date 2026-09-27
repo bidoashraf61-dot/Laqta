@@ -65,6 +65,7 @@ editing copy) is never selected on a public surface.
 | `/licences` | Standard vs extended licence scope | [licences.md](licences.md) |
 | `/content-policy` | What may be uploaded and sold | [content-policy.md](content-policy.md) |
 | `/forbidden` | 403, reached by rewrite so the URL survives | [forbidden.md](forbidden.md) |
+| `/sitemap.xml` · `/robots.txt` | Every indexable page in both languages, clip pages with video blocks; private pages kept out | [sitemap.md](sitemap.md) |
 
 `/sign-in` and `/sign-up` also live in `app/(public)/` but belong to the auth area and are
 specified there.

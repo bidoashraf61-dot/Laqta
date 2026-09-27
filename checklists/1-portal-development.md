@@ -68,7 +68,7 @@ album's price, and no way to edit site wording without a developer.
 
 ### SEO fixes
 - [x] **DEV-33** ⛔ English album, clip, creator, collection and hub pages point Google at the Arabic page — use `localeAlternates` everywhere so each language is indexed — 🤖 · ½ day — done 2026-09-27 (6 page types + hub; locale resolved before metadata; `og:locale` per language; root layout's wrong inherited hreflang removed; robots.txt covers `/en` private pages; boards/forbidden noindex; new gate `verify:seo`)
-- [ ] **DEV-34** Sitemap sends theme/tag terms to `/collections/…` which 404 — fix; add clip pages; video sitemap — 🤖 · ½ day
+- [x] **DEV-34** Sitemap sends theme/tag terms to `/collections/…` which 404 — fix; add clip pages; video sitemap — 🤖 · ½ day — done 2026-09-27 (only location + category hubs listed; every clip of a live album listed in both languages with a `<video:video>` block — poster, watermarked preview, duration; new spec `specs/public/sitemap.md`; `verify:seo` fetches every sitemap URL and fails on anything but 200)
 - [ ] **DEV-35** English pages carry Arabic in share data (`ar_SA`, `inLanguage`, breadcrumbs) — make locale-aware — 🤖 · 2 hrs
 - [ ] **DEV-36** Structured data: VideoObject `uploadDate` + AI-origin marker; Product image/brand; Organization address/contact; album share image = cover — 🤖 · ½ day
 - [x] **DEV-37** Hide private pages from Google in English too (`/en/account`, `/en/studio`, `/en/admin`, `/checkout`, `/boards`); noindex empty hubs — 🤖 · 1 hr — done 2026-09-27 in DEV-33 (robots.txt disallows the private pages under `/en` too, plus checkout and password pages)

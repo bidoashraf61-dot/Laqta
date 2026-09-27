@@ -92,6 +92,22 @@ async function main() {
     }
   }
 
+  // The sitemap (DEV-34): every page it lists must exist. Themes and tags were
+  // mapped to /collections/<slug>, which 404s — a crawl error Google charges
+  // to the whole domain. Every non-clip URL is fetched; clips are sampled.
+  const sitemap = await (await fetch(`${BASE}/sitemap.xml`)).text()
+  const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname)
+  const clipLocs = locs.filter((p) => p.includes('/footage/'))
+  report('sitemap lists clip pages in both languages', clipLocs.some((p) => p.startsWith('/footage/')) && clipLocs.some((p) => p.startsWith('/en/footage/')), `${clipLocs.length} clip URLs`)
+  report('sitemap carries <video:video> blocks with a thumbnail', /<video:video>[\s\S]*?<video:thumbnail_loc>/.test(sitemap))
+  const toCheck = [...locs.filter((p) => !p.includes('/footage/')), ...clipLocs.slice(0, 6)]
+  const broken: string[] = []
+  for (const loc of toCheck) {
+    const res = await fetch(`${BASE}${loc}`, { redirect: 'manual', headers: { 'user-agent': GOOGLEBOT } })
+    if (res.status !== 200) broken.push(`${loc} ${res.status}`)
+  }
+  report(`every sitemap URL answers 200 (${toCheck.length} checked of ${locs.length})`, broken.length === 0, broken.slice(0, 5).join(', '))
+
   const robots = await (await fetch(`${BASE}/robots.txt`)).text()
   const kept = ['/account', '/en/account', '/admin', '/en/admin', '/checkout', '/en/checkout']
   report('robots.txt keeps both languages of private pages out', kept.every((p) => robots.includes(`Disallow: ${p}`)))

@@ -85,6 +85,12 @@ textarea (required, 500 chars).
   A creator promoted after the sale must not have the new rate applied retroactively, or
   the ledger stops netting to zero (`lib/commission.reverseCommission`,
   `lib/admin.refundOrderItem`).
+- **The refund that empties a line reverses exactly what is left** of its frozen
+  `commissionAmount` and `creatorNetAmount` (minus earlier refund lines), not rate × gross —
+  so every line nets to zero to the cent. It matters on a bundled line (DEV-62), whose
+  stored rate is derived from the amounts. Earlier, partial refunds use the frozen rate.
+- A bundled line shows its bundle discount in `discountAmount` and `bundleId`; the creator's
+  net on it is the stand-alone net (Laqta paid the discount).
 - The refund is capped at `grossAmount − refundedAmount`; VAT is reversed pro-rata
   (`vatAmount × refundGross / gross`).
 - Refund, refund line, order-item update, order update and the creator `refund` ledger

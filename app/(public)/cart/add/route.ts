@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { auth } from '@/lib/auth'
-import { addToCart } from '../actions'
+import { addBundleToCart, addToCart } from '../actions'
 import { LOCALE_HEADER } from '@/lib/locale'
 
 /**
@@ -33,6 +33,8 @@ import { LOCALE_HEADER } from '@/lib/locale'
  */
 export async function GET(request: NextRequest) {
   const album = request.nextUrl.searchParams.get('album')
+  // «اشترِ الحزمة» (DEV-62): the same door, for a whole bundle.
+  const bundle = request.nextUrl.searchParams.get('bundle')
 
   /*
    * The locale rides on a request header the middleware set, because the `/en`
@@ -43,18 +45,23 @@ export async function GET(request: NextRequest) {
   const locale = request.headers.get(LOCALE_HEADER) === 'en' ? 'en' : 'ar'
   const to = (path: string) => new URL(locale === 'en' ? `/en${path}` : path, request.url)
 
-  if (!album) return NextResponse.redirect(to('/albums'))
+  if (!album && !bundle) return NextResponse.redirect(to('/albums'))
 
   const session = await auth()
   if (!session?.user) {
     // Bring them back to this exact add once signed in, prefix and all, so
     // nothing is lost to the detour.
-    const back = `${locale === 'en' ? '/en' : ''}/cart/add?album=${encodeURIComponent(album)}`
+    const query = bundle ? `bundle=${encodeURIComponent(bundle)}` : `album=${encodeURIComponent(album!)}`
+    const back = `${locale === 'en' ? '/en' : ''}/cart/add?${query}`
     const signIn = to('/sign-in')
     signIn.searchParams.set('callbackUrl', back)
     return NextResponse.redirect(signIn)
   }
 
-  const result = await addToCart(album)
+  if (bundle) {
+    const result = await addBundleToCart(bundle)
+    return NextResponse.redirect(to(result.ok ? '/cart' : `/bundles/${encodeURIComponent(bundle)}`))
+  }
+  const result = await addToCart(album!)
   return NextResponse.redirect(to(result.ok ? '/cart' : '/albums'))
 }

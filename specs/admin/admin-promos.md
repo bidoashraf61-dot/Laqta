@@ -44,6 +44,7 @@ There is **no delete control** — codes are only deactivated.
 - `PromoCode.albumIds` (restrict-to-albums) and `currency` are **not editable here** —
   the editor exposes neither, so `albumIds` stays `[]` (everything) and `currency` keeps
   its schema default.
+- A code never applies to albums an order buys inside a bundle (DEV-62) — discounts do not stack; see [`/admin/bundles`](admin-bundles.md).
 - Nothing here mutates an order, a commission rate or an entitlement.
 
 ## Verified by

@@ -151,6 +151,10 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
                     },
                   ]
                 : []),
+              // The bundle saving (DEV-62), also already off the subtotal.
+              ...(raw(payload, 'bundleDiscountAmount')
+                ? [{ label: tr('email.labelBundleDiscount'), value: `−${money('bundleDiscountAmount')}` }]
+                : []),
               { label: tr('email.labelSubtotal'), value: money('subtotal') },
               { label: tr('email.labelVat'), value: money('vatAmount') },
               { label: tr('email.labelTotal'), value: money('total') },

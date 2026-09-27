@@ -16,6 +16,8 @@ The conversion page: show every clip in the album, both licence prices, and the 
 - Every poster, preview and trailer key goes through `mediaUrl()`: "/"-rooted keys serve from `public/`; bucket keys resolve against `NEXT_PUBLIC_MEDIA_CDN_URL`, and to `null` when it is unset.
 - Second query: up to 4 other live albums by the same `creatorId`, plus their cover posters.
 
+- `buyableBundlesFor(album.id)` (`lib/bundles.ts`, DEV-62) — running bundles holding this album whose albums are all live and within Laqta's-share ceiling, with the saving.
+
 ## Controls
 
 | Control | Action | Effect |
@@ -30,6 +32,7 @@ The conversion page: show every clip in the album, both licence prices, and the 
 | Other-album card | Link | `/albums/{creatorHandle}/{slug}` |
 
 ## States
+- **Part of a bundle** — under the price block, one line per buyable bundle: «ضمن حزمة» + title (link to `/bundles/[slug]`) «— وفّر مع الحزمة» + amount. None when the album is in no buyable bundle.
 - **On offer** (DEV-60) — the licence panel shows the offer price with the regular price struck, only while the offer's dates are running (`lib/offers.priceNow`); outside them the regular price, no badge.
 - **Not found / not live / wrong creator handle** — `notFound()` → 404; metadata falls back to `state.notFound`.
 - **Editorial-only album** (`clearanceStatus='editorial_only'`) — the Extended tier option is not rendered at all, in the picker and in the cart line. Hidden rather than shown-and-rejected at checkout.

@@ -63,6 +63,14 @@ export default async function CheckoutPage() {
             <span className="numeric">{formatMoney(Number(item.unitPrice), currency)}</span>
           </div>
         ))}
+        {cart.bundles.map((bundle) => (
+          <div key={bundle.slug} className="flex justify-between gap-4 text-sm text-success">
+            <span className="truncate">
+              {t('cart.bundleSaving')} <Bilingual ar={bundle.titleAr} en={bundle.titleEn} />
+            </span>
+            <span className="numeric">−{formatMoney(bundle.discount, currency)}</span>
+          </div>
+        ))}
         <div className="flex justify-between gap-4 border-t pt-2 text-sm text-muted-foreground">
           <span>{t('cart.vat')}</span>
           <span className="numeric">{formatMoney(cart.vatAmount, currency)}</span>

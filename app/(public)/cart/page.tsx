@@ -74,6 +74,19 @@ export default async function CartPage() {
 
           <Card>
             <CardContent className="space-y-2 p-5">
+              {/* A bundle the cart completes (DEV-62): its saving as its own line,
+                  named and linked, so the buyer sees why the total dropped. */}
+              {cart.bundles.map((bundle) => (
+                <div key={bundle.slug} className="flex justify-between gap-4 text-success">
+                  <span>
+                    {t('cart.bundleSaving')}{' '}
+                    <Link href={`/bundles/${bundle.slug}`} className="underline underline-offset-4">
+                      <Bilingual ar={bundle.titleAr} en={bundle.titleEn} />
+                    </Link>
+                  </span>
+                  <span className="numeric">−{formatMoney(bundle.discount, currency)}</span>
+                </div>
+              ))}
               <Row label={t('cart.subtotal')} value={formatMoney(cart.subtotal, currency)} />
               <Row label={t('cart.vat')} value={formatMoney(cart.vatAmount, currency)} />
               <Separator className="my-2" />

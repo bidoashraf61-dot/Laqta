@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
 import { evaluatePromo, redeem } from '@/lib/promos'
 import { resolveCommission, vatOn } from '@/lib/commission'
+import { bundledCommission, bundleLines, resolveBundles } from '@/lib/bundles'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
 import { drainSoon } from '@/lib/outbox'
 import { attachCertificates, notifyOrderPaid, notifyOrderPlaced } from '@/lib/notifications'
@@ -120,13 +121,20 @@ export async function checkout({
 
   if (albums.length !== lines.length) return { ok: false, messageKey: 'cart.unavailable' }
 
+  // Bundles the cart completes (DEV-62), priced now — the cart page's figure
+  // is display only. Laqta pays their discount (lib/bundles.ts).
+  const bundles = await resolveBundles(bundleLines(albums))
+
   // The promo code, re-evaluated here against the albums as they are now —
-  // the preview on the page is not the boundary (lib/promos.ts).
+  // the preview on the page is not the boundary (lib/promos.ts). Only albums
+  // outside an applied bundle: discounts do not stack.
   let promo: Extract<Awaited<ReturnType<typeof evaluatePromo>>, { ok: true }> | null = null
   if (promoCode && promoCode.trim()) {
     const evaluated = await evaluatePromo(
       promoCode,
-      albums.map((album) => ({ albumId: album.id, gross: priceNow(album).priceStandard })),
+      albums
+        .filter((album) => !bundles.bundleOf[album.id])
+        .map((album) => ({ albumId: album.id, gross: priceNow(album).priceStandard })),
     )
     if (!evaluated.ok) return { ok: false, messageKey: evaluated.error }
     promo = evaluated
@@ -171,21 +179,30 @@ export async function checkout({
       const album = albums.find((candidate) => candidate.id === line.albumId)
       if (!album) throw new Error('ALBUM_UNAVAILABLE')
 
-      // The price actually paid: list price less this line's share of the
-      // promo discount. Commission, VAT and refunds all run on it (DEV-63).
-      const lineDiscount = promo?.discounts[album.id] ?? 0
       // The price NOW — a running offer's price inside its dates (DEV-60).
-      const gross = Math.round((priceNow(album).priceStandard - lineDiscount) * 100) / 100
-      const lineVat = vatOn(gross, VAT_RATE)
+      const listPrice = priceNow(album).priceStandard
+      const bundleDiscount = bundles.discounts[album.id] ?? 0
+      const commissionFor = (grossAmount: number) =>
+        resolveCommission({
+          grossAmount,
+          tier: album.creator.tier,
+          isExclusive: album.isExclusive,
+          override: album.creator.commissionRateOverride
+            ? Number(album.creator.commissionRateOverride)
+            : null,
+        })
 
-      const commission = resolveCommission({
-        grossAmount: gross,
-        tier: album.creator.tier,
-        isExclusive: album.isExclusive,
-        override: album.creator.commissionRateOverride
-          ? Number(album.creator.commissionRateOverride)
-          : null,
-      })
+      // A bundled line (DEV-62): the creator is paid on the album's own price
+      // and the bundle discount comes out of Laqta's commission. Otherwise the
+      // price actually paid is the list price less this line's share of the
+      // promo discount, and commission, VAT and refunds all run on it (DEV-63).
+      const bundled = bundleDiscount > 0
+        ? bundledCommission({ preDiscount: listPrice, discount: bundleDiscount, standalone: commissionFor(listPrice) })
+        : null
+      const lineDiscount = bundled ? bundleDiscount : (promo?.discounts[album.id] ?? 0)
+      const gross = bundled ? bundled.paid : Math.round((listPrice - lineDiscount) * 100) / 100
+      const lineVat = vatOn(gross, VAT_RATE)
+      const commission = bundled ?? commissionFor(gross)
 
       const item = await tx.orderItem.create({
         data: {
@@ -195,6 +212,7 @@ export async function checkout({
           licenceVersionId,
           grossAmount: gross,
           discountAmount: lineDiscount,
+          bundleId: bundles.bundleOf[album.id] ?? null,
           vatAmount: lineVat,
           commissionRate: commission.rate,
           commissionAmount: commission.commissionAmount,
@@ -234,6 +252,7 @@ export async function checkout({
         vatAmount,
         total: subtotal + vatAmount,
         ...(promo ? { promoCodeId: promo.promoId, promoCode: promo.code, discountAmount: promo.total } : {}),
+        bundleDiscountAmount: bundles.applied.reduce((sum, bundle) => sum + bundle.discount, 0),
       },
     })
   }).catch((error: unknown) => {

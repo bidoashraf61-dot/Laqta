@@ -499,7 +499,8 @@
     "total": "Total",
     "checkout": "Checkout",
     "continueShopping": "Keep browsing",
-    "licenceTier": "Licence"
+    "licenceTier": "Licence",
+    "bundleSaving": "Bundle saving"
   },
   "checkout": {
     "title": "Checkout",
@@ -942,7 +943,81 @@
         "contact": "Contact page",
         "landing": "Home page",
         "sell": "Sell page",
-        "email": "Emails"
+        "email": "Emails",
+        "bundle": "Bundles"
+      }
+    },
+    "bundles": {
+      "nav": "Bundles",
+      "title": "Bundles",
+      "hint": "Group albums at a lower price. The discount comes from Laqta's share — every creator keeps their full share.",
+      "new": "New bundle",
+      "edit": "Edit bundle",
+      "editHint": "The bundle price applies automatically when every album of it is in the buyer's cart.",
+      "empty": "No bundles yet",
+      "emptyHint": "Create a bundle of two or more albums priced below buying them separately.",
+      "albumCount": "Albums: {count}",
+      "percentOff": "{value}% off",
+      "fixedPrice": "Fixed price",
+      "state": {
+        "running": "Running",
+        "scheduled": "Scheduled",
+        "ended": "Ended",
+        "off": "Off",
+        "unavailable": "Unavailable"
+      },
+      "activate": "Switch on",
+      "deactivate": "Switch off",
+      "deactivateConfirm": "Switch the bundle off? Buyers will no longer get its price. Past orders do not change.",
+      "activated": "Bundle switched on.",
+      "deactivated": "Bundle switched off.",
+      "saved": "Bundle saved.",
+      "details": "Bundle details",
+      "titleAr": "Arabic name",
+      "titleEn": "English name",
+      "slug": "Page link",
+      "slugHint": "Lower-case English letters, numbers and hyphens — the last part of the bundle page link.",
+      "descriptionAr": "Arabic description (optional)",
+      "descriptionEn": "English description (optional)",
+      "albums": "Albums in the bundle",
+      "albumsHint": "{min} to {max} live albums. The order here is their order on the bundle page.",
+      "addAlbum": "Add an album",
+      "searchAlbums": "Search by title or creator",
+      "noAlbums": "No matching albums.",
+      "removeAlbum": "Remove {title} from the bundle",
+      "albumGone": "An album that is no longer live — remove it to save.",
+      "remove": "Remove",
+      "priceAndDates": "Price and dates",
+      "pricing": "Pricing",
+      "pricingPercent": "Percentage off",
+      "pricingFixed": "Fixed bundle price",
+      "percent": "Discount (%)",
+      "price": "Bundle price (USD)",
+      "percentHint": "At most {max}% for these albums — Laqta's lowest share among them.",
+      "priceHint": "Bought separately: {regular} USD.",
+      "active": "Bundle switched on",
+      "summary": "The numbers",
+      "summaryEmpty": "Pick at least {min} albums to see the price.",
+      "split": "Who pays the discount — per album",
+      "colAlbum": "Album",
+      "colPaid": "Buyer pays",
+      "colCreator": "Creator",
+      "colLaqta": "Laqta",
+      "whoPays": "The whole discount comes from Laqta's share; each creator earns what their album earns on its own.",
+      "save": "Save bundle",
+      "error": {
+        "title": "The Arabic name is required.",
+        "slug": "Link: at least 3 characters, lower-case English letters, numbers and hyphens.",
+        "slugTaken": "Another bundle uses this link.",
+        "claim": "“{words}” is wording Laqta does not use — reword it.",
+        "albumCount": "A bundle has {min} to {max} albums.",
+        "albumsLive": "Every album in the bundle must be live and priced.",
+        "pricing": "Choose how the bundle is priced.",
+        "value": "The price is not valid.",
+        "percent": "The discount is 1 to {max}%.",
+        "fixed": "The bundle price must be below buying them separately ({regular} USD).",
+        "ceiling": "The discount is more than Laqta's share on {count} album(s) — at most {max}% for this bundle.",
+        "dates": "The end must be after the start and in the future."
       }
     }
   },
@@ -1073,7 +1148,8 @@
     "passwordResetIgnore": "Didn't ask for this? Ignore this message. Your current password stays as it is, and nobody can change it without this link.",
     "footerAccount": "You are receiving this because a password reset was requested for this address on Laqta.",
     "albumChangesPrice": "We also proposed a price for the album: {price}. You will find it in the album details — save to accept it, or suggest another.",
-    "labelDiscount": "Discount ({code})"
+    "labelDiscount": "Discount ({code})",
+    "labelBundleDiscount": "Bundle discount"
   },
   "contact": {
     "lead": "Write to us,",
@@ -1218,5 +1294,19 @@
     "exhausted": "This code has no uses left.",
     "minimum": "This code needs an order of ${amount} or more.",
     "notApplicable": "This code does not cover the albums in your cart."
+  },
+  "bundle": {
+    "albums": "Albums in the bundle: {count}",
+    "regular": "Bought separately",
+    "price": "Bundle price",
+    "save": "You save",
+    "ends": "Offer ends",
+    "buy": "Buy the bundle",
+    "buyHint": "The bundle's albums go into your cart and the bundle price applies automatically.",
+    "ownedSome": "You already own {count} of these albums. The bundle price needs all of them in one order, so the rest are added at their usual price.",
+    "ended": "This bundle has ended.",
+    "unavailable": "This bundle isn't available right now.",
+    "onAlbum": "Part of the bundle",
+    "onAlbumSave": "— save"
   }
 }

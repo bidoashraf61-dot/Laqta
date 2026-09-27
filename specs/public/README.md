@@ -51,7 +51,8 @@ editing copy) is never selected on a public surface.
 | `/creators` | Approved creators with at least one live album | [creators.md](creators.md) |
 | `/creators/[handle]` | One creator's bio and live shelf | [creators-handle.md](creators-handle.md) |
 | `/cart` | Review lines, change licence tier, remove | [cart.md](cart.md) |
-| `/cart/add` | GET add-to-cart that always redirects | [cart-add.md](cart-add.md) |
+| `/cart/add` | GET add-to-cart (an album, or a whole bundle) that always redirects | [cart-add.md](cart-add.md) |
+| `/bundles/[slug]` | A bundle of albums at one lower price; «اشترِ الحزمة» (DEV-62) | [bundles-slug.md](bundles-slug.md) |
 | `/checkout` | Billing entity, payment method, and the order freeze | [checkout.md](checkout.md) |
 | `/checkout/return` | Read-only payment status after Paymob's hosted checkout | [checkout-return.md](checkout-return.md) |
 | `/boards/[token]` | Account-free shared shortlist for agency clients | [boards-token.md](boards-token.md) |

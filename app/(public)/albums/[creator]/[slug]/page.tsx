@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { OFFER_SELECT, priceNow } from '@/lib/offers'
+import { buyableBundlesFor } from '@/lib/bundles'
 import { Link } from '@/components/ui/link'
 import { notFound } from 'next/navigation'
 import { BadgeCheck, Download, FileText, Receipt } from 'lucide-react'
@@ -166,6 +167,7 @@ export default async function AlbumPage({
 
   // Price paid now + struck regular price, per the offer's dates (DEV-60).
   const pricing = priceNow(album)
+  const bundles = await buyableBundlesFor(album.id)
   const priceStandard = pricing.priceStandard
   const { comp } = await searchParams
   const sample = await getPublicSample()
@@ -410,6 +412,20 @@ export default async function AlbumPage({
             currency={album.currency}
             clipCount={album.clipCount}
           />
+
+          {/* Part of a bundle (DEV-62): one quiet line, the saving in plain
+              text — the album's own price stays the thing this block sells. */}
+          {bundles.map((bundle) => (
+            <p key={bundle.slug} className="mt-4 rounded-md border bg-card px-4 py-3 text-sm">
+              {t('bundle.onAlbum')}{' '}
+              <Link href={`/bundles/${bundle.slug}`} className="font-medium underline underline-offset-4">
+                <Bilingual ar={bundle.titleAr} en={bundle.titleEn} />
+              </Link>{' '}
+              <span className="text-muted-foreground">
+                {t('bundle.onAlbumSave')} <span className="numeric">{formatMoney(bundle.discount, album.currency)}</span>
+              </span>
+            </p>
+          ))}
 
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">

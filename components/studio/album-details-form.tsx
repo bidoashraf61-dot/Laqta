@@ -40,7 +40,7 @@ export function AlbumDetailsForm({
   const [quality, setQuality] = useState<Quality | null>(current.quality)
   const suggestion =
     type && resolution && quality
-      ? suggestPrice({ clipCount: view.clipCount, type, resolution, quality, bands: view.bands })
+      ? suggestPrice({ clipCount: view.clipCount, type, resolution, quality, bands: view.bands, config: view.config })
       : null
   const money = (value: number) => formatMoneyIn(locale, value)
 

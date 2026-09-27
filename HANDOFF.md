@@ -290,8 +290,24 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   creator may accept it even outside the calculator range. No separate
   acceptance step.
 
-**Next:** DEV-09c (owner edits the calculator multipliers in admin), then the
-remaining M2 tasks (DEV-10, 11, 12, 13, 17, 18, 19; DEV-07 waits on BIZ-09). Owner: approve the creator
+## 18. Session — 2026-09-27 (DEV-09c + owner-control review)
+
+- **DEV-09c done.** «حاسبة السعر» on `/admin/catalogue`, dropdowns only: one
+  importance grade (منخفضة/متوسطة/عالية) per aspect — resolution, footage type,
+  quality — each a fixed multiplier set (medium = the agreed numbers); price
+  limits and creator margin as three-choice dropdowns; live example; audited.
+  Stored as choices in `PricingSetting` (migration `pricing_settings`);
+  `lib/pricing-config.ts` loads, `lib/pricing-config-shared.ts` is the pure
+  half. The approve/propose range, band limits, calculator and `/sell` FAQ all
+  read it.
+- **Owner asked for full admin control.** Reviewed: offers display but have no
+  editor; promo codes are created but **never applied at checkout** (spec
+  corrected); no bundles; no special-price edit; no content editing. Logged as
+  DEV-60 (offers), DEV-61 (special price), DEV-62 (bundles — needs a decision
+  on who pays the discount), DEV-63 (promo codes at checkout, ⛔), DEV-64a–c
+  (every word editable, 6–8 days).
+
+**Next:** owner picks the order among the remaining M2 tasks and DEV-60 – 64. Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

@@ -1,14 +1,16 @@
 import type { PermitsDeclaration, TaxonomyKind } from '@prisma/client'
 import { db } from '@/lib/db'
 import { pickLocalised } from '@/lib/locale'
+import { loadPricingConfig } from '@/lib/pricing-config'
 import {
-  QUALITY_FACTOR,
-  RESOLUTION_FACTOR,
-  TYPE_FACTOR,
+  FOOTAGE_TYPES,
+  QUALITIES,
+  RESOLUTIONS,
   columnsToType,
   suggestPrice,
   typeToColumns,
   type Band,
+  type PricingConfig,
   type FootageType,
   type Quality,
   type Resolution,
@@ -77,11 +79,11 @@ export function parseAlbumDetailsForm(
     [...new Set(formData.getAll(name).map((value) => String(value).trim()).filter(Boolean))]
 
   const type = one('type')
-  if (!(type in TYPE_FACTOR)) return { ok: false, error: 'studio.details.originRequired' }
+  if (!(FOOTAGE_TYPES as readonly string[]).includes(type)) return { ok: false, error: 'studio.details.originRequired' }
   const resolution = one('resolution')
-  if (!(resolution in RESOLUTION_FACTOR)) return { ok: false, error: 'studio.details.resolutionRequired' }
+  if (!(RESOLUTIONS as readonly string[]).includes(resolution)) return { ok: false, error: 'studio.details.resolutionRequired' }
   const quality = one('quality')
-  if (!(quality in QUALITY_FACTOR)) return { ok: false, error: 'studio.details.qualityRequired' }
+  if (!(QUALITIES as readonly string[]).includes(quality)) return { ok: false, error: 'studio.details.qualityRequired' }
   const recommendedPrice = Number(one('recommendedPrice'))
   if (!one('recommendedPrice') || !Number.isFinite(recommendedPrice)) {
     return { ok: false, error: 'studio.details.priceRequired' }
@@ -134,10 +136,11 @@ export async function saveAlbumDetails(
 ): Promise<{ ok: true } | { ok: false; error: DetailsError }> {
   // The recommendation must sit inside the calculator's range for the album
   // as it stands — the same arithmetic the form showed.
-  const [album, bands, proposal] = await Promise.all([
+  const [album, bands, proposal, config] = await Promise.all([
     db.album.findUnique({ where: { id: albumId }, select: { clipCount: true } }),
     loadBands(),
     latestProposal(albumId),
+    loadPricingConfig(),
   ])
   const range = suggestPrice({
     clipCount: album?.clipCount ?? 0,
@@ -145,6 +148,7 @@ export async function saveAlbumDetails(
     type: input.type,
     quality: input.quality,
     bands,
+    config,
   })
   const acceptsProposal = proposal !== null && input.recommendedPrice === proposal
   if (!acceptsProposal && (!range || input.recommendedPrice < range.low || input.recommendedPrice > range.high)) {
@@ -220,6 +224,8 @@ export async function loadBands(): Promise<Band[]> {
 
 export type AlbumDetailsView = {
   clipCount: number
+  /** The owner's live pricing parameters, for the client-side calculator. */
+  config: PricingConfig
   /** The owner's counter-price from the last round, if any (DEV-09b). */
   proposal: number | null
   bands: Band[]
@@ -251,7 +257,7 @@ export type AlbumDetailsView = {
  * request's locale itself.
  */
 export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsView | null> {
-  const [album, taxonomy, bands, round] = await Promise.all([
+  const [album, taxonomy, bands, round, config] = await Promise.all([
     db.album.findUnique({
       where: { id: albumId },
       select: {
@@ -275,6 +281,7 @@ export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsVie
     }),
     loadBands(),
     latestProposalRound(albumId),
+    loadPricingConfig(),
   ])
   if (!album) return null
   const proposal = round?.price ?? null
@@ -296,6 +303,7 @@ export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsVie
   const saved = album.detailsCompletedAt !== null
   return {
     clipCount: album.clipCount,
+    config,
     bands,
     proposal,
     options: {

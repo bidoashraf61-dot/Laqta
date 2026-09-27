@@ -40,7 +40,7 @@ There is **no delete control** — codes are only deactivated.
 - A percent code is capped at 90 — a 100%-off code would be a free catalogue — and no
   code may be zero or negative (a negative one would be a credit).
 - `code` is unique in the schema and re-checked in the action before writing.
-- `redemptions` is never written from this route; it is incremented by the checkout path.
+- `redemptions` is never written from this route — **and nothing else writes it either: checkout does not apply promo codes at all** (checked 2026-09-27). Codes can be created and toggled but a buyer cannot use one. DEV-63 wires them into checkout.
 - `PromoCode.albumIds` (restrict-to-albums) and `currency` are **not editable here** —
   the editor exposes neither, so `albumIds` stays `[]` (everything) and `currency` keeps
   its schema default.

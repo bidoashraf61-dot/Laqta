@@ -1319,6 +1319,18 @@ model ReviewTask {
 // Pricing
 // ─────────────────────────────────────────────────────────────────────────────
 
+/// The album price calculator's parameters (DEV-09c): the price range, the
+/// creator's recommendation spread and every multiplier. One row, id
+/// "default", edited on /admin/catalogue. `config` is validated and merged
+/// over the defaults in lib/pricing-config.ts, so a missing key never breaks
+/// pricing. The clip-count bases stay in PriceBand.
+model PricingSetting {
+  id          String   @id @default("default")
+  config      Json
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
+
 model PriceBand {
   id            String    @id @default(cuid())
   tier          AlbumTier @unique

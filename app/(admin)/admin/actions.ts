@@ -21,6 +21,7 @@ import {
 import { ALBUM_TIERS, parseBandForm, validateBand } from '@/lib/price-bands'
 import { COUNTRIES } from '@/lib/countries'
 import { parseAlbumDetailsForm, saveAlbumDetails } from '@/lib/album-details'
+import { loadPricingConfig, parsePricingForm, savePricingChoices } from '@/lib/pricing-config'
 
 export async function submitReview(input: {
   taskId: string
@@ -952,6 +953,33 @@ export async function setContactMessageStatus(
 // ── Price bands ─────────────────────────────────────────────────────────────
 
 /**
+ * Save the price calculator's parameters — `/admin/catalogue` (DEV-09c).
+ *
+ * The importance grade of each aspect, the price limits and the creator's
+ * margin — all dropdowns (owner, 2026-09-27). Reaches the next
+ * calculation only: live albums keep their approved price and completed
+ * orders their frozen amounts (lib/pricing-config.ts). Audited with the
+ * before and after values.
+ */
+export async function savePricingSettings(_state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (admin.impersonatedBy) return { ok: false, message: tr('state.forbidden') }
+  const parsed = parsePricingForm(formData)
+  if (!parsed.ok) return { ok: false, message: tr(parsed.error) }
+  const before = await savePricingChoices(parsed.choices, admin.id)
+  await recordAudit({
+    actorId: admin.id,
+    action: 'pricing.update',
+    entity: 'PricingSetting',
+    entityId: 'default',
+    detail: { before, after: parsed.choices },
+  })
+  revalidatePath('/admin/catalogue')
+  return { ok: true, message: tr('dash.pricing.saved') }
+}
+
+/**
  * Create or edit a price band — `/admin/catalogue`.
  *
  * Writes `PriceBand` and nothing else. A band's price is copied onto an album
@@ -968,7 +996,7 @@ export async function savePriceBand(_state: Result | null, formData: FormData): 
   const others = await db.priceBand.findMany({
     select: { id: true, tier: true, labelAr: true, minClips: true, maxClips: true },
   })
-  const error = validateBand(input, others)
+  const error = validateBand(input, others, await loadPricingConfig())
   if (error) return { ok: false, message: tr(error.key, 'vars' in error ? error.vars : undefined) }
 
   const data = {

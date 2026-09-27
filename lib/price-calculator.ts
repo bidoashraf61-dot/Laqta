@@ -8,12 +8,12 @@
  * `suggested ± SPREAD`; the owner confirms or counters at review.
  *
  * Pure — no database, no server imports — so the client form and the server
- * action run the same arithmetic. The base comes from the price bands (the
- * caller passes them in); the multipliers are the owner's starting values and
- * move to an admin editor later (DEV-09c).
+ * action run the same arithmetic. The base comes from the price bands and the
+ * multipliers, range and spread from the owner's settings (DEV-09c); the
+ * caller passes both in.
  */
 
-/** The album price range the owner set (decision D4, 2026-09-26). */
+/** The album price range the owner set (decision D4, 2026-09-26) — defaults. */
 export const PRICE_MIN_USD = 49
 export const PRICE_MAX_USD = 249
 
@@ -29,26 +29,48 @@ export function bandForCount<T extends { minClips: number; maxClips: number | nu
   )
 }
 
-export const RESOLUTION_FACTOR = { sd720: 0.6, hd1080: 1.0, uhd4k: 1.3 } as const
-/** Footage type as the form offers it: three generated styles, or filmed. */
-export const TYPE_FACTOR = {
-  ai_live_action: 1.0,
-  ai_animated_3d: 0.9,
-  ai_animated_2d: 0.8,
-  filmed: 1.25,
-} as const
-export const QUALITY_FACTOR = { standard: 0.9, good: 1.0, exceptional: 1.15 } as const
+/**
+ * Every pricing parameter the owner controls (DEV-09c). The live values come
+ * from `lib/pricing-config.ts#loadPricingConfig` (the `PricingSetting` row);
+ * these are the defaults it falls back to, key by key.
+ */
+export type PricingConfig = {
+  priceMin: number
+  priceMax: number
+  /** How far the creator's recommendation may sit from the suggestion, 0–0.5. */
+  spread: number
+  resolution: { sd720: number; hd1080: number; uhd4k: number }
+  type: { ai_live_action: number; ai_animated_3d: number; ai_animated_2d: number; filmed: number }
+  quality: { standard: number; good: number; exceptional: number }
+}
 
-/** How far the creator's recommendation may sit from the suggestion. */
-export const SPREAD = 0.15
+export const DEFAULT_PRICING: PricingConfig = {
+  priceMin: PRICE_MIN_USD,
+  priceMax: PRICE_MAX_USD,
+  spread: 0.15,
+  resolution: { sd720: 0.6, hd1080: 1.0, uhd4k: 1.3 },
+  type: { ai_live_action: 1.0, ai_animated_3d: 0.9, ai_animated_2d: 0.8, filmed: 1.25 },
+  quality: { standard: 0.9, good: 1.0, exceptional: 1.15 },
+}
 
-export type Resolution = keyof typeof RESOLUTION_FACTOR
-export type FootageType = keyof typeof TYPE_FACTOR
-export type Quality = keyof typeof QUALITY_FACTOR
+export const RESOLUTIONS = ['sd720', 'hd1080', 'uhd4k'] as const
+export const FOOTAGE_TYPES = ['ai_live_action', 'ai_animated_3d', 'ai_animated_2d', 'filmed'] as const
+export const QUALITIES = ['standard', 'good', 'exceptional'] as const
+
+export type Resolution = (typeof RESOLUTIONS)[number]
+export type FootageType = (typeof FOOTAGE_TYPES)[number]
+export type Quality = (typeof QUALITIES)[number]
+
+/** A price the owner may set or approve at: inside the range, whole cents. */
+export function parseAlbumPrice(raw: unknown, config: Pick<PricingConfig, 'priceMin' | 'priceMax'> = DEFAULT_PRICING): number | null {
+  const value = typeof raw === 'number' ? raw : Number(String(raw ?? '').trim())
+  if (String(raw ?? '').trim() === '' || !Number.isFinite(value)) return null
+  if (value < config.priceMin || value > config.priceMax) return null
+  if (Math.round(value * 100) !== value * 100) return null
+  return value
+}
 
 export type Band = { minClips: number; maxClips: number | null; priceStandard: number }
-
-const clamp = (value: number) => Math.min(PRICE_MAX_USD, Math.max(PRICE_MIN_USD, value))
 
 /**
  * The suggestion and the range a recommendation must fall in. `null` when no
@@ -62,21 +84,24 @@ export function suggestPrice(input: {
   type: FootageType
   quality: Quality
   bands: Band[]
+  config?: PricingConfig
 }) {
+  const config = input.config ?? DEFAULT_PRICING
+  const clamp = (value: number) => Math.min(config.priceMax, Math.max(config.priceMin, value))
   const count = Math.min(70, Math.max(30, input.clipCount))
   const band = bandForCount(count, input.bands)
   if (!band) return null
   const raw =
     band.priceStandard *
-    RESOLUTION_FACTOR[input.resolution] *
-    TYPE_FACTOR[input.type] *
-    QUALITY_FACTOR[input.quality]
+    config.resolution[input.resolution] *
+    config.type[input.type] *
+    config.quality[input.quality]
   const price = Math.round(clamp(raw))
   return {
     base: band.priceStandard,
     price,
-    low: Math.round(clamp(price * (1 - SPREAD))),
-    high: Math.round(clamp(price * (1 + SPREAD))),
+    low: Math.round(clamp(price * (1 - config.spread))),
+    high: Math.round(clamp(price * (1 + config.spread))),
   }
 }
 

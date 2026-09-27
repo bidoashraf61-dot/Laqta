@@ -82,6 +82,12 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Dead ends worth knowing
 
+- **Promo codes are never applied.** `/admin/promos` creates and toggles codes, but checkout
+  has no code field and nothing increments `redemptions` (DEV-63).
+- **Album offers have no editor.** `Album.compareAtPrice` / `offerLabelAr/En` render on
+  public cards, but only seed data sets them (DEV-60). A live album's price cannot be changed
+  from admin either (DEV-61).
+
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.
 - Album prices are set per album at approval on `/admin/review/[id]` ($49–$249, DEV-09);

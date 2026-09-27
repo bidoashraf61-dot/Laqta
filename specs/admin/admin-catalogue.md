@@ -5,7 +5,7 @@
 ## Purpose
 Everything that has been through review, with the two escalations that skip the queue —
 pause (reversible) and delist (final) — plus feature toggling, setting each album's
-trailer, and the price band editor.
+trailer, the price band editor, and the price calculator's settings (DEV-09c).
 
 ## Data in
 - `searchParams.q` — case-insensitive `contains` over `titleAr`, `titleEn`,
@@ -39,9 +39,37 @@ trailer, and the price band editor.
 | «تمييز» (hidden when delisted) | `toggleAlbumFeatured(id, !isFeatured)` | sets `isFeatured` and `featureRank` (`0` when featured, `null` when not); revalidates `/admin/merchandising` and `/` |
 | «شطب» (hidden when delisted) | `setAlbumStatus(id,'delisted')`, native confirm | `Album.status='delisted'`, `delistedAt=now`. Audits `album.delisted` |
 | Band row «تعديل» | opens that band's form (disclosure) | Fields: «اسم الشريحة», «الاسم بالإنجليزية», «أقل عدد لقطات», «أكثر عدد لقطات» (blank = open-ended, hint «اتركه فارغًا لشريحة مفتوحة من الأعلى.»), «السعر بالدولار». The tier is fixed on an existing band |
-| Band form → «حفظ» | `savePriceBand` (`SettingsForm`) | Validates with `lib/price-bands.ts#validateBand` (labels required; counts positive integers; min ≤ max; price within $49–$249 in whole cents (`dash.bandPriceRange` «سعر الشريحة بين ٤٩ و٢٤٩ دولاراً، مثل أسعار الألبومات.»); one band per tier; no overlapping clip range with another band — «هذا المدى يتداخل مع شريحة «…».»). Writes `PriceBand` only; audits `priceband.update` with before/after. Success: «حُفظت الشريحة. لم يتغير سعر أي ألبوم.» Revalidates `/admin/catalogue` and `/studio/albums/new` |
+| Band form → «حفظ» | `savePriceBand` (`SettingsForm`) | Validates with `lib/price-bands.ts#validateBand` (labels required; counts positive integers; min ≤ max; price within the configured range in whole cents (`dash.bandPriceRange` «سعر الشريحة بين {min} و{max} دولار، مثل أسعار الألبومات.»); one band per tier; no overlapping clip range with another band — «هذا المدى يتداخل مع شريحة «…».»). Writes `PriceBand` only; audits `priceband.update` with before/after. Success: «حُفظت الشريحة. لم يتغير سعر أي ألبوم.» Revalidates `/admin/catalogue` and `/studio/albums/new` |
 | Band form → «حذف» | `deletePriceBand(id)`, native confirm «حذف هذه الشريحة؟ لن تُقترح بعد الآن، والألبومات تحتفظ بسعرها.» | Deletes the `PriceBand`; audits `priceband.delete` with the old values. That clip range then has no suggested price on the review page |
 | «إضافة شريحة» (only while a tier has no band) | opens the new-band form, with a «الفئة» select of the free tiers | `savePriceBand` without an id → `PriceBand.create` with `currency: 'USD'`; audits `priceband.create`. When all four tiers have bands the button is replaced by «كل الفئات الأربع لها شرائح. عدّل واحدة أو احذفها.» |
+
+## Price calculator settings (DEV-09c)
+Panel «حاسبة السعر» under the bands (`components/admin/pricing-settings.tsx`). **All
+dropdowns — no typed numbers** (owner, 2026-09-27). Read from
+`lib/pricing-config.loadPricingChoices()`: the one `PricingSetting` row (`id = 'default'`),
+whose `config` JSON stores the owner's *choices*; `toConfig()` turns them into the numbers the
+calculator runs on (`lib/pricing-config-shared.ts`, pure, so the panel computes live). An
+unknown or missing value falls back to the default choice.
+
+| Control | Choices | Effect |
+|---|---|---|
+| «أهمية الدقة في السعر» | منخفضة / متوسطة / عالية | 720p · 1080p · 4K = 0.8·1·1.15 / **0.6·1·1.3** / 0.5·1·1.5 |
+| «أهمية نوع اللقطات في السعر» | same | AI 2D · AI 3D · AI live · filmed = 0.9·0.95·1·1.1 / **0.8·0.9·1·1.25** / 0.65·0.8·1·1.5 |
+| «أهمية الجودة في السعر» | same | standard · good · exceptional = 0.95·1·1.05 / **0.9·1·1.15** / 0.8·1·1.3 |
+| «أقل سعر للألبوم» | $29 / **$49** / $69 | Lower price limit |
+| «أعلى سعر للألبوم» | $199 / **$249** / $299 | Upper price limit |
+| «هامش اقتراح الصانع» | ±10% / **±15%** / ±20% | How far a creator's recommendation may sit from the suggestion |
+| Multiplier line under each grade | live | The numbers the chosen grade stands for, each label isolated with `<bdi>` |
+| Example line | live | «مثال: ٥٠ لقطة، 4K، ذكاء اصطناعي واقعي، جودة جيدة: $X» + «ويقترح الصانع ضمن: $low – $high», same `suggestPrice` as the creator's form |
+| «حفظ إعدادات السعر» | `savePricingSettings` (`SettingsForm`) | `parsePricingForm` refuses any value not in its list («اختر من القوائم فقط.»); upserts the row; audits `pricing.update` with before/after choices; «حُفظت إعدادات السعر. تسري على الحساب القادم.» |
+
+Bold = the default, which equals the numbers agreed on 2026-09-27 (`verify:pricing` asserts
+it), so an untouched panel changes nothing. A change reaches the next calculation only: the
+creator's calculator, the range checked when a recommendation is saved and when an album is
+submitted, the approve/propose range on `/admin/review/[id]`, the band editor's price
+limits and the `/sell` FAQ range. Live albums keep their approved price; completed orders
+never move. Setting a special price on one album, offers, bundles and promo codes are
+DEV-60 – DEV-63.
 
 ## States
 - **Empty result** — `EmptyState` with `state.empty` / `dash.catalogueHint`.
@@ -87,7 +115,7 @@ trailer, and the price band editor.
 - Every mutation writes an `AuditLog` row.
 
 ## Verified by
-`verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
+`verify:pricing` (settings: default choices equal the agreed numbers; none saved → defaults; a saved grade applies and unknown values fall back; the calculator follows a grade; the dropdowns parse and refuse values outside their lists; a custom range moves what may be approved). `verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
 band editor: min > max refused with nothing written, a price edit persists, no album's
 price and no order total moves, the edit is audited, and the price restores).
 The entitlement snapshot rule is covered by `verify:entitlement`. The trailer key

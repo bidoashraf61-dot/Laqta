@@ -114,7 +114,8 @@ they throw rather than redirect, so they pair with — not replace — the layou
   cookie; the route-group layout is the lock).
 - **Rate limits (DEV-48, `lib/rate-limit.ts`)** — in-process fixed windows, keys
   hashed: sign-in 10 consecutive failures per account and 40 attempts per network
-  per 15 min (enforced in `authorize`, so a POST straight to the Auth.js callback
+  per 15 min (enforced in `authorize`, before the input's shape is checked — so a
+  malformed guess counts too — and so a POST straight to the Auth.js callback
   meets it too; a success clears the account's count; a locked sign-in throws
   `RateLimitedError`, `code='rate_limited'`); sign-up 10 per network per hour;
   checkout 20 orders and 30 promo previews per account per 10 min. Loopback and an

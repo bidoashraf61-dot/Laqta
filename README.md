@@ -44,9 +44,13 @@ the same `DATABASE_URL`** so you are all developing against one catalogue.
 | `npm run verify:auth` | email sign-in, phone rail shut, 2FA, password reset, and the full role-guard matrix |
 | `npm run verify:arabic` | no English leaking into an Arabic route and no Arabic into an English one (needs the server running) |
 
-### Seeded accounts
+### Seeded accounts (development only)
 
-Password for all three: `Laqta!2026`
+`npm run db:seed` is the **demo** seed. It refuses any database that is not
+local (set `SEED_DEMO=1` to force it) because these accounts share a published
+password and the data includes fake sales and view counts.
+
+Password for all of them: `Laqta!2026`
 
 | Email | Role |
 |---|---|
@@ -59,6 +63,23 @@ The seed also puts in the full bilingual Saudi taxonomy, one live album with 22
 clips, a draft, one album in review, five orders at different ages so the
 30-day payout hold is visible in the ledger, and ten search queries — seven of
 them zero-result, which is the content-acquisition signal `/admin/reports` shows.
+
+### Production database (DEV-47)
+
+A real database gets the production seed instead — real data only:
+
+```bash
+ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='a long private password' npm run db:seed:production
+```
+
+It adds the Saudi taxonomy with its search synonyms, the one current licence
+(`commercial-v1`), the four suggested-price bands and one admin account — and no
+albums, creators, orders, reviews, collections or statistics. Safe to re-run
+(an existing admin keeps its password unless `ADMIN_RESET_PASSWORD=1`); it
+refuses a weak or demo password and a database that holds the demo accounts.
+After it: sign in, then enable two-step sign-in at `/account/security`.
+The shared real data lives in `prisma/seed-base.ts`; `npm run
+verify:production-seed` checks all of this against a throwaway database.
 
 The seed is idempotent. Re-run it whenever you like.
 

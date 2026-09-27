@@ -28,6 +28,8 @@ above all the Arabic/English synonym layer that search folding depends on.
 
 There is **no delete control** — terms are only deactivated.
 
+Also on each **location** and **category** row: «نص الصفحة» (plain `<a>`) → [`/admin/taxonomy/[id]`](admin-taxonomy-id.md), where the page's intro, FAQs and SEO text are written (DEV-41).
+
 ## States
 - **Empty result** — `EmptyState` with `dash.noTerms`.
 - **Inactive term** — a warning badge (`dash.slotInactive`) beside the name; the row is

@@ -9,6 +9,7 @@ An SEO landing page for one Saudi location (العلا، الدرعية، الر
 - `Taxonomy` by unique `(kind='location', slug)` for `nameAr/En`, `seoTitleAr`, `seoDescAr`, `heroImage`.
 - `search({ location: slug, page, perPage: 24 })`. A clip matches on any of three paths: `Clip.location.slug`, its own `ClipTaxonomy` with a `location` taxonomy, or its `Album`'s `AlbumTaxonomy` with a `location` taxonomy. Album must be `live`, clip must be `ingestStatus='ready'`.
 
+- **Page layout (DEV-41)** — top to bottom: breadcrumb; H1; the owner's **intro** (`introAr/En` via `pickLocalised`, `whitespace-pre-line`; falls back to the SEO description); the result count; **«ألبومات {name}» / "{name} albums"** — up to 6 live albums tagged with the term or holding clips that are (`lib/catalogue.ts#getHubAlbums`), first page only; **«اللقطات»** — the clip grid; **«أسئلة عن {name}»** — up to 3 owner-written Q&As (`Taxonomy.faqs`, read through `lib/hub-page.ts#parseHubFaqs`; English pair only when both halves exist, else the Arabic pair) with `FAQPage` JSON-LD; **«تصفّح أيضاً»** — up to 6 other active locations/categories the hub's albums are tagged with, most shared first (`getRelatedHubs`), as pill links. The owner writes the text at [`/admin/taxonomy/[id]`](../admin/admin-taxonomy-id.md).
 - **Title and H1 (DEV-38)** — `catalogue.hubTitle`: «لقطات {name}» / "{name} stock footage" (e.g. «لقطات الرياض», "Riyadh stock footage"). The `<title>` uses the owner's `seoTitleAr`/`seoTitleEn` **in the page's own language only** — an English page with no `seoTitleEn` gets the generated English title, not the Arabic SEO title. The meta description likewise: own-language `seoDesc*`, else `brand.seo.hubLocation` («لقطات فيديو من {name} في ألبومات جاهزة للمونتاج…» / "Stock footage of {name} in edit-ready albums…").
 - **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
 
@@ -26,7 +27,7 @@ Read-only. `?page=n` is accepted and applied, but no pagination controls are ren
 ## States
 - **Unknown slug or `isActive=false`** — `notFound()` → 404.
 - **No clips** — `EmptyState` with `catalogue.noResultsTitle` / `catalogue.noResultsBody`.
-- **No `seoDescAr`** — the editorial paragraph is omitted.
+- **No intro and no `seoDesc*`** — the paragraph is omitted. **No albums / no FAQs / no related hubs** — that section is omitted.
 - `heroImage` is read into metadata (OpenGraph) but is not rendered on the hub page itself.
 
 ## Invariants

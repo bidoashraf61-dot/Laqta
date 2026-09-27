@@ -51,6 +51,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 9-check gated checklist (in Arabic; AI accuracy blocking, DEV-17). | [admin-review-id.md](admin-review-id.md) |
 | `/admin/users` | Find any account by email, name or phone; role, status, joined, order count. | [admin-users.md](admin-users.md) |
 | `/admin/waitlist` | The launch waitlist: members, language, source; CSV export; send the launch notice once; sync to Resend (DEV-45). | [admin-waitlist.md](admin-waitlist.md) |
+| `/admin/taxonomy/[id]` | The text of a location or category page: SEO title/description, intro, 3 FAQs, both languages (DEV-41). | [admin-taxonomy-id.md](admin-taxonomy-id.md) |
 | `/admin/users/[id]` | One account: profile, suspend/reactivate, orders, library, preview downloads, contact messages, sample claim, creator link, and read-only audited view-as-user. | [admin-users-id.md](admin-users-id.md) |
 | `/admin/creators` | Creator roster: approve, suspend, reinstate, set tier / commission override. | [admin-creators.md](admin-creators.md) |
 | `/admin/disputes` | DMCA and content complaints: disable content, then close with a written resolution. | [admin-disputes.md](admin-disputes.md) |

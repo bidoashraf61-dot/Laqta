@@ -7,7 +7,11 @@ import { ClipCard } from '@/components/catalogue/clip-card'
 import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { countOf, formatNumber, t } from '@/lib/i18n'
-import { PageTitle } from '@/components/ui/typography'
+import { PageTitle, SubHeadline } from '@/components/ui/typography'
+import { AlbumCard } from '@/components/catalogue/album-card'
+import { FaqSchema } from '@/components/catalogue/faq-schema'
+import { getHubAlbums, getRelatedHubs } from '@/lib/catalogue'
+import { faqInLocale, parseHubFaqs } from '@/lib/hub-page'
 import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { siteOrigin } from '@/lib/site'
@@ -109,7 +113,11 @@ export async function TaxonomyIndex({ kind }: { kind: Kind }) {
   )
 }
 
-/** A single hub, with the clips that belong to it. */
+/**
+ * A single hub (DEV-41): the owner's intro, the albums first — the album is
+ * what a buyer buys — then the clips, up to three questions and answers
+ * (with FAQPage JSON-LD), and the hubs next door.
+ */
 export async function TaxonomyHub({
   kind,
   slug,
@@ -122,15 +130,26 @@ export async function TaxonomyHub({
   const entry = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
   if (!entry || !entry.isActive) notFound()
 
-  const result = await search({
-    [kind]: slug,
-    page,
-    perPage: 24,
-  } as Parameters<typeof search>[0])
+  const [result, albums, related] = await Promise.all([
+    search({
+      [kind]: slug,
+      page,
+      perPage: 24,
+    } as Parameters<typeof search>[0]),
+    // Albums on the first page only; page 2+ of the clips is a clip browse.
+    page <= 1 ? getHubAlbums(entry.id, kind) : Promise.resolve([]),
+    getRelatedHubs(entry.id),
+  ])
+
+  const locale = currentLocale()
+  const name = pickLocalised(entry.nameAr, entry.nameEn) ?? entry.nameAr
+  const intro = pickLocalised(entry.introAr, entry.introEn) ?? pickLocalised(entry.seoDescAr, entry.seoDescEn)
+  const faqs = parseHubFaqs(entry.faqs).map((faq) => faqInLocale(faq, locale))
 
   return (
     <div className="container-tight py-16">
       <BreadcrumbJsonLd kind={kind} entry={entry} />
+      {faqs.length > 0 ? <FaqSchema pairs={faqs} /> : null}
 
       <nav className="mb-4 text-sm text-muted-foreground" aria-label={t('catalogue.breadcrumb')}>
         <Link href="/" className="hover:text-foreground">
@@ -141,35 +160,82 @@ export async function TaxonomyHub({
           {t(TITLE_KEY[kind])}
         </Link>
         {' / '}
-        <span className="text-foreground">{pickLocalised(entry.nameAr, entry.nameEn)}</span>
+        <span className="text-foreground">{name}</span>
       </nav>
 
-      <header className="mb-6 space-y-2">
-        <PageTitle>
-          {t('catalogue.hubTitle', { name: pickLocalised(entry.nameAr, entry.nameEn) })}
-        </PageTitle>
-        {entry.seoDescAr ? (
-          <p className="max-w-prose font-serif text-base text-muted-foreground">
-            {pickLocalised(entry.seoDescAr, entry.seoDescEn)}
+      <header className="mb-8 space-y-2">
+        <PageTitle>{t('catalogue.hubTitle', { name })}</PageTitle>
+        {intro ? (
+          <p className="max-w-prose whitespace-pre-line font-serif text-base leading-[1.9] text-muted-foreground">
+            {intro}
           </p>
         ) : null}
-        <p className="numeric text-sm text-muted-foreground">
-          {countOf('result', result.total)}
-        </p>
+        <p className="numeric text-sm text-muted-foreground">{countOf('result', result.total)}</p>
       </header>
 
-      {result.hits.length === 0 ? (
-        <EmptyState
-          title={t('catalogue.noResultsTitle')}
-          description={t('catalogue.noResultsBody')}
-        />
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {result.hits.map((clip, i) => (
-            <ClipCard key={clip.id} clip={clip} index={i} />
-          ))}
-        </div>
-      )}
+      {albums.length > 0 ? (
+        <section className="mb-12">
+          <SubHeadline as="h2" size="panel" weight="strong" className="mb-4">
+            {t('catalogue.hubAlbums', { name })}
+          </SubHeadline>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {albums.map((album, i) => (
+              <AlbumCard key={album.slug} album={album} index={i} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section>
+        <SubHeadline as="h2" size="panel" weight="strong" className="mb-4">
+          {t('catalogue.hubClips')}
+        </SubHeadline>
+        {result.hits.length === 0 ? (
+          <EmptyState title={t('catalogue.noResultsTitle')} description={t('catalogue.noResultsBody')} />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {result.hits.map((clip, i) => (
+              <ClipCard key={clip.id} clip={clip} index={i} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {faqs.length > 0 ? (
+        <section className="mt-14 max-w-prose">
+          <SubHeadline as="h2" size="panel" weight="strong" className="mb-4">
+            {t('catalogue.hubFaq', { name })}
+          </SubHeadline>
+          <dl className="space-y-6">
+            {faqs.map((faq) => (
+              <div key={faq.q}>
+                <dt className="font-bold">{faq.q}</dt>
+                <dd className="mt-1.5 font-serif leading-[1.9] text-muted-foreground">{faq.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null}
+
+      {related.length > 0 ? (
+        <nav aria-labelledby="hub-related" className="mt-14">
+          <h2 id="hub-related" className="mb-3 text-sm font-medium text-muted-foreground">
+            {t('catalogue.hubRelated')}
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {related.map((term) => (
+              <li key={term.id}>
+                <Link
+                  href={`${term.kind === 'location' ? '/locations' : '/categories'}/${term.slug}`}
+                  className="inline-flex h-9 items-center rounded-full border border-border px-4 text-sm transition-colors hover:border-foreground/40"
+                >
+                  <Bilingual ar={term.nameAr} en={term.nameEn} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
     </div>
   )
 }

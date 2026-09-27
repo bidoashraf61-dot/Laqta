@@ -365,3 +365,56 @@ export async function getSeasonalShelf(take = 6) {
   })
   return { season: null, albums: await toCards(rows as AlbumRow[]) }
 }
+
+/**
+ * Live albums in a location or category hub (DEV-41) — tagged with the term,
+ * or holding clips that are. Shown before the clips: the album is what a
+ * buyer buys.
+ */
+export async function getHubAlbums(taxonomyId: string, kind: 'location' | 'category', take = 6): Promise<AlbumCardData[]> {
+  const rows = await db.album.findMany({
+    where: {
+      status: 'live',
+      OR: [
+        { taxonomy: { some: { taxonomyId } } },
+        {
+          clips: {
+            some:
+              kind === 'location'
+                ? { OR: [{ locationId: taxonomyId }, { taxonomy: { some: { taxonomyId } } }] }
+                : { taxonomy: { some: { taxonomyId } } },
+          },
+        },
+      ],
+    },
+    orderBy: [{ publishedAt: 'desc' }],
+    take,
+    select: ALBUM_CARD_SELECT,
+  })
+  return toCards(rows as AlbumRow[])
+}
+
+/**
+ * Hubs next door (DEV-41): the other locations and categories the albums of
+ * this hub are tagged with, most shared first. A buyer on «العلا» sees
+ * «درون» and «تراث» — the next click the catalogue can actually answer.
+ */
+export async function getRelatedHubs(taxonomyId: string, take = 6) {
+  const links = await db.albumTaxonomy.findMany({
+    where: {
+      album: { status: 'live', taxonomy: { some: { taxonomyId } } },
+      taxonomyId: { not: taxonomyId },
+      taxonomy: { isActive: true, kind: { in: ['location', 'category'] } },
+    },
+    select: { taxonomy: { select: { id: true, kind: true, slug: true, nameAr: true, nameEn: true } } },
+  })
+  const counts = new Map<string, { term: (typeof links)[number]['taxonomy']; n: number }>()
+  for (const link of links) {
+    const current = counts.get(link.taxonomy.id)
+    counts.set(link.taxonomy.id, { term: link.taxonomy, n: (current?.n ?? 0) + 1 })
+  }
+  return [...counts.values()]
+    .sort((a, b) => b.n - a.n)
+    .slice(0, take)
+    .map(({ term }) => term)
+}

@@ -739,6 +739,13 @@ model Taxonomy {
   seoTitleEn String?
   seoDescAr  String?
   seoDescEn  String?
+  /// The hub page's opening paragraph (DEV-41), written by the owner on
+  /// /admin/taxonomy/[id]. Location and category hubs only.
+  introAr    String?
+  introEn    String?
+  /// Up to three questions and answers for the hub page (DEV-41):
+  /// `[{ qAr, aAr, qEn, aEn }]`, rendered with FAQPage JSON-LD.
+  faqs       Json?
 
   sortOrder Int     @default(0)
   isActive  Boolean @default(true)

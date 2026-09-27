@@ -151,6 +151,16 @@ export default async function AdminTaxonomyPage({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-1.5">
+                  {/* The page text of a hub (DEV-41). A plain anchor — the
+                      client router has swallowed navigations on this page. */}
+                  {term.kind === 'location' || term.kind === 'category' ? (
+                    <a
+                      href={`/admin/taxonomy/${term.id}`}
+                      className="inline-flex h-8 items-center rounded-md px-3 text-sm underline-offset-4 hover:underline"
+                    >
+                      {t('dash.hubPageLink')}
+                    </a>
+                  ) : null}
                   <ActionButton
                     action={toggleTaxonomyActive.bind(null, term.id, !term.isActive)}
                     label={term.isActive ? t('dash.slotInactive') : t('dash.slotActive')}

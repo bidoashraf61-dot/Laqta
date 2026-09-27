@@ -118,6 +118,13 @@ async function main() {
   }
   report(`every sitemap URL answers 200 (${toCheck.length} checked of ${locs.length})`, broken.length === 0, broken.slice(0, 5).join(', '))
 
+  // DEV-41: a hub with owner-written FAQs publishes them as FAQPage.
+  if (location) {
+    const hub = await (await fetch(`${BASE}/locations/${location.slug}`, { headers: { 'user-agent': GOOGLEBOT } })).text()
+    const hasFaqText = /<dt[^>]*>[^<]+<\/dt>/.test(hub)
+    report('a hub with FAQs carries FAQPage JSON-LD', !hasFaqText || hub.includes('"FAQPage"'), hasFaqText ? 'faq present' : 'no faq on this hub')
+  }
+
   const robots = await (await fetch(`${BASE}/robots.txt`)).text()
   const kept = ['/account', '/en/account', '/admin', '/en/admin', '/checkout', '/en/checkout']
   report('robots.txt keeps both languages of private pages out', kept.every((p) => robots.includes(`Disallow: ${p}`)))

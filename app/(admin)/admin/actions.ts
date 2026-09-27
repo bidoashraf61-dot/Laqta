@@ -1,6 +1,8 @@
 'use server'
 
 import { notifyCreatorAdded } from '@/lib/notifications'
+import { HUB_INTRO_MAX, hubFaqsFromForm } from '@/lib/hub-page'
+import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -586,6 +588,44 @@ export async function saveTaxonomy(_state: Result | null, formData: FormData): P
   })
 
   revalidatePath('/admin/taxonomy')
+  return { ok: true, message: tr('dash.saved') }
+}
+
+/**
+ * The text of a location or category hub page (DEV-41): SEO title and
+ * description, the intro paragraph and up to three questions and answers, in
+ * both languages. Written on /admin/taxonomy/[id].
+ */
+export async function saveHubPage(id: string, _state: Result | null, formData: FormData): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  const term = await db.taxonomy.findUnique({ where: { id }, select: { id: true, kind: true, slug: true } })
+  if (!term || (term.kind !== 'location' && term.kind !== 'category')) return { ok: false, message: tr('state.notFound') }
+
+  const field = (name: string, max: number) => String(formData.get(name) ?? '').trim().slice(0, max) || null
+  const { faqs, incomplete } = hubFaqsFromForm(formData)
+  if (incomplete) return { ok: false, message: tr('dash.hubFaqIncomplete') }
+  const seoDescAr = field('seoDescAr', 400)
+  const seoDescEn = field('seoDescEn', 400)
+  if ((seoDescAr?.length ?? 0) > 160 || (seoDescEn?.length ?? 0) > 160) return { ok: false, message: tr('dash.hubDescTooLong') }
+
+  await db.taxonomy.update({
+    where: { id: term.id },
+    data: {
+      seoTitleAr: field('seoTitleAr', 70),
+      seoTitleEn: field('seoTitleEn', 70),
+      seoDescAr,
+      seoDescEn,
+      introAr: field('introAr', HUB_INTRO_MAX),
+      introEn: field('introEn', HUB_INTRO_MAX),
+      faqs: faqs.length > 0 ? faqs : Prisma.DbNull,
+    },
+  })
+  await recordAudit({ actorId: admin.id, action: 'taxonomy.page', entity: 'Taxonomy', entityId: term.id, detail: { faqs: faqs.length } })
+  const base = term.kind === 'location' ? '/locations' : '/categories'
+  revalidatePath(`${base}/${term.slug}`)
+  revalidatePath(`/en${base}/${term.slug}`)
+  revalidatePath(`/admin/taxonomy/${term.id}`)
   return { ok: true, message: tr('dash.saved') }
 }
 

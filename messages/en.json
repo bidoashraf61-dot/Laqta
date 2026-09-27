@@ -452,7 +452,11 @@
     "timeNight": "Night",
     "loadMore": "Show more",
     "endOfResults": "You've reached the end of the results",
-    "hubTitle": "{name} stock footage"
+    "hubTitle": "{name} stock footage",
+    "hubAlbums": "{name} albums",
+    "hubClips": "Clips",
+    "hubFaq": "About {name}",
+    "hubRelated": "Browse also"
   },
   "sell": {
     "title": "Sell your footage on Laqta",

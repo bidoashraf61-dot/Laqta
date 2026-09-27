@@ -186,6 +186,11 @@ export function AlbumDetailsForm({
         ) : (
           <p className="text-sm text-muted-foreground">{t('studio.details.pickToPrice')}</p>
         )}
+        {view.proposal !== null ? (
+          <p className="rounded-md border border-border bg-background p-3 text-sm">
+            {t('studio.details.proposal', { price: money(view.proposal) })}
+          </p>
+        ) : null}
         <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
           <div className="space-y-1.5">
             <label htmlFor="details-price" className="text-sm font-medium">
@@ -197,8 +202,9 @@ export function AlbumDetailsForm({
                 name="recommendedPrice"
                 type="number"
                 inputMode="decimal"
-                min={suggestion?.low}
-                max={suggestion?.high}
+                // The owner's proposal is valid even outside the range.
+                min={suggestion ? Math.min(suggestion.low, view.proposal ?? suggestion.low) : undefined}
+                max={suggestion ? Math.max(suggestion.high, view.proposal ?? suggestion.high) : undefined}
                 step="1"
                 required
                 dir="ltr"

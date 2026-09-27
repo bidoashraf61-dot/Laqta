@@ -134,9 +134,10 @@ export async function saveAlbumDetails(
 ): Promise<{ ok: true } | { ok: false; error: DetailsError }> {
   // The recommendation must sit inside the calculator's range for the album
   // as it stands — the same arithmetic the form showed.
-  const [album, bands] = await Promise.all([
+  const [album, bands, proposal] = await Promise.all([
     db.album.findUnique({ where: { id: albumId }, select: { clipCount: true } }),
     loadBands(),
+    latestProposal(albumId),
   ])
   const range = suggestPrice({
     clipCount: album?.clipCount ?? 0,
@@ -145,7 +146,8 @@ export async function saveAlbumDetails(
     quality: input.quality,
     bands,
   })
-  if (!range || input.recommendedPrice < range.low || input.recommendedPrice > range.high) {
+  const acceptsProposal = proposal !== null && input.recommendedPrice === proposal
+  if (!acceptsProposal && (!range || input.recommendedPrice < range.low || input.recommendedPrice > range.high)) {
     return { ok: false, error: 'studio.details.priceOutOfRange' }
   }
 
@@ -190,6 +192,26 @@ export async function saveAlbumDetails(
 
 export type DetailsOption = { slug: string; name: string }
 
+/**
+ * The owner's counter-price from the latest review round, if that round asked
+ * for changes and carried one (DEV-09b). A recommendation EQUAL to it is valid
+ * even outside the calculator's range: it is the price the owner proposed.
+ */
+export async function latestProposal(albumId: string): Promise<number | null> {
+  return (await latestProposalRound(albumId))?.price ?? null
+}
+
+async function latestProposalRound(albumId: string) {
+  const task = await db.reviewTask.findFirst({
+    where: { albumId, decidedAt: { not: null } },
+    orderBy: { decidedAt: 'desc' },
+    select: { decision: true, proposedPrice: true, decidedAt: true },
+  })
+  return task?.decision === 'request_changes' && task.proposedPrice !== null
+    ? { price: Number(task.proposedPrice), at: task.decidedAt! }
+    : null
+}
+
 /** The price bands as the calculator reads them. */
 export async function loadBands(): Promise<Band[]> {
   const rows = await db.priceBand.findMany({ select: { minClips: true, maxClips: true, priceStandard: true } })
@@ -198,6 +220,8 @@ export async function loadBands(): Promise<Band[]> {
 
 export type AlbumDetailsView = {
   clipCount: number
+  /** The owner's counter-price from the last round, if any (DEV-09b). */
+  proposal: number | null
   bands: Band[]
   options: {
     category: DetailsOption[]
@@ -227,7 +251,7 @@ export type AlbumDetailsView = {
  * request's locale itself.
  */
 export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsView | null> {
-  const [album, taxonomy, bands] = await Promise.all([
+  const [album, taxonomy, bands, round] = await Promise.all([
     db.album.findUnique({
       where: { id: albumId },
       select: {
@@ -250,8 +274,13 @@ export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsVie
       orderBy: [{ sortOrder: 'asc' }, { slug: 'asc' }],
     }),
     loadBands(),
+    latestProposalRound(albumId),
   ])
   if (!album) return null
+  const proposal = round?.price ?? null
+  // The proposal pre-fills the field until the creator saves again after it.
+  const savedSinceProposal =
+    round !== null && album.detailsCompletedAt !== null && album.detailsCompletedAt > round.at
 
   const option = (row: { slug: string; nameAr: string; nameEn: string }) => ({
     slug: row.slug,
@@ -268,6 +297,7 @@ export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsVie
   return {
     clipCount: album.clipCount,
     bands,
+    proposal,
     options: {
       category: of('category').map(option),
       location: of('location').map(option),
@@ -279,7 +309,13 @@ export async function loadAlbumDetails(albumId: string): Promise<AlbumDetailsVie
       type: saved ? columnsToType(album.origin, album.footageStyle) : null,
       resolution: album.resolution,
       quality: album.qualityLevel,
-      recommendedPrice: album.recommendedPrice === null ? null : Number(album.recommendedPrice),
+      // A pending proposal pre-fills the field: accepting it is one click.
+      recommendedPrice:
+        proposal !== null && !savedSinceProposal
+          ? proposal
+          : album.recommendedPrice === null
+            ? null
+            : Number(album.recommendedPrice),
       recommendedNote: album.recommendedNote,
       orientation: saved && album.orientation !== 'mixed' ? album.orientation : null,
       permitsDeclaration: album.permitsDeclaration,

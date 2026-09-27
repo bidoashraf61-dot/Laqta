@@ -131,6 +131,35 @@ async function main() {
     const forged = await saveAlbumDetails(draft.id, { ...details, recommendedPrice: 125, category: 'not-a-category' })
     report('a forged category is refused', !forged.ok && forged.error === 'studio.details.categoryRequired')
 
+    // ── DEV-09b: the price travels with the review round ─────────────────────
+    const round1 = await db.reviewTask.create({
+      data: { albumId: draft.id, status: 'unassigned', checklist: allPass, submittedAt: new Date(), slaDueAt: new Date() },
+    })
+    const decide = (taskId: string, decision: 'approve' | 'request_changes', extra: Record<string, unknown> = {}) =>
+      decideReview({ taskId, reviewerId: admin!.id, checklist: allPass, decision, note: 'ملاحظة', ...extra })
+    const badProposal = await decide(round1.id, 'request_changes', { proposedPrice: '300' })
+    report('a proposal above $249 is refused', !badProposal.ok && badProposal.messageKey === 'admin.proposedPriceInvalid')
+    const sent = await decide(round1.id, 'request_changes', { proposedPrice: '180' })
+    const storedRound = await db.reviewTask.findUnique({ where: { id: round1.id } })
+    report('a proposal is stored on the round', sent.ok && Number(storedRound?.proposedPrice) === 180)
+    const mail = await db.mailOutbox.findFirst({ where: { template: 'album.changes', toEmail: user.email! }, orderBy: { createdAt: 'desc' } })
+    report('the changes email carries the proposal', (mail?.payload as Record<string, unknown> | null)?.proposedPrice === '180')
+    const accept = await saveAlbumDetails(draft.id, { ...details, recommendedPrice: 180 })
+    report('the creator can accept a proposal outside the calculator range', accept.ok)
+    const other = await saveAlbumDetails(draft.id, { ...details, recommendedPrice: 181 })
+    report('…but not a different out-of-range price', !other.ok)
+    await db.album.update({ where: { id: draft.id }, data: { clipCount: 0 } })
+    const round2 = await db.reviewTask.create({
+      data: { albumId: draft.id, status: 'unassigned', checklist: allPass, submittedAt: new Date(), slaDueAt: new Date() },
+    })
+    const approved = await decide(round2.id, 'approve', { price: '60' })
+    const live = await db.album.findUnique({ where: { id: draft.id } })
+    report(
+      'approval sells at the recommendation, not a typed price',
+      approved.ok && Number(live?.priceStandard) === 180,
+      String(live?.priceStandard),
+    )
+
     const approve = (price: unknown) =>
       decideReview({ taskId: task.id, reviewerId: admin!.id, checklist: allPass, decision: 'approve', note: '', price: price as string })
 
@@ -169,6 +198,8 @@ async function main() {
     await db.order.deleteMany({ where: { userId: buyer.id } })
     await db.reviewTask.deleteMany({ where: { albumId: album.id } })
     await db.album.delete({ where: { id: album.id } })
+    await db.reviewTask.deleteMany({ where: { albumId: draft.id } })
+    await db.auditLog.deleteMany({ where: { entityId: draft.id } })
     await db.album.delete({ where: { id: draft.id } })
     await db.user.delete({ where: { id: buyer.id } })
     await db.user.delete({ where: { id: user.id } })

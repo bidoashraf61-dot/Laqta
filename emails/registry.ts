@@ -217,6 +217,17 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
         blocks: [
           { kind: 'p', text: tr('email.albumChangesBody', { album }) },
           { kind: 'quote', text: raw(payload, 'notes') },
+          // The owner's counter-price, when the feedback carried one (DEV-09b).
+          ...(raw(payload, 'proposedPrice')
+            ? [
+                {
+                  kind: 'p' as const,
+                  text: tr('email.albumChangesPrice', {
+                    price: formatMoneyIn(BCP47[locale], raw(payload, 'proposedPrice'), 'USD'),
+                  }),
+                },
+              ]
+            : []),
           { kind: 'button', label: tr('email.albumChangesCta'), url: raw(payload, 'albumUrl') },
         ],
         footer: 'footerCreator',

@@ -279,8 +279,19 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Local database migration history was out of step (older changes applied
   by `db push`); reconciled with `prisma migrate resolve` — status clean.
 
-**Next:** DEV-09b (proposed price inside the request-changes feedback), then
-DEV-09c (owner edits multipliers). Owner: approve the creator
+## 17. Session — 2026-09-27 (DEV-09b)
+
+- **DEV-09b done.** On `/admin/review/[id]` an album with a creator
+  recommendation shows «سعر الصانع» (read-only) — «اعتماد» publishes at it —
+  and an optional «سعرك المقترح» that goes with «طلب تعديل» (typing one
+  disables approve). Stored as `ReviewTask.proposedPrice` (migration
+  `review_proposed_price`), carried by the `album.changes` email, shown in the
+  studio's changes panel, and pre-filled into the creator's price field; the
+  creator may accept it even outside the calculator range. No separate
+  acceptance step.
+
+**Next:** DEV-09c (owner edits the calculator multipliers in admin), then the
+remaining M2 tasks (DEV-10, 11, 12, 13, 17, 18, 19; DEV-07 waits on BIZ-09). Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

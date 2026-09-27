@@ -805,7 +805,8 @@
     "passwordResetCta": "Choose a new password",
     "passwordResetExpiry": "The link works once and expires in {minutes} minutes. Asking for another link stops this one.",
     "passwordResetIgnore": "Didn't ask for this? Ignore this message. Your current password stays as it is, and nobody can change it without this link.",
-    "footerAccount": "You are receiving this because a password reset was requested for this address on Laqta."
+    "footerAccount": "You are receiving this because a password reset was requested for this address on Laqta.",
+    "albumChangesPrice": "We also proposed a price for the album: {price}. You will find it in the album details — save to accept it, or suggest another."
   },
   "contact": {
     "lead": "Write to us,",
@@ -934,9 +935,14 @@
       "resolutionRequired": "Choose the resolution.",
       "qualityRequired": "Choose the album's quality.",
       "priceRequired": "Enter your recommended price.",
-      "priceOutOfRange": "Your recommended price is outside the calculator's range for this album."
+      "priceOutOfRange": "Your recommended price is outside the calculator's range for this album.",
+      "proposal": "Laqta proposed {price}. It is in your price field: save the details to accept it, or recommend a price within the range."
     },
     "detailsMissing": "Fill in and save the album details: how it was made, orientation, category, location and permits.",
-    "priceOutOfRange": "The clip count changed, so your recommended price is now outside the range. Open the album details and update it."
+    "priceOutOfRange": "The clip count changed, so your recommended price is now outside the range. Open the album details and update it.",
+    "review": {
+      "proposedPrice": "Laqta's proposed price:",
+      "proposedPriceAction": "Review it in the album details"
+    }
   }
 }

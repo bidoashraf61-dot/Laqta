@@ -65,8 +65,13 @@ export type ReviewDecisionInput = {
   checklist: Checklist
   decision: 'approve' | 'request_changes' | 'reject'
   note: string
-  /** USD. Required to approve — the operator sets every album's price (DEV-09). */
+  /**
+   * USD. Used to approve ONLY an album with no creator recommendation (saved
+   * before the calculator); otherwise approval sells at the recommendation.
+   */
   price?: number | string | null
+  /** USD, optional: the owner's counter-price sent with request-changes (DEV-09b). */
+  proposedPrice?: number | string | null
 }
 
 /**
@@ -84,10 +89,18 @@ export async function decideReview(input: ReviewDecisionInput) {
     select: {
       id: true,
       albumId: true,
-      album: { select: { clipCount: true } },
+      album: { select: { clipCount: true, recommendedPrice: true } },
     },
   })
   if (!task) return { ok: false as const, messageKey: 'state.notFound' }
+
+  // A counter-price travels with the feedback (owner, 2026-09-27): only on
+  // request-changes, optional, and in range when given.
+  let proposedPrice: number | null = null
+  if (input.decision === 'request_changes' && String(input.proposedPrice ?? '').trim() !== '') {
+    proposedPrice = parseAlbumPrice(input.proposedPrice)
+    if (proposedPrice === null) return { ok: false as const, messageKey: 'admin.proposedPriceInvalid' }
+  }
 
   const checklist = normaliseChecklist(input.checklist)
 
@@ -97,9 +110,15 @@ export async function decideReview(input: ReviewDecisionInput) {
   let price: number | null = null
   let tier: 'mini' | 'standard' | 'pro' | 'signature' | undefined
   if (input.decision === 'approve') {
-    // The operator's price, $49–$249, re-checked here — the page is not the
-    // boundary. The tier is only a record of which band the count fell in.
-    price = parseAlbumPrice(input.price)
+    // Approving the album approves its price (owner, 2026-09-27): the
+    // creator's recommendation, which already passed the calculator or equals
+    // the owner's last proposal. A different price goes back as a proposal
+    // with «طلب تعديل», never straight live. Legacy albums with no
+    // recommendation take the price typed on the page. $49–$249 either way;
+    // the tier is only a record of which band the count fell in.
+    price = parseAlbumPrice(
+      task.album.recommendedPrice !== null ? Number(task.album.recommendedPrice) : input.price,
+    )
     if (price === null) return { ok: false as const, messageKey: 'admin.priceRequired' }
     const bands = await db.priceBand.findMany({ select: { tier: true, minClips: true, maxClips: true } })
     tier = bandForCount(task.album.clipCount, bands)?.tier
@@ -135,6 +154,7 @@ export async function decideReview(input: ReviewDecisionInput) {
               : 'changes_requested',
         decision: input.decision,
         decisionNote: input.note || null,
+        proposedPrice,
         checklist: checklist as unknown as object,
         decidedAt: new Date(),
       },
@@ -178,7 +198,12 @@ export async function decideReview(input: ReviewDecisionInput) {
     action: `album.review.${input.decision}`,
     entity: 'Album',
     entityId: task.albumId,
-    detail: { note: input.note, cleared, ...(price !== null ? { price } : {}) },
+    detail: {
+      note: input.note,
+      cleared,
+      ...(price !== null ? { price } : {}),
+      ...(proposedPrice !== null ? { proposedPrice } : {}),
+    },
   })
 
   return {

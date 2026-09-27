@@ -53,7 +53,7 @@ build/
 # Generated documents (certificates, invoices) — private, never committed
 .documents/
 /public/hero/vid
-/.media/
+/.media
 # Studio uploads on the local (dev) driver: watermarked previews/posters
 # published for the page. Masters and scans never land under public/.
 /public/uploads/

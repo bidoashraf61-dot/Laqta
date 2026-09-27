@@ -18,6 +18,8 @@ The conversion page: show every clip in the album, both licence prices, and the 
 
 - `buyableBundlesFor(album.id)` (`lib/bundles.ts`, DEV-62) — running bundles holding this album whose albums are all live and within Laqta's-share ceiling, with the saving.
 
+- **Specs block** (DEV-20) opens with «طريقة الإنتاج» — «تصوير بالكاميرا» or «مُنتَج بالذكاء الاصطناعي» from `Album.origin` — and «الدقة» — `Album.resolution` (`uhd4k` → 4K, `hd1080` → 1080p, `sd720` → 720p), or, for an album with none declared, the widest clip (≥3840 → 4K, ≥1920 → 1080p, else 720p; no clips → «—»). The catalogue mixes filmed and generated albums and not all are 4K, so the page states both for this album.
+
 ## Controls
 
 | Control | Action | Effect |

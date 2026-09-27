@@ -52,7 +52,7 @@ album's price, and no way to edit site wording without a developer.
 
 
 ### Site copy (🤖 writes, 🧑 approves)
-- [ ] **DEV-20** ⛔ Review every «تصوير» / ص-و-ر form and "filmed/shot" wording (~25 places: origin badge «تصوير حقيقي», landing, `/sell`, studio, legal pages, meta keywords). **D1/D3 answered: AI + filmed**, so keep «تصوير» where it describes filmed footage; fix only places that call generated footage filmed or say the catalogue is AI-only. Remove blanket «4K» claims (D5: resolution stated per album) — 🤖 · ½ day
+- [x] **DEV-20** ⛔ Review every «تصوير» / ص-و-ر form and "filmed/shot" wording (~25 places: origin badge «تصوير حقيقي», landing, `/sell`, studio, legal pages, meta keywords). **D1/D3 answered: AI + filmed**, so keep «تصوير» where it describes filmed footage; fix only places that call generated footage filmed or say the catalogue is AI-only. Remove blanket «4K» claims (D5: resolution stated per album) — 🤖 · ½ day — done 2026-09-27 (owner confirmed: mixed filmed/AI, resolution varies. No blanket claims left; badge «تصوير حقيقي» → «تصوير بالكاميرا»; album page now shows «طريقة الإنتاج» and «الدقة»; 720p chip; SEO description, FAQ, /sell fixed)
 - [ ] **DEV-21** ⛔ Replace "own it forever" with "permanent licence" (~12 places incl. the order email) — 🤖 · 2 hrs · *needs D2*
 - [ ] **DEV-22** Clip-count grammar: "22 clip" → "22 clips"; Arabic «١٠ لقطة» → «١٠ لقطات»; «٣ صانع محتوى» — 🤖 · ½ day
 - [ ] **DEV-23** Saudi register fixes («أقدر»، «فاضي»، «ما فيه»، «تقدر») in FAQ, emails, empty states — 🤖 · 2 hrs

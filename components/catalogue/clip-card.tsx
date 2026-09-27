@@ -55,7 +55,7 @@ export function ClipCard({
   const money = useMoney()
   const pick = usePick()
 
-  const resolution = clip.width >= 3840 ? '4K' : clip.width >= 1920 ? '1080p' : 'HD'
+  const resolution = clip.width >= 3840 ? '4K' : clip.width >= 1920 ? '1080p' : '720p'
 
   return (
     <article

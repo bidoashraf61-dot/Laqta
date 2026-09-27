@@ -27,8 +27,9 @@ export const CONTRADICTIONS: Array<[RegExp, string]> = [
 /**
  * Claims the copy has made and the product cannot back.
  *
- * The launch catalogue is AI-generated, so "real locations" and "permits
- * cleared" are false about it (specs/public/index.md). A price comparison names
+ * The catalogue mixes filmed and AI-generated albums, so a blanket "real
+ * locations" or "permits cleared" is false about part of it — how each album
+ * was made is stated on the album (specs/public/index.md, DEV-20). A price comparison names
  * a competitor by implication and cannot be substantiated. "Every use" is false
  * while the licence excludes reselling the clip itself.
  */

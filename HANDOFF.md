@@ -4,13 +4,14 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-62 done — album bundles, discount paid by Laqta)_
+_Last updated: 2026-09-27 (DEV-20 done — honest origin and resolution wording)_
 
 ---
 
 ## 1. What Laqta is
 
-- **Product:** Arabic-first marketplace for **AI-generated Saudi stock footage**
+- **Product:** Arabic-first marketplace for **Saudi stock footage — some albums
+  AI-generated, some filmed with a camera**; resolution varies by album
   (لقطة = "shot"). Headline: «مكتبة لقطات السعودية».
 - **Model:** buyers discover at the **clip** level, buy at the **album** level.
   Albums only — no single clips, no packs. 30–70 clips around one subject.
@@ -451,12 +452,34 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   frozen amounts left (not rate × gross), so every line nets to zero.
 - New gate `npm run verify:bundles` (29 checks, in `npm run verify`).
 
-## 26. Where to pick up
+## 26. Session — 2026-09-27 (DEV-20)
 
-All owner-decision tasks in the portal list are answered. Next ⛔ tasks with
-no dependency: DEV-20 (AI vs filmed wording, blanket «4K» claims), DEV-33
-(English pages indexed on their own), DEV-39 (page speed). Many ⛔ tasks wait
-on the owner's accounts (BIZ-02/03/04/06/07/13).
+- **Owner confirmed:** the catalogue is mixed — some albums AI-generated,
+  some filmed with a camera — and resolution varies (720p / 1080p / 4K).
+- **DEV-20 done.** No blanket claim left either way: the home SEO
+  description, the FAQ answer, the `/sell` requirements and the (unused)
+  trust strip no longer promise "1080p and 4K" for everything. The origin
+  badge «تصوير حقيقي» / "Real footage" is now «تصوير بالكاميرا» / "Filmed"
+  («حقيقي» implied AI albums are fake). Album pages now state
+  «طريقة الإنتاج» and «الدقة» for that album (declared resolution, else the
+  widest clip). Clip cards say 720p instead of "HD". «يغنيك عن يوم تصوير»
+  (the buyer's own shoot day) and the filming-permit rules stay — true.
+- Project descriptions updated (CLAUDE.md, HANDOFF §1, specs/public/index.md
+  invariant, glossary, mail spec).
+- Left alone on purpose: the landing keyword «تصوير جوي السعودية» (a search
+  term, not a claim); the schema default `origin = captured` (the studio
+  form makes creators choose, but an album created another way would be
+  labelled filmed — worth fixing with the production seed, DEV-47); the dev
+  seed marks every demo album «captured».
+- Tip: after an app restart the shell loses `.env`; run gates with
+  `set -a; . ./.env; set +a` first, and start the DB (`laqta-db`).
+
+## 27. Where to pick up
+
+Next ⛔ tasks with no dependency: DEV-21 is next in the list («لك للأبد» →
+«ترخيص دائم», D2 answered), then DEV-33 (English pages indexed on their own)
+and DEV-39 (page speed). Many ⛔ tasks wait on the owner's accounts
+(BIZ-02/03/04/06/07/13).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

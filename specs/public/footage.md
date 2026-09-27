@@ -45,6 +45,8 @@ No server action mutates anything on this route; the only write is the search lo
 - A `?tag=` filter matches a tag on the clip **or on its album** (album tags come from the album details form, DEV-08), the same way location and category already did.
 - **Search engine** — Postgres today. `SearchDriver` is the boundary for a future Meilisearch driver; nothing in the route layer changes when it lands.
 
+- **Clip-card chips** (DEV-20): the origin badge reads «تصوير بالكاميرا» / "Filmed" or «مُنتَج بالذكاء الاصطناعي» / "AI generated" (was «تصوير حقيقي» / "Real footage"); the resolution chip reads 4K (width ≥ 3840), 1080p (≥ 1920) or 720p (was "HD").
+
 ## Invariants
 - Header: `PageTitle` (Serif Display Bold) over the subtitle set in `<Prose>` (Serif Text), the site-wide head composition — not a muted Sans line.
 - `/locations` and `/categories` **308 to this page**. Both indexes were walls of tiles that mostly read "0" on a launch-scale catalogue — pages whose whole job was to advertise how little there is. Browsing by location or category is a FILTER and now composes with every other facet instead of being a separate journey.

@@ -1290,6 +1290,9 @@ model ReviewTask {
   notes        String?
   /// Note sent to the creator on request-changes / reject.
   decisionNote String?
+  /// The owner's price, sent WITH a request-changes note (DEV-09b). The
+  /// creator's recommendation may equal it even outside the calculator range.
+  proposedPrice Decimal? @db.Decimal(10, 2)
   decision     ReviewDecision?
   /// SLA target is 3 business days from submission.
   submittedAt  DateTime        @default(now())

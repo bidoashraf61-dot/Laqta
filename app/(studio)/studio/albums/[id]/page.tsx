@@ -49,6 +49,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
           id: true,
           decision: true,
           decisionNote: true,
+          proposedPrice: true,
           checklist: true,
           submittedAt: true,
           decidedAt: true,
@@ -141,6 +142,18 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
               failedChecks={failedChecks}
               after={t('studio.review.changesBody')}
             />
+            {/* The owner's counter-price travels with the feedback (DEV-09b). */}
+            {latestReview.proposedPrice !== null ? (
+              <p className="mt-3 text-sm">
+                {t('studio.review.proposedPrice')}{' '}
+                <span className="numeric font-bold">
+                  {formatMoney(Number(latestReview.proposedPrice), 'USD')}
+                </span>{' '}
+                <a href="#details" className="underline underline-offset-4">
+                  {t('studio.review.proposedPriceAction')}
+                </a>
+              </p>
+            ) : null}
           </AlertDescription>
         </Alert>
       ) : null}

@@ -6,7 +6,7 @@ import { siteUrl } from '@/lib/site'
 import { addBusinessDays } from '@/lib/utils'
 import { emptyChecklist } from '@/lib/review-checklist'
 import { columnsToType, suggestPrice } from '@/lib/price-calculator'
-import { loadBands } from '@/lib/album-details'
+import { latestProposal, loadBands } from '@/lib/album-details'
 
 /**
  * Creator-side operations.
@@ -124,7 +124,10 @@ export async function canSubmit(albumId: string): Promise<SubmitCheck> {
       bands: await loadBands(),
     })
     const price = Number(album.recommendedPrice)
-    if (!range || price < range.low || price > range.high) reasons.push('studio.priceOutOfRange')
+    const acceptsProposal = price === (await latestProposal(albumId))
+    if (!acceptsProposal && (!range || price < range.low || price > range.high)) {
+      reasons.push('studio.priceOutOfRange')
+    }
   } else reasons.push('studio.detailsMissing')
 
   const facesWithoutRelease = album.clips.filter(

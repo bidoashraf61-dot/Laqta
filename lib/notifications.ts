@@ -257,6 +257,7 @@ export async function notifyAlbumDecision(albumId: string): Promise<void> {
         id: true,
         decision: true,
         decisionNote: true,
+        proposedPrice: true,
         album: {
           select: {
             id: true,
@@ -292,6 +293,8 @@ export async function notifyAlbumDecision(albumId: string): Promise<void> {
         taskId: task.id,
         album: titleFor(locale, album.titleAr, album.titleEn),
         notes: task.decisionNote ?? '',
+        // The owner's counter-price, when it came with the feedback (DEV-09b).
+        ...(task.proposedPrice !== null ? { proposedPrice: String(task.proposedPrice), currency: 'USD' } : {}),
         albumUrl:
           template === 'album.approved'
             ? siteUrl(`/albums/${album.creator.handle}/${album.slug}`, locale)

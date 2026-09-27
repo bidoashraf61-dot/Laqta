@@ -44,7 +44,12 @@ otherwise the same fields render disabled under «الألبوم قيد المر
 | «حفظ التفاصيل» | `saveAlbumDetailsAction(albumId)` → `lib/album-details.saveAlbumDetails` | Re-checks editability (`editableAlbum`); parses; refuses a recommendation outside `suggestPrice(clipCount, …)`'s range («سعرك المقترح خارج النطاق…»); resolves slugs against ACTIVE taxonomy of the right kind only (a forged category/location is refused); writes the columns + `detailsCompletedAt=now` and replaces the album's category/location/theme/tag links in one transaction; audits `album.details`. Success «حُفظت تفاصيل الألبوم.» |
 
 Under the calculator: «لقطة تعتمد سعرك أو تقترح سعراً آخر، ولا يُنشر الألبوم بسعر مختلف
-قبل موافقتك.» — the counter-offer flow itself is DEV-09b (not built yet).
+قبل موافقتك.» When the last review round asked for changes **with a proposed price**
+(DEV-09b), the calculator shows «لقطة اقترحت {price}. خانة سعرك فيها هذا السعر: احفظ
+التفاصيل لتقبله، أو اقترح سعراً ضمن النطاق.», the price field is pre-filled with it (until
+the creator saves again after that round), and a recommendation equal to it is accepted
+even outside the range — by the save action and by the submission gate
+(`lib/album-details.latestProposal`).
 
 **Calculator** (owner, 2026-09-27): base from the band for the clip count (count clamped
 to 30–70) × resolution (720p 0.6 · 1080p 1.0 · 4K 1.3) × type (AI live action 1.0 · AI 3D
@@ -75,6 +80,7 @@ upload protocol is `components/studio/upload-engine.ts` against
 Every clip action re-checks ownership and editability server-side (`lib/uploads.ts#editableClip`); an album in review, live, paused or delisted returns «اللقطات لا تُعدَّل والألبوم قيد المراجعة أو منشور.». There is still no album title/price edit and no album delete on this page.
 
 ## States
+- **Changes requested with a price** — the warning panel adds «سعر لقطة المقترح: {price}» and a «راجعه في تفاصيل الألبوم» link to `#details` (`ReviewTask.proposedPrice`, DEV-09b).
 - **Unpriced** — the header line reads «{n} لقطة · يُحدَّد السعر عند الاعتماد» until the operator approves the album at a price (DEV-09).
 - **Not found / not owned** — `notFound()` (404). A creator with `creatorId == null` matches nothing and also gets 404 here (this route does **not** redirect to `/sell`).
 - **In review** — an info `Alert`: submitted on `{date}`, and the decision arrives by email (`studio.review.inReviewBody`). No SLA date is promised to the creator.

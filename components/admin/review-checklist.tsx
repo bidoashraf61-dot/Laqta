@@ -58,6 +58,9 @@ export function ReviewChecklist({
 }) {
   const t = useT()
   const [price, setPrice] = useState(priceRange.suggested === null ? '' : String(priceRange.suggested))
+  const [proposedPrice, setProposedPrice] = useState('')
+  // A typed proposal belongs to «طلب تعديل»; approving would silently drop it.
+  const proposing = priceRange.recommended != null && proposedPrice.trim() !== ''
 
   const router = useRouter()
   const [checklist, setChecklist] = useState<Checklist>(initial)
@@ -73,7 +76,7 @@ export function ReviewChecklist({
   const decide = (decision: 'approve' | 'request_changes' | 'reject') =>
     startTransition(async () => {
       setError(null)
-      const result = await submitReview({ taskId, checklist, decision, note, price })
+      const result = await submitReview({ taskId, checklist, decision, note, price, proposedPrice })
       if (!result.ok) {
         setError(result.detail ?? t(result.messageKey))
         return
@@ -145,47 +148,84 @@ export function ReviewChecklist({
           />
         </div>
 
-        {/* The price is set here, not by the creator. Required to approve only;
-            the server re-checks the range. */}
-        <div className="space-y-2">
-          <label htmlFor="album-price" className="text-sm font-medium">
-            {t('admin.albumPrice')}
-          </label>
-          <div className="flex items-center gap-2">
-            <Input
-              id="album-price"
-              type="number"
-              inputMode="decimal"
-              min={priceRange.min}
-              max={priceRange.max}
-              step="0.01"
-              dir="ltr"
-              className="numeric w-32"
-              value={price}
-              onChange={(event) => setPrice(event.target.value)}
-              aria-describedby="album-price-hint"
-            />
-            <span className="ltr-island text-sm text-muted-foreground">USD</span>
-          </div>
-          <p id="album-price-hint" className="text-xs text-muted-foreground">
-            {t('admin.albumPriceHint', { min: priceRange.min, max: priceRange.max })}
-            {priceRange.recommended != null
-              ? ` ${t('admin.albumPriceRecommended', { price: priceRange.recommended })}`
-              : priceRange.bandLabel
-                ? ` ${t('admin.albumPriceBand', { band: priceRange.bandLabel })}`
-                : ''}
-          </p>
-          {priceRange.recommendedNote ? (
-            <p className="whitespace-pre-line rounded-md bg-muted/60 p-3 text-sm">
-              <span className="block text-xs text-muted-foreground">{t('admin.albumPriceNote')}</span>
-              {priceRange.recommendedNote}
+        {/* Price (owner, 2026-09-27). Approving the album approves the creator's
+            recommended price. A different price is a PROPOSAL, sent with
+            «طلب تعديل» and the note; the creator resubmits. Albums saved before
+            the calculator (no recommendation) take the price typed here. */}
+        {priceRange.recommended != null ? (
+          <div className="space-y-2">
+            <p className="text-sm">
+              {t('admin.creatorPrice')}{' '}
+              <span className="numeric font-bold">{priceRange.recommended}</span>{' '}
+              <span className="ltr-island text-muted-foreground">USD</span>
             </p>
-          ) : null}
-        </div>
+            {priceRange.recommendedNote ? (
+              <p className="whitespace-pre-line rounded-md bg-muted/60 p-3 text-sm">
+                <span className="block text-xs text-muted-foreground">{t('admin.albumPriceNote')}</span>
+                {priceRange.recommendedNote}
+              </p>
+            ) : null}
+            <p className="text-xs text-muted-foreground">{t('admin.creatorPriceHint')}</p>
+            <label htmlFor="proposed-price" className="block pt-1 text-sm font-medium">
+              {t('admin.proposedPrice')}
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="proposed-price"
+                type="number"
+                inputMode="decimal"
+                min={priceRange.min}
+                max={priceRange.max}
+                step="1"
+                dir="ltr"
+                className="numeric w-32"
+                value={proposedPrice}
+                onChange={(event) => setProposedPrice(event.target.value)}
+                aria-describedby="proposed-price-hint"
+              />
+              <span className="ltr-island text-sm text-muted-foreground">USD</span>
+            </div>
+            <p id="proposed-price-hint" className="text-xs text-muted-foreground">
+              {t('admin.proposedPriceHint', { min: priceRange.min, max: priceRange.max })}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <label htmlFor="album-price" className="text-sm font-medium">
+              {t('admin.albumPrice')}
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="album-price"
+                type="number"
+                inputMode="decimal"
+                min={priceRange.min}
+                max={priceRange.max}
+                step="0.01"
+                dir="ltr"
+                className="numeric w-32"
+                value={price}
+                onChange={(event) => setPrice(event.target.value)}
+                aria-describedby="album-price-hint"
+              />
+              <span className="ltr-island text-sm text-muted-foreground">USD</span>
+            </div>
+            <p id="album-price-hint" className="text-xs text-muted-foreground">
+              {t('admin.albumPriceHint', { min: priceRange.min, max: priceRange.max })}
+              {priceRange.bandLabel ? ` ${t('admin.albumPriceBand', { band: priceRange.bandLabel })}` : ''}
+            </p>
+          </div>
+        )}
 
         {!gate.ok ? (
           <Alert variant="warning">
             <AlertDescription>{gate.reason}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        {proposing ? (
+          <Alert variant="info">
+            <AlertDescription>{t('admin.proposingBlocksApprove')}</AlertDescription>
           </Alert>
         ) : null}
 
@@ -198,7 +238,7 @@ export function ReviewChecklist({
         <div className="flex flex-wrap gap-2">
           <Button
             variant="default"
-            disabled={!gate.ok || pending}
+            disabled={!gate.ok || pending || proposing}
             onClick={() => decide('approve')}
           >
             {t('admin.approve')}

@@ -61,7 +61,8 @@ The conversion page: show every clip in the album, both licence prices, and the 
 - `Clip.masterKey` is never selected on a catalogue surface.
 - The album cover and every clip tile carry `PreviewWatermark`; the `catalogue.previewWatermarked` badge states it.
 - Both prices come from `Album.priceStandard` / `priceExtended` — nothing on this page computes a price.
-- `Product`/`Offer` JSON-LD is server-rendered.
+- `Product`/`Offer` JSON-LD is server-rendered, with `image` (the cover poster, absolute), `brand` (Laqta) and `additionalProperty` `digitalSourceType` — IPTC `trainedAlgorithmicMedia` for a generated album, `digitalCapture` for a filmed one (DEV-36).
+- The share card (`og:image`) is the album's **cover** clip poster (`coverClipId`), falling back to the first clip (DEV-36).
 
 ## Verified by
 `verify:arabic` (via `/albums/yousef-shami/alula-golden-hour-aerials`), `audit`. The resolver rules (local, CDN, null, private-prefix refusal) are unit-tested in `tests/unit/media.test.ts`. The trailer-present state is covered by no gate — no seeded album has a trailer; it was checked by hand in a browser (desktop + 375px) on 2026-09-24.

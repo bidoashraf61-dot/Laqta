@@ -17,6 +17,8 @@ in the same round trip.
   - Then Auth.js `signIn('email', …)`, which re-reads the `User` with
     `creator: { select: { id } }`.
 
+- **Meta description (DEV-38)** — `brand.seo.signUp`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

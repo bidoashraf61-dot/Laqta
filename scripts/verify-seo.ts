@@ -87,10 +87,36 @@ async function main() {
       const og = attr(head, /<meta property="og:locale" content="([^"]+)"/)
       if (og) report(`${url} — og:locale`, og === (lang === 'en' ? 'en_US' : 'ar_SA'), og)
 
+      // Share data in the page's language (DEV-35): JSON-LD `inLanguage` and
+      // breadcrumb targets used to be Arabic on the English pages.
+      const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n')
+      const langs = [...ld.matchAll(/"inLanguage":"([^"]+)"/g)].map((m) => m[1])
+      if (langs.length) report(`${url} — JSON-LD inLanguage is ${lang}`, langs.every((l) => l.startsWith(lang)), langs.join(','))
+      if (/BreadcrumbList/.test(ld)) {
+        const items = [...ld.matchAll(/"item":"([^"]+)"/g)].map((m) => new URL(m[1]).pathname)
+        report(`${url} — breadcrumbs point at ${lang} pages`, items.every((p) => (lang === 'en') === (p === '/en' || p.startsWith('/en/'))), items.join(' '))
+      }
+
       const title = attr(head, /<title>([^<]*)<\/title>/) ?? ''
       report(`${url} — title in its language`, lang === 'en' ? !ARABIC.test(title) : ARABIC.test(title), title.slice(0, 60))
     }
   }
+
+  // The sitemap (DEV-34): every page it lists must exist. Themes and tags were
+  // mapped to /collections/<slug>, which 404s — a crawl error Google charges
+  // to the whole domain. Every non-clip URL is fetched; clips are sampled.
+  const sitemap = await (await fetch(`${BASE}/sitemap.xml`)).text()
+  const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname)
+  const clipLocs = locs.filter((p) => p.includes('/footage/'))
+  report('sitemap lists clip pages in both languages', clipLocs.some((p) => p.startsWith('/footage/')) && clipLocs.some((p) => p.startsWith('/en/footage/')), `${clipLocs.length} clip URLs`)
+  report('sitemap carries <video:video> blocks with a thumbnail', /<video:video>[\s\S]*?<video:thumbnail_loc>/.test(sitemap))
+  const toCheck = [...locs.filter((p) => !p.includes('/footage/')), ...clipLocs.slice(0, 6)]
+  const broken: string[] = []
+  for (const loc of toCheck) {
+    const res = await fetch(`${BASE}${loc}`, { redirect: 'manual', headers: { 'user-agent': GOOGLEBOT } })
+    if (res.status !== 200) broken.push(`${loc} ${res.status}`)
+  }
+  report(`every sitemap URL answers 200 (${toCheck.length} checked of ${locs.length})`, broken.length === 0, broken.slice(0, 5).join(', '))
 
   const robots = await (await fetch(`${BASE}/robots.txt`)).text()
   const kept = ['/account', '/en/account', '/admin', '/en/admin', '/checkout', '/en/checkout']

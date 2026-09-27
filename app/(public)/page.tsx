@@ -15,8 +15,9 @@ import { getFootageWall, getLandingTrailers, getSeasonalShelf } from '@/lib/cata
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
-import { currentLocale, localeAlternates, localePath, ogLocale } from '@/lib/locale'
+import { BCP47, currentLocale, localeAlternates, localePath, ogLocale } from '@/lib/locale'
 import { siteOrigin } from '@/lib/site'
+import { contactChannels } from '@/content/contact'
 
 export async function generateMetadata(): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
@@ -138,7 +139,8 @@ function StructuredData() {
         name: t('brand.name'),
         alternateName: 'Laqta',
         description: t('brand.promise'),
-        inLanguage: 'ar-SA',
+        // The language of THIS page (DEV-35) — the English landing is not ar-SA.
+        inLanguage: BCP47[currentLocale()],
         potentialAction: {
           '@type': 'SearchAction',
           target: {
@@ -166,6 +168,10 @@ function StructuredData() {
           height: LOGO_SIZE,
         },
         sameAs: SOCIAL.map((s) => s.href),
+        // Contact (DEV-36): the published support email, once the owner sets
+        // it. The postal address is added the same way when the company's
+        // registered address is filled in (content/contact.ts) — never before.
+        ...organisationContact(),
         areaServed: ['SA', 'AE', 'EG', 'KW', 'QA', 'BH', 'OM'],
       },
     ],
@@ -180,3 +186,18 @@ function StructuredData() {
     />
   )
 }
+
+/** `contactPoint` / `address` for the Organization block — only what is set. */
+function organisationContact() {
+  const { email, company } = contactChannels()
+  const address = pickAddress(company.addressAr, company.addressEn)
+  return {
+    ...(email
+      ? { email, contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email, availableLanguage: ['ar', 'en'] } }
+      : {}),
+    ...(address ? { address: { '@type': 'PostalAddress', streetAddress: address, addressCountry: 'EG' } } : {}),
+  }
+}
+
+const pickAddress = (ar: string, en: string) => (currentLocale() === 'en' ? en || ar : ar).replace(/\n/g, ', ') || null
+

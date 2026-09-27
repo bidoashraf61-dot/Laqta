@@ -14,6 +14,8 @@ Let an agency send a shortlist to a client who has no account — the client rev
 
 - **Not indexed (DEV-33)** — `metadata.robots = { index: false, follow: false }`.
 
+- **Meta description (DEV-38)** — `brand.seo.board`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

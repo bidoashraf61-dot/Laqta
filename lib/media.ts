@@ -1,3 +1,4 @@
+import { siteOrigin } from '@/lib/site'
 /**
  * The one place a public media key becomes a URL.
  *
@@ -114,3 +115,25 @@ export function heroFilmUrl(mobile: boolean): string {
   const local = mobile ? '/hero/vid/hero-web-m-v2.mp4' : '/hero/vid/hero-web-v2.mp4'
   return mediaCdnConfigured() ? (mediaUrl(key) ?? local) : local
 }
+
+/**
+ * `mediaUrl`, made absolute — for the places a relative URL is wrong: JSON-LD,
+ * the sitemap, Open Graph images read by another site. "/"-rooted keys get the
+ * site origin; CDN URLs are already absolute.
+ */
+export function absoluteMediaUrl(key: string | null | undefined): string | null {
+  const url = mediaUrl(key)
+  if (!url) return null
+  return url.startsWith('/') ? `${siteOrigin()}${url}` : url
+}
+
+/**
+ * The IPTC digital source type for an album's origin — the vocabulary Google
+ * and C2PA read to tell generated media from a camera capture (DEV-36).
+ */
+export function digitalSourceType(origin: 'captured' | 'generated'): string {
+  return origin === 'generated'
+    ? 'http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia'
+    : 'http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture'
+}
+

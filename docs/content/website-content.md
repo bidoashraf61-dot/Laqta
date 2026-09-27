@@ -1,5 +1,7 @@
 # محتوى الموقع — Website Content Source
 
+> ⚠️ **Superseded (2026-09-27, DEV-31).** This August draft predates D1–D10: it says Arabic-only, AI-only, 15–70 clips, 1080p + vertical in every album, «تملكها للأبد», and has a refund page — all wrong now. The live copy lives in `messages/ar.json` / `messages/en.json` (editable at `/admin/content/copy`); the writer briefs are `content-brief-for-writer-ar.md` and `content-brief-gemini.md`. Keep this file only for its SEO/AEO reasoning.
+
 **Status:** Draft v2 · 7 August 2026 · Revised against SEO/GEO/AEO audit criteria
 **Purpose:** The single source for every user-facing line. Edit here, then port to `messages/ar.json`.
 **Name:** `[الاسم]` — placeholder. Swap with find-and-replace.

@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: t('auth.signIn'),
+    description: t('brand.seo.signIn'),
   }
 }
 

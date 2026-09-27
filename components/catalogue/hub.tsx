@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { countOf, formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
-import { localeAlternates, ogLocale, pickLocalised } from '@/lib/locale'
+import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { siteOrigin } from '@/lib/site'
 
@@ -39,10 +39,15 @@ export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
   if (!entry) return { title: t('state.notFound') }
 
   const name = pickLocalised(entry.nameAr, entry.nameEn)
-  const title = pickLocalised(entry.seoTitleAr, entry.seoTitleEn) ?? `${t('nav.footage')} ${name}`
+  // A natural title in each language (DEV-38): «لقطات الرياض» / "Riyadh stock
+  // footage" — how people search — not "Footage Riyadh". An owner-written SEO
+  // title wins, but only in its OWN language: an English page must not fall
+  // back to the Arabic SEO title when a generated English one reads fine.
+  const ownTitle = currentLocale() === 'en' ? entry.seoTitleEn : entry.seoTitleAr
+  const title = ownTitle || t('catalogue.hubTitle', { name })
+  const ownDescription = currentLocale() === 'en' ? entry.seoDescEn : entry.seoDescAr
   const description =
-    pickLocalised(entry.seoDescAr, entry.seoDescEn) ??
-    `${t('brand.tagline')} — ${name}. ${t('brand.promise')}`
+    ownDescription || t(kind === 'location' ? 'brand.seo.hubLocation' : 'brand.seo.hubCategory', { name })
 
   return {
     title,
@@ -141,7 +146,7 @@ export async function TaxonomyHub({
 
       <header className="mb-6 space-y-2">
         <PageTitle>
-          {t('nav.footage')} <Bilingual ar={entry.nameAr} en={entry.nameEn} />
+          {t('catalogue.hubTitle', { name: pickLocalised(entry.nameAr, entry.nameEn) })}
         </PageTitle>
         {entry.seoDescAr ? (
           <p className="max-w-prose font-serif text-base text-muted-foreground">
@@ -174,13 +179,15 @@ function BreadcrumbJsonLd({
   entry,
 }: {
   kind: Kind
-  entry: { slug: string; nameAr: string }
+  entry: { slug: string; nameAr: string; nameEn: string | null }
 }) {
   const data = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: t('nav.home'), item: siteOrigin() },
+      // Every crumb in the page's own language and at its own address (DEV-35):
+      // an English hub used to publish Arabic names pointing at Arabic URLs.
+      { '@type': 'ListItem', position: 1, name: t('nav.home'), item: `${siteOrigin()}${localePath(currentLocale(), '/')}` },
       {
         // The middle crumb points at the SHOTS page, not at `/locations` or
         // `/categories`. Those indexes now 301 to it, and a breadcrumb that
@@ -190,13 +197,13 @@ function BreadcrumbJsonLd({
         '@type': 'ListItem',
         position: 2,
         name: t('nav.footage'),
-        item: `${siteOrigin()}/footage`,
+        item: `${siteOrigin()}${localePath(currentLocale(), '/footage')}`,
       },
       {
         '@type': 'ListItem',
         position: 3,
-        name: entry.nameAr,
-        item: `${siteOrigin()}${BASE[kind]}/${entry.slug}`,
+        name: pickLocalised(entry.nameAr, entry.nameEn),
+        item: `${siteOrigin()}${localePath(currentLocale(), `${BASE[kind]}/${entry.slug}`)}`,
       },
     ],
   }

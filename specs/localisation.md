@@ -108,11 +108,13 @@ agreement.
   canonical on both languages, so no English detail page was indexed. The root
   layout sets **no** `alternates`: whatever it set, every page without its own
   inherited (it once named the home page as every page's other language).
-- **`og:locale`** — `ogLocale()`: `ar_SA` / `en_US`, the page's own language.
+- **`og:locale`** — `ogLocale()`: `ar_SA` / `en_US`, the page's own language; the root layout also sets `og:locale:alternate` to the other one (DEV-35).
 - **`generateMetadata` resolves the locale first** (`await requestLocale()`),
   like every page — the detail pages did not, and could put an Arabic
   `<title>` on the English page.
 - **JSON-LD `url`** — the page's own-language address (`localePath`).
+- **JSON-LD `inLanguage`** — `BCP47[currentLocale()]` (`ar-SA` / `en`) on the landing `WebSite`, the `FAQPage` blocks and the clip `VideoObject`; never a hard-coded `ar-SA` (DEV-35).
+- **Breadcrumbs** (`BreadcrumbList` on the location/category hubs) — names in the page's language (`pickLocalised`) and every `item` at its own-language address (DEV-35).
 - **Not indexed:** robots.txt disallows the private pages in **both**
   languages (`/account`, `/studio`, `/admin`, `/cart`, `/checkout`,
   `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, each also
@@ -122,7 +124,8 @@ agreement.
   Next streams metadata into the body for ordinary browsers): canonical,
   hreflang, `og:locale` and title language on the home, `/albums`, an album,
   a clip, a creator, a collection, a location, a category and `/terms`, both
-  languages; and robots.txt.
+  languages; JSON-LD `inLanguage` and breadcrumb targets match the page's
+  language (DEV-35); every sitemap URL answers 200 (DEV-34); and robots.txt.
 
 ## Controls
 

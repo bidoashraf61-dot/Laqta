@@ -1,0 +1,149 @@
+# لقطة — الجزء 12 من 18
+
+هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
+طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## dash
+> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
+
+- `dash.viewAsNone` :: لم يُعرض هذا الحساب من قبل
+- `dash.viewAsActive` :: جارية
+- `dash.viewAsEnded` :: انتهت
+- `dash.viewAsExpired` :: انتهت مهلتها
+- `dash.bandEdit` :: تعديل
+- `dash.bandNew` :: إضافة شريحة
+- `dash.bandTierField` :: الفئة
+- `dash.bandLabelAr` :: اسم الشريحة
+- `dash.bandLabelEn` :: الاسم بالإنجليزية
+- `dash.bandMin` :: أقل عدد لقطات
+- `dash.bandMax` :: أكثر عدد لقطات
+- `dash.bandMaxHint` :: اتركه فارغًا لشريحة مفتوحة من الأعلى.
+- `dash.bandPriceField` :: السعر بالدولار
+- `dash.bandDelete` :: حذف
+- `dash.bandDeleteConfirm` :: حذف هذه الشريحة؟ لن تُقترح بعد الآن، والألبومات تحتفظ بسعرها.
+- `dash.bandSaved` :: حُفظت الشريحة. لم يتغير سعر أي ألبوم.
+- `dash.bandDeleted` :: حُذفت الشريحة
+- `dash.bandMinMax` :: أقل عدد لقطات يجب ألا يتجاوز الأكثر.
+- `dash.bandCountsInvalid` :: عدد اللقطات يجب أن يكون رقمًا صحيحًا موجبًا.
+- `dash.bandOverlap` :: هذا المدى يتداخل مع شريحة «{label}».
+- `dash.bandLabelRequired` :: اكتب اسم الشريحة بالعربية والإنجليزية.
+- `dash.bandTierTaken` :: لهذه الفئة شريحة بالفعل.
+- `dash.bandNoFreeTier` :: كل الفئات الأربع لها شرائح. عدّل واحدة أو احذفها.
+- `dash.bandOutside` :: خارج مدى الألبوم
+- `dash.bandOutsideHint` :: الألبوم الآن من 30 إلى 70 لقطة وبوابة الاستوديو تفرض ذلك، فالشريحة المعلَّمة يقع جزء من مداها أو كله خارج ما يمكن أن يكونه ألبوم جديد.
+- `dash.bandAlbums` :: ألبومات بهذه الفئة
+- `dash.tierMini` :: مصغّر
+- `dash.tierStandardAlbum` :: قياسي
+- `dash.tierPro` :: احترافي
+- `dash.tierSignature` :: مميّز
+- `dash.orderAlbums` :: ألبومات الطلب
+- `dash.makeCreator` :: اجعله صانع محتوى   ⟂ EN: Make this user a creator
+- `dash.makeCreatorHint` :: يفتح له الاستوديو ليرفع ألبوماته، ويُسجَّل الإجراء في سجل التدقيق. يصلح لحسابك أنت أيضاً.   ⟂ EN: Opens the studio to them so they can upload albums, and records it in the audit log. Works for your own account too.
+- `dash.makeCreatorHandle` :: المعرّف   ⟂ EN: Handle
+- `dash.makeCreatorHandleHint` :: أحرف إنجليزية صغيرة وأرقام وشرطة، ويظهر في رابط صفحته.   ⟂ EN: Lower-case letters, digits and hyphens, e.g. nada-films. Used in their page's address.
+- `dash.makeCreatorNameAr` :: الاسم المعروض بالعربي   ⟂ EN: Display name in Arabic
+- `dash.makeCreatorNameEn` :: الاسم المعروض بالإنجليزي   ⟂ EN: Display name in English
+- `dash.makeCreatorCountry` :: الدولة   ⟂ EN: Country
+- `dash.makeCreatorFounding` :: صانع مؤسس: حصته ٧٠٪   ⟂ EN: Founding creator: 70% share
+- `dash.makeCreatorFoundingHint` :: بدونها تبدأ حصته بـ٦٥٪، حصة الشريحة الأساسية.   ⟂ EN: Otherwise they start at 65%, the standard tier's share.
+- `dash.makeCreatorSubmit` :: أنشئ حساب الصانع   ⟂ EN: Create creator profile
+- `dash.makeCreatorDone` :: صار صانع محتوى. إذا كان داخلاً الآن، يسجّل خروجه ثم دخوله ليفتح الاستوديو.   ⟂ EN: They are now a creator. If they are signed in right now, they sign out and back in to open the studio.
+- `dash.makeCreatorExists` :: هذا الحساب صانع محتوى أصلاً.   ⟂ EN: This account is already a creator.
+- `dash.makeCreatorHandleInvalid` :: المعرّف من ٣ إلى ٣٠ حرفاً: أحرف إنجليزية صغيرة وأرقام وشرطة.   ⟂ EN: The handle is 3 to 30 characters: lower-case letters, digits and hyphens.
+- `dash.makeCreatorHandleTaken` :: هذا المعرّف مستخدم. اختر غيره.   ⟂ EN: That handle is taken. Choose another.
+- `dash.makeCreatorNamesRequired` :: اكتب الاسم المعروض بالعربي والإنجليزي.   ⟂ EN: Enter the display name in Arabic and in English.
+- `dash.makeCreatorSuspended` :: الحساب موقوف. أعد تفعيله أولاً.   ⟂ EN: This account is suspended. Reactivate it first.
+- `dash.priceAtApproval` :: يُحدَّد السعر عند الاعتماد
+- `dash.bandPriceRange` :: سعر الشريحة بين {min} و{max} دولار، مثل أسعار الألبومات.
+- `dash.pricing.title` :: حاسبة السعر   ⟂ EN: Price calculator
+- `dash.pricing.hint` :: الأرقام اللي تحسب السعر المقترح لكل ألبوم، مع أسعار الشرائح فوق. التغيير يسري على الحساب القادم فقط: الألبومات المنشورة تحتفظ بسعرها، والطلبات المكتملة لا تتغير.   ⟂ EN: The numbers behind every album's suggested price, alongside the band prices above. A change reaches the next calculation only: published albums keep their price and completed orders never change.
+- `dash.pricing.min` :: أقل سعر للألبوم   ⟂ EN: Lowest album price
+- `dash.pricing.max` :: أعلى سعر للألبوم   ⟂ EN: Highest album price
+- `dash.pricing.spread` :: هامش اقتراح الصانع   ⟂ EN: Creator's recommendation margin
+- `dash.pricing.spreadHint` :: كم يبعد سعر الصانع عن السعر المقترح، صعوداً أو نزولاً.   ⟂ EN: How far the creator's price may sit from the suggestion, up or down.
+- `dash.pricing.example` :: مثال: ٥٠ لقطة، 4K، ذكاء اصطناعي واقعي، جودة جيدة:   ⟂ EN: Example — 50 clips, 4K, AI live action, good quality:
+- `dash.pricing.exampleRange` :: ويقترح الصانع ضمن:   ⟂ EN: Creator recommends within:
+- `dash.pricing.save` :: حفظ إعدادات السعر   ⟂ EN: Save pricing settings
+- `dash.pricing.saved` :: حُفظت إعدادات السعر. تسري على الحساب القادم.   ⟂ EN: Pricing settings saved. They apply to the next calculation.
+- `dash.pricing.resolutionImportance` :: أهمية الدقة في السعر   ⟂ EN: Weight of resolution in the price
+- `dash.pricing.typeImportance` :: أهمية نوع اللقطات في السعر   ⟂ EN: Weight of footage type in the price
+- `dash.pricing.qualityImportance` :: أهمية الجودة في السعر   ⟂ EN: Weight of quality in the price
+- `dash.pricing.grade.low` :: منخفضة   ⟂ EN: Low
+- `dash.pricing.grade.medium` :: متوسطة   ⟂ EN: Medium
+- `dash.pricing.grade.high` :: عالية   ⟂ EN: High
+- `dash.pricing.invalid` :: اختر من القوائم فقط.   ⟂ EN: Choose from the lists only.
+- `dash.offer.add` :: عرض   ⟂ EN: Offer
+- `dash.offer.edit` :: تعديل العرض   ⟂ EN: Edit offer
+- `dash.offer.save` :: حفظ العرض   ⟂ EN: Save offer
+- `dash.offer.price` :: سعر العرض (دولار)   ⟂ EN: Offer price (USD)
+- `dash.offer.priceHint` :: أقل من السعر المعتاد: {price} دولار.   ⟂ EN: Below the regular price: ${price}.
+- `dash.offer.labelAr` :: وسم العرض بالعربي   ⟂ EN: Offer label in Arabic
+- `dash.offer.labelEn` :: وسم العرض بالإنجليزي   ⟂ EN: Offer label in English
+- `dash.offer.labelEnHint` :: اختياري، وإذا تركته يظهر الوسم العربي.   ⟂ EN: Optional; the Arabic label shows if left blank.
+- `dash.offer.startsAt` :: يبدأ   ⟂ EN: Starts
+- `dash.offer.startsHint` :: اتركه فارغاً ليبدأ الآن.   ⟂ EN: Leave blank to start now.
+- `dash.offer.endsAt` :: ينتهي   ⟂ EN: Ends
+- `dash.offer.endsHint` :: اتركه فارغاً ليستمر حتى تنهيه.   ⟂ EN: Leave blank to run until you end it.
+- `dash.offer.remove` :: إنهاء العرض   ⟂ EN: End offer
+- `dash.offer.removeConfirm` :: إنهاء العرض الآن؟ يرجع الألبوم لسعره المعتاد.   ⟂ EN: End the offer now? The album goes back to its regular price.
+- `dash.offer.saved` :: حُفظ العرض.   ⟂ EN: Offer saved.
+- `dash.offer.removed` :: انتهى العرض، ورجع الألبوم لسعره المعتاد.   ⟂ EN: Offer ended; the album is back at its regular price.
+- `dash.offer.priceInvalid` :: سعر العرض أكبر من صفر وأقل من السعر المعتاد ({price} دولار).   ⟂ EN: The offer price must be above zero and below the regular price (${price}).
+- `dash.offer.labelRequired` :: اكتب وسم العرض بالعربي.   ⟂ EN: Enter the offer label in Arabic.
+- `dash.offer.datesInvalid` :: تاريخ النهاية يكون بعد البداية وفي المستقبل.   ⟂ EN: The end date must be after the start and in the future.
+- `dash.offer.listTitle` :: العروض   ⟂ EN: Offers
+- `dash.offer.none` :: ما فيه ألبوم عليه عرض. أضف عرضاً من صف الألبوم في الجدول.   ⟂ EN: No album is on offer. Add one from an album's row in the table.
+- `dash.offer.from` :: من   ⟂ EN: From
+- `dash.offer.until` :: حتى   ⟂ EN: until
+- `dash.offer.noEnd` :: بلا تاريخ نهاية   ⟂ EN: No end date
+- `dash.offer.state.running` :: جارٍ الآن   ⟂ EN: Running now
+- `dash.offer.state.scheduled` :: مجدول   ⟂ EN: Scheduled
+- `dash.offer.state.ended` :: انتهى   ⟂ EN: Ended
+- `dash.price.edit` :: السعر   ⟂ EN: Price
+- `dash.price.field` :: السعر المعتاد (دولار)   ⟂ EN: Regular price (USD)
+- `dash.price.hint` :: أي مبلغ تحدده أنت، حتى خارج نطاق الحاسبة. الطلبات السابقة تحتفظ بسعرها.   ⟂ EN: Any amount you choose, even outside the calculator's range. Past orders keep their price.
+- `dash.price.offerHint` :: أي مبلغ أعلى من سعر العرض ({price} دولار). الطلبات السابقة تحتفظ بسعرها.   ⟂ EN: Any amount above the offer price (${price}). Past orders keep their price.
+- `dash.price.reason` :: السبب (اختياري، يُحفظ في سجل التدقيق)   ⟂ EN: Reason (optional, kept in the audit log)
+- `dash.price.save` :: حفظ السعر   ⟂ EN: Save price
+- `dash.price.saved` :: حُفظ السعر الجديد.   ⟂ EN: New price saved.
+- `dash.price.invalid` :: اكتب سعراً أكبر من صفر.   ⟂ EN: Enter a price above zero.
+- `dash.price.belowOffer` :: السعر المعتاد لازم يكون أعلى من سعر العرض ({price} دولار). عدّل العرض أو أنهِه أولاً.   ⟂ EN: The regular price must be above the offer price (${price}). Change or end the offer first.
+- `dash.price.notLive` :: يُحدَّد سعر الألبوم عند اعتماده. التعديل اليدوي للألبومات المنشورة أو الموقوفة فقط.   ⟂ EN: An album is priced when it is approved. Manual prices are for published or paused albums only.
+- `dash.docs.nav` :: نصوص الموقع   ⟂ EN: Site text
+- `dash.docs.title` :: نصوص الموقع والصفحات   ⟂ EN: Site copy and pages
+- `dash.docs.hint` :: عدّل نصوص الموقع والصفحات الطويلة، عاينها، ثم انشرها — كل نسخة سابقة تبقى ويمكن استرجاعها.   ⟂ EN: Edit the site copy and the long pages, preview, then publish — every earlier version is kept and can be restored.
+- `dash.docs.original` :: النص الأصلي   ⟂ EN: Original text
+- `dash.docs.originalHint` :: لم تُنشر نسخة معدّلة بعد.   ⟂ EN: No edited version published yet.
+- `dash.docs.publishedOn` :: منشورة {date}   ⟂ EN: Published {date}
+- `dash.docs.by` :: بواسطة {name}   ⟂ EN: by {name}
+- `dash.docs.versions` :: النسخ المنشورة: {count}   ⟂ EN: Published versions: {count}
+- `dash.docs.edit` :: تعديل   ⟂ EN: Edit
+- `dash.docs.view` :: عرض الصفحة   ⟂ EN: View page
+- `dash.docs.viewNewTab` :: (يفتح في تبويب جديد)   ⟂ EN: (opens in a new tab)
+- `dash.docs.editTitle` :: تحرير: {title}   ⟂ EN: Edit: {title}
+- `dash.docs.onSiteOriginal` :: على الموقع الآن: النص الأصلي.   ⟂ EN: On the site now: the original text.
+- `dash.docs.onSiteVersion` :: على الموقع الآن: نسخة {date}.   ⟂ EN: On the site now: version of {date}.
+- `dash.docs.section` :: القسم {n}   ⟂ EN: Section {n}
+- `dash.docs.moveUp` :: نقل القسم {n} إلى الأعلى   ⟂ EN: Move section {n} up
+- `dash.docs.moveDown` :: نقل القسم {n} إلى الأسفل   ⟂ EN: Move section {n} down
+- `dash.docs.remove` :: حذف القسم {n}   ⟂ EN: Remove section {n}
+- `dash.docs.removeConfirm` :: حذف هذا القسم من المسودة؟ لن يتغيّر شيء على الموقع حتى تنشر.   ⟂ EN: Remove this section from the draft? Nothing changes on the site until you publish.
+- `dash.docs.arabic` :: العربية   ⟂ EN: Arabic
+- `dash.docs.english` :: الإنجليزية   ⟂ EN: English
+- `dash.docs.heading` :: العنوان   ⟂ EN: Heading
+- `dash.docs.headingEn` :: العنوان بالإنجليزية   ⟂ EN: English heading
+- `dash.docs.paragraphs` :: الفقرات   ⟂ EN: Paragraphs
+- `dash.docs.paragraphsEn` :: الفقرات بالإنجليزية   ⟂ EN: English paragraphs
+- `dash.docs.paragraphsHint` :: اترك سطراً فارغاً بين كل فقرتين.   ⟂ EN: Leave an empty line between paragraphs.
+- `dash.docs.list` :: قائمة نقاط (اختيارية)   ⟂ EN: Bullet list (optional)
+- `dash.docs.listEn` :: قائمة النقاط بالإنجليزية   ⟂ EN: English bullet list
+- `dash.docs.listHint` :: بند واحد في كل سطر.   ⟂ EN: One item per line.
+- `dash.docs.englishHint` :: ما تتركه فارغاً يظهر بالعربية في الصفحة الإنجليزية.   ⟂ EN: Anything left empty shows in Arabic on the English page.
+- `dash.docs.untranslated` :: الترجمة ناقصة — ستظهر العربية مكانها في الصفحة الإنجليزية.   ⟂ EN: Translation incomplete — the English page shows the Arabic here.
+- `dash.docs.addSection` :: إضافة قسم   ⟂ EN: Add section
+- `dash.docs.note` :: ما الذي تغيّر؟ (اختياري — يظهر في سجل النسخ)   ⟂ EN: What changed? (optional — shown in the version history)
+- `dash.docs.publish` :: نشر   ⟂ EN: Publish
+- `dash.docs.publishConfirm` :: تُنشر هذه النسخة على الموقع فوراً. متابعة؟   ⟂ EN: This version goes live on the site immediately. Continue?
+- `dash.docs.published` :: نُشرت الصفحة.   ⟂ EN: Page published.
+- `dash.docs.effectiveNote` :: تاريخ السريان في الصفحة يصبح تاريخ النشر.   ⟂ EN: The page's in-effect date becomes the publish date.

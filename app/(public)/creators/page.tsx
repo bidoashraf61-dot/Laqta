@@ -18,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: t('catalogue.creatorsTitle'),
+    description: t('brand.seo.creators'),
     alternates: localeAlternates('/creators'),
   }
 }

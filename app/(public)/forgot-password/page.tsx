@@ -10,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   await requestLocale()
   return {
     title: t('auth.forgotTitle'),
+    description: t('brand.seo.forgotPassword'),
     robots: { index: false },
   }
 }

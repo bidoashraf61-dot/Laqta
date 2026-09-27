@@ -1,0 +1,149 @@
+# لقطة — الجزء 13 من 18
+
+هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
+طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
+
+## dash
+> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
+
+- `dash.docs.unsaved` :: تعديلات غير منشورة   ⟂ EN: Unpublished changes
+- `dash.docs.noChanges` :: لا تعديلات بعد   ⟂ EN: No changes yet
+- `dash.docs.discard` :: تجاهل التعديلات   ⟂ EN: Discard changes
+- `dash.docs.discardConfirm` :: تجاهل كل التعديلات والعودة إلى ما على الموقع؟   ⟂ EN: Discard all changes and go back to what is on the site?
+- `dash.docs.preview` :: معاينة   ⟂ EN: Preview
+- `dash.docs.previewHint` :: هكذا تظهر الصفحة بعد النشر.   ⟂ EN: How the page looks once published.
+- `dash.docs.previewLanguage` :: لغة المعاينة   ⟂ EN: Preview language
+- `dash.docs.editorTab` :: تحرير   ⟂ EN: Edit
+- `dash.docs.panes` :: المحرر أو المعاينة   ⟂ EN: Editor or preview
+- `dash.docs.draftFound` :: وجدنا تعديلات لم تُنشر من زيارة سابقة لهذه الصفحة.   ⟂ EN: Found unpublished changes from an earlier visit to this page.
+- `dash.docs.draftRestore` :: استعادتها   ⟂ EN: Restore them
+- `dash.docs.draftDismiss` :: تجاهلها   ⟂ EN: Discard them
+- `dash.docs.history` :: سجل النسخ   ⟂ EN: Version history
+- `dash.docs.historyHint` :: كل نسخة نُشرت تبقى هنا. الاسترجاع ينشر نسخة جديدة مطابقة لها ولا يحذف شيئاً.   ⟂ EN: Every published version stays here. Restoring publishes a new copy of it and deletes nothing.
+- `dash.docs.restoredFrom` :: استرجاع نسخة {date}   ⟂ EN: Restored the version of {date}
+- `dash.docs.restoredOriginal` :: استرجاع النص الأصلي   ⟂ EN: Restored the original text
+- `dash.docs.openInEditor` :: فتح في المحرر   ⟂ EN: Open in editor
+- `dash.docs.opened` :: فُتحت النسخة في المحرر — راجعها ثم انشرها.   ⟂ EN: Version opened in the editor — review it, then publish.
+- `dash.docs.restore` :: استرجاع   ⟂ EN: Restore
+- `dash.docs.restoreConfirm` :: تُنشر هذه النسخة على الموقع فوراً كنسخة جديدة. متابعة؟   ⟂ EN: This version goes live on the site immediately, as a new version. Continue?
+- `dash.docs.restored` :: استُرجعت النسخة.   ⟂ EN: Version restored.
+- `dash.docs.originalRowHint` :: النص الذي بُنيت به الصفحة.   ⟂ EN: The text the page was built with.
+- `dash.docs.live` :: على الموقع   ⟂ EN: Live
+- `dash.docs.noHistory` :: لم تُنشر أي نسخة بعد — الموقع يعرض النص الأصلي.   ⟂ EN: No version published yet — the site shows the original text.
+- `dash.docs.error.empty` :: الصفحة بلا أقسام — أضف قسماً واحداً على الأقل.   ⟂ EN: The page has no sections — add at least one.
+- `dash.docs.error.tooMany` :: الحد الأقصى {max} قسماً.   ⟂ EN: At most {max} sections.
+- `dash.docs.error.heading` :: القسم {section}: العنوان العربي مطلوب.   ⟂ EN: Section {section}: the Arabic heading is required.
+- `dash.docs.error.body` :: القسم {section}: أضف فقرة أو بنداً بالعربية.   ⟂ EN: Section {section}: add an Arabic paragraph or list item.
+- `dash.docs.error.noLists` :: القسم {section}: هذه الصفحة لا تعرض قوائم النقاط — اكتب البنود فقرات.   ⟂ EN: Section {section}: this page does not show bullet lists — write the items as paragraphs.
+- `dash.docs.error.listEnOnly` :: القسم {section}: قائمة إنجليزية بلا قائمة عربية.   ⟂ EN: Section {section}: an English list with no Arabic list.
+- `dash.docs.error.headingLong` :: القسم {section}: العنوان أطول من {max} حرفاً.   ⟂ EN: Section {section}: the heading is longer than {max} characters.
+- `dash.docs.error.paragraphLong` :: القسم {section}: فقرة أطول من {max} حرف — قسّمها.   ⟂ EN: Section {section}: a paragraph is longer than {max} characters — split it.
+- `dash.docs.error.itemLong` :: القسم {section}: بند أطول من {max} حرف.   ⟂ EN: Section {section}: a list item is longer than {max} characters.
+- `dash.docs.error.markup` :: القسم {section}: في النص وسوم HTML — اكتب نصاً عادياً.   ⟂ EN: Section {section}: the text contains HTML tags — write plain text.
+- `dash.docs.error.arabicInEnglish` :: القسم {section}: نص عربي في خانة إنجليزية.   ⟂ EN: Section {section}: Arabic text in an English field.
+- `dash.docs.error.claim` :: القسم {section}: «{words}» ادعاء لا تستطيع المنصّة إثباته — أعد صياغته.   ⟂ EN: Section {section}: “{words}” is a claim the platform cannot back — reword it.
+- `dash.docs.error.noteLong` :: الملاحظة أطول من {max} حرفاً.   ⟂ EN: The note is longer than {max} characters.
+- `dash.copy.group.landing` :: الصفحة الرئيسية والأسئلة الشائعة   ⟂ EN: Home page and FAQ
+- `dash.copy.group.sell` :: صفحة «بِع لقطاتك»   ⟂ EN: “Sell your footage” page
+- `dash.copy.group.email` :: الرسائل البريدية   ⟂ EN: Emails
+- `dash.copy.group.site` :: القوائم والتذييل ورسائل الموقع العامة   ⟂ EN: Menus, footer and site-wide messages
+- `dash.copy.group.catalogue` :: الكتالوج وصفحات الألبومات   ⟂ EN: Catalogue and album pages
+- `dash.copy.group.checkout` :: السلة وإتمام الشراء   ⟂ EN: Cart and checkout
+- `dash.copy.group.account` :: تسجيل الدخول والحساب والمكتبة   ⟂ EN: Sign-in, account and library
+- `dash.copy.group.contact` :: صفحة التواصل   ⟂ EN: Contact page
+- `dash.copy.sectionPages` :: الصفحات الطويلة   ⟂ EN: Long pages
+- `dash.copy.sectionCopy` :: نصوص الموقع   ⟂ EN: Site copy
+- `dash.copy.sectionCopyHint` :: كل ما يقرؤه الزائر: الصفحة الرئيسية وصفحة البيع والكتالوج والسلة والحساب والرسائل. ما لا تعدّله يبقى كما هو. نصوص لوحة التحكم واستوديو الصنّاع ليست هنا.   ⟂ EN: Everything a visitor reads: the home page, the sell page, the catalogue, the cart, the account and the emails. Anything you don't edit stays as it is. Dashboard and creator-studio labels are not here.
+- `dash.copy.strings` :: النصوص: {count}   ⟂ EN: Strings: {count}
+- `dash.copy.modified` :: المعدّلة: {count}   ⟂ EN: Edited: {count}
+- `dash.copy.lastPublished` :: آخر نشر {date}   ⟂ EN: Last published {date}
+- `dash.copy.neverEdited` :: لم يُعدَّل شيء بعد.   ⟂ EN: Nothing edited yet.
+- `dash.copy.editTitle` :: تحرير: {title}   ⟂ EN: Edit: {title}
+- `dash.copy.editHint` :: عدّل النص في الخانة؛ ما تتركه فارغاً يعود إلى الأصل. التغيير لا يظهر على الموقع حتى تنشر.   ⟂ EN: Edit the text in its box; anything left empty goes back to the original. Nothing changes on the site until you publish.
+- `dash.copy.search` :: ابحث في النصوص   ⟂ EN: Search the copy
+- `dash.copy.searchHint` :: بالكلمة، بالعربية أو الإنجليزية   ⟂ EN: By word, in Arabic or English
+- `dash.copy.onlyModified` :: المعدّلة فقط   ⟂ EN: Edited only
+- `dash.copy.shown` :: {shown} من {total}   ⟂ EN: {shown} of {total}
+- `dash.copy.noMatch` :: لا نصوص تطابق البحث.   ⟂ EN: No copy matches the search.
+- `dash.copy.arabic` :: العربية   ⟂ EN: Arabic
+- `dash.copy.english` :: الإنجليزية   ⟂ EN: English
+- `dash.copy.published` :: معدّل   ⟂ EN: Edited
+- `dash.copy.draft` :: تعديل غير منشور   ⟂ EN: Unpublished edit
+- `dash.copy.original` :: الأصل:   ⟂ EN: Original:
+- `dash.copy.reset` :: إرجاع الأصل   ⟂ EN: Back to original
+- `dash.copy.resetLabel` :: إرجاع {key} ({lang}) إلى الأصل   ⟂ EN: Put {key} ({lang}) back to the original
+- `dash.copy.mustKeep` :: يجب أن يبقى:   ⟂ EN: Must keep:
+- `dash.copy.counter` :: {n} من {max}   ⟂ EN: {n} / {max}
+- `dash.copy.unsaved` :: تعديلات غير منشورة: {count}   ⟂ EN: Unpublished edits: {count}
+- `dash.copy.noChanges` :: لا تعديلات بعد   ⟂ EN: No changes yet
+- `dash.copy.note` :: ما الذي تغيّر؟ (اختياري — يظهر في السجل)   ⟂ EN: What changed? (optional — shown in the history)
+- `dash.copy.publish` :: نشر   ⟂ EN: Publish
+- `dash.copy.publishConfirm` :: تُنشر هذه التعديلات على الموقع فوراً. متابعة؟   ⟂ EN: These edits go live on the site immediately. Continue?
+- `dash.copy.publishedToast` :: نُشرت التعديلات.   ⟂ EN: Edits published.
+- `dash.copy.discard` :: تجاهل التعديلات   ⟂ EN: Discard edits
+- `dash.copy.discardConfirm` :: تجاهل كل التعديلات غير المنشورة؟   ⟂ EN: Discard all unpublished edits?
+- `dash.copy.fixErrors` :: صحّح النصوص المعلّمة بالأحمر قبل النشر.   ⟂ EN: Fix the copy marked in red before publishing.
+- `dash.copy.preview` :: معاينة على الصفحة   ⟂ EN: Preview on the page
+- `dash.copy.previewLanguage` :: لغة المعاينة   ⟂ EN: Preview language
+- `dash.copy.previewEmail` :: معاينة رسالة   ⟂ EN: Preview an email
+- `dash.copy.previewTemplate` :: الرسالة   ⟂ EN: Email
+- `dash.copy.previewOpened` :: فُتحت المعاينة في تبويب جديد.   ⟂ EN: Preview opened in a new tab.
+- `dash.copy.previewBannerTitle` :: معاينة نصوص غير منشورة   ⟂ EN: Previewing unpublished copy
+- `dash.copy.previewBannerBody` :: لا يرى هذه النصوص أحد غيرك. انشرها من لوحة الإدارة لتظهر للزوار.   ⟂ EN: Only you can see this copy. Publish it from admin for visitors to see it.
+- `dash.copy.previewBannerEnd` :: إنهاء المعاينة   ⟂ EN: End preview
+- `dash.copy.draftFound` :: وجدنا تعديلات لم تُنشر من زيارة سابقة لهذه الصفحة.   ⟂ EN: Found unpublished edits from an earlier visit to this page.
+- `dash.copy.draftRestore` :: استعادتها   ⟂ EN: Restore them
+- `dash.copy.draftDismiss` :: تجاهلها   ⟂ EN: Discard them
+- `dash.copy.history` :: سجل النشر   ⟂ EN: Publish history
+- `dash.copy.historyHint` :: كل نشر يبقى هنا. «التراجع» يعيد كل نص غيّره ذلك النشر إلى ما كان عليه قبله، كنشر جديد.   ⟂ EN: Every publish stays here. “Undo” puts every string that publish changed back to what it was before, as a new publish.
+- `dash.copy.noHistory` :: لم يُنشر أي تعديل بعد — الموقع يعرض النصوص الأصلية.   ⟂ EN: Nothing published yet — the site shows the original copy.
+- `dash.copy.batchCount` :: عدد النصوص: {count}   ⟂ EN: Strings: {count}
+- `dash.copy.undo` :: التراجع عن هذا النشر   ⟂ EN: Undo this publish
+- `dash.copy.undoConfirm` :: يعيد هذا كل نص غيّره ذلك النشر إلى ما كان عليه قبله، ويُنشر فوراً. متابعة؟   ⟂ EN: This puts every string that publish changed back to what it was before, live immediately. Continue?
+- `dash.copy.undone` :: تم التراجع.   ⟂ EN: Publish undone.
+- `dash.copy.undoOf` :: تراجع عن نشر {date}   ⟂ EN: Undo of the {date} publish
+- `dash.copy.showChanges` :: عرض التغييرات   ⟂ EN: Show changes
+- `dash.copy.toOriginal` :: (الأصل)   ⟂ EN: (original)
+- `dash.copy.emailPreviewTitle` :: معاينة الرسالة: {template}   ⟂ EN: Email preview: {template}
+- `dash.copy.emailPreviewHint` :: ببيانات تجريبية. هكذا تصل الرسالة إلى صندوق البريد.   ⟂ EN: With sample data. This is how the message arrives in an inbox.
+- `dash.copy.emailSubject` :: الموضوع:   ⟂ EN: Subject:
+- `dash.copy.error.unknownKey` :: هذا النص غير قابل للتعديل من هنا.   ⟂ EN: This string cannot be edited here.
+- `dash.copy.error.placeholderMissing` :: ينقصه {names} — هذه الخانات تُملأ تلقائياً ولا بد أن تبقى.   ⟂ EN: Missing {names} — these are filled in automatically and must stay.
+- `dash.copy.error.placeholderExtra` :: فيه {names} غير موجود في الأصل — احذفه.   ⟂ EN: Has {names}, which the original does not — remove it.
+- `dash.copy.error.tooLong` :: أطول من {max} حرفاً — لن يتّسع مكانه.   ⟂ EN: Longer than {max} characters — it will not fit its space.
+- `dash.copy.error.markup` :: فيه وسوم HTML — اكتب نصاً عادياً.   ⟂ EN: Contains HTML tags — write plain text.
+- `dash.copy.error.arabicInEnglish` :: نص عربي في خانة إنجليزية.   ⟂ EN: Arabic text in an English box.
+- `dash.copy.error.englishInArabic` :: لا عربية في هذه الخانة — اكتبه بالعربية.   ⟂ EN: No Arabic in this box — write it in Arabic.
+- `dash.copy.error.claim` :: «{words}» عبارة ممنوعة في نصوص لقطة — أعد الصياغة.   ⟂ EN: “{words}” is wording Laqta does not use — reword it.
+- `dash.copy.error.nothing` :: لا تعديلات لنشرها.   ⟂ EN: No edits to publish.
+- `dash.copy.error.noteLong` :: الملاحظة أطول من {max} حرفاً.   ⟂ EN: The note is longer than {max} characters.
+- `dash.copy.template.order_placed` :: طلب جديد بانتظار التحويل   ⟂ EN: New order awaiting transfer
+- `dash.copy.template.order_confirmed` :: تأكيد الدفع والتحميل   ⟂ EN: Payment confirmed, ready to download
+- `dash.copy.template.sample_claimed` :: الألبوم المجاني   ⟂ EN: Free sample album
+- `dash.copy.template.album_approved` :: قبول ألبوم الصانع   ⟂ EN: Creator album approved
+- `dash.copy.template.album_changes` :: طلب تعديلات على الألبوم   ⟂ EN: Album changes requested
+- `dash.copy.template.album_rejected` :: رفض الألبوم   ⟂ EN: Album rejected
+- `dash.copy.template.album_priced` :: تسعير الألبوم   ⟂ EN: Album priced
+- `dash.copy.template.review_queued` :: ألبوم جديد للمراجعة (للإدارة)   ⟂ EN: New album to review (admin)
+- `dash.copy.template.contact_message` :: رسالة من نموذج التواصل (للإدارة)   ⟂ EN: Contact form message (admin)
+- `dash.copy.template.auth_passwordReset` :: إعادة تعيين كلمة المرور   ⟂ EN: Password reset
+- `dash.copy.section.brand` :: العلامة ووصف الموقع لمحركات البحث   ⟂ EN: Brand and search-engine descriptions
+- `dash.copy.section.nav` :: القوائم   ⟂ EN: Menus
+- `dash.copy.section.footer` :: التذييل   ⟂ EN: Footer
+- `dash.copy.section.search` :: البحث   ⟂ EN: Search
+- `dash.copy.section.legal` :: الصفحات القانونية (العناصر المشتركة)   ⟂ EN: Legal pages (shared parts)
+- `dash.copy.section.state` :: رسائل التحميل والأخطاء والحالات الفارغة   ⟂ EN: Loading, error and empty messages
+- `dash.copy.section.actions` :: أزرار عامة (تظهر في لوحة التحكم أيضاً)   ⟂ EN: Common buttons (also shown in the dashboards)
+- `dash.copy.section.catalogue` :: الكتالوج والفلاتر وصفحات الألبوم واللقطة   ⟂ EN: Catalogue, filters, album and clip pages
+- `dash.copy.section.commerce` :: الشراء والأسعار والترخيص   ⟂ EN: Buying, prices and licence
+- `dash.copy.section.count` :: أعداد اللقطات   ⟂ EN: Clip counts
+- `dash.copy.section.media` :: مشغّل الفيديو   ⟂ EN: Video player
+- `dash.copy.section.review` :: آراء المشترين   ⟂ EN: Buyer reviews
+- `dash.copy.section.request` :: طلب لقطات   ⟂ EN: Footage requests
+- `dash.copy.section.sample` :: الألبوم المجاني   ⟂ EN: Free sample album
+- `dash.copy.section.cart` :: السلة   ⟂ EN: Cart
+- `dash.copy.section.checkout` :: إتمام الشراء   ⟂ EN: Checkout
+- `dash.copy.section.promo` :: أكواد الخصم   ⟂ EN: Promo codes
+- `dash.copy.section.auth` :: تسجيل الدخول وإنشاء الحساب   ⟂ EN: Sign-in and sign-up
+- `dash.copy.section.account` :: الحساب والطلبات   ⟂ EN: Account and orders

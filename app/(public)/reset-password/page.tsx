@@ -17,6 +17,7 @@ export async function generateMetadata({
   return {
     // The tab says what the card says — a dead link is not "choose a password".
     title: t((await isResetTokenLive(token)) ? 'auth.resetTitle' : 'auth.resetInvalidTitle'),
+    description: t('brand.seo.resetPassword'),
     robots: { index: false, follow: false },
     // The token is in this page's URL. No outbound request may carry it in a
     // Referer header.

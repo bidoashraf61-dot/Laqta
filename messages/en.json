@@ -11,7 +11,18 @@
       "contact": "Contact Laqta to request footage of a specific place, or to ask about the licence, tax invoices, and agency or government accounts.",
       "terms": "The terms governing use of the platform and the purchase of albums: orders, payment, downloads, limits of liability and governing law.",
       "privacy": "How we collect, use and protect your data: what we ask for, how long we keep it, your rights, and how to reach us about them.",
-      "contentPolicy": "What may be uploaded and sold on Laqta: disclosure of AI-generated content, clearances, cultural fit, and rights reports."
+      "contentPolicy": "What may be uploaded and sold on Laqta: disclosure of AI-generated content, clearances, cultural fit, and rights reports.",
+      "creators": "The creators on Laqta: people who film Saudi Arabia and people who generate it, with each one's albums and ratings.",
+      "signIn": "Sign in to Laqta to download your albums and licence certificates from your library.",
+      "signUp": "Create a Laqta account to buy Saudi footage albums and download them under a full commercial licence.",
+      "forgotPassword": "Forgot your password? We will email you a link to choose a new one.",
+      "resetPassword": "Choose a new password for your Laqta account.",
+      "checkout": "Complete your album purchase: review the order, choose how to pay, and get your licence certificate once it is confirmed.",
+      "checkoutReturn": "The payment result for your Laqta order.",
+      "forbidden": "This page is not available to your account.",
+      "board": "A shared board on Laqta: a set of clips someone picked out for you.",
+      "hubLocation": "Stock footage of {name} in edit-ready albums, under one full commercial licence, paid for once.",
+      "hubCategory": "{name} stock footage from Saudi Arabia in edit-ready albums, under one full commercial licence, paid for once."
     }
   },
   "nav": {
@@ -438,7 +449,8 @@
     "timeDusk": "Dusk",
     "timeNight": "Night",
     "loadMore": "Show more",
-    "endOfResults": "You've reached the end of the results"
+    "endOfResults": "You've reached the end of the results",
+    "hubTitle": "{name} stock footage"
   },
   "sell": {
     "title": "Sell your footage on Laqta",

@@ -10,6 +10,8 @@ List the approved creators who have at least one live album.
 - Selects `handle`, `displayNameAr`, `displayNameEn`, `bioAr`, `city`, `_count.albums`.
 - No take limit — the whole approved-with-live-work set.
 
+- **Meta description (DEV-38)** — `brand.seo.creators`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

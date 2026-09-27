@@ -1,6 +1,6 @@
-# لقطة — الجزء 2 من 10
+# لقطة — الجزء 2 من 18
 
-هذا الجزء فيه **126 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **135 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
@@ -9,16 +9,12 @@
 
 - `landing.heroLabel` :: مكتبة لقطات فيديو سعودية   ⟂ EN: Saudi video footage library
 - `landing.scrollHint` :: اسحب لاستكشاف المكتبة   ⟂ EN: Scroll to explore
-- `landing.heroLead` :: يوم تصوير كامل،   ⟂ EN: A full shoot day,
-- `landing.heroBold` :: في ألبوم واحد.   ⟂ EN: in one album.
-- `landing.heroBody` :: ألبومات لقطات سعودية متناسقة الضوء واللون، جاهزة لمونتاج حملتك مباشرة. ادفع مرة واحدة، والألبوم لك للأبد.   ⟂ EN: Saudi footage albums matched in light and colour, ready to cut into your campaign. Pay once, and the album is yours for life.
+- `landing.heroLead` :: جمهورك سعودي،   ⟂ EN: Your audience is Saudi,
+- `landing.heroBold` :: ولقطات إعلانك سعودية.   ⟂ EN: and so is your footage.
+- `landing.heroBody` :: ألبومات لقطات متناسقة الضوء واللون، جاهزة لمونتاج حملتك مباشرة. ادفع مرة واحدة، وترخيصك دائم.   ⟂ EN: Footage albums matched in light and colour, ready to cut into your campaign. Pay once, and your licence is permanent.
 - `landing.heroChipNoSub` :: بلا اشتراكات   ⟂ EN: No subscription
 - `landing.browseAlbums` :: تصفّح الألبومات   ⟂ EN: Browse the albums
-- `landing.trustClips` :: لقطة   ⟂ EN: clips
-- `landing.trustAlbums` :: ألبوم   ⟂ EN: albums
-- `landing.trustRegions` :: منطقة   ⟂ EN: regions
-- `landing.trustCreators` :: صانع محتوى   ⟂ EN: creators
-- `landing.trustResolution` :: ‏1080p و 4K   ⟂ EN: 1080p and 4K
+- `landing.trustResolution` :: دقة كل ألبوم مذكورة   ⟂ EN: Resolution per album
 - `landing.trustCleared` :: مرخّصة تجارياً بالكامل   ⟂ EN: Cleared for commercial use
 - `landing.audienceTitle` :: لمن صُمّمت لقطة؟   ⟂ EN: Who Laqta is for
 - `landing.audienceLead` :: إن كان مشروعك يستهدف السوق السعودي،   ⟂ EN: If your project speaks to a Saudi audience,
@@ -59,8 +55,6 @@
 - `landing.notifyThanks` :: تمام، نراسلك يوم الإطلاق.   ⟂ EN: Done — we'll write on launch day.
 - `landing.notifyInvalid` :: اكتب بريداً إلكترونياً صحيحاً   ⟂ EN: Enter a valid email address
 - `landing.viewAll` :: عرض الكل   ⟂ EN: View all
-- `landing.clipCount` :: {count} لقطة   ⟂ EN: {count} clips
-- `landing.albumCount` :: {count} ألبوم   ⟂ EN: {count} albums
 - `landing.wallLead` :: تصفّح باللقطة،   ⟂ EN: Browse by the clip,
 - `landing.wallBold` :: واشترِ بالألبوم.   ⟂ EN: buy by the album.
 - `landing.wallHint` :: اضغط أي لقطة لتفتح ألبومها.   ⟂ EN: Tap any clip to open its album.
@@ -77,35 +71,50 @@
 - `landing.lic2Body` :: نراجع كل ألبوم قبل نشره: الموقع، واللبس، والتفاصيل التي لا يلتقطها إلا المشاهد المحلي.   ⟂ EN: We review every album before it is published: the place, the dress, the details only a local viewer catches.
 - `landing.lic3Title` :: تسلسل بصري متناسق   ⟂ EN: A matched sequence
 - `landing.lic3Body` :: لقطات من موقع واحد وبضوء واحد، تركّبها على خط زمني واحد دون إعادة تلوين.   ⟂ EN: Clips from one location in one light, so they cut together on a single timeline without regrading.
-- `landing.lic4Title` :: امتلاك دائم   ⟂ EN: Yours for life
+- `landing.lic4Title` :: ترخيص دائم   ⟂ EN: Permanent licence
 - `landing.lic4Body` :: ادفع مرة واحدة، ويبقى الألبوم في مكتبتك بلا رسوم تجديد.   ⟂ EN: Pay once, and the album stays in your library with no renewal fees.
 - `landing.faqLead` :: أسئلة قبل الشراء،   ⟂ EN: Questions before you buy,
 - `landing.faqBold` :: وإجابات مباشرة.   ⟂ EN: and straight answers.
-- `landing.faq1Q` :: هل يمكنني شراء لقطة واحدة من الألبوم؟   ⟂ EN: Can I buy a single clip from an album?
-- `landing.faq1A` :: لا. نبيع الألبوم كاملاً فقط، لأن قيمته في لقطات تُركّب مع بعضها على خط زمني واحد.   ⟂ EN: No. We sell the album whole, because its value is in clips that cut together on one timeline.
-- `landing.faq2Q` :: ما الذي يغطيه الترخيص التجاري؟   ⟂ EN: What does the commercial licence cover?
+- `landing.faq1Q` :: أقدر أشتري لقطة وحدة من الألبوم؟   ⟂ EN: Can I buy a single clip from an album?
+- `landing.faq1A` :: لا. ما نبيع إلا الألبوم كاملاً، لأن قيمته في لقطات تُركّب مع بعضها على خط زمني واحد.   ⟂ EN: No. We sell the album whole, because its value is in clips that cut together on one timeline.
+- `landing.faq2Q` :: وش يغطي الترخيص التجاري؟   ⟂ EN: What does the commercial licence cover?
 - `landing.faq2A` :: يغطي الاستخدام التجاري كاملاً: منصات التواصل، والتلفزيون، والمواقع، والعرض خارج المنزل، والمنتجات المعدّة لإعادة البيع، بلا حد لعدد المشاهدات. ولا يشمل إعادة بيع اللقطة نفسها.   ⟂ EN: Commercial use in full: social platforms, television, websites, out-of-home and products made for resale, with no cap on views. It does not cover reselling the clip itself.
-- `landing.faq3Q` :: هل توجد اشتراكات شهرية؟   ⟂ EN: Is there a monthly subscription?
-- `landing.faq3A` :: لا. تدفع سعر الألبوم مرة واحدة، ويبقى لك للأبد.   ⟂ EN: No. You pay the album's price once, and it stays yours for life.
-- `landing.faq4Q` :: كيف أحصل على فاتورة ضريبية لشركتي؟   ⟂ EN: How do I get a tax invoice for my company?
+- `landing.faq3Q` :: فيه اشتراك شهري؟   ⟂ EN: Is there a monthly subscription?
+- `landing.faq3A` :: لا. تدفع سعر الألبوم مرة وحدة، وترخيصه دائم.   ⟂ EN: No. You pay the album's price once, and its licence is permanent.
+- `landing.faq4Q` :: كيف آخذ فاتورة ضريبية لشركتي؟   ⟂ EN: How do I get a tax invoice for my company?
 - `landing.faq4A` :: تصدر الفاتورة الضريبية مع كل عملية شراء. وللشركات والجهات: الدفع بالتحويل البنكي أو بأمر شراء.   ⟂ EN: A tax invoice is issued with every purchase. Companies and government bodies can pay by bank transfer or against a purchase order.
-- `landing.faq5Q` :: ما الذي أحمّله بعد الشراء؟   ⟂ EN: What do I download after buying?
-- `landing.faq5A` :: النسخة الأصلية بجودتها الكاملة، ومعها نسخة مونتاج خفيفة لكل لقطة. الدقة 1080p أو 4K حسب الألبوم، ومذكورة في صفحته.   ⟂ EN: The full-quality original, plus a lightweight edit proxy of every clip. Resolution is 1080p or 4K depending on the album, and it is stated on the album page.
+- `landing.faq5Q` :: وش أحمّل بعد الشراء؟   ⟂ EN: What do I download after buying?
+- `landing.faq5A` :: النسخة الأصلية بجودتها الكاملة، ومعها نسخة مونتاج خفيفة لكل لقطة. الدقة تختلف من ألبوم لآخر (720p أو 1080p أو 4K)، ومذكورة في صفحته.   ⟂ EN: The full-quality original, plus a lightweight edit proxy of every clip. Resolution varies by album (720p, 1080p or 4K), and it is stated on the album page.
+- `landing.faq6Q` :: اللقطات مولّدة بالذكاء الاصطناعي؟   ⟂ EN: Is the footage AI-generated?
+- `landing.faq6A` :: بعضها. فيه ألبومات مولّدة بالذكاء الاصطناعي وألبومات مصوّرة بالكاميرا، ونوع كل ألبوم مكتوب بوضوح في صفحته.   ⟂ EN: Some of it. Some albums are AI-generated and some are filmed on camera, and every album says which, plainly, on its page.
+- `landing.faq7Q` :: أقدر أستخدمها في الأخبار أو في محتوى وثائقي؟   ⟂ EN: Can I use it in news or documentary work?
+- `landing.faq7A` :: نعم، الترخيص يشملها. لكن اللقطة المولّدة بالذكاء الاصطناعي ما تُعرض على أنها تصوير حقيقي لحدث أو شخص أو مكان. استخدمها للتوضيح، لا كدليل.   ⟂ EN: Yes, the licence covers it. But an AI-generated clip must never be presented as real footage of an actual event, person or place. Use it to illustrate, not as evidence.
+- `landing.faq8Q` :: يقدر فريقي كامل يستخدم الألبوم؟   ⟂ EN: Can my whole team use an album?
+- `landing.faq8A` :: نعم. الترخيص باسم المشتري، أنت أو الشركة اللي تشتري لها، وكل من يشتغل على مشاريعها يستخدم نفس الملفات. الحسابات المشتركة للفرق في المكتبة ما هي متاحة بعد.   ⟂ EN: Yes. The licence belongs to the buyer, you or the company you buy for, and everyone working on that buyer's projects uses the same files. Shared team accounts in the library are not available yet.
+- `landing.faq9Q` :: فيه لقطات رأسية؟   ⟂ EN: Do you have vertical footage?
+- `landing.faq9A` :: ألبوماتنا أفقية ١٦:٩ عشان لقطاتها تركب على خط زمني واحد. اللقطات الرأسية ٩:١٦ تكون في ألبومات رأسية مستقلة، ومكتوب ذلك في صفحتها.   ⟂ EN: Our albums are landscape 16:9, so their clips cut together on one timeline. Vertical 9:16 footage comes as separate vertical albums, labelled as such on their page.
+- `landing.faq10Q` :: أقدر أطلب ألبوم بموضوع معيّن؟   ⟂ EN: Can I request an album on a specific subject?
+- `landing.faq10A` :: نعم. اكتب في النموذج تحت وش تحتاج: المكان، والوقت، والأجواء. نوصل طلبك لصنّاع المحتوى، ونراسلك إذا جهز له ألبوم.   ⟂ EN: Yes. Tell us what you need in the form below: the place, the time, the mood. We pass it to our creators and email you when an album for it is ready.
 - `landing.offersLead` :: أحدث الألبومات،   ⟂ EN: The newest albums,
 - `landing.offersBold` :: بأسعار الإطلاق.   ⟂ EN: at launch prices.
-- `landing.offersHint` :: السعر المشطوب هو السعر المعتاد. تدفع الأقل، والألبوم لك للأبد.   ⟂ EN: The struck-through figure is the usual price. You pay the lower one, and the album is yours for life.
+- `landing.offersHint` :: السعر المشطوب هو السعر المعتاد. تدفع الأقل، وترخيصك دائم.   ⟂ EN: The struck-through figure is the usual price. You pay the lower one, and your licence is permanent.
 - `landing.shelfLead` :: كل الألبومات المتاحة،   ⟂ EN: Every album available,
 - `landing.shelfBold` :: اختر واحداً وابدأ.   ⟂ EN: pick one and start.
 - `landing.heroExplore` :: تصفّح اللقطات   ⟂ EN: Browse the footage
 - `landing.heroWatchTrailer` :: كيف تعمل لقطة؟   ⟂ EN: How Laqta works
 - `landing.problemLead` :: لقطات من موقع واحد،   ⟂ EN: From one location,
 - `landing.problemBold` :: بضوء واحد وهوية واحدة.   ⟂ EN: in one light, with one look.
-- `landing.problemBody` :: لقطة من هنا ولقطة من هناك تشتّت هوية إعلانك، ويوم تصوير كامل يستهلك ميزانيتك ووقتك. ألبوم لقطة يجمع لك من ١٠ إلى ٢٤ لقطة متجانسة: موقع واحد، وضوء واحد، وهوية واحدة.   ⟂ EN: A shot from here and a shot from there scatter the look of your ad, and a full shoot day eats your budget and your time. A Laqta album gives you 10 to 24 matching clips: one location, one light, one look.
+- `landing.problemBody` :: لقطة من هنا ولقطة من هناك تشتّت هوية إعلانك، ويوم تصوير كامل يستهلك ميزانيتك ووقتك. ألبوم لقطة يجمع لك من ٣٠ إلى ٧٠ لقطة متجانسة حول موضوع واحد: موقع واحد، وضوء واحد، وهوية واحدة.   ⟂ EN: A shot from here and a shot from there scatter the look of your ad, and a full shoot day eats your budget and your time. A Laqta album gives you 30 to 70 matching clips around a single subject: one location, one light, one look.
 - `landing.collectionViewAll` :: عرض كل الألبومات   ⟂ EN: See all albums
+- `landing.trailersLead` :: شوف الألبوم يتحرك،   ⟂ EN: See the album move,
+- `landing.trailersBold` :: قبل ما تدفع.   ⟂ EN: before you pay.
+- `landing.trailersBody` :: مقطع قصير من لقطات الألبوم نفسها: الضوء والحركة والإطار. عدد اللقطات والسعر تحته، والترخيص واحد في كل ألبوم.   ⟂ EN: A short cut from the album's own clips: the light, the movement, the framing. Clip count and price sit underneath, and every album carries the same single licence.
+- `landing.trailersListLabel` :: ألبومات لها تريلر   ⟂ EN: Albums with a trailer
+- `landing.trailersNowShowing` :: يُعرض الحين   ⟂ EN: Now showing
 - `landing.priceLead` :: بلا اشتراك ولا رصيد ينتهي،   ⟂ EN: No subscription, no credits that expire,
-- `landing.priceBold` :: ادفع مرة واحدة، والألبوم لك.   ⟂ EN: pay once and the album is yours.
+- `landing.priceBold` :: ادفع مرة واحدة، وترخيصك دائم.   ⟂ EN: pay once and your licence is permanent.
 - `landing.priceSub` :: سعر واحد للألبوم يشمل الترخيص التجاري كاملاً، ولا يتغيّر بحجم مشروعك.   ⟂ EN: One price per album, covering the full commercial licence — it does not change with the size of your project.
-- `landing.price1Title` :: امتلاك دائم   ⟂ EN: Yours for life
+- `landing.price1Title` :: ترخيص دائم   ⟂ EN: Permanent licence
 - `landing.price1Body` :: ادفع مرة واحدة، واستخدم الألبوم في كل مشاريعك القادمة.   ⟂ EN: Pay once, and use the album in every project to come.
 - `landing.price2Title` :: توفير الوقت   ⟂ EN: Time saved
 - `landing.price2Body` :: اختصر أيام التصوير والإعداد إلى دقائق من التصفّح.   ⟂ EN: Days of shooting and preparation become minutes of browsing.
@@ -115,7 +124,7 @@
 - `landing.finalCtaLead` :: جاهز تبدأ   ⟂ EN: Ready to start
 - `landing.finalCtaBold` :: مونتاج حملتك؟   ⟂ EN: cutting your campaign?
 - `landing.finalCtaButton` :: تصفّح اللقطات   ⟂ EN: Browse the footage
-- `landing.footerTagline` :: ألبومات لقطات سعودية، تشتريها مرة وتبقى لك.   ⟂ EN: Saudi footage albums. Buy once, keep for good.
+- `landing.footerTagline` :: ألبومات لقطات سعودية، تدفع مرة وترخيصها دائم.   ⟂ EN: Saudi footage albums. Pay once; the licence is permanent.
 - `landing.problemStillAlt` :: مشهد من ألبومات لقطة: العلا خلال الساعة الذهبية   ⟂ EN: A frame from the Laqta catalogue: AlUla rock formations at golden hour
 - `landing.sellNote` :: مفتوحة لكل صنّاع المحتوى: مصوّرين، ومشغّلي درون، وصنّاع أفلام بالذكاء الاصطناعي.   ⟂ EN: Open to every kind of creator: filmmakers, drone operators and AI filmmakers.
 - `landing.seasonEyebrow` :: الموسم الحالي   ⟂ EN: This season
@@ -126,7 +135,7 @@
 - `landing.deckLabel` :: كيف تعمل لقطة، والأسعار، والأسئلة الشائعة   ⟂ EN: How Laqta works, pricing, and frequently asked questions
 - `landing.usp1` :: لقطات سعودية جاهزة   ⟂ EN: Saudi footage, ready-made
 - `landing.usp1Note` :: لا تولّدها بنفسك، ولا ترضى بمشاهد أجنبية   ⟂ EN: No generating it yourself, no settling for foreign footage
-- `landing.usp2` :: ادفع مرة واحدة، وامتلكه للأبد   ⟂ EN: Pay once, own it for life
+- `landing.usp2` :: ادفع مرة واحدة، وترخيصك دائم   ⟂ EN: Pay once, licensed permanently
 - `landing.usp2Note` :: بلا اشتراك، ولا رصيد شهري ينتهي   ⟂ EN: No subscription, no monthly credits that expire
 - `landing.usp3` :: ترخيص تجاري كامل   ⟂ EN: Full commercial licence
 - `landing.usp3Note` :: بلا حد لعدد المشاهدات، على أي منصة   ⟂ EN: No cap on views, on any platform

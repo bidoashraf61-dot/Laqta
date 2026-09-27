@@ -1,4 +1,4 @@
-# لقطة — الجزء 1 من 10
+# لقطة — الجزء 1 من 18
 
 هذا الجزء فيه **44 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
@@ -9,9 +9,9 @@
 
 - `brand.name` :: لقطة   ⟂ EN: Laqta
 - `brand.tagline` :: مكتبة اللقطات السعودية   ⟂ EN: The Saudi footage library
-- `brand.promise` :: ألبومات لقطات سعودية بترخيص تجاري كامل. ادفع مرة واحدة، والألبوم لك للأبد، بلا اشتراكات.   ⟂ EN: Saudi footage albums under a full commercial licence. Pay once and the album is yours for life, with no subscription.
+- `brand.promise` :: ألبومات لقطات سعودية بترخيص تجاري كامل. ادفع مرة واحدة، وترخيصك دائم بلا اشتراكات.   ⟂ EN: Saudi footage albums under a full commercial licence. Pay once; your licence is permanent, with no subscription.
 - `brand.forWhom` :: للوكالات وفرق التسويق وصنّاع المحتوى، ولكل من يعمل على حملة موجّهة للجمهور السعودي.   ⟂ EN: For agencies, marketing teams and creators — anyone working on a campaign for a Saudi audience.
-- `brand.seo.home` :: ألبومات لقطات فيديو سعودية جاهزة للمونتاج، أفقية وعمودية، بدقة 1080p و4K. ترخيص تجاري كامل، تدفع مرة واحدة والألبوم لك للأبد.   ⟂ EN: Edit-ready Saudi footage albums, landscape and vertical, in 1080p and 4K. One full commercial licence; pay once and the album is yours for life.
+- `brand.seo.home` :: ألبومات لقطات فيديو سعودية جاهزة للمونتاج: مصوّرة أو مولّدة بالذكاء الاصطناعي، أفقية وعمودية، ودقة كل ألبوم مذكورة. ترخيص تجاري كامل وتدفع مرة واحدة.   ⟂ EN: Edit-ready Saudi footage albums — filmed or AI-generated, landscape and vertical, resolution stated per album. One full commercial licence; pay once.
 - `brand.seo.licences` :: ترخيص واحد لكل ألبوم: تجاري كامل، دائم، بلا حد لعدد المشاهدات. يشمل الحملات المدفوعة والعرض خارج المنزل والمنتجات المعدّة لإعادة البيع.   ⟂ EN: One licence per album: full commercial, perpetual, no cap on views. Covers paid campaigns, out-of-home and products made for resale.
 - `brand.seo.about` :: لماذا بُنيت لقطة وكيف تعمل: ألبومات لقطات سعودية تُراجَع قبل النشر، وتُشترى مرة واحدة بترخيص تجاري كامل.   ⟂ EN: Why Laqta was built and how it works: Saudi footage albums, reviewed before publication, bought once under a full commercial licence.
 - `brand.seo.contact` :: تواصل مع لقطة لطلب لقطات من موقع محدد، أو للسؤال عن الترخيص والفواتير الضريبية وحسابات الوكالات والجهات.   ⟂ EN: Contact Laqta to request footage of a specific place, or to ask about the licence, tax invoices, and agency or government accounts.
@@ -62,4 +62,4 @@
 - `footer.contentPolicy` :: سياسة المحتوى   ⟂ EN: Content policy
 - `footer.follow` :: تابعنا   ⟂ EN: Follow us
 - `footer.rights` :: جميع الحقوق محفوظة   ⟂ EN: All rights reserved
-- `footer.tagline` :: ألبومات لقطات سعودية، تشتريها مرة وتبقى لك.   ⟂ EN: Saudi footage albums. Buy once, keep for good.
+- `footer.tagline` :: ألبومات لقطات سعودية، تدفع مرة وترخيصها دائم.   ⟂ EN: Saudi footage albums. Pay once; the licence is permanent.

@@ -1,6 +1,6 @@
-# لقطة — الجزء 3 من 10
+# لقطة — الجزء 3 من 18
 
-هذا الجزء فيه **136 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **131 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
@@ -15,7 +15,6 @@
 - `catalogue.categoriesTitle` :: تصفّح حسب التصنيف   ⟂ EN: Browse by category
 - `catalogue.collectionsTitle` :: المجموعات   ⟂ EN: Collections
 - `catalogue.creatorsTitle` :: صنّاع المحتوى   ⟂ EN: Creators
-- `catalogue.resultsCount` :: {count} نتيجة   ⟂ EN: {count} results
 - `catalogue.filters` :: تصفية النتائج   ⟂ EN: Filters
 - `catalogue.clearFilters` :: مسح الكل   ⟂ EN: Clear all
 - `catalogue.applyFilters` :: تطبيق   ⟂ EN: Apply
@@ -53,7 +52,7 @@
 - `catalogue.totalSize` :: حجم الملفات   ⟂ EN: Total size
 - `catalogue.clipCountLabel` :: عدد اللقطات   ⟂ EN: Number of clips
 - `catalogue.licence` :: الترخيص   ⟂ EN: Licence
-- `catalogue.reassurance` :: امتلاك دائم · فاتورة ضريبية · تحميل بلا حد من مكتبتك   ⟂ EN: Yours for life · tax invoice · unlimited downloads from your library
+- `catalogue.reassurance` :: ترخيص دائم · فاتورة ضريبية · تحميل بلا حد من مكتبتك   ⟂ EN: Permanent licence · tax invoice · unlimited downloads from your library
 - `catalogue.clearance` :: حالة التصاريح   ⟂ EN: Clearance and licensing
 - `catalogue.clearanceFull` :: مكتملة — مرخّصة تجارياً بالكامل   ⟂ EN: Complete — cleared for commercial use
 - `catalogue.clearanceEditorial` :: للاستخدام التحريري والإخباري فقط   ⟂ EN: Editorial use only
@@ -63,18 +62,27 @@
 - `catalogue.noResultsTitle` :: ما لقينا لقطات تطابق بحثك   ⟂ EN: No clips match your search
 - `catalogue.noResultsBody` :: جرّب كلمات أعم، أو شيل فلتر أو اثنين. سجّلنا بحثك، وقد نطلبه من صنّاع المحتوى.   ⟂ EN: Try broader words, or clear a filter or two. We have logged your search, and may ask our creators for it.
 - `catalogue.previewWatermarked` :: المعاينة بعلامة مائية   ⟂ EN: The preview is watermarked
+- `catalogue.compDownload` :: حمّل المعاينة   ⟂ EN: Download preview
+- `catalogue.compDownloadAll` :: حمّل معاينات الألبوم كلها   ⟂ EN: Download all previews (ZIP)
+- `catalogue.compSignIn` :: سجّل دخولك وحمّل المعاينة   ⟂ EN: Sign in to download the preview
+- `catalogue.compSignInAll` :: سجّل دخولك وحمّل معاينات الألبوم   ⟂ EN: Sign in to download all previews
+- `catalogue.compNote` :: نسخة بعلامة مائية ودقة {res}، تجرّبها على خط المونتاج قبل ما تشتري. ما تُستخدم في عمل منشور؛ الترخيص يجيك مع الشراء.   ⟂ EN: Watermarked, {res}. Cut it into your timeline to test before you buy. Not for published work: the licence comes with purchase.
+- `catalogue.compNoteAlbum` :: ملف مضغوط فيه {count} بعلامة مائية ودقة {res}، تجرّبها على خط المونتاج قبل ما تشتري. ما تُستخدم في عمل منشور؛ الترخيص يجيك مع الشراء.   ⟂ EN: A ZIP of {count}, watermarked, at {res}, to test in your timeline before you buy. Not for published work: the licence comes with purchase.
+- `catalogue.compLimit` :: وصلت الحد: {limit} في الساعة. جرّب بعد ساعة.   ⟂ EN: Limit reached: {limit} an hour. Try again in an hour.
+- `catalogue.compLimitAlbum` :: وصلت الحد: {limit} في اليوم. جرّب بكرة.   ⟂ EN: Limit reached: {limit} a day. Try again tomorrow.
+- `catalogue.compUnavailable` :: المعاينة مو متوفرة للتحميل الحين.   ⟂ EN: This preview can't be downloaded right now.
 - `catalogue.preview` :: معاينة   ⟂ EN: Preview
 - `catalogue.watermarkNote` :: كل المعاينات بعلامة مائية. ما تشتريه يصلك نظيفاً بجودته الأصلية.   ⟂ EN: Every preview is watermarked. What you buy arrives clean, at original quality.
 - `catalogue.page` :: الصفحة   ⟂ EN: Page
 - `catalogue.next` :: التالي   ⟂ EN: Next
 - `catalogue.previous` :: السابق   ⟂ EN: Previous
 - `catalogue.breadcrumb` :: المسار   ⟂ EN: Breadcrumb
-- `catalogue.altAlbumCover` :: ألبوم {album} — {count} لقطة سعودية   ⟂ EN: The album {album} — {count} Saudi clips
+- `catalogue.altAlbumCover` :: ألبوم {album} — {count}   ⟂ EN: The album {album} — {count}
 - `catalogue.altClipThumb` :: معاينة لقطة {clip}   ⟂ EN: The clip {clip}
 - `catalogue.openAlbum` :: افتح الألبوم   ⟂ EN: Open the album
-- `catalogue.creatorAlbums` :: ألبوم منشور   ⟂ EN: albums published
-- `catalogue.creatorClips` :: لقطة في المكتبة   ⟂ EN: clips in the library
-- `catalogue.creatorViews` :: زيارة لألبوماته   ⟂ EN: visits to their albums
+- `catalogue.creatorAlbums` :: الألبومات المنشورة   ⟂ EN: Albums published
+- `catalogue.creatorClips` :: اللقطات في المكتبة   ⟂ EN: Clips in the library
+- `catalogue.creatorViews` :: زيارات ألبوماته   ⟂ EN: Visits to their albums
 - `catalogue.creatorSince` :: ينشر على لقطة منذ   ⟂ EN: Publishing on Laqta since
 - `catalogue.creatorFeatured` :: ألبومات مختارة   ⟂ EN: Featured albums
 - `catalogue.creatorAll` :: كل الألبومات   ⟂ EN: All albums
@@ -85,18 +93,18 @@
 - `catalogue.dur10to20` :: بين ١٠ و ٢٠ ثانية   ⟂ EN: 10 – 20 seconds
 - `catalogue.dur20plus` :: أكثر من ٢٠ ثانية   ⟂ EN: Over 20 seconds
 - `catalogue.licenceGrantCommercial` :: ترخيص تجاري كامل، بلا حد لعدد المشاهدات   ⟂ EN: Full commercial licence, no cap on views
-- `catalogue.licenceGrantForever` :: امتلاك دائم   ⟂ EN: Yours for life
+- `catalogue.licenceGrantForever` :: ترخيص دائم   ⟂ EN: Permanent licence
 - `catalogue.licenceGrantOnce` :: ادفع مرة واحدة، بلا اشتراكات   ⟂ EN: Pay once, no subscription
 - `catalogue.licenceDetails` :: تفاصيل الترخيص   ⟂ EN: Licence details
 - `catalogue.originGenerated` :: مُنتَج بالذكاء الاصطناعي   ⟂ EN: AI generated
-- `catalogue.originCaptured` :: تصوير حقيقي   ⟂ EN: Real footage
+- `catalogue.originCaptured` :: تصوير بالكاميرا   ⟂ EN: Filmed
 - `catalogue.orientationLandscape` :: أفقي   ⟂ EN: Landscape
 - `catalogue.orientationPortrait` :: عمودي   ⟂ EN: Portrait
 - `catalogue.orientationMixed` :: أفقي وعمودي   ⟂ EN: Landscape & portrait
 - `catalogue.offSuffix` :: خصم   ⟂ EN: off
 - `catalogue.runtimeTotal` :: المدة الكلية {duration}   ⟂ EN: {duration} in total
 - `catalogue.openShot` :: افتح اللقطة   ⟂ EN: Open the clip
-- `catalogue.shotsIncluded` :: لقطة في هذا الألبوم   ⟂ EN: clips in this album
+- `catalogue.shotsIncluded` :: في هذا الألبوم   ⟂ EN: in this album
 - `catalogue.creatorRating` :: تقييمات المشترين   ⟂ EN: Buyer rating
 - `catalogue.creatorNoRating` :: ما فيه تقييمات لهذا الصانع بعد.   ⟂ EN: No ratings yet
 - `catalogue.origin` :: طريقة الإنتاج   ⟂ EN: How it was made
@@ -114,7 +122,6 @@
 
 - `commerce.album` :: ألبوم   ⟂ EN: album
 - `commerce.clip` :: لقطة   ⟂ EN: clip
-- `commerce.clips` :: لقطات   ⟂ EN: clips
 - `commerce.buyAlbum` :: اشترِ الألبوم   ⟂ EN: Buy the album
 - `commerce.addToCart` :: أضف للسلة   ⟂ EN: Add to cart
 - `commerce.buyNow` :: اشترِ الآن   ⟂ EN: Buy now
@@ -126,7 +133,7 @@
 - `commerce.vat` :: ضريبة القيمة المضافة   ⟂ EN: VAT
 - `commerce.licence` :: الترخيص   ⟂ EN: Licence
 - `commerce.oneTimePurchase` :: دفعة واحدة   ⟂ EN: One payment
-- `commerce.ownForever` :: امتلاك دائم   ⟂ EN: Yours for life
+- `commerce.ownForever` :: ترخيص دائم   ⟂ EN: Permanent licence
 - `commerce.instantDownload` :: تحميل فور تأكيد الدفع   ⟂ EN: Download as soon as payment is confirmed
 - `commerce.taxInvoice` :: فاتورة ضريبية   ⟂ EN: Tax invoice
 - `commerce.arabicSupport` :: دعم باللغة العربية   ⟂ EN: Support in Arabic
@@ -135,19 +142,3 @@
 - `commerce.editorialOnly` :: للاستخدام التحريري فقط   ⟂ EN: Editorial use only
 - `commerce.byCreator` :: من {creator}   ⟂ EN: by {creator}
 - `commerce.licenceCommercial` :: ترخيص تجاري كامل   ⟂ EN: Full commercial licence
-
-## cart
-> سلة الشراء
-
-- `cart.title` :: سلتك   ⟂ EN: Cart
-- `cart.empty` :: سلتك فاضية   ⟂ EN: Your cart is empty
-- `cart.emptyHint` :: تصفّح الألبومات وأضف اللي تحتاجه لمشروعك.   ⟂ EN: Browse the albums and add what your project needs.
-- `cart.unavailable` :: أحد الألبومات لم يعد متاحاً   ⟂ EN: One of the albums is no longer available
-- `cart.remove` :: حذف   ⟂ EN: Remove
-- `cart.added` :: أُضيف إلى سلتك   ⟂ EN: Added to your cart
-- `cart.subtotal` :: المجموع الفرعي   ⟂ EN: Subtotal
-- `cart.vat` :: ضريبة القيمة المضافة   ⟂ EN: VAT
-- `cart.total` :: الإجمالي   ⟂ EN: Total
-- `cart.checkout` :: إتمام الشراء   ⟂ EN: Checkout
-- `cart.continueShopping` :: تصفّح الألبومات   ⟂ EN: Keep browsing
-- `cart.licenceTier` :: الترخيص   ⟂ EN: Licence

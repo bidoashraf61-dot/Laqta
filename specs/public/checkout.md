@@ -17,6 +17,8 @@ Collect the billing entity and payment method, then place the order — the one 
 - The summary box lists each applied bundle as «توفير الحزمة» + title, −saving (success colour), and its VAT and total are after the bundle (from `getCart`).
 - Display currency taken from the first cart item's album currency, defaulting to `'SAR'`.
 
+- **Meta description (DEV-38)** — `brand.seo.checkout`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

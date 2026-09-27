@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { localePath } from '@/lib/locale'
 import { siteOrigin } from '@/lib/site'
+import { absoluteMediaUrl } from '@/lib/media'
 
 /**
  * Revalidate hourly.
@@ -35,17 +36,23 @@ export const revalidate = 3600
  * the other and drop it. The pairing is the point.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [albums, taxonomy, creators, collections] = await Promise.all([
+  const [albums, taxonomy, creators, collections, clips] = await Promise.all([
     db.album.findMany({
       where: { status: 'live' },
       select: { slug: true, updatedAt: true, creator: { select: { handle: true } } },
     }),
     db.taxonomy.findMany({
-      // Only entries with live footage behind them. A taxonomy row with no
-      // albums renders a heading and a count of zero — and `kind='theme'`
-      // renders under /collections/, which is where the thirty stub pages in
-      // the audit actually came from. They were never Collection rows.
-      where: { isActive: true, albums: { some: { album: { status: 'live' } } } },
+      // Only the two kinds that HAVE a page — `/locations/[slug]` and
+      // `/categories/[slug]` — and only with live footage behind them. Themes
+      // and tags have no public route: they used to be mapped to
+      // `/collections/<slug>`, which looks up a Collection row, finds none and
+      // 404s (DEV-34). A 404 in the sitemap is a crawl error Google reports
+      // against the whole domain.
+      where: {
+        isActive: true,
+        kind: { in: ['location', 'category'] },
+        albums: { some: { album: { status: 'live' } } },
+      },
       select: { kind: true, slug: true, updatedAt: true },
     }),
     db.creator.findMany({
@@ -59,6 +66,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       // drags the whole domain. A collection with no albums is not a page yet.
       where: { isPublished: true, albums: { some: { album: { status: 'live' } } } },
       select: { slug: true, updatedAt: true },
+    }),
+    db.clip.findMany({
+      // Clip pages (DEV-34). Discovery happens at the clip — it is what a
+      // search for «لقطة درون الرياض ليلاً» lands on — so each clip of a live
+      // album is its own entry, with a <video:video> block when it has a
+      // poster. Same filter as the clip page itself: live album only.
+      where: { album: { status: 'live' } },
+      select: {
+        slug: true,
+        updatedAt: true,
+        createdAt: true,
+        titleAr: true,
+        titleEn: true,
+        descriptionAr: true,
+        descriptionEn: true,
+        durationS: true,
+        thumbnailKeys: true,
+        previewKey: true,
+        album: { select: { titleAr: true, titleEn: true } },
+      },
+      orderBy: [{ albumId: 'asc' }, { orderIndex: 'asc' }],
     }),
   ])
 
@@ -87,7 +115,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const taxonomyRoutes: MetadataRoute.Sitemap = taxonomy.flatMap((entry) =>
     bilingual(
-      `/${entry.kind === 'location' ? 'locations' : entry.kind === 'category' ? 'categories' : 'collections'}/${entry.slug}`,
+      `/${entry.kind === 'location' ? 'locations' : 'categories'}/${entry.slug}`,
       {
         lastModified: entry.updatedAt,
         changeFrequency: 'weekly',
@@ -95,6 +123,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     ),
   )
+
+  const absoluteMedia = (key: string | null | undefined) => absoluteMediaUrl(key) ?? undefined
+
+  /**
+   * The video sitemap block for one clip in one language. Google requires a
+   * title, description and thumbnail; a clip with no poster gets no block
+   * (the page is still listed). The content URL is the public WATERMARKED
+   * preview — never the master or the buyer's proxy.
+   */
+  function clipVideos(clip: (typeof clips)[number], locale: 'ar' | 'en') {
+    const thumbnail = absoluteMedia(clip.thumbnailKeys[0])
+    if (!thumbnail) return undefined
+    const title = locale === 'ar' ? clip.titleAr : clip.titleEn || clip.titleAr
+    const albumTitle = locale === 'ar' ? clip.album.titleAr : clip.album.titleEn || clip.album.titleAr
+    const description =
+      (locale === 'ar' ? clip.descriptionAr : clip.descriptionEn || clip.descriptionAr) ||
+      (locale === 'ar' ? `لقطة من ألبوم «${albumTitle}» على لقطة.` : `A clip from the album “${albumTitle}” on Laqta.`)
+    return [
+      {
+        title,
+        description,
+        thumbnail_loc: thumbnail,
+        content_loc: absoluteMedia(clip.previewKey),
+        duration: Math.max(1, Math.round(Number(clip.durationS))),
+        publication_date: clip.createdAt.toISOString(),
+        family_friendly: 'yes' as const,
+        requires_subscription: 'no' as const,
+      },
+    ]
+  }
+
+  const clipRoutes: MetadataRoute.Sitemap = clips.flatMap((clip) => {
+    const path = `/footage/${clip.slug}`
+    const languages = { ar: `${siteOrigin()}${path}`, en: `${siteOrigin()}${localePath('en', path)}` }
+    const rest = { lastModified: clip.updatedAt, changeFrequency: 'monthly' as const, priority: 0.5 }
+    return [
+      { ...rest, url: languages.ar, alternates: { languages }, videos: clipVideos(clip, 'ar') },
+      { ...rest, url: languages.en, alternates: { languages }, videos: clipVideos(clip, 'en') },
+    ]
+  })
 
   return [
     ...staticRoutes,
@@ -113,6 +181,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       }),
     ),
+    ...clipRoutes,
     ...creators.flatMap((creator) =>
       bilingual(`/creators/${creator.handle}`, {
         lastModified: creator.updatedAt,

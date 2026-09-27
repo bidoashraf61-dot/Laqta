@@ -15,7 +15,11 @@ import { ReturnPending } from '@/components/checkout/return-pending'
 
 export async function generateMetadata(): Promise<Metadata> {
   await requestLocale()
-  return { title: t('checkout.returnTitle'), robots: { index: false, follow: false } }
+  return {
+    title: t('checkout.returnTitle'),
+    description: t('brand.seo.checkoutReturn'),
+    robots: { index: false, follow: false },
+  }
 }
 
 type State = 'paid' | 'pending' | 'failed' | 'unknown'

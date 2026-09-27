@@ -1,77 +1,149 @@
-# لقطة — الجزء 10 من 10
+# لقطة — الجزء 10 من 18
 
-هذا الجزء فيه **56 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
+هذا الجزء فيه **140 سطراً**. أعد **كل** الأسطر، بنفس المفاتيح وبنفس الترتيب، حتى ما لم تغيّره.
 كل سطر على الشكل: `- \`المفتاح\` :: النص` — احذف ما بعد العلامة ⟂ (الترجمة الإنجليزية للاسترشاد فقط).
 طبّق قواعد الموجز كاملة. لا تُضف أسطراً ولا تحذف أسطراً ولا تدمج سطرين.
 
-## doc.licences
-> تفاصيل الترخيص — ترخيص واحد فقط
+## dash
+> عناصر لوحات التحكم المشتركة بين الاستوديو والإدارة — نبرة تشغيلية مختصرة
 
-- `doc.licences.1.heading` :: ترخيص واحد يُشترى مرة واحدة   ⟂ EN: One licence, bought once
-- `doc.licences.1.body.1` :: لا يوجد اشتراك ولا رصيد شهري ينتهي. تشتري الألبوم مرة واحدة، وتحتفظ بحق استخدام لقطاته بلا حد زمني، ويبقى الألبوم قابلاً للتحميل من مكتبتك.   ⟂ EN: There is no subscription and no monthly allowance that expires. You buy the album once, keep the right to use its clips with no time limit, and the album stays downloadable from your library.
-- `doc.licences.2.heading` :: ما يغطّيه الترخيص   ⟂ EN: What the licence covers
-- `doc.licences.2.body.1` :: ترخيص واحد، ويغطي الاستخدام التجاري كاملاً:   ⟂ EN: One licence, and it covers commercial use in full:
-- `doc.licences.2.list.1` :: الإعلانات الرقمية، ومنصّات التواصل، ومواقع الويب، والعروض الداخلية.   ⟂ EN: Digital advertising, social platforms, websites and internal presentations.
-- `doc.licences.2.list.2` :: الأعمال التلفزيونية والسينمائية والمحتوى المدفوع، بلا حد لعدد المشاهدات.   ⟂ EN: Television, cinema and paid content, with no cap on views.
-- `doc.licences.2.list.3` :: العرض خارج المنزل والشاشات التجارية.   ⟂ EN: Out-of-home and commercial displays.
-- `doc.licences.2.list.4` :: المنتجات المعدّة لإعادة البيع: القوالب، وخلفيات المنتجات الرقمية، والتغليف.   ⟂ EN: Products made for resale: templates, digital product backgrounds and packaging.
-- `doc.licences.2.list.5` :: الاستخدام في أكثر من مشروع عميل.   ⟂ EN: Use across more than one client project.
-- `doc.licences.3.heading` :: ما يمنعه الترخيص   ⟂ EN: What the licence prohibits
-- `doc.licences.3.list.1` :: إعادة بيع اللقطة كما هي أو إدراجها في مكتبة لقطات أخرى.   ⟂ EN: Reselling the clip as it is, or listing it in another footage library.
-- `doc.licences.3.list.2` :: الاستخدام الذي يسيء إلى شخص ظاهر في اللقطة أو يوحي بتأييده لمنتج أو رأي.   ⟂ EN: Any use that reflects badly on a person appearing in the clip, or implies their endorsement of a product or opinion.
-- `doc.licences.3.list.3` :: الاستخدام الذي يمسّ الرموز الدينية أو الوطنية أو الأماكن المقدّسة.   ⟂ EN: Any use that touches religious or national symbols, or holy places.
-- `doc.licences.3.list.4` :: استخدام لقطة موسومة «للاستخدام التحريري فقط» في سياق تجاري.   ⟂ EN: Using a clip marked “editorial use only” in a commercial context.
-- `doc.licences.4.heading` :: التحريري مقابل التجاري   ⟂ EN: Editorial versus commercial
-- `doc.licences.4.body.1` :: الألبوم الموسوم «مرخّص للاستخدام التجاري» اكتملت تصاريحه: تصاريح النماذج والمواقع والتصوير كلها موثّقة. أما «للاستخدام التحريري فقط» فيعني أن تصريحاً ما ناقص، ويقتصر استخدامه على السياق الإخباري والتوثيقي دون الترويج لمنتج أو خدمة.   ⟂ EN: An album marked “cleared for commercial use” has complete clearance: model, location and filming permits are all documented. “Editorial use only” means some clearance is missing, and use is limited to news and documentary contexts, without promoting a product or service.
-- `doc.licences.5.heading` :: شهادة الترخيص   ⟂ EN: The licence certificate
-- `doc.licences.5.body.1` :: تصدر مع كل عملية شراء شهادة ترخيص تحمل رقماً وقائمة اللقطات المشمولة ونص الترخيص الساري لحظة الشراء. تعديل نص الترخيص لاحقاً لا يغيّر ما اشتريته: الشهادة تحفظ النص كما كان.   ⟂ EN: Every purchase issues a licence certificate carrying a number, the list of clips covered, and the text of the licence as it stood at the moment of purchase. Changing the licence text later does not change what you bought: the certificate preserves the text as it was.
-
-## doc.contentPolicy
-> سياسة المحتوى
-
-- `doc.contentPolicy.1.heading` :: ما الذي نقبله   ⟂ EN: What we accept
-- `doc.contentPolicy.1.body.1` :: لقطات سعودية بدقة 1080p أو 4K، ضمن ألبومات متناسقة لا تقل عن ثماني لقطات. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.   ⟂ EN: Saudi footage at 1080p or 4K, in coherent albums of no fewer than eight clips. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.
-- `doc.contentPolicy.2.heading` :: التصاريح شرط للنشر   ⟂ EN: Clearance is a condition of publication
-- `doc.contentPolicy.2.body.1` :: لا يُنشر ألبوم فيه وجه واضح بلا تصريح نموذج. ولا تُنشر لقطة صُوّرت في موقع يشترط تصريح تصوير — العلا، والدرعية، ونيوم، والبحر الأحمر، وما يماثلها — دون إرفاق التصريح ورقمه المرجعي.   ⟂ EN: No album is published with an identifiable face in it and no model release. Nor is a clip published that was filmed at a location requiring a filming permit — AlUla, Diriyah, NEOM, the Red Sea and the like — without the permit and its reference number attached.
-- `doc.contentPolicy.2.body.2` :: التصريح يُراجَع من فريق المنصّة قبل النشر، ولا يكفي إقرار الصانع وحده.   ⟂ EN: The permit is checked by the platform team before publication; the creator's own declaration is not enough on its own.
-- `doc.contentPolicy.3.heading` :: الملاءمة الثقافية   ⟂ EN: Cultural fit
-- `doc.contentPolicy.3.body.1` :: نراجع كل ألبوم من زاوية ملاءمته للسياق السعودي: احترام الأماكن المقدّسة، وعدم استخدام الرموز الدينية أو الوطنية في سياق تجاري غير لائق، واحترام خصوصية الأشخاص في الأماكن العامة.   ⟂ EN: We review every album for how well it fits the Saudi context: respect for holy places, no use of religious or national symbols in an unbecoming commercial context, and respect for people's privacy in public places.
-- `doc.contentPolicy.3.body.2` :: هذا فحص إلزامي لا يجوز تجاوزه في المراجعة، لأنه مصدر مسؤولية مباشرة على المنصّة وعلى المشتري معاً.   ⟂ EN: This check is mandatory and cannot be skipped in review, because it is a direct source of liability for the platform and the buyer alike.
-- `doc.contentPolicy.4.heading` :: التكرار والمحتوى المنقول   ⟂ EN: Duplication and lifted material
-- `doc.contentPolicy.4.body.1` :: نقارن البصمة البصرية لكل لقطة جديدة بالكتالوج القائم. التطابق لا يعني الرفض تلقائياً — قد يعيد الصانع إدراج مادته الخاصة في ألبوم جديد — لكنه يُعرض على مراجع بشري قبل أي قرار.   ⟂ EN: We compare the visual fingerprint of every new clip against the existing catalogue. A match is not an automatic rejection — a creator may be relisting their own material in a new album — but it goes to a human reviewer before any decision.
-- `doc.contentPolicy.5.heading` :: ما لا نقبله   ⟂ EN: What we do not accept
-- `doc.contentPolicy.5.list.1` :: مادة لا يملك رافعها حقوقها كاملة.   ⟂ EN: Material whose uploader does not hold the full rights to it.
-- `doc.contentPolicy.5.list.2` :: لقطات مولّدة بالذكاء الاصطناعي معروضة على أنها تصوير حقيقي.   ⟂ EN: AI-generated footage presented as if it were filmed.
-- `doc.contentPolicy.5.list.3` :: محتوى يخالف أنظمة المملكة أو يسيء لأفراد أو جهات.   ⟂ EN: Content that breaches the laws of the Kingdom or reflects badly on individuals or bodies.
-- `doc.contentPolicy.5.list.4` :: لقطات مأخوذة من إنتاج تجاري لجهة أخرى دون إذنها.   ⟂ EN: Footage taken from someone else's commercial production without their permission.
-- `doc.contentPolicy.6.heading` :: العلامة المائية والمعاينة   ⟂ EN: Watermarking and previews
-- `doc.contentPolicy.6.body.1` :: كل لقطة تُرفع إلى المنصّة تُعرض للجمهور بعلامة مائية تلقائياً — على كل مصغّرة وكل معاينة وكل مشغّل، دون استثناء ودون خطوة إضافية من الصانع. المعاينة تُعرّف باللقطة دون أن تسلّم نسخة صالحة للاستخدام.   ⟂ EN: Every clip uploaded to Laqta is shown publicly with an automatic watermark — on every thumbnail, every preview and every player, without exception and without any extra step from the creator. A preview shows what the clip is without handing over a usable copy.
-- `doc.contentPolicy.6.body.2` :: الملف الأصلي بالدقة الكاملة وبلا علامة مائية لا يُسلَّم إلا للمشتري بعد إتمام الدفع. هذا يحمي حق الصانع ويجعل المعاينة آمنة للعرض في كل مكان.   ⟂ EN: The original file, at full resolution and without a watermark, is delivered only to the buyer once payment completes. This protects the creator's rights and makes previews safe to show anywhere.
-- `doc.contentPolicy.7.heading` :: البلاغات والإزالة   ⟂ EN: Reports and takedowns
-- `doc.contentPolicy.7.body.1` :: لأي صاحب حق أن يتقدّم ببلاغ. نعطّل المحتوى محل البلاغ فور تقييمه تقييماً أولياً جادّاً، ثم نمنح الصانع فرصة الرد. التعطيل إجراء قابل للتراجع بطبيعته، ولهذا نلجأ إليه سريعاً بدل الانتظار.   ⟂ EN: Any rights holder may file a report. We disable the reported content as soon as we have made a serious initial assessment, then give the creator a chance to respond. Disabling is reversible by nature, which is why we do it quickly rather than waiting.
-
-## doc.about
-> عن لقطة
-
-- `doc.about.1.heading` :: لماذا وُجدت لقطة   ⟂ EN: Why Laqta exists
-- `doc.about.1.body.1` :: ابحث عن «الرياض» في أي مكتبة لقطات عالمية وستجد الأفق نفسه من الطائرة، ومشاهد لا تعرف الفرق بين حيّ وحيّ. المشكلة ليست السعر، بل أن من جمع تلك اللقطات لم يكن يعرف المكان.   ⟂ EN: Search for “Riyadh” in any global footage library and you will find the same skyline from a plane, and scenes that cannot tell one district from another. The problem is not the price — it is that whoever assembled that library did not know the place.
-- `doc.about.1.body.2` :: لقطة مكتبة لقطات سعودية: تُراجَع قبل النشر، ومفهرسة بأسماء الأماكن كما ينطقها أهلها — لا كما تُترجم آلياً.   ⟂ EN: Laqta is a Saudi footage library: reviewed before publication, and indexed under place names as the people who live there say them — not as a machine translates them.
-- `doc.about.2.heading` :: ما الذي يميّز الفهرسة   ⟂ EN: What makes the indexing different
-- `doc.about.2.body.1` :: البحث العربي هنا ليس ترجمة للبحث الإنجليزي. «العلا» و«AlUla» و«العُلا» كلها تصل إلى المادة نفسها، وكذلك اختلافات الهمزة والألف المقصورة والتاء المربوطة. الفهرس مبني على طبقة مرادفات يحرّرها فريق المنصّة، لا على مطابقة نصية.   ⟂ EN: Arabic search here is not a translation of English search. “العلا”, “AlUla” and “العُلا” all reach the same material, and so do variations of hamza, alef maqsura and teh marbuta. The index is built on a synonym layer the platform team edits, not on text matching.
-- `doc.about.3.heading` :: نموذج العمل   ⟂ EN: The business model
-- `doc.about.3.body.1` :: تشتري الألبوم مرة واحدة وتملك ترخيصه للأبد. لا اشتراك، ولا رصيد ينتهي آخر الشهر، ولا مفاجآت عند التجديد. تصلك فاتورة ضريبية عن كل عملية.   ⟂ EN: You buy the album once and own its licence forever. No subscription, no allowance expiring at the end of the month, no surprises at renewal. A tax invoice comes with every purchase.
-- `doc.about.3.body.2` :: يحتفظ صانع المحتوى بحقوق مادته، ويأخذ حصّة من كل عملية بيع ترتفع مع إجمالي مبيعاته. تُحجز أرباح كل عملية ثلاثين يوماً، ثم تصبح قابلة للسحب.   ⟂ EN: The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days, then become withdrawable.
-- `doc.about.4.heading` :: المراجعة   ⟂ EN: Review
-- `doc.about.4.body.1` :: كل ألبوم يمرّ على مراجع بشري قبل النشر: تناسق المواصفات، واكتمال التصاريح، والملاءمة الثقافية، والتكرار مع الكتالوج القائم. مهلتنا المعلنة ثلاثة أيام عمل.   ⟂ EN: Every album goes to a human reviewer before publication: matching specifications, complete clearances, cultural fit, and duplication against the existing catalogue. Our stated turnaround is three business days.
-
-## doc.contact
-> تواصل معنا
-
-- `doc.contact.1.heading` :: الدعم   ⟂ EN: Support
-- `doc.contact.1.body.1` :: لأي سؤال عن طلب، أو ترخيص، أو ملف لا يعمل كما ينبغي، راسلنا وسنرد خلال يوم عمل واحد. اذكر رقم الطلب إن كان سؤالك متعلقاً بعملية شراء — يختصر ذلك المراسلة كلها.   ⟂ EN: For any question about an order, a licence, or a file that is not behaving as it should, write to us and we will reply within one business day. Quote the order number if your question is about a purchase — it saves the entire back-and-forth.
-- `doc.contact.2.heading` :: صنّاع المحتوى   ⟂ EN: Creators
-- `doc.contact.2.body.1` :: إن كنت صانع محتوى وتريد عرض مادتك، ابدأ من صفحة «بِع لقطاتك». أسئلة الشراكات والحصرية تُرسل على القناة نفسها.   ⟂ EN: If you make Saudi material and want to list it, start from the “Sell your footage” page. Partnership and exclusivity questions go to the same channel.
-- `doc.contact.3.heading` :: بلاغات الحقوق   ⟂ EN: Rights reports
-- `doc.contact.3.body.1` :: لأي صاحب حق أن يتقدّم ببلاغ إزالة. أرفق ما يثبت صفتك، ورابط المادة محل البلاغ، ووصفاً محدّداً للقطات المعنية. نعالج البلاغات الجادة فور تقييمها.   ⟂ EN: Any rights holder may file a takedown report. Attach proof of your standing, a link to the material in question, and a specific description of the clips concerned. We act on serious reports as soon as we have assessed them.
-- `doc.contact.4.heading` :: الشركات والجهات الحكومية   ⟂ EN: Companies and government bodies
-- `doc.contact.4.body.1` :: للحسابات المؤسسية، والفوترة بأمر شراء، والاتفاقيات على مستوى المنظمة، تواصل معنا وسنجهّز لك عرضاً.   ⟂ EN: For organisational accounts, invoicing against a purchase order, and organisation-wide agreements, get in touch and we will put together a proposal.
+- `dash.creatorsTitle` :: صنّاع المحتوى
+- `dash.creatorsHint` :: اعتماد الطلبات، وضبط العمولة، وإيقاف الحسابات.
+- `dash.creatorPending` :: بانتظار الاعتماد
+- `dash.creatorApproved` :: معتمد
+- `dash.creatorSuspended` :: موقوف
+- `dash.creatorRejected` :: مرفوض
+- `dash.approveCreator` :: اعتماد   ⟂ EN: Approve creator
+- `dash.suspendCreator` :: إيقاف
+- `dash.reinstateCreator` :: إعادة تفعيل
+- `dash.tier` :: الشريحة
+- `dash.commissionOverride` :: عمولة مخصّصة
+- `dash.commissionOverrideHint` :: اتركه فارغاً لاستخدام نسبة الشريحة.
+- `dash.lifetimeGmv` :: إجمالي المبيعات
+- `dash.noCreators` :: ما فيه صنّاع محتوى
+- `dash.disputesTitle` :: الشكاوى والبلاغات
+- `dash.disputesHint` :: بلاغات حقوق النشر وطلبات الإزالة. تعطيل المحتوى إجراء فوري وقابل للتراجع.
+- `dash.disputeDmca` :: بلاغ حقوق نشر
+- `dash.disputeIp` :: نزاع ملكية
+- `dash.disputeTakedown` :: طلب إزالة
+- `dash.disputeComplaint` :: شكوى محتوى
+- `dash.disputeOpen` :: مفتوح
+- `dash.disputeInvestigating` :: قيد الفحص
+- `dash.disputeDisabled` :: المحتوى معطّل
+- `dash.disputeResolved` :: مغلق
+- `dash.disputeRejected` :: مرفوض
+- `dash.disableContent` :: تعطيل المحتوى
+- `dash.restoreContent` :: إعادة النشر
+- `dash.resolveDispute` :: إغلاق البلاغ
+- `dash.claimant` :: مقدّم البلاغ
+- `dash.resolution` :: قرار الإغلاق
+- `dash.noDisputes` :: ما فيه بلاغات
+- `dash.catalogueTitle` :: الكتالوج
+- `dash.catalogueHint` :: كل الألبومات المنشورة. أوقف أو اسحب ألبوماً دون المرور بقائمة المراجعة.
+- `dash.pauseAlbum` :: إيقاف مؤقت
+- `dash.resumeAlbum` :: إعادة النشر
+- `dash.delistAlbum` :: سحب من الكتالوج
+- `dash.priceBands` :: شرائح الأسعار
+- `dash.priceBandsHint` :: الشرائح اقتراح فقط: تملأ خانة السعر في صفحة المراجعة حسب عدد لقطات الألبوم، وأنت تحدّد السعر النهائي عند الاعتماد. تعديلها لا يغيّر سعر أي ألبوم، والطلبات المكتملة لا تتغير أبداً.
+- `dash.bandRange` :: عدد اللقطات
+- `dash.bandPrice` :: سعر الألبوم   ⟂ EN: Album price
+- `dash.taxonomyTitle` :: التصنيفات والمواقع
+- `dash.taxonomyHint` :: التصنيفات والمواقع والوسوم ومرادفاتها. المرادفات هي ما يجعل البحث العربي يجد المحتوى الموسوم بالإنجليزية.
+- `dash.kindCategory` :: تصنيف
+- `dash.kindLocation` :: موقع
+- `dash.kindTag` :: وسم
+- `dash.kindTheme` :: موضوع
+- `dash.addTerm` :: إضافة مصطلح
+- `dash.termAr` :: الاسم بالعربية
+- `dash.termEn` :: الاسم بالإنجليزية
+- `dash.termSlug` :: المعرّف
+- `dash.termSynonyms` :: المرادفات (افصل بفاصلة)
+- `dash.termParent` :: التصنيف الأعلى
+- `dash.termNone` :: لا شيء
+- `dash.noTerms` :: ما فيه مصطلحات
+- `dash.merchandisingTitle` :: واجهة الموقع
+- `dash.merchandisingHint` :: ما يظهر في الصفحة الرئيسية: البانر، والألبومات المميّزة، والمجموعات — دون تعديل الكود.
+- `dash.slots` :: الخانات
+- `dash.slotActive` :: مفعّلة
+- `dash.slotInactive` :: متوقفة
+- `dash.slotWindow` :: فترة العرض
+- `dash.collections` :: المجموعات
+- `dash.collectionPublished` :: منشورة
+- `dash.collectionDraft` :: مسودة
+- `dash.collectionFeatured` :: مميّزة
+- `dash.featureToggle` :: تمييز
+- `dash.publishToggle` :: نشر
+- `dash.sortOrder` :: الترتيب
+- `dash.noSlots` :: ما فيه خانات معرّفة
+- `dash.slotTitle` :: العنوان
+- `dash.slotSubtitle` :: النص الفرعي
+- `dash.slotCta` :: نص الزر
+- `dash.slotLink` :: رابط الوجهة
+- `dash.slotMedia` :: رابط الصورة أو الفيديو
+- `dash.trailerEdit` :: التريلر   ⟂ EN: Trailer
+- `dash.trailerKey` :: مفتاح التريلر في مكتبة الوسائط   ⟂ EN: Trailer key in the media library
+- `dash.trailerHint` :: مفتاح في مكتبة الوسائط العامة، أو رابط كامل من نطاق الوسائط. اتركه فارغاً لإزالة التريلر، فتعود صفحة الألبوم إلى صورة الغلاف.   ⟂ EN: A key in the public media library, or a full URL on the media domain. Leave it empty to remove the trailer; the album page goes back to its cover still.
+- `dash.trailerConvention` :: المفتاح الذي يكتبه أمر الرفع لهذا الألبوم:   ⟂ EN: The key the upload command writes for this album:
+- `dash.trailerInvalid` :: هذا ليس مفتاحاً في مكتبة الوسائط العامة. اكتب مساراً في مجلد التريلرات، أو رابطاً من نطاق الوسائط.   ⟂ EN: That is not a key in the public media library. Enter a path in the trailers folder, or a URL on the media domain.
+- `dash.trailerNoCdn` :: حُفظ التريلر، لكنه لن يظهر للزوّار قبل ضبط نطاق الوسائط. تبقى صورة الغلاف حتى ذلك الحين.   ⟂ EN: Trailer saved, but visitors will not see it until the media domain is configured. The cover still stays until then.
+- `dash.trailerCleared` :: أُزيل التريلر. تعرض صفحة الألبوم صورة الغلاف الآن.   ⟂ EN: Trailer removed. The album page now shows its cover still.
+- `dash.trailerSet` :: له تريلر   ⟂ EN: Has a trailer
+- `dash.trailerNone` :: بلا تريلر   ⟂ EN: No trailer
+- `dash.ordersTitle` :: الطلبات
+- `dash.ordersHint` :: كل عمليات الشراء، والاسترجاع، والفواتير الضريبية.
+- `dash.orderPaid` :: مدفوع
+- `dash.orderPending` :: بانتظار الدفع
+- `dash.orderFailed` :: فشل الدفع
+- `dash.orderRefunded` :: مسترجع
+- `dash.orderPartial` :: استرجاع جزئي
+- `dash.orderItems` :: بنود الطلب
+- `dash.buyer` :: المشتري
+- `dash.refund` :: استرجاع
+- `dash.refundReason` :: سبب الاسترجاع
+- `dash.refundPolicy` :: الأساس النظامي
+- `dash.refundHint` :: تُعكس العمولة بالنسبة المجمّدة لحظة الشراء، لا بالنسبة الحالية.
+- `dash.basisTechnical` :: خلل تقني في الملف
+- `dash.basisLicence` :: الترخيص لا يطابق الاستخدام
+- `dash.basisDuplicate` :: شراء مكرّر
+- `dash.basisGoodwill` :: استرجاع ودّي
+- `dash.orderNumber` :: رقم الطلب
+- `dash.paymentMethod` :: وسيلة الدفع
+- `dash.remaining` :: المتبقّي
+- `dash.refundedAmount` :: المسترجع
+- `dash.payoutRef` :: المرجع البنكي
+- `dash.confirmPaid` :: تأكيد التحويل
+- `dash.noOrders` :: ما فيه طلبات
+- `dash.payoutQueueTitle` :: طلبات التحويل
+- `dash.payoutQueueHint` :: اعتمد الطلبات ثم صدّرها كدفعة واحدة لكل قناة.
+- `dash.approvePayout` :: اعتماد
+- `dash.markPaid` :: تأكيد التحويل
+- `dash.runs` :: الدفعات
+- `dash.noPayoutRequests` :: ما فيه طلبات تحويل
+- `dash.promosTitle` :: أكواد الخصم
+- `dash.promosHint` :: أكواد ترويجية بنسبة أو بمبلغ ثابت، بحد أقصى للاستخدام وفترة صلاحية.
+- `dash.promoCode` :: الكود
+- `dash.promoKind` :: النوع
+- `dash.promoPercent` :: نسبة مئوية
+- `dash.promoFixed` :: مبلغ ثابت
+- `dash.promoValue` :: القيمة
+- `dash.promoRedemptions` :: الاستخدامات
+- `dash.promoLimit` :: الحد الأقصى
+- `dash.promoWindow` :: فترة الصلاحية
+- `dash.promoMinOrder` :: الحد الأدنى للطلب
+- `dash.promoActive` :: مفعّل
+- `dash.promoInactive` :: متوقف
+- `dash.newPromo` :: كود جديد
+- `dash.noPromos` :: ما فيه أكواد
+- `dash.platformSettings` :: إعدادات المنصّة
+- `dash.platformSettingsHint` :: الأرقام التي تحكم التشغيل: مهلة المراجعة، ومدة الحجز، والحد الأدنى للتحويل، والضريبة، ونسب العمولة.
+- `dash.reviewSla` :: مهلة المراجعة (أيام عمل)
+- `dash.holdDays` :: مدة حجز الأرباح (أيام)
+- `dash.minPayout` :: الحد الأدنى للتحويل
+- `dash.vatRate` :: نسبة ضريبة القيمة المضافة
+- `dash.commissionTiers` :: نسب العمولة
+- `dash.settingsReadOnly` :: هذه القيم مثبّتة في الكود حالياً وتظهر هنا للمراجعة.
+- `dash.auditTrail` :: سجل الإجراءات
+- `dash.auditAction` :: الإجراء
+- `dash.auditActor` :: المنفِّذ
+- `dash.storage` :: التخزين السحابي
+- `dash.licenceCurrent` :: نسخة الترخيص السارية

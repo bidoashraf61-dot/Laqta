@@ -16,10 +16,10 @@ import { ScrollArea } from '@/components/ui/overlays'
 import { PreviewWatermark } from '@/components/catalogue/watermark'
 import { AlbumShots } from '@/components/catalogue/album-shots'
 import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
-import { mediaUrl } from '@/lib/media'
+import { absoluteMediaUrl, digitalSourceType, mediaUrl } from '@/lib/media'
 import { Sparkles, Video } from 'lucide-react'
 import { PageTitle } from '@/components/ui/typography'
-import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
+import { BCP47, currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { auth } from '@/lib/auth'
 import { previewDeliverable } from '@/lib/previews'
@@ -44,6 +44,7 @@ async function getClip(slug: string) {
     where: { slug, album: { status: 'live' } },
     select: {
       id: true,
+      createdAt: true,
       slug: true,
       titleAr: true,
       titleEn: true,
@@ -431,6 +432,8 @@ function VideoJsonLd({
     descriptionEn: string | null
     thumbnailKeys: string[]
     durationS: unknown
+    createdAt: Date
+    album: { origin: 'captured' | 'generated' }
   }
   url: string
 }) {
@@ -442,11 +445,23 @@ function VideoJsonLd({
     description:
       pickLocalised(clip.descriptionAr, clip.descriptionEn) ??
       pickLocalised(clip.titleAr, clip.titleEn),
-    thumbnailUrl: clip.thumbnailKeys.map(mediaUrl).filter((url): url is string => !!url),
+    // Absolute: a relative thumbnail in JSON-LD is ignored by Google.
+    thumbnailUrl: clip.thumbnailKeys.map(absoluteMediaUrl).filter((url): url is string => !!url),
+    // Required for the video rich result (DEV-36): when the clip entered the
+    // catalogue.
+    uploadDate: clip.createdAt.toISOString(),
     // ISO-8601 duration.
     duration: `PT${Math.floor(seconds / 60)}M${seconds % 60}S`,
     url,
-    inLanguage: 'ar',
+    inLanguage: BCP47[currentLocale()],
+    // AI or camera, in the IPTC vocabulary search engines read (DEV-36) — the
+    // same honesty the visible badge on the page carries.
+    additionalProperty: {
+      '@type': 'PropertyValue',
+      name: 'digitalSourceType',
+      value: digitalSourceType(clip.album.origin),
+    },
+    genre: clip.album.origin === 'generated' ? 'AI-generated stock footage' : 'Stock footage',
   }
   return (
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />

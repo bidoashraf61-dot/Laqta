@@ -138,6 +138,8 @@ export async function notifyOrderPaid(
         orderNumber: true,
         status: true,
         subtotal: true,
+        discountAmount: true,
+        promoCode: true,
         vatAmount: true,
         total: true,
         currency: true,
@@ -193,6 +195,10 @@ export async function notifyOrderPaid(
         orderNumber: order.orderNumber,
         albumTitles: order.items.map((item) => titleFor(locale, item.album.titleAr, item.album.titleEn)),
         subtotal: Number(order.subtotal),
+        // A promo code's discount, already off the subtotal (DEV-63).
+        ...(Number(order.discountAmount) > 0
+          ? { discountAmount: Number(order.discountAmount), promoCode: order.promoCode ?? '' }
+          : {}),
         vatAmount: Number(order.vatAmount),
         total: Number(order.total),
         currency: order.currency,

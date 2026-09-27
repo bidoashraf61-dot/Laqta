@@ -10,8 +10,9 @@ import { Alert, AlertDescription } from '@/components/ui/state'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/lib/payments'
-import { placeOrder } from '@/app/(public)/checkout/actions'
-import { useT } from '@/lib/i18n-client'
+import { placeOrder, previewPromo, type PromoPreview } from '@/app/(public)/checkout/actions'
+import { useLocale, useT } from '@/lib/i18n-client'
+import { formatMoneyIn } from '@/lib/i18n'
 
 const METHOD_LABEL: Record<PaymentMethod, string> = {
   card: 'checkout.methodCard',
@@ -70,6 +71,29 @@ export function CheckoutForm({
         return
       }
       setError(t(result.messageKey))
+    })
+  }
+
+  // ── Promo code (DEV-63) ────────────────────────────────────────────────────
+  // Applied by a preview round trip, so the buyer sees the discount and the
+  // new total before paying. Only an applied code is posted (hidden input);
+  // editing the field un-applies it. `checkout()` re-checks it regardless.
+  const locale = useLocale()
+  const [codeInput, setCodeInput] = useState('')
+  const [promo, setPromo] = useState<Extract<PromoPreview, { ok: true }> | null>(null)
+  const [promoError, setPromoError] = useState<string | null>(null)
+  const [checking, startChecking] = useTransition()
+  const money = (value: number) => formatMoneyIn(locale, value)
+
+  function applyCode() {
+    setPromoError(null)
+    startChecking(async () => {
+      const result = await previewPromo(codeInput)
+      if (result.ok) setPromo(result)
+      else {
+        setPromo(null)
+        setPromoError(t(result.messageKey, result.vars))
+      }
     })
   }
 
@@ -158,6 +182,74 @@ export function CheckoutForm({
             <Input id="city" name="city" />
           </Field>
         </div>
+      </section>
+
+      <section className="space-y-3" aria-labelledby="promo-title">
+        <h2 id="promo-title" className="font-bold">
+          {t('checkout.promoTitle')}
+        </h2>
+        <div className="flex flex-wrap items-start gap-2">
+          <Input
+            id="promo-code"
+            aria-label={t('checkout.promoTitle')}
+            value={codeInput}
+            onChange={(event) => {
+              setCodeInput(event.target.value)
+              setPromo(null)
+              setPromoError(null)
+            }}
+            onKeyDown={(event) => {
+              // Enter applies the code; it must not submit the order.
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                if (codeInput.trim()) applyCode()
+              }
+            }}
+            autoComplete="off"
+            dir="ltr"
+            maxLength={64}
+            className="ltr-island w-48 uppercase"
+          />
+          <Button type="button" variant="outline" disabled={!codeInput.trim() || checking} onClick={applyCode}>
+            {checking ? t('state.loading') : t('checkout.promoApply')}
+          </Button>
+          {promo ? (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setPromo(null)
+                setCodeInput('')
+              }}
+            >
+              {t('checkout.promoRemove')}
+            </Button>
+          ) : null}
+        </div>
+        {promo ? <input type="hidden" name="promoCode" value={promo.code} /> : null}
+        {promoError ? (
+          <p role="alert" className="text-sm text-destructive">
+            {promoError}
+          </p>
+        ) : null}
+        {promo ? (
+          <div role="status" className="space-y-1 rounded-md border bg-card p-3 text-sm">
+            <div className="flex justify-between gap-4 text-success">
+              <span>
+                {t('checkout.promoDiscount')} <span className="ltr-island">{promo.code}</span>
+              </span>
+              <span className="numeric">−{money(promo.discount)}</span>
+            </div>
+            <div className="flex justify-between gap-4 text-muted-foreground">
+              <span>{t('cart.vat')}</span>
+              <span className="numeric">{money(promo.vatAmount)}</span>
+            </div>
+            <div className="flex justify-between gap-4 pt-1 font-bold">
+              <span>{t('checkout.promoNewTotal')}</span>
+              <span className="numeric">{money(promo.total)}</span>
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section className="space-y-3">

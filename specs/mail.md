@@ -263,3 +263,4 @@ address or a limited request.
   goes out with the next message queued after one is.
 
 - `album.changes` (2026-09-27, DEV-09b): when the review round carried a proposed price, the payload has `proposedPrice` + `currency` and the body adds «واقترحنا سعراً للألبوم: {price}. تلقاه في تفاصيل الألبوم، واحفظه لتقبله أو اقترح غيره.» after the reviewer's note.
+- `order.confirmed` (2026-09-27, DEV-63): when the order used a promo code the totals add «خصم الكود {code}» −amount before the subtotal (the subtotal is already after it); payload `discountAmount`, `promoCode`.

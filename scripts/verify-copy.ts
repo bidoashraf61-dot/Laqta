@@ -1,10 +1,13 @@
 /**
- * The site copy the owner edits from /admin/content/copy (DEV-64b).
+ * The site copy the owner edits from /admin/content/copy (DEV-64b, DEV-64c).
  *
  *   npm run verify:copy        (no server needed)
  *
  * What this protects:
- *   - every original string of the landing page, /sell and the emails passes
+ *   - only visitor-facing copy is editable (landing, /sell, emails — DEV-64b —
+ *     and every public, checkout and account surface — DEV-64c); the admin
+ *     and studio interfaces are not, and the brand name is locked;
+ *   - every original string of every editable group passes
  *     the edit rules, in both languages — so the rules never refuse the text
  *     the site was built with;
  *   - an edit cannot drop or invent a `{placeholder}`, overrun its length cap,
@@ -46,7 +49,19 @@ async function main() {
     )
     report(`the ${keys.length} original ${group} strings pass the edit rules`, broken.length === 0, broken.slice(0, 3).join('; '))
   }
-  report('only landing, sell and email are editable', !isEditableKey('dash.settings') && !isEditableKey('checkout.pay') && isEditableKey('landing.heroBold'))
+  // Visitor-facing copy only (owner, 2026-09-27): the dashboards stay code.
+  const adminOnly = ['dash.settings', 'studio.albums', 'admin.catalogue', 'payoutRun.title', 'security.title', 'role.admin']
+  report(
+    'admin and studio strings are not editable',
+    adminOnly.every((key) => !isEditableKey(key)),
+    adminOnly.filter((key) => isEditableKey(key)).join(', '),
+  )
+  const visitor = ['landing.heroBold', 'nav.albums', 'catalogue.albumsTitle', 'checkout.title', 'cart.title', 'auth.signIn', 'library.title', 'contact.lead', 'footer.terms', 'state.error']
+  report('every visitor surface is editable', visitor.every(isEditableKey), visitor.filter((key) => !isEditableKey(key)).join(', '))
+  report('the brand name is locked', !isEditableKey('brand.name') && isEditableKey('brand.tagline'))
+  const keysEverywhere = COPY_GROUP_KEYS.flatMap(groupKeys)
+  report('no string belongs to two groups', new Set(keysEverywhere).size === keysEverywhere.length)
+  report('a one-word button keeps a tight cap', lengthCap('ar', 'actions.save') <= 12, String(lengthCap('ar', 'actions.save')))
 
   // ── The rules, on plain values ───────────────────────────────────────────
   const withVars = groupKeys('email').find((key) => placeholders(defaultCopy('ar', key)).length > 0)!
@@ -66,6 +81,8 @@ async function main() {
   refuses('refund copy', 'ar', 'sell.lead', 'استرداد كامل خلال أسبوع.', 'claim')
   refuses('a licence overclaim', 'en', 'landing.heroBody', 'Covers every use you can think of.', 'claim')
   refuses('"filmed" in an email', 'en', 'email.orderConfirmedHeading', 'Filmed for you.', 'claim')
+  refuses('a button that outgrows its box', 'ar', 'actions.save', 'احفظ كل التعديلات الآن من فضلك', 'tooLong')
+  refuses('a dropped plural count', 'ar', 'count.clipMany', 'لقطة كثيرة', 'placeholderMissing')
   report('accepts Latin runs inside Arabic', validateCopy('ar', 'landing.heroBold', 'بدقة 4K ولقطات سعودية.') === null)
 
   // ── Against the database ─────────────────────────────────────────────────

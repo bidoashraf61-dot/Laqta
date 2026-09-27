@@ -112,6 +112,7 @@ const ROUTES = [
   '/admin/content',
   '/admin/content/terms',
   '/admin/content/copy/landing',
+  '/admin/content/copy/catalogue',
   '/admin/content/copy/email/preview',
   '/admin/reports',
   '/admin/settings',

@@ -6,7 +6,7 @@ import { Anchor } from '@/components/ui/link'
 import { buttonVariants } from '@/components/ui/button'
 import { DashboardHeader } from '@/components/dashboard/primitives'
 import { CopyEditor, type CopyRow, type EditorBatch } from '@/components/admin/copy-editor'
-import { COPY_GROUPS, defaultCopy, groupKeys, isCopyGroup, lengthCap, placeholders } from '@/lib/copy-rules'
+import { COPY_GROUPS, defaultCopy, groupKeys, groupOf, groupPrefixes, isCopyGroup, lengthCap, placeholders } from '@/lib/copy-rules'
 import { groupOverrides, listCopyBatches } from '@/lib/copy-overrides'
 import { TEMPLATES } from '@/emails/registry'
 import { formatDateTime, t } from '@/lib/i18n'
@@ -45,8 +45,8 @@ export default async function AdminCopyPage({ params }: { params: Promise<{ grou
   const definition = COPY_GROUPS[group]
 
   const [published, batches] = await Promise.all([
-    groupOverrides(definition.prefix),
-    listCopyBatches(definition.prefix),
+    groupOverrides(groupPrefixes(group)),
+    listCopyBatches(groupPrefixes(group)),
   ])
 
   const rows: CopyRow[] = groupKeys(group).map((key) => ({
@@ -74,7 +74,7 @@ export default async function AdminCopyPage({ params }: { params: Promise<{ grou
     undoOf: batch.restoredFromBatchId
       ? t('dash.copy.undoOf', { date: dates.get(batch.restoredFromBatchId) ?? '—' })
       : null,
-    changes: batch.changes.filter((c) => c.key.startsWith(definition.prefix)),
+    changes: batch.changes.filter((c) => groupOf(c.key) === group),
   }))
 
   const title = t(definition.titleKey)

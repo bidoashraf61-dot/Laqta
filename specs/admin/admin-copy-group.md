@@ -3,12 +3,27 @@
 **Route** `/admin/content/copy/[group]` · **Access** admin only · **Rendering** server, dynamic (`auth()`); the editor is a client component (`components/admin/copy-editor.tsx`)
 
 ## Purpose
-Edit the words on the landing page (FAQ included), the `/sell` page and the transactional
-emails, in Arabic and English, preview them on the real page, publish, and undo any publish
-(DEV-64b).
+Edit every string a visitor reads, in Arabic and English, preview it on the real page,
+publish, and undo any publish (DEV-64b: landing, `/sell`, emails; DEV-64c: every other
+public, checkout and account surface).
 
-`[group]` is `landing` (`landing.*`, 131 strings), `sell` (`sell.*`, 51) or `email`
-(`email.*`, 82) — `lib/copy-rules.ts#COPY_GROUPS`; anything else is `notFound()`.
+`[group]` (`lib/copy-rules.ts#COPY_GROUPS` — each group lists top-level `messages` sections):
+
+| Group | Sections | Strings | Preview opens |
+| --- | --- | --- | --- |
+| `landing` | `landing` (FAQ included) | 131 | `/` |
+| `sell` | `sell` | 51 | `/sell` |
+| `email` | `email` | 82 | the [email preview](admin-copy-email-preview.md) |
+| `site` | `brand` (not `brand.name`), `nav`, `footer`, `search`, `legal`, `state`, `actions` | 75 | `/` |
+| `catalogue` | `catalogue`, `commerce`, `count`, `media`, `review`, `request`, `sample` | 195 | `/albums` |
+| `checkout` | `cart`, `checkout`, `promo` | 64 | `/cart` |
+| `account` | `auth`, `account`, `library`, `boards` | 129 | `/account` |
+| `contact` | `contact` | 39 | `/contact` |
+
+Anything else is `notFound()`. **Not editable, by the owner's decision (2026-09-27):** the
+admin and creator-studio interfaces — `dash.*`, `studio.*`, `admin.*`, `payoutRun.*`,
+`security.*`, `role.*`, `palette.*` — and `brand.name` (the logo's text and accessible
+name). `actions.*` and `state.*` are shared with the dashboards: an edit there shows in both.
 
 ## How edits are stored and read
 - **`messages/*.json` is the default and is never modified.** An edit is a `CopyOverride`
@@ -28,18 +43,21 @@ emails, in Arabic and English, preview them on the real page, publish, and undo 
   `null` = the JSON default. Append-only.
 
 ## Data in
-- `groupKeys(group)` — every key under the prefix, in JSON (page) order.
+- `groupKeys(group)` — every key of the group's sections, section by section, in JSON
+  (page) order; `brand.name` excluded.
 - For each key and language: the original (`defaultCopy`), the published override
   (`groupOverrides(prefix)`), the length cap (`lengthCap`) and the placeholders the original
   carries.
-- `listCopyBatches(prefix)` — the 20 newest publishes touching the group, with publisher
-  names; dates formatted server-side (`formatDateTime`).
+- `listCopyBatches(groupPrefixes(group))` — the 20 newest publishes touching the group,
+  with publisher names; dates formatted server-side (`formatDateTime`). A batch's change
+  list shows only this group's strings.
 - For `email`: the template names (`emails/registry.ts#TEMPLATES`) for the preview picker.
 
 ## Controls
 
 | Control | Action | Effect |
 | --- | --- | --- |
+| Section heading (mixed groups) | — | «القوائم», «السلة», … (`dash.copy.section.*`) where a new part of the site begins; one-section groups show keys without the section name |
 | «ابحث في النصوص» | client filter | matches the key, the current text or the original, either language |
 | «المعدّلة فقط» (`aria-pressed`) | client filter | rows with a published edit or an unpublished change |
 | Row — «العربية» / «الإنجليزية» textareas | edit | starts at what the site shows now; «الأصل: …» shows under the box whenever it differs from the original or is empty |
@@ -49,7 +67,7 @@ emails, in Arabic and English, preview them on the real page, publish, and undo 
 | «الرسالة» (email only) | native select, templates by name (`dash.copy.template.*`) | which email the preview renders |
 | «معاينة على الصفحة» / «معاينة رسالة» | `previewCopyAction(changes)` → new tab | stores the drafts (`CopyPreview`, validated like a publish, rows older than a day pruned) and opens `/?copyPreview=<id>` or `/sell?…` (`/en…` for English), or the [email preview](admin-copy-email-preview.md). Disabled while any row has an error |
 | «تجاهل التعديلات» | native confirm | every box back to what the site shows; the stored draft cleared |
-| «نشر» | native confirm → `publishCopyAction(changes, note)` | validates every change, writes the batch in one transaction, audits `copy.publish`, refreshes the published map, revalidates `/`, `/en`, `/sell`, `/en/sell` and `/admin/content`. Disabled until something changed and while any row has an error |
+| «نشر» | native confirm → `publishCopyAction(changes, note)` | validates every change, writes the batch in one transaction, audits `copy.publish`, refreshes the published map, revalidates the whole site (`revalidatePath('/', 'layout')` — menus and footer are on every page). Disabled until something changed and while any row has an error |
 | History — «التراجع عن هذا النشر» | native confirm → `undoCopyBatchAction(batchId)` | publishes a new batch that puts every string of that batch back to its `before` (an override or the original); audits `copy.restore` |
 | History — «عرض التغييرات» | `<details>` | each string's before (struck) → after; `(الأصل)` marks the JSON default |
 
@@ -59,8 +77,9 @@ All three actions refuse during view-as-user (`state.forbidden`).
 ## Edit rules (`lib/copy-rules.ts#validateCopy` — run live in the editor and again on the server)
 - `{placeholders}` must match the original exactly — none dropped (`placeholderMissing`),
   none invented (`placeholderExtra`). The row lists them under «يجب أن يبقى».
-- Length cap per string: originals ≤ 40 characters get `max(24, 1.6×)`, longer ones
-  `2× + 40` — a label or headline cut stays near its box. A live counter turns warning at
+- Length cap per string, from the original's length: ≤ 12 characters (a button or badge,
+  «حفظ», «بحث») `max(len + 8, 2×)`; ≤ 40 `max(24, 1.6×)`; longer `2× + 40`. This is what
+  keeps an edited button inside its button and a headline cut near its box. A live counter turns warning at
   90 %.
 - No HTML tags.
 - English box: not mostly Arabic. Arabic box: at least one Arabic letter when the original
@@ -94,8 +113,9 @@ with «إنهاء المعاينة» (the same path without the query). Anyone e
 
 ## Invariants
 - The JSON is the permanent fallback; a database failure or a removed override renders it.
-- Only `landing.*`, `sell.*` and `email.*` are editable (DEV-64b); a key outside them is
-  refused at publish, at preview and when loaded.
+- Only the groups above are editable; a key outside them (or `brand.name`) is refused at
+  publish, at preview and when loaded.
+- An edit can never blank a string: an empty box publishes as the original.
 - A preview never leaks: drafts live per render on the server and per provider on the
   client.
 - Every publish and undo is a new batch, audited; nothing is rewritten or deleted.
@@ -107,7 +127,9 @@ with «إنهاء المعاينة» (the same path without the query). Anyone e
   is recorded and audited; an unchanged string is "nothing"; an empty edit removes the
   override; undo restores as a new audited batch; a preview refuses what publish refuses,
   stores drafts, does not publish, and an unknown id loads nothing; an explicit (client) map
-  wins; every published override still passes the rules.
+  wins; every published override still passes the rules. Plus (DEV-64c): admin/studio
+  strings are not editable, every visitor surface is, `brand.name` is locked, no string is
+  in two groups, a one-word button keeps a tight cap, a plural count keeps `{count}`.
 - `verify:mail` — shares the banned patterns.
-- `verify:arabic`, `audit` — `/admin/content/copy/landing`. `verify:arabic` skips textarea contents (a field's value is data being edited, and holds `{count}`-style placeholders by design).
+- `verify:arabic`, `audit` — `/admin/content/copy/landing` and `/admin/content/copy/catalogue`. `verify:arabic` skips textarea contents (a field's value is data being edited, and holds `{count}`-style placeholders by design).
 - Not covered by a browser gate: the editor's controls and the preview banner.

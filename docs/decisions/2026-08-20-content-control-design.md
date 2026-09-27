@@ -1,6 +1,6 @@
 # Spec D — Content control (admin as CMS)
 
-**Status** approved 2026-08-20; **64a built 2026-09-27** (long-form pages) and **64b built 2026-09-27** (landing, `/sell`, FAQ, email copy) — see below; 64c (every other string) not built · **Order** fourth (A → C → B → D) · **Largest of the four**
+**Status** approved 2026-08-20; **64a built 2026-09-27** (long-form pages) **64b** (landing, `/sell`, FAQ, email copy) and **64c** (every other visitor-facing string) built 2026-09-27 — see below · **Order** fourth (A → C → B → D) · **Largest of the four**
 
 ## Purpose
 
@@ -121,6 +121,19 @@ page to fail.
 - Scope: `landing.*` (incl. FAQ), `sell.*`, `email.*`. Routes: `/admin/content` (hub),
   `/admin/content/copy/[group]`, `/admin/content/copy/email/preview`.
   Specs: `specs/admin/admin-copy-group.md`, `admin-copy-email-preview.md`.
+
+### What 64c actually built (2026-09-27) — narrows this spec
+
+- **The owner narrowed "every word" to "every word a visitor reads."** The admin and
+  creator-studio labels (`dash.*`, `studio.*`, `admin.*`, `payoutRun.*`, `security.*`,
+  ~900 strings) stay code-only; they are not public copy. `brand.name` is locked.
+- The same editor covers five more groups (site, catalogue, checkout, account, contact —
+  766 strings with 64b's three). A group is a list of top-level `messages` sections.
+- "Cannot blank a label": an empty box publishes as the original. "Cannot overflow its
+  box": a tighter length cap for strings ≤ 12 characters (buttons, badges). "Cannot break
+  Arabic direction": the Arabic box must contain Arabic, the English box must not be
+  mostly Arabic. No per-key orphan detection yet — an override for a key removed from the
+  JSON is ignored at load (`isEditableKey`), not surfaced.
 
 ### `CmsEntry` — connected, finally
 

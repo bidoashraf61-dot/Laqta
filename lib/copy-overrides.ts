@@ -158,10 +158,12 @@ export type CopyBatch = {
   changes: Array<{ key: string; locale: Locale; before: string | null; after: string | null }>
 }
 
-/** The newest publishes that touched a key with `prefix`, newest first. */
-export async function listCopyBatches(prefix: string, limit = 20): Promise<CopyBatch[]> {
+const underAny = (prefixes: string[]) => ({ OR: prefixes.map((prefix) => ({ key: { startsWith: prefix } })) })
+
+/** The newest publishes that touched a key under any of `prefixes`, newest first. */
+export async function listCopyBatches(prefixes: string[], limit = 20): Promise<CopyBatch[]> {
   const recent = await db.copyRevision.findMany({
-    where: { key: { startsWith: prefix } },
+    where: underAny(prefixes),
     orderBy: { publishedAt: 'desc' },
     distinct: ['batchId'],
     take: limit,
@@ -196,13 +198,22 @@ export async function listCopyBatches(prefix: string, limit = 20): Promise<CopyB
   return [...batches.values()].sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
 }
 
-/** The published overrides for a group, as `{ "<locale>:<key>": value }`. */
-export async function groupOverrides(prefix: string): Promise<CopyOverrideMap> {
-  const rows = await db.copyOverride.findMany({ where: { key: { startsWith: prefix } } })
+/** The published overrides under any of `prefixes`, as `{ "<locale>:<key>": value }`. */
+export async function groupOverrides(prefixes: string[]): Promise<CopyOverrideMap> {
+  const rows = await db.copyOverride.findMany({ where: underAny(prefixes) })
   return Object.fromEntries(rows.map((row) => [`${row.locale}:${row.key}`, row.value]))
 }
 
 // ─── Preview ─────────────────────────────────────────────────────────────────
+
+/** Edited strings and the newest publish under `prefixes` — for the hub. */
+export async function copyGroupStats(prefixes: string[]) {
+  const [edited, last] = await Promise.all([
+    db.copyOverride.findMany({ where: underAny(prefixes), distinct: ['key'], select: { key: true } }),
+    db.copyRevision.findFirst({ where: underAny(prefixes), orderBy: { publishedAt: 'desc' }, select: { publishedAt: true } }),
+  ])
+  return { edited: edited.length, last: last?.publishedAt ?? null }
+}
 
 /**
  * Store drafts for a preview render. Drafts are validated like a publish, so a

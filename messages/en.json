@@ -830,11 +830,16 @@
       "group": {
         "landing": "Home page and FAQ",
         "sell": "“Sell your footage” page",
-        "email": "Emails"
+        "email": "Emails",
+        "site": "Menus, footer and site-wide messages",
+        "catalogue": "Catalogue and album pages",
+        "checkout": "Cart and checkout",
+        "account": "Sign-in, account and library",
+        "contact": "Contact page"
       },
       "sectionPages": "Long pages",
       "sectionCopy": "Site copy",
-      "sectionCopyHint": "Headlines, buttons and paragraphs on the home page, the sell page and the emails. Anything you don't edit stays as it is.",
+      "sectionCopyHint": "Everything a visitor reads: the home page, the sell page, the catalogue, the cart, the account and the emails. Anything you don't edit stays as it is. Dashboard and creator-studio labels are not here.",
       "strings": "{count} strings",
       "modified": "Edited: {count}",
       "lastPublished": "Last published {date}",
@@ -911,6 +916,33 @@
         "review_queued": "New album to review (admin)",
         "contact_message": "Contact form message (admin)",
         "auth_passwordReset": "Password reset"
+      },
+      "section": {
+        "brand": "Brand and search-engine descriptions",
+        "nav": "Menus",
+        "footer": "Footer",
+        "search": "Search",
+        "legal": "Legal pages (shared parts)",
+        "state": "Loading, error and empty messages",
+        "actions": "Common buttons (also shown in the dashboards)",
+        "catalogue": "Catalogue, filters, album and clip pages",
+        "commerce": "Buying, prices and licence",
+        "count": "Clip counts",
+        "media": "Video player",
+        "review": "Buyer reviews",
+        "request": "Footage requests",
+        "sample": "Free sample album",
+        "cart": "Cart",
+        "checkout": "Checkout",
+        "promo": "Promo codes",
+        "auth": "Sign-in and sign-up",
+        "account": "Account and orders",
+        "library": "My library and downloads",
+        "boards": "Boards",
+        "contact": "Contact page",
+        "landing": "Home page",
+        "sell": "Sell page",
+        "email": "Emails"
       }
     }
   },

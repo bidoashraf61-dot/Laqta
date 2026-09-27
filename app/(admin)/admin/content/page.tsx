@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { DashboardHeader, Panel } from '@/components/dashboard/primitives'
 import { DOCUMENT_KEYS, DOCUMENTS } from '@/lib/editable-documents'
-import { COPY_GROUP_KEYS, COPY_GROUPS, groupKeys } from '@/lib/copy-rules'
+import { COPY_GROUP_KEYS, COPY_GROUPS, groupKeys, groupPrefixes } from '@/lib/copy-rules'
+import { copyGroupStats } from '@/lib/copy-overrides'
 import { formatDate, formatNumber, t } from '@/lib/i18n'
 import { requestLocale } from '@/lib/locale-request'
 import { cn } from '@/lib/utils'
@@ -62,27 +63,11 @@ export default async function AdminContentPage() {
     : []
   const who = new Map(publishers.map((u) => [u.id, u.name || u.email]))
   const copyStats = await Promise.all(
-    COPY_GROUP_KEYS.map(async (group) => {
-      const prefix = COPY_GROUPS[group].prefix
-      const [edited, last] = await Promise.all([
-        db.copyOverride.findMany({
-          where: { key: { startsWith: prefix } },
-          distinct: ['key'],
-          select: { key: true },
-        }),
-        db.copyRevision.findFirst({
-          where: { key: { startsWith: prefix } },
-          orderBy: { publishedAt: 'desc' },
-          select: { publishedAt: true },
-        }),
-      ])
-      return {
-        group,
-        total: groupKeys(group).length,
-        edited: edited.length,
-        last: last?.publishedAt ?? null,
-      }
-    }),
+    COPY_GROUP_KEYS.map(async (group) => ({
+      group,
+      total: groupKeys(group).length,
+      ...(await copyGroupStats(groupPrefixes(group))),
+    })),
   )
   const byKey = new Map(latest.map((row) => [row.docKey, row]))
   const countByKey = new Map(counts.map((row) => [row.docKey, row._count._all]))

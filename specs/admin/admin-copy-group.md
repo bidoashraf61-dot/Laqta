@@ -85,7 +85,8 @@ All three actions refuse during view-as-user (`state.forbidden`).
 - English box: not mostly Arabic. Arabic box: at least one Arabic letter when the original
   has one (Latin runs like «رقم IBAN» and «4K» are fine).
 - No banned claim (`lib/copy-claims.ts`): the licence contradictions and overclaims
-  (`verify:licence`), refund copy and first/largest claims (owner decisions), and — email
+  (`verify:licence` — including, since DEV-21, ownership wording like «لك للأبد»,
+  «امتلاك دائم», "yours for life": the buyer holds a permanent licence), refund copy and first/largest claims (owner decisions), and — email
   only — "filmed" and the bare words first/largest (`verify:mail`).
 A publish with any failing string writes nothing; the refusal names the string, and the
 editor scrolls to it and focuses it.

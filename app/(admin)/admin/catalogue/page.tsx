@@ -20,6 +20,7 @@ import { StatusBadge, statusLabel, statusValues } from '@/components/dashboard/s
 import { ActionButton } from '@/components/dashboard/form'
 import { TrailerEditor } from '@/components/admin/trailer-editor'
 import { OfferEditor } from '@/components/admin/offer-editor'
+import { PriceEditor } from '@/components/admin/price-editor'
 import { OFFER_SELECT, offerRunning } from '@/lib/offers'
 import { setAlbumStatus, toggleAlbumFeatured } from '@/app/(admin)/admin/actions'
 import { formatDate, formatMoney, formatNumber, t } from '@/lib/i18n'
@@ -255,6 +256,13 @@ export default async function AdminCataloguePage({
                             albumSlug={album.slug}
                             trailerKey={album.trailerKey}
                           />
+                          {album.status === 'live' || album.status === 'paused' ? (
+                            <PriceEditor
+                              albumId={album.id}
+                              price={Number(album.priceStandard)}
+                              offerPrice={album.offerPrice === null ? null : Number(album.offerPrice)}
+                            />
+                          ) : null}
                           {album.status !== 'delisted' ? (
                             <OfferEditor
                               albumId={album.id}

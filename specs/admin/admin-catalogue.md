@@ -64,6 +64,12 @@ the cart and `checkout()` all read `priceNow`: inside the window a buyer sees an
 offer price with the regular struck; outside it the regular price. Past orders keep what
 they paid. Price sorting and the price filter in search still use the regular price.
 
+## Special price (DEV-61)
+| Control | Action | Effect |
+|---|---|---|
+| Row «السعر» (live and paused albums) | opens `PriceEditor` popover (`components/admin/price-editor.tsx`, scrolls within the screen) | «السعر المعتاد (دولار)» pre-filled with `priceStandard`; hint «أي مبلغ تحدده أنت، حتى خارج نطاق الحاسبة…», or, with an offer set, «أي مبلغ أعلى من سعر العرض ({price} دولار)…»; «السبب (اختياري، يُحفظ في سجل التدقيق)» |
+| «حفظ السعر» | `setAlbumPrice` → `lib/album-price.setRegularPrice` | Any amount > 0 and ≤ 100,000 in whole cents, **outside the calculator range if the owner chooses** (that range governs approval only). Refused: a draft / in-review / delisted album «يُحدَّد سعر الألبوم عند اعتماده…»; zero or malformed «اكتب سعراً أكبر من صفر.»; at or under a set offer «السعر المعتاد لازم يكون أعلى من سعر العرض…». Writes `priceStandard`; audits `album.price.set` {from, to, reason}; revalidates the catalogue and storefront; «حُفظ السعر الجديد.» Past orders keep the gross they paid |
+
 ## Price calculator settings (DEV-09c)
 Panel «حاسبة السعر» under the bands (`components/admin/pricing-settings.tsx`). **All
 dropdowns — no typed numbers** (owner, 2026-09-27). Read from
@@ -136,7 +142,7 @@ DEV-60 – DEV-63.
 - Every mutation writes an `AuditLog` row.
 
 ## Verified by
-`verify:offers` (none / open / scheduled / ended / at-or-above-regular on plain values; the running filter; checkout charges the offer inside its dates and the regular price before and after). `verify:pricing` (settings: default choices equal the agreed numbers; none saved → defaults; a saved grade applies and unknown values fall back; the calculator follows a grade; the dropdowns parse and refuse values outside their lists; a custom range moves what may be approved). `verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
+`verify:offers` (none / open / scheduled / ended / at-or-above-regular on plain values; the running filter; checkout charges the offer inside its dates and the regular price before and after; DEV-61: a regular price at or under the offer and a zero price are refused, a price outside the calculator range is accepted and charged, the change is audited, a draft cannot be priced by hand). `verify:pricing` (settings: default choices equal the agreed numbers; none saved → defaults; a saved grade applies and unknown values fall back; the calculator follows a grade; the dropdowns parse and refuse values outside their lists; a custom range moves what may be approved). `verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
 band editor: min > max refused with nothing written, a price edit persists, no album's
 price and no order total moves, the edit is audited, and the price restores).
 The entitlement snapshot rule is covered by `verify:entitlement`. The trailer key

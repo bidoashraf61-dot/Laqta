@@ -334,8 +334,16 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   checkout all use it. New gate `npm run verify:offers`.
 - Price sort and the search price filter still use the regular price.
 
-**Next (owner's order):** DEV-61 (special price), then DEV-64 in three phases;
-DEV-62 bundles needs the discount decision. Owner: approve the creator
+## 21. Session — 2026-09-27 (DEV-61)
+
+- **DEV-61 done — special price.** Row «السعر» on `/admin/catalogue` sets a
+  live/paused album's regular price to any amount (outside the calculator
+  range allowed), with an optional reason; must stay above a set offer;
+  audited `album.price.set`. Rules in `lib/album-price.ts`; checks in
+  `verify:offers`.
+
+**Next (owner's order):** DEV-64 (every word editable, three phases); DEV-62
+bundles needs the discount decision. Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

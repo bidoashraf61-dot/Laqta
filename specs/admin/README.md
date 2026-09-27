@@ -82,8 +82,6 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Dead ends worth knowing
 
-- A live album's **regular** price cannot be changed from admin yet (DEV-61); offers can
-  (DEV-60, `/admin/catalogue`).
 
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.

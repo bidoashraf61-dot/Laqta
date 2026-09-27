@@ -735,6 +735,18 @@
         "scheduled": "Scheduled",
         "ended": "Ended"
       }
+    },
+    "price": {
+      "edit": "Price",
+      "field": "Regular price (USD)",
+      "hint": "Any amount you choose, even outside the calculator's range. Past orders keep their price.",
+      "offerHint": "Any amount above the offer price (${price}). Past orders keep their price.",
+      "reason": "Reason (optional, kept in the audit log)",
+      "save": "Save price",
+      "saved": "New price saved.",
+      "invalid": "Enter a price above zero.",
+      "belowOffer": "The regular price must be above the offer price (${price}). Change or end the offer first.",
+      "notLive": "An album is priced when it is approved. Manual prices are for published or paused albums only."
     }
   },
   "account": {

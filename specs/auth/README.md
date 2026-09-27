@@ -12,7 +12,10 @@ Two sign-in rails. **Only email is open at launch** (DEV-01, 2026-09-26):
 
 - **email** — email + bcrypt password, with a TOTP second factor
   (`lib/totp.ts`, RFC 6238, SHA-1 / 6 digits / 30 s / ±1 step) once the account
-  has enrolled. Enrolment lives at `/account/security`, not here.
+  has enrolled. Enrolment lives at `/account/security`, not here. Enrolment is
+  **mandatory for creator and admin**: unenrolled, they sign in but are held on
+  `/account/security` for every `/admin*` / `/studio*` request
+  ([`guard-model.md`](./guard-model.md)).
 - **phone** — 6-digit OTP (`lib/otp.ts`, bcrypt-hashed at rest, 5-minute TTL,
   5 attempts, single-use). This rail doubles as sign-up: a first-time verified
   number upserts a `buyer` `User`. **Shut until an SMS provider is built.**

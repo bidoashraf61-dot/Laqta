@@ -12,7 +12,8 @@ ffprobe and makes the watermarked preview and poster. The client is
 - Session via `auth()` in `lib/route-auth.ts#studioActor` — `role` must be `creator`
   or `admin`. These routes are **outside the middleware matcher** (`api/studio` is
   excluded: a part is a 16 MB+ body and Next buffers a middleware-visible body at
-  10 MB), so this check is the only guard in front of them.
+  10 MB), so this check is the only guard in front of them — including the mandatory-2FA
+  hold (`twoFactorOwed`, `lib/two-factor.ts`).
 - `lib/uploads.ts#editableAlbum` / `editableClip` — `Album.findFirst` scoped by
   `creatorId` (dropped for admins), status in `EDITABLE_STATUSES`.
 - Limits (env, `lib/uploads.ts`): `UPLOAD_MAX_CLIP_BYTES` (default 20 GiB);
@@ -34,7 +35,9 @@ ffprobe and makes the watermarked preview and poster. The client is
 | `DELETE …/[clipId]` | `destroyClip` | Aborts/removes the master, preview and poster (best effort), deletes the row, renumbers, refreshes album totals. Audit `clip.delete` |
 
 ## States
-- No session → **401** `unauthenticated`; a buyer → **403** `forbidden`.
+- No session → **401** `unauthenticated`; a buyer → **403** `forbidden`; a creator or admin
+  who has not enrolled in 2FA → **403** `two_factor_required` (mandatory 2FA — these routes
+  are outside middleware, so `studioActor()` is the only place it is held).
 - Album or clip not the caller's (or absent) → **404** `not_found` — never "exists but not yours".
 - Album not `draft`/`changes_requested` → **409** `not_editable`. Clip not `uploading` on sign/part/complete/resume → **409** `not_editable`.
 - Wrong extension or type → **415** `type`; size ≤ 0 or over the cap, or an oversized part → **413** `size`; album full → **409** `too_many`; album ever sold (delete) → **409** `sold`.
@@ -57,4 +60,5 @@ ffmpeg-generated master uploaded in parts and assembled byte-exact, ffprobe spec
 preview (H.264, 720 lines) and poster published, album totals and cover, the gate's
 `clipsProcessing`/`minClips`, an audio-only file failing with `probe`, delete removing
 row, master and preview; with `VERIFY_BASE_URL`, unauthenticated start and part → 401.
+`verify:auth` — an unenrolled creator's `GET …/[clipId]` → 403 `two_factor_required`.
 The S3 driver's presigned path is not exercised (no bucket in CI).

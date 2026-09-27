@@ -70,7 +70,9 @@ audited, expiring support impersonation).
   `/api/impersonation/end`. English copy under `/en`.
 - **End.** The end route calls `unstable_update({ impersonation: { end: true } })`; the
   JWT callback closes the row (`endReason='ended'`), audits `user.impersonate.end`, and
-  restores the admin, then 303s to this page.
+  restores the admin, then 303s to this page. The admin's 2FA claim (`tfa`) is parked
+  with them at start and restored at end or expiry, so the viewed buyer's `false` never
+  sends the admin to `/account/security` (mandatory 2FA, `lib/two-factor.ts`).
 - **Expiry.** 30 minutes. The edge JWT callback (`lib/auth.config.ts`) restores the admin
   on the first request after `expiresAt`, so middleware re-issues an admin cookie; the
   node callback closes the row `expired` when it sees the expired token, and this page's

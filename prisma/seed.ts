@@ -330,6 +330,40 @@ const RUB_SHOTS: Array<[string, string, number, number, number, string]> = [
   ['نجوم فوق الكثبان', 'Stars over the dunes', 3840, 2160, 24, 'S-Log3'],
 ]
 
+/**
+ * Two-factor for the demo admin and creators. It is mandatory for both roles
+ * (lib/two-factor.ts), so an unenrolled demo account could not open /admin or
+ * /studio at all. Fixed, published secrets — these are DEV accounts with a
+ * published password already; this seed must never run against production.
+ *
+ * Get the current 6-digit code with `npm run totp:code -- admin@laqta.sa`, or
+ * add the secret to an authenticator app. The verify gates read the secret
+ * from the database, so an account the owner re-enrolled still passes.
+ */
+const DEMO_TWO_FACTOR: Record<string, string> = {
+  'admin@laqta.sa': 'LAQTADEVADMINTOTPSECRETONLYLOCAL',
+  'creator@laqta.sa': 'LAQTADEVCREATORTOTPSECRETLOCAL22',
+  'nada@laqta.sa': 'LAQTADEVNADATOTPSECRETONLYLOCAL2',
+}
+
+/**
+ * Enrol the demo accounts — only where no secret exists yet, so re-seeding
+ * never replaces one the owner enrolled with their own authenticator.
+ */
+async function enrolDemoTwoFactor() {
+  for (const [email, secret] of Object.entries(DEMO_TWO_FACTOR)) {
+    await db.user.updateMany({
+      where: { email, twoFactorSecret: null },
+      data: { twoFactorSecret: secret, twoFactorEnabled: true },
+    })
+    // A secret without the flag (an abandoned enrolment) completes too.
+    await db.user.updateMany({
+      where: { email, twoFactorSecret: { not: null }, twoFactorEnabled: false },
+      data: { twoFactorEnabled: true },
+    })
+  }
+}
+
 async function main() {
   console.log('Seeding Laqta…')
 
@@ -352,9 +386,7 @@ async function main() {
       name: 'مدير المنصة',
       role: 'admin',
       locale: 'ar',
-      // 2FA secret is left null: enrol through /account/security so the
-      // authenticator and the database agree on a real shared secret.
-      twoFactorEnabled: false,
+      // 2FA is mandatory for admin and creator — see DEMO_TWO_FACTOR below.
     },
   })
 
@@ -474,7 +506,9 @@ async function main() {
 
   await db.cart.upsert({ where: { userId: buyer.id }, update: {}, create: { userId: buyer.id } })
 
+  await enrolDemoTwoFactor()
   console.log('  users — admin@laqta.sa · creator@laqta.sa · nada@laqta.sa · buyer@agency.sa')
+  console.log('  2FA on for admin and creators — code: npm run totp:code -- admin@laqta.sa')
   console.log('  password for all — Laqta!2026')
 
   // ── Releases and permits ──────────────────────────────────────────────────

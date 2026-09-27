@@ -3,11 +3,17 @@ import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import type { Role } from '@prisma/client'
-import { applyImpersonationToSession, authConfig, type SessionImpersonation } from '@/lib/auth.config'
+import {
+  applyImpersonationToSession,
+  authConfig,
+  twoFactorClaim,
+  type SessionImpersonation,
+} from '@/lib/auth.config'
 import { expireIfDue } from '@/lib/impersonation-shared'
 import { db } from '@/lib/db'
 import { consumeOtp, phoneSignInEnabled } from '@/lib/otp'
 import { verifyToken } from '@/lib/totp'
+import { twoFactorOwed } from '@/lib/two-factor'
 
 declare module 'next-auth' {
   interface Session {
@@ -16,6 +22,11 @@ declare module 'next-auth' {
       role: Role
       locale: string
       creatorId: string | null
+      /**
+       * Enrolled in TOTP. Fresh from the database in every server render; in
+       * middleware it is the cookie's copy, undefined on a pre-claim cookie.
+       */
+      twoFactorEnabled?: boolean
       /** Set only while an admin is viewing the site as this user — the admin's id. */
       impersonatedBy?: string
       /** The active view-as-user session, for the banner. */
@@ -27,6 +38,7 @@ declare module 'next-auth' {
     role?: Role
     locale?: string
     creatorId?: string | null
+    twoFactorEnabled?: boolean
   }
 }
 
@@ -83,9 +95,12 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         const ok = await bcrypt.compare(parsed.data.password, user.passwordHash)
         if (!ok) return null
 
-        // Second factor, mandatory for creator and admin once enrolled. The
+        // Second factor, asked for whenever the account has enrolled. The
         // password is verified first so an unenrolled attacker never learns
-        // that a given account carries 2FA.
+        // that a given account carries 2FA. A creator or admin who has NOT
+        // enrolled still signs in — and is held on /account/security until
+        // they do (lib/two-factor.ts); refusing them here would leave no way
+        // to reach the enrolment page at all.
         if (user.twoFactorEnabled && user.twoFactorSecret) {
           if (!parsed.data.totp) throw new TwoFactorRequiredError()
           if (!verifyToken(user.twoFactorSecret, parsed.data.totp)) return null
@@ -161,6 +176,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         token.role = user.role ?? 'buyer'
         token.locale = user.locale ?? 'ar'
         token.creatorId = user.creatorId ?? null
+        token.tfa = user.twoFactorEnabled === true
         // When this session began — compared with `passwordChangedAt` below.
         token.signedInAt = Date.now()
       } else if (token.uid) {
@@ -180,6 +196,8 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
             passwordChangedAt: true,
             status: true,
             role: true,
+            twoFactorEnabled: true,
+            twoFactorSecret: true,
             creator: { select: { id: true } },
           },
         })
@@ -196,6 +214,9 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         // again to pass the /studio gate.
         token.role = account.role
         token.creatorId = account.creator?.id ?? null
+        // Same read again: the 2FA lock in the layouts and in requireRole()
+        // judges the database, never a cookie that predates an enrolment.
+        token.tfa = enrolled(account)
       }
 
       // Role or creator status can change mid-session (a creator gets
@@ -209,6 +230,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
           token.role = fresh.role
           token.locale = fresh.locale
           token.creatorId = fresh.creator?.id ?? null
+          token.tfa = enrolled(fresh)
         }
       }
 
@@ -220,6 +242,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
       session.user.role = (token.role as Role) ?? 'buyer'
       session.user.locale = (token.locale as string) ?? 'ar'
       session.user.creatorId = (token.creatorId as string | null) ?? null
+      session.user.twoFactorEnabled = twoFactorClaim(token)
       applyImpersonationToSession(session.user, token)
       return session
     },
@@ -233,6 +256,8 @@ function toSessionUser(user: {
   image: string | null
   role: Role
   locale: string
+  twoFactorEnabled: boolean
+  twoFactorSecret: string | null
   creator: { id: string } | null
 }) {
   return {
@@ -243,7 +268,17 @@ function toSessionUser(user: {
     role: user.role,
     locale: user.locale,
     creatorId: user.creator?.id ?? null,
+    twoFactorEnabled: enrolled(user),
   }
+}
+
+/**
+ * Enrolled means sign-in actually asks for a code: the flag AND a secret. A
+ * flag without a secret (a hand-edited row) is skipped by `authorize`, so it
+ * must not count as enrolled either.
+ */
+function enrolled(user: { twoFactorEnabled: boolean; twoFactorSecret?: string | null }) {
+  return user.twoFactorEnabled && Boolean(user.twoFactorSecret)
 }
 
 /** E.164-ish. KSA and Egypt both drop a leading 0 behind the country code. */
@@ -281,9 +316,15 @@ export async function requireUser() {
   return user
 }
 
+/**
+ * Also the 2FA lock for every admin and studio server action: a creator or
+ * admin who has not enrolled is held on /account/security by middleware and
+ * the layouts, and a POST forged past the page stops here.
+ */
 export async function requireRole(...roles: Role[]) {
   const user = await requireUser()
   if (!roles.includes(user.role)) throw new Error('FORBIDDEN')
+  if (twoFactorOwed(user)) throw new Error('TWO_FACTOR_REQUIRED')
   return user
 }
 

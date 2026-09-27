@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-39 done — lighter hero film, caching, phone poster)_
+_Last updated: 2026-09-27 (DEV-11 done — two-factor now enforced for creator and admin)_
 
 ---
 
@@ -45,7 +45,8 @@ users + read-only view-as-user, price-band editor, taxonomy, reports,
 album offers / special prices / promo codes, the page-text editor for
 Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a — and the
 site-copy editor for every string a visitor reads — DEV-64b/c),
-English site under `/en`, transactional email outbox.
+English site under `/en`, transactional email outbox, **mandatory two-factor
+for creator and admin accounts** (DEV-11 — enforced, not just promised).
 
 **Built but switched off — waiting for the owner's accounts/keys:**
 
@@ -520,7 +521,37 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - **Rule:** never overwrite a file in `public/hero` or `public/fonts` under
   the same name — browsers keep them a year. New content = new file name.
 
-## 30. Where to pick up
+## 30. Session — 2026-09-27 (DEV-11)
+
+- **DEV-11 done — two-factor is now enforced**, as the Terms, the security
+  page and the README already claimed. A creator or admin without 2FA still
+  signs in, but every `/admin/*` and `/studio/*` page sends them to
+  `/account/security` (English keeps `/en`) with a notice «فعّل التحقق بخطوتين
+  لتدخل»; once they turn it on they go straight back to where they were.
+  Held three ways: middleware (cookie), the admin/studio layouts (database),
+  and every admin/studio action + upload route. View-as-user still works — the
+  admin is handed back still enrolled. `lib/two-factor.ts` explains it.
+- **Two real sign-in bugs fixed on the way** (no one had 2FA on, so nobody
+  hit them): the sign-in action sent the word "undefined" as the code, so an
+  enrolled account was always told «بيانات الدخول غير صحيحة»; and the code
+  step wiped the email and password fields.
+- **Local demo accounts now have 2FA on** (admin, creator, nada — fixed dev
+  secrets in `prisma/seed.ts`). To sign in to one locally:
+  `npm run totp:code -- admin@laqta.sa` prints the current 6-digit code. The
+  browser gates type the code themselves (`scripts/two-factor-fixture.mjs`) —
+  no bypass exists, not even in development.
+- **Owner, before launch:** the real admin account (yours) must enrol at
+  `/account/security` with an authenticator app (Google Authenticator,
+  1Password…) on first sign-in. There are **no backup codes** — if the phone is
+  lost, getting back in needs a database edit. Worth a DEV task before launch.
+- `verify:auth` +30 checks (the hold in both languages, `next`, open
+  `/account`, stale cookie, layout lock, upload API 403); `verify:flows` (a new
+  creator is held, then reaches the studio once enrolled);
+  `verify:impersonation` (the admin comes back enrolled).
+- The demo 2FA secrets are public (the repo is public), like the demo
+  password — harmless for dev data, but never run `prisma/seed.ts` on production.
+
+## 31. Where to pick up
 
 Next ⛔ with no dependency: **DEV-47** (production seed — real taxonomy,
 bands, licence, admin; no demo albums). Fold in two findings: the dev seed

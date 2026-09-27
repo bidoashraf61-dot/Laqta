@@ -25,7 +25,7 @@
     "verify:money": "tsx scripts/verify-money.ts",
     "verify:payouts": "tsx scripts/verify-payouts.ts",
     "verify:payments": "tsx scripts/verify-payments.ts",
-    "verify": "npm run verify:migrations && npm run verify:action-locale && npm run verify:licence && npm run verify:mail && npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:pricing && npm run verify:promos && npm run verify:offers && npm run verify:bundles && npm run verify:documents && npm run verify:copy && npm run verify:payouts && npm run verify:payments && npm run verify:previews && npm run verify:sample && npm run verify:uploads && npm run verify:auth && npm run verify:arabic && npm run verify:pairs && npm run verify:leading && npm run verify:bands && npm run verify:contrast && npm run verify:hero && npm run verify:flows && npm run verify:impersonation && npm run audit",
+    "verify": "npm run verify:migrations && npm run verify:action-locale && npm run verify:licence && npm run verify:mail && npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:pricing && npm run verify:promos && npm run verify:offers && npm run verify:bundles && npm run verify:documents && npm run verify:copy && npm run verify:payouts && npm run verify:payments && npm run verify:previews && npm run verify:sample && npm run verify:uploads && npm run verify:auth && npm run verify:arabic && npm run verify:seo && npm run verify:pairs && npm run verify:leading && npm run verify:bands && npm run verify:contrast && npm run verify:hero && npm run verify:flows && npm run verify:impersonation && npm run audit",
     "verify:hero": "tsx scripts/verify-hero.ts",
     "audit": "tsx scripts/audit-portal.ts",
     "verify:flows": "tsx scripts/verify-flows.ts",
@@ -33,7 +33,7 @@
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "verify:journeys": "tsx scripts/verify-journeys.ts",
-    "test": "npm run test:unit && npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:payouts && npm run verify:payments && npm run verify:auth && npm run verify:arabic && npm run verify:hero && npm run verify:journeys && npm run verify:flows && npm run verify:impersonation && npm run audit",
+    "test": "npm run test:unit && npm run verify:i18n && npm run verify:search && npm run verify:entitlement && npm run verify:money && npm run verify:payouts && npm run verify:payments && npm run verify:auth && npm run verify:arabic && npm run verify:seo && npm run verify:hero && npm run verify:journeys && npm run verify:flows && npm run verify:impersonation && npm run audit",
     "verify:pairs": "node scripts/verify-token-pairs.mjs",
     "verify:leading": "node scripts/verify-leading.mjs",
     "verify:bands": "node scripts/verify-bands.mjs",
@@ -57,7 +57,8 @@
     "verify:offers": "tsx scripts/verify-offers.ts",
     "verify:documents": "tsx scripts/verify-documents.ts",
     "verify:copy": "tsx scripts/verify-copy.ts",
-    "verify:bundles": "tsx scripts/verify-bundles.ts"
+    "verify:bundles": "tsx scripts/verify-bundles.ts",
+    "verify:seo": "tsx scripts/verify-seo.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

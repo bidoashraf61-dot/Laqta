@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { db } from '@/lib/db'
@@ -7,6 +8,12 @@ import { t } from '@/lib/i18n'
 import type { ClipHit } from '@/lib/search'
 import { PageTitle } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
+
+/**
+ * Never in a search index (DEV-33): a shared board is a private link, and the
+ * forbidden page renders in place of a guarded one.
+ */
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 /**
  * A shared board, viewable WITHOUT an account.

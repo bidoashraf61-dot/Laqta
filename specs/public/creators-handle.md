@@ -10,6 +10,8 @@ One creator's public shelf: who they are and every live album they have.
 - Nested `albums` where `status='live'`, ordered `publishedAt desc`, selecting `slug`, titles, `priceStandard`, `currency`, `clipCount`, `totalRuntimeS`, `clearedForCommercial`, `coverClipId`.
 - Second query resolves cover posters from `Clip.thumbnailKeys[0]`.
 
+- **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
+
 ## Controls
 
 | Control | Action | Effect |

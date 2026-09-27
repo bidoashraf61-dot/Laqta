@@ -67,7 +67,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-32** Contact details shown on `/contact` and in site data — 🤖 · 30 min · *needs BIZ-10*
 
 ### SEO fixes
-- [ ] **DEV-33** ⛔ English album, clip, creator, collection and hub pages point Google at the Arabic page — use `localeAlternates` everywhere so each language is indexed — 🤖 · ½ day
+- [x] **DEV-33** ⛔ English album, clip, creator, collection and hub pages point Google at the Arabic page — use `localeAlternates` everywhere so each language is indexed — 🤖 · ½ day — done 2026-09-27 (6 page types + hub; locale resolved before metadata; `og:locale` per language; root layout's wrong inherited hreflang removed; robots.txt covers `/en` private pages; boards/forbidden noindex; new gate `verify:seo`)
 - [ ] **DEV-34** Sitemap sends theme/tag terms to `/collections/…` which 404 — fix; add clip pages; video sitemap — 🤖 · ½ day
 - [ ] **DEV-35** English pages carry Arabic in share data (`ar_SA`, `inLanguage`, breadcrumbs) — make locale-aware — 🤖 · 2 hrs
 - [ ] **DEV-36** Structured data: VideoObject `uploadDate` + AI-origin marker; Product image/brand; Organization address/contact; album share image = cover — 🤖 · ½ day

@@ -7,7 +7,7 @@ import { Bilingual } from '@/components/ui/bilingual'
 import { EmptyState } from '@/components/ui/state'
 import { t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
-import { pickLocalised } from '@/lib/locale'
+import { localeAlternates, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 
 async function getCollection(slug: string) {
@@ -44,6 +44,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
   const { slug } = await params
   const collection = await getCollection(slug)
   if (!collection) return { title: t('state.notFound') }
@@ -58,7 +62,8 @@ export async function generateMetadata({
   return {
     title: pickLocalised(collection.titleAr, collection.titleEn),
     description: pickLocalised(collection.descriptionAr, collection.descriptionEn) ?? undefined,
-    alternates: { canonical: `/collections/${slug}` },
+    // Each language its own canonical, both linked (DEV-33).
+    alternates: localeAlternates(`/collections/${slug}`),
     ...(empty ? { robots: { index: false, follow: true } } : {}),
   }
 }

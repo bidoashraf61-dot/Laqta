@@ -8,7 +8,8 @@ import { EmptyState } from '@/components/ui/state'
 import { Bilingual } from '@/components/ui/bilingual'
 import { formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
-import { pickLocalised } from '@/lib/locale'
+import { localeAlternates, ogLocale, pickLocalised } from '@/lib/locale'
+import { requestLocale } from '@/lib/locale-request'
 
 /**
  * Taxonomy hubs — `/locations/[slug]` and `/categories/[slug]`.
@@ -31,6 +32,10 @@ const TITLE_KEY: Record<Kind, string> = {
 }
 
 export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
   const entry = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
   if (!entry) return { title: t('state.notFound') }
 
@@ -43,10 +48,11 @@ export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `${BASE[kind]}/${slug}` },
+    // Each language its own canonical, both linked (DEV-33).
+    alternates: localeAlternates(`${BASE[kind]}/${slug}`),
     openGraph: {
       type: 'website',
-      locale: 'ar_SA',
+      locale: ogLocale(),
       title,
       description,
       images: entry.heroImage ? [entry.heroImage] : [],

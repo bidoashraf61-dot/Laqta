@@ -19,7 +19,7 @@ import { AutoplayVideo } from '@/components/catalogue/autoplay-video'
 import { mediaUrl } from '@/lib/media'
 import { Sparkles, Video } from 'lucide-react'
 import { PageTitle } from '@/components/ui/typography'
-import { currentLocale, localePath, pickLocalised } from '@/lib/locale'
+import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { auth } from '@/lib/auth'
 import { previewDeliverable } from '@/lib/previews'
@@ -108,6 +108,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
   const { slug } = await params
   const clip = await getClip(slug)
   if (!clip) return { title: t('state.notFound') }
@@ -117,10 +121,11 @@ export async function generateMetadata({
     description:
       pickLocalised(clip.descriptionAr, clip.descriptionEn) ??
       `${pickLocalised(clip.titleAr, clip.titleEn)} — ${t('commerce.fromAlbum', { album: pickLocalised(clip.album.titleAr, clip.album.titleEn) })}`,
-    alternates: { canonical: `/footage/${slug}` },
+    // Each language its own canonical, both linked (DEV-33).
+    alternates: localeAlternates(`/footage/${slug}`),
     openGraph: {
       type: 'video.other',
-      locale: 'ar_SA',
+      locale: ogLocale(),
       title: pickLocalised(clip.titleAr, clip.titleEn),
       images: [mediaUrl(clip.thumbnailKeys[0])].filter((url): url is string => !!url),
     },
@@ -160,7 +165,7 @@ export default async function ClipPage({
 
   return (
     <div className="container-tight py-16">
-      <VideoJsonLd clip={clip} url={`${SITE_URL}/footage/${slug}`} />
+      <VideoJsonLd clip={clip} url={`${SITE_URL}${localePath(currentLocale(), `/footage/${slug}`)}`} />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-6">

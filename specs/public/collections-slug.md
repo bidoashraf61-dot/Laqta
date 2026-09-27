@@ -10,6 +10,8 @@ Show the albums in one published collection as poster cards.
 - Albums are filtered to `status='live'` **in application code**, not in the query.
 - Second query resolves cover posters from `Clip.thumbnailKeys[0]`.
 
+- **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
+
 ## Controls
 
 | Control | Action | Effect |

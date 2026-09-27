@@ -1,3 +1,4 @@
+import { isOccasion } from '@/lib/occasions'
 import type { Prisma } from '@prisma/client'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -153,7 +154,7 @@ export default async function AdminTaxonomyPage({
                 <div className="flex shrink-0 items-center gap-1.5">
                   {/* The page text of a hub (DEV-41). A plain anchor — the
                       client router has swallowed navigations on this page. */}
-                  {term.kind === 'location' || term.kind === 'category' ? (
+                  {term.kind === 'location' || term.kind === 'category' || (term.kind === 'theme' && isOccasion(term.slug)) ? (
                     <a
                       href={`/admin/taxonomy/${term.id}`}
                       className="inline-flex h-8 items-center rounded-md px-3 text-sm underline-offset-4 hover:underline"

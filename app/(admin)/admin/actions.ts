@@ -2,6 +2,7 @@
 
 import { notifyCreatorAdded } from '@/lib/notifications'
 import { HUB_INTRO_MAX, hubFaqsFromForm } from '@/lib/hub-page'
+import { isOccasion } from '@/lib/occasions'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
@@ -600,7 +601,8 @@ export async function saveHubPage(id: string, _state: Result | null, formData: F
   const tr = await actionT()
   const admin = await requireAdmin()
   const term = await db.taxonomy.findUnique({ where: { id }, select: { id: true, kind: true, slug: true } })
-  if (!term || (term.kind !== 'location' && term.kind !== 'category')) return { ok: false, message: tr('state.notFound') }
+  const hasPage = term && (term.kind === 'location' || term.kind === 'category' || (term.kind === 'theme' && isOccasion(term.slug)))
+  if (!term || !hasPage) return { ok: false, message: tr('state.notFound') }
 
   const field = (name: string, max: number) => String(formData.get(name) ?? '').trim().slice(0, max) || null
   const { faqs, incomplete } = hubFaqsFromForm(formData)
@@ -622,7 +624,7 @@ export async function saveHubPage(id: string, _state: Result | null, formData: F
     },
   })
   await recordAudit({ actorId: admin.id, action: 'taxonomy.page', entity: 'Taxonomy', entityId: term.id, detail: { faqs: faqs.length } })
-  const base = term.kind === 'location' ? '/locations' : '/categories'
+  const base = term.kind === 'location' ? '/locations' : term.kind === 'theme' ? '/occasions' : '/categories'
   revalidatePath(`${base}/${term.slug}`)
   revalidatePath(`/en${base}/${term.slug}`)
   revalidatePath(`/admin/taxonomy/${term.id}`)

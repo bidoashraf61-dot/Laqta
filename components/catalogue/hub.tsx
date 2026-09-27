@@ -12,6 +12,7 @@ import { AlbumCard } from '@/components/catalogue/album-card'
 import { FaqSchema } from '@/components/catalogue/faq-schema'
 import { getHubAlbums, getRelatedHubs } from '@/lib/catalogue'
 import { faqInLocale, parseHubFaqs } from '@/lib/hub-page'
+import { isOccasion } from '@/lib/occasions'
 import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
 import { siteOrigin } from '@/lib/site'
@@ -26,20 +27,30 @@ import { siteOrigin } from '@/lib/site'
  * the grid rather than a bare list of tiles.
  */
 
-type Kind = 'location' | 'category'
+type Kind = 'location' | 'category' | 'theme'
 
-const BASE: Record<Kind, string> = { location: '/locations', category: '/categories' }
+/** `theme` hubs are the occasion pages (DEV-42). */
+const BASE: Record<Kind, string> = { location: '/locations', category: '/categories', theme: '/occasions' }
 const TITLE_KEY: Record<Kind, string> = {
   location: 'catalogue.locationsTitle',
   category: 'catalogue.categoriesTitle',
+  theme: 'catalogue.occasionsTitle',
 }
+const DESCRIPTION_KEY: Record<Kind, string> = {
+  location: 'brand.seo.hubLocation',
+  category: 'brand.seo.hubCategory',
+  theme: 'brand.seo.hubOccasion',
+}
+
+/** Only the five occasion themes have a page. */
+const hasPage = (kind: Kind, slug: string) => kind !== 'theme' || isOccasion(slug)
 
 export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
   // on the layout having already resolved the locale.
   await requestLocale()
 
-  const entry = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
+  const entry = hasPage(kind, slug) ? await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } }) : null
   if (!entry) return { title: t('state.notFound') }
 
   const name = pickLocalised(entry.nameAr, entry.nameEn)
@@ -51,7 +62,7 @@ export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
   const title = ownTitle || t('catalogue.hubTitle', { name })
   const ownDescription = currentLocale() === 'en' ? entry.seoDescEn : entry.seoDescAr
   const description =
-    ownDescription || t(kind === 'location' ? 'brand.seo.hubLocation' : 'brand.seo.hubCategory', { name })
+    ownDescription || t(DESCRIPTION_KEY[kind], { name })
 
   return {
     title,
@@ -127,7 +138,7 @@ export async function TaxonomyHub({
   slug: string
   page: number
 }) {
-  const entry = await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } })
+  const entry = hasPage(kind, slug) ? await db.taxonomy.findUnique({ where: { kind_slug: { kind, slug } } }) : null
   if (!entry || !entry.isActive) notFound()
 
   const [result, albums, related] = await Promise.all([
@@ -156,8 +167,9 @@ export async function TaxonomyHub({
           {t('nav.home')}
         </Link>
         {' / '}
-        <Link href={BASE[kind]} className="hover:text-foreground">
-          {t(TITLE_KEY[kind])}
+        {/* Occasions have no index page: their middle crumb is the shots page. */}
+        <Link href={kind === 'theme' ? '/footage' : BASE[kind]} className="hover:text-foreground">
+          {kind === 'theme' ? t('nav.footage') : t(TITLE_KEY[kind])}
         </Link>
         {' / '}
         <span className="text-foreground">{name}</span>

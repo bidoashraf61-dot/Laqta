@@ -28,6 +28,7 @@ const ROUTES = [
   '/categories/aerials',
   '/locations',
   '/locations/alula',
+  '/occasions/ramadan',
   '/collections',
   '/collections/saudi-heritage',
   '/creators',

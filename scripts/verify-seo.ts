@@ -56,6 +56,8 @@ async function main() {
     collection && `/collections/${collection.slug}`,
     location && `/locations/${location.slug}`,
     category && `/categories/${category.slug}`,
+    // An occasion page (DEV-42).
+    '/occasions/ramadan',
     '/terms',
   ].filter((p): p is string => Boolean(p))
 

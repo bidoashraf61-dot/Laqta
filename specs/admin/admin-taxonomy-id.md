@@ -3,11 +3,11 @@
 **Route** `/admin/taxonomy/[id]` · **Access** admin (`requireAdmin`) · **Rendering** server component, dynamic
 
 ## Purpose
-Write the text of one location or category page (DEV-41): what Google and a buyer read above the
+Write the text of one location, category or occasion page (DEV-41; occasions since DEV-42): what Google and a buyer read above the
 albums, in Arabic and English.
 
 ## Data in
-- `Taxonomy` by id — only `kind` `location` or `category` (anything else → 404): `nameAr`, `slug`, `seoTitleAr/En`, `seoDescAr/En`, `introAr/En`, `faqs` (via `parseHubFaqs`).
+- `Taxonomy` by id — `kind` `location` or `category`, or a `theme` that is one of the five occasions (anything else → 404): `nameAr`, `slug`, `seoTitleAr/En`, `seoDescAr/En`, `introAr/En`, `faqs` (via `parseHubFaqs`).
 
 ## Controls
 

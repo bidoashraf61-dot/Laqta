@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { localePath } from '@/lib/locale'
 import { siteOrigin } from '@/lib/site'
+import { OCCASION_SLUGS } from '@/lib/occasions'
 import { absoluteMediaUrl } from '@/lib/media'
 
 /**
@@ -50,7 +51,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       // against the whole domain.
       where: {
         isActive: true,
-        kind: { in: ['location', 'category'] },
+        // Plus the five occasion themes, which have pages at /occasions (DEV-42).
+        OR: [{ kind: { in: ['location', 'category'] } }, { kind: 'theme', slug: { in: [...OCCASION_SLUGS] } }],
         albums: { some: { album: { status: 'live' } } },
       },
       select: { kind: true, slug: true, updatedAt: true },
@@ -115,7 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const taxonomyRoutes: MetadataRoute.Sitemap = taxonomy.flatMap((entry) =>
     bilingual(
-      `/${entry.kind === 'location' ? 'locations' : 'categories'}/${entry.slug}`,
+      `/${entry.kind === 'location' ? 'locations' : entry.kind === 'theme' ? 'occasions' : 'categories'}/${entry.slug}`,
       {
         lastModified: entry.updatedAt,
         changeFrequency: 'weekly',

@@ -36,6 +36,8 @@ export type ClipFilters = {
   /** Taxonomy slugs. */
   location?: string
   category?: string
+  /** An occasion — a `theme` taxonomy slug (DEV-42). */
+  theme?: string
   tags?: string[]
   minWidth?: number
   aspectRatio?: string
@@ -218,6 +220,14 @@ const postgresDriver: SearchDriver = {
               taxonomy: { some: { taxonomy: { kind: 'category', slug: filters.category } } },
             },
           },
+        ],
+      })
+    }
+    if (filters.theme) {
+      andClauses.push({
+        OR: [
+          { taxonomy: { some: { taxonomy: { kind: 'theme', slug: filters.theme } } } },
+          { album: { taxonomy: { some: { taxonomy: { kind: 'theme', slug: filters.theme } } } } },
         ],
       })
     }

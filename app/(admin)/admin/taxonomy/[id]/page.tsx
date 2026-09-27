@@ -10,6 +10,7 @@ import { Field } from '@/components/ui/label'
 import { Input, Textarea } from '@/components/ui/input'
 import { HUB_FAQ_MAX, HUB_INTRO_MAX, parseHubFaqs } from '@/lib/hub-page'
 import { saveHubPage } from '@/app/(admin)/admin/actions'
+import { isOccasion } from '@/lib/occasions'
 
 export async function generateMetadata(): Promise<Metadata> {
   await requestLocale()
@@ -28,9 +29,9 @@ export default async function HubPageEditor({ params }: { params: Promise<{ id: 
   const { id } = await params
 
   const term = await db.taxonomy.findUnique({ where: { id } })
-  if (!term || (term.kind !== 'location' && term.kind !== 'category')) notFound()
+  if (!term || !(term.kind === 'location' || term.kind === 'category' || (term.kind === 'theme' && isOccasion(term.slug)))) notFound()
   const faqs = parseHubFaqs(term.faqs)
-  const path = `${term.kind === 'location' ? '/locations' : '/categories'}/${term.slug}`
+  const path = `${term.kind === 'location' ? '/locations' : term.kind === 'theme' ? '/occasions' : '/categories'}/${term.slug}`
 
   return (
     <>

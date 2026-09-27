@@ -371,7 +371,7 @@ export async function getSeasonalShelf(take = 6) {
  * or holding clips that are. Shown before the clips: the album is what a
  * buyer buys.
  */
-export async function getHubAlbums(taxonomyId: string, kind: 'location' | 'category', take = 6): Promise<AlbumCardData[]> {
+export async function getHubAlbums(taxonomyId: string, kind: 'location' | 'category' | 'theme', take = 6): Promise<AlbumCardData[]> {
   const rows = await db.album.findMany({
     where: {
       status: 'live',

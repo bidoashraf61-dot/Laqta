@@ -41,7 +41,7 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 | Footage-wall "view all" | Link | `/footage` |
 | Album poster in the collection (stretched link) | Link | `/albums/{creatorHandle}/{slug}` |
 | Creator name on a poster (sibling link, lifted above the stretch) | Link | `/creators/{creatorHandle}` |
-| Collection «عرض كل الألبومات» (`landing.collectionViewAll`) | Link | `/albums` |
+| Collection «عرض كل الألبومات» (`landing.collectionViewAll`) | Link | `/albums` — or, while the shelf shows one of the five occasions, «كل ألبومات {name}» (`landing.seasonViewAll`) → `/occasions/{slug}` (DEV-42) |
 | Trailer list row (`<button aria-pressed>`) | Client state | Swaps the featured player, poster, title, count, price and album link to that album; plays it unless reduced motion is set or nothing is in view |
 | Trailer play/pause | Client | Toggles the player; a reader's pause is sticky (the in-view observer never overrides it) |
 | Trailer mute/unmute (`aria-pressed`) | Client | Starts muted; the reader may turn sound on |

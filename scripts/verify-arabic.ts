@@ -67,6 +67,7 @@ const ROUTES = [
   '/footage/alula-01',
   '/locations',
   '/locations/alula',
+  '/occasions/ramadan',
   '/categories',
   '/categories/aerials',
   '/collections',

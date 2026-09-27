@@ -77,6 +77,27 @@ Arabic leaked longest, because no visual review catches them.
   `alternates.languages`.
 - `<html lang>` carries the bare subtag (`ar` / `en`); `Intl` uses the
   region-qualified tag (`ar-SA`).
+- **One helper:** every indexable page sets `alternates: localeAlternates(path)`
+  (`lib/locale.ts`) — canonical and hreflang together. Until DEV-33 the album,
+  clip, creator, collection, location and category pages set a bare Arabic
+  canonical on both languages, so no English detail page was indexed. The root
+  layout sets **no** `alternates`: whatever it set, every page without its own
+  inherited (it once named the home page as every page's other language).
+- **`og:locale`** — `ogLocale()`: `ar_SA` / `en_US`, the page's own language.
+- **`generateMetadata` resolves the locale first** (`await requestLocale()`),
+  like every page — the detail pages did not, and could put an Arabic
+  `<title>` on the English page.
+- **JSON-LD `url`** — the page's own-language address (`localePath`).
+- **Not indexed:** robots.txt disallows the private pages in **both**
+  languages (`/account`, `/studio`, `/admin`, `/cart`, `/checkout`,
+  `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, each also
+  under `/en`, plus `/api/`); `/boards/[token]` and `/forbidden` carry
+  `robots: noindex, nofollow`.
+- **Verified by `verify:seo`** (browser server; fetched as Googlebot, since
+  Next streams metadata into the body for ordinary browsers): canonical,
+  hreflang, `og:locale` and title language on the home, `/albums`, an album,
+  a clip, a creator, a collection, a location, a category and `/terms`, both
+  languages; and robots.txt.
 
 ## Controls
 

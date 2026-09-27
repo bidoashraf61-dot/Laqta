@@ -21,9 +21,8 @@ import { AlbumReviews } from '@/components/catalogue/reviews'
 import { getAlbumReviews, getOwnReview, ownsAlbum } from '@/lib/reviews'
 import { auth } from '@/lib/auth'
 import { requestLocale } from '@/lib/locale-request'
-import { pickLocalised } from '@/lib/locale'
 import { mediaUrl } from '@/lib/media'
-import { currentLocale, localePath } from '@/lib/locale'
+import { currentLocale, localeAlternates, localePath, ogLocale, pickLocalised } from '@/lib/locale'
 import { previewDeliverable } from '@/lib/previews'
 import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
 import { getPublicSample } from '@/lib/sample'
@@ -88,6 +87,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ creator: string; slug: string }>
 }): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
   const { creator, slug } = await params
   const album = await getAlbum(creator, slug)
   if (!album) return { title: t('state.notFound') }
@@ -96,10 +99,11 @@ export async function generateMetadata({
     title: pickLocalised(album.titleAr, album.titleEn),
     description:
       pickLocalised(album.descriptionAr, album.descriptionEn) ?? t('catalogue.albumsSubtitle'),
-    alternates: { canonical: `/albums/${creator}/${slug}` },
+    // Each language its own canonical, both linked (DEV-33).
+    alternates: localeAlternates(`/albums/${creator}/${slug}`),
     openGraph: {
       type: 'website',
-      locale: 'ar_SA',
+      locale: ogLocale(),
       title: pickLocalised(album.titleAr, album.titleEn),
       description: pickLocalised(album.descriptionAr, album.descriptionEn) ?? '',
       images: [mediaUrl(album.clips[0]?.thumbnailKeys[0])].filter((url): url is string => !!url),
@@ -186,7 +190,7 @@ export default async function AlbumPage({
       <ProductJsonLd
         album={album}
         priceStandard={priceStandard}
-        url={`${SITE_URL}/albums/${creatorHandle}/${slug}`}
+        url={`${SITE_URL}${localePath(currentLocale(), `/albums/${creatorHandle}/${slug}`)}`}
       />
 
       <div className="grid gap-10 lg:grid-cols-[1fr_22rem]">

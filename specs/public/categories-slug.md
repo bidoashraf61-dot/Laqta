@@ -10,6 +10,8 @@ An SEO landing page for one category: Arabic metadata, breadcrumb, editorial cop
 - `search({ category: slug, page, perPage: 24 })` from `lib/search.ts` — matches `Clip` where either `ClipTaxonomy` or the parent `Album`'s `AlbumTaxonomy` carries a `category` taxonomy with this slug, and `album.status='live'`, `ingestStatus='ready'`.
 - Metadata falls back to `"{nav.footage} {nameAr}"` and `"{brand.tagline} — {nameAr}. {brand.promise}"` when the SEO fields are unset.
 
+- **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
+
 ## Controls
 
 | Control | Action | Effect |

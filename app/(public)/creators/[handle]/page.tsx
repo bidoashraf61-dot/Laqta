@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/ui/state'
 import { Stars } from '@/components/ui/stars'
 import { t, formatNumber, formatDate } from '@/lib/i18n'
 import { PageTitle, SubHeadline } from '@/components/ui/typography'
-import { pickLocalised } from '@/lib/locale'
+import { currentLocale, localeAlternates, localePath, pickLocalised } from '@/lib/locale'
 import { REVEAL } from '@/lib/motion'
 import { requestLocale } from '@/lib/locale-request'
 
@@ -58,13 +58,18 @@ export async function generateMetadata({
 }: {
   params: Promise<{ handle: string }>
 }): Promise<Metadata> {
+  // Metadata is generated outside the layout's render, so it cannot rely
+  // on the layout having already resolved the locale.
+  await requestLocale()
+
   const { handle } = await params
   const creator = await getCreator(handle)
   if (!creator) return { title: t('state.notFound') }
   return {
     title: pickLocalised(creator.displayNameAr, creator.displayNameEn),
     description: pickLocalised(creator.bioAr, creator.bioEn) ?? undefined,
-    alternates: { canonical: `/creators/${handle}` },
+    // Each language its own canonical, both linked (DEV-33).
+    alternates: localeAlternates(`/creators/${handle}`),
   }
 }
 
@@ -183,7 +188,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
       '@type': 'Person',
       name: pickLocalised(creator.displayNameAr, creator.displayNameEn),
       alternateName: creator.displayNameEn,
-      url: `${SITE_URL}/creators/${creator.handle}`,
+      url: `${SITE_URL}${localePath(currentLocale(), `/creators/${creator.handle}`)}`,
       ...(pickLocalised(creator.bioAr, creator.bioEn)
         ? { description: pickLocalised(creator.bioAr, creator.bioEn) as string }
         : {}),

@@ -1,9 +1,16 @@
+import type { Metadata } from 'next'
 import { Link } from '@/components/ui/link'
 import { ShieldAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import { requestLocale } from '@/lib/locale-request'
+
+/**
+ * Never in a search index (DEV-33): a shared board is a private link, and the
+ * forbidden page renders in place of a guarded one.
+ */
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 /**
  * 403. middleware.ts *rewrites* here rather than redirecting, so the URL the

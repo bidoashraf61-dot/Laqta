@@ -12,6 +12,8 @@ Let an agency send a shortlist to a client who has no account — the client rev
 - Clips whose album is not `live` are filtered out in application code.
 - `Clip.masterKey` is not selected.
 
+- **Not indexed (DEV-33)** — `metadata.robots = { index: false, follow: false }`.
+
 ## Controls
 
 | Control | Action | Effect |

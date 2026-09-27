@@ -8,6 +8,8 @@ Tell a signed-in user that their role does not permit the URL they requested, wi
 ## Data in
 - None. Renders `state.forbidden` / `state.forbiddenHint` from the message dictionary.
 
+- **Not indexed (DEV-33)** — `metadata.robots = { index: false, follow: false }`.
+
 ## Controls
 
 | Control | Action | Effect |

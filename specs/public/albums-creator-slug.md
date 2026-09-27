@@ -20,6 +20,8 @@ The conversion page: show every clip in the album, both licence prices, and the 
 
 - **Specs block** (DEV-20) opens with «طريقة الإنتاج» — «تصوير بالكاميرا» or «مُنتَج بالذكاء الاصطناعي» from `Album.origin` — and «الدقة» — `Album.resolution` (`uhd4k` → 4K, `hd1080` → 1080p, `sd720` → 720p), or, for an album with none declared, the widest clip (≥3840 → 4K, ≥1920 → 1080p, else 720p; no clips → «—»). The catalogue mixes filmed and generated albums and not all are 4K, so the page states both for this album.
 
+- **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
+
 ## Controls
 
 | Control | Action | Effect |

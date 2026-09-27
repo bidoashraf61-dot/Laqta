@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-21 done — «ترخيص دائم», not «لك للأبد»)_
+_Last updated: 2026-09-27 (DEV-33 done — English pages indexed on their own)_
 
 ---
 
@@ -490,11 +490,24 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - The local DB stops when the app restarts: `npm run db:start` (in the
   background), and `set -a; . ./.env; set +a` before gates.
 
-## 28. Where to pick up
+## 28. Session — 2026-09-27 (DEV-33)
 
-Next ⛔ tasks with no dependency: DEV-33 (English pages indexed on their own)
-and DEV-39 (page speed). DEV-22 (clip-count grammar) is a quick non-⛔ one.
-Many ⛔ tasks wait on the owner's accounts (BIZ-02/03/04/06/07/13).
+- **DEV-33 done.** The album, clip, creator, collection, location and
+  category pages told Google their English version was the Arabic page
+  (canonical); now every indexable page uses `localeAlternates(path)`.
+  Found and fixed on the way: those pages' metadata read the language before
+  resolving it (English page, Arabic title); share cards always said
+  `ar_SA`; the root layout gave every page a hreflang pair pointing at the
+  HOME page; robots.txt left `/en/account`, `/en/admin` etc. crawlable;
+  shared board links were indexable. JSON-LD urls follow the language.
+- New gate `npm run verify:seo` (needs the server; fetches as Googlebot —
+  Next streams metadata into the body for normal browsers).
+
+## 29. Where to pick up
+
+Next ⛔ with no dependency: DEV-39 (page speed — hero film 31 MB, caching,
+fonts). DEV-22 (clip-count grammar) is a quick non-⛔ one. Many ⛔ tasks wait
+on the owner's accounts (BIZ-02/03/04/06/07/13).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

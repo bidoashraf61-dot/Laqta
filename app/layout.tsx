@@ -39,18 +39,12 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title: { default: title, template: `%s · ${t('brand.name')}` },
     description: t('brand.promise'),
-    alternates: {
-      // Both languages named on both sides, so a crawler landing on either one
-      // knows the other exists and neither is read as duplicate content.
-      languages: {
-        ar: localePath('ar', '/'),
-        en: localePath('en', '/'),
-        'x-default': localePath('ar', '/'),
-      },
-    },
+    // No `alternates` here (DEV-33): whatever the root sets, every page without
+    // its own inherits — and it named the HOME page as the other language of
+    // every page. Indexable pages set theirs with `localeAlternates(path)`.
     openGraph: {
       type: 'website',
-      locale: locale === 'en' ? 'en' : 'ar_SA',
+      locale: locale === 'en' ? 'en_US' : 'ar_SA',
       siteName: t('brand.name'),
       title,
       description: t('brand.promise'),

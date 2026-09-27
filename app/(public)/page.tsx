@@ -15,7 +15,7 @@ import { getFootageWall, getLandingTrailers, getSeasonalShelf } from '@/lib/cata
 import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
-import { localeAlternates } from '@/lib/locale'
+import { currentLocale, localeAlternates, localePath, ogLocale } from '@/lib/locale'
 
 const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
@@ -45,8 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: localeAlternates('/'),
     openGraph: {
       type: 'website',
-      locale: 'ar_SA',
-      url: '/',
+      locale: ogLocale(),
+      url: localePath(currentLocale(), '/'),
       title: `${t('brand.name')} — ${t('brand.tagline')}`,
       description: t('brand.seo.home'),
       images: [{ url: '/hero/06-alula.jpg', width: 1920, height: 1080, alt: t('brand.tagline') }],

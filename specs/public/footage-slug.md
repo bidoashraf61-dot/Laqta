@@ -12,6 +12,8 @@ A crawlable, shareable page for one clip that plays that clip's own preview and 
 - `masterKey` and `proxyKey` are explicitly excluded from the select.
 - Poster and preview keys resolve through `lib/media.ts#mediaUrl`: "/"-rooted keys serve from `public/`; bucket keys resolve against `NEXT_PUBLIC_MEDIA_CDN_URL`, and to `null` when it is unset. The OG image and `VideoObject.thumbnailUrl` use the same resolver.
 
+- **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
+
 ## Controls
 
 | Control | Action | Effect |

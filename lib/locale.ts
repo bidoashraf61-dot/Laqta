@@ -116,6 +116,11 @@ export function localePath(locale: Locale, pathname: string): string {
  *     is what stops two translations of one page being read as duplicates, and
  *     it has to be present on BOTH sides to be believed.
  */
+/** `og:locale` for share cards — the language of THIS page, not always Arabic. */
+export function ogLocale() {
+  return currentLocale() === 'en' ? 'en_US' : 'ar_SA'
+}
+
 export function localeAlternates(path: string) {
   return {
     canonical: localePath(currentLocale(), path),

@@ -9,6 +9,8 @@ An SEO landing page for one Saudi location (العلا، الدرعية، الر
 - `Taxonomy` by unique `(kind='location', slug)` for `nameAr/En`, `seoTitleAr`, `seoDescAr`, `heroImage`.
 - `search({ location: slug, page, perPage: 24 })`. A clip matches on any of three paths: `Clip.location.slug`, its own `ClipTaxonomy` with a `location` taxonomy, or its `Album`'s `AlbumTaxonomy` with a `location` taxonomy. Album must be `live`, clip must be `ingestStatus='ready'`.
 
+- **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
+
 ## Controls
 
 | Control | Action | Effect |

@@ -159,7 +159,8 @@ say different things.
 7. **Money is read, never recomputed** — subtotal / VAT / total come off the
    Order as `lib/orders.ts` froze them. Nothing here touches entitlement or
    commission.
-8. **Copy rules.** The catalogue is AI-generated — no message claims footage was
+8. **Copy rules.** The catalogue mixes filmed and AI-generated albums and the
+   messages are about orders, not footage — so no message claims footage was
    filmed or shot anywhere. Refunds are never mentioned. No "first" / "largest"
    claims. Enforced by `verify:mail` on every rendered message and every
    `email.*` string.

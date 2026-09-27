@@ -313,6 +313,14 @@ export default async function AlbumPage({
           <section className="space-y-3">
             <h2 className="font-subhead text-xl font-bold">{t('catalogue.specs')}</h2>
             <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
+              {/* How it was made and at what resolution, stated per album
+                  (DEV-20): the catalogue mixes filmed and AI-generated albums,
+                  and not every album is 4K — the page has to say which. */}
+              <Spec
+                label={t('catalogue.origin')}
+                value={album.origin === 'generated' ? t('catalogue.originGenerated') : t('catalogue.originCaptured')}
+              />
+              <Spec label={t('catalogue.resolution')} value={albumResolution(album)} numeric />
               <Spec label={t('catalogue.clipCountLabel')} value={String(album.clipCount)} numeric />
               <Spec
                 label={t('catalogue.totalRuntime')}
@@ -490,6 +498,19 @@ export default async function AlbumPage({
  * "Rec.709" renders as "709.Rec" beside Arabic, and "DJI Inspire 3" loses its
  * number to the wrong end of the line.
  */
+/**
+ * The album's resolution: what the creator declared, else the widest clip —
+ * albums from before the details form have no declared value.
+ */
+function albumResolution(album: { resolution: string | null; clips: Array<{ width: number | null }> }) {
+  if (album.resolution === 'uhd4k') return '4K'
+  if (album.resolution === 'hd1080') return '1080p'
+  if (album.resolution === 'sd720') return '720p'
+  const widest = Math.max(0, ...album.clips.map((clip) => clip.width ?? 0))
+  if (!widest) return '—'
+  return widest >= 3840 ? '4K' : widest >= 1920 ? '1080p' : '720p'
+}
+
 function Spec({ label, value, numeric }: { label: string; value: string; numeric?: boolean }) {
   const latin = !numeric && /[A-Za-z]/.test(value)
   return (

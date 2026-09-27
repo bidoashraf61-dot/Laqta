@@ -1,7 +1,7 @@
 # Laqta — project rules
 
-Laqta (لقطة) is an Arabic-first marketplace for AI-generated Saudi stock
-footage: buyers find clips, buy whole **albums** (30–70 clips, USD, one-time
+Laqta (لقطة) is an Arabic-first marketplace for Saudi stock footage — some
+albums AI-generated, some filmed; resolution (720p/1080p/4K) varies by album: buyers find clips, buy whole **albums** (30–70 clips, USD, one-time
 purchase, perpetual licence). The owner runs it alone and is **not a
 developer** — explain in plain language, one clear recommendation, commands in
 copy-paste blocks.

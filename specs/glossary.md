@@ -30,7 +30,7 @@ finds nothing.
 | What lands in your library | الجودة الأصلية | original quality |
 | Common questions | الأسئلة الشائعة | Frequently asked questions |
 | The aircraft | **درون** | drone |
-| Footage made with a camera | تصوير حقيقي | Real footage |
+| Footage made with a camera | تصوير بالكاميرا (badge; was «تصوير حقيقي» until DEV-20 — «حقيقي» implied the AI albums are not real) | Filmed |
 | Footage made with generative tools | ذكاء اصطناعي | AI generated |
 | The album's shape | أفقي / عمودي / أفقي وعمودي | Landscape / Portrait / Landscape & portrait |
 | Footer rights line | جميع الحقوق محفوظة | All rights reserved |
@@ -76,7 +76,7 @@ sweep that explicitly listed them.
 
 It happened again. A later editorial pass reintroduced a comparison as
 `landing.priceLead`/`priceBold` «ألبوم كامل بسعر لقطة مفردة», alongside «مواقع
-سعودية حقيقية» and «تصاريح موثّقة» about an AI-generated catalogue. The
+سعودية حقيقية» and «تصاريح موثّقة» about a catalogue that is partly AI-generated. The
 creative-director polish of 2026-09-23 removed them, and `verify:licence` now
 fails on any of them (`OVERCLAIMS`), in both languages and in `content/legal.ts`.
 

@@ -47,6 +47,11 @@ step, not on the send-code step.
   password, wrong TOTP, suspended account) returns the single key
   `auth.invalidCredentials` → «بيانات الدخول غير صحيحة». Account existence is
   never disclosed.
+- **Too many attempts (DEV-48)** — after 10 consecutive failures for one account, or
+  40 attempts from one network, within 15 minutes, `authorize` throws
+  `RateLimitedError` and the form shows `auth.rateLimited` «محاولات كثيرة ورا بعض.
+  انتظر دقائق وجرّب مرة ثانية.» — even for the right password, until the window
+  resets. A successful sign-in clears the account's count.
 - **Two-factor challenge** — `TwoFactorRequiredError` (`code = 'two_factor_required'`)
   is thrown by `authorize` only when `twoFactorEnabled && twoFactorSecret` and no
   code was supplied. The action detects it by both `error.code` and a substring

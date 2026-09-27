@@ -621,7 +621,8 @@
     "resetInvalidTitle": "This link no longer works",
     "resetInvalid": "Reset links work once, within {minutes} minutes of asking. Ask for a new one.",
     "resetRequestNew": "Ask for a new link",
-    "invalidEmail": "Enter a valid email address."
+    "invalidEmail": "Enter a valid email address.",
+    "rateLimited": "Too many attempts in a row. Wait a few minutes and try again."
   },
   "library": {
     "title": "My library",

@@ -133,8 +133,6 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
   live) is still not built — the creator is told the price by the approval email only.
 - Making a buyer a creator (`/admin/users/[id]`) takes effect at their next sign-in: an
   open session is still a buyer at the `/studio` gate (the success message says so).
-- Suspending an account (`/admin/users/[id]`) refuses new sign-ins only; a JWT already
-  issued keeps working until it expires.
 - **2FA has no recovery path.** No backup codes, and no admin control resets another
   account's 2FA: an admin or creator who loses their authenticator needs a database edit
   (`twoFactorEnabled = false, twoFactorSecret = null`), after which they are held on

@@ -33,7 +33,7 @@ audited, expiring support impersonation).
 | Control | Action | Effect |
 | --- | --- | --- |
 | «المستخدمون» back link | link | → `/admin/users` |
-| «إيقاف الحساب» (header; status ≠ suspended; hidden for admins) | `setUserStatus(id,'suspended')`, native confirm «إيقاف هذا الحساب؟ …» | `User.status='suspended'`; audits `user.suspended` (detail from/to). Refuses admins and self with «حساب المدير لا يُوقف من هنا.» |
+| «إيقاف الحساب» (header; status ≠ suspended; hidden for admins) | `setUserStatus(id,'suspended')`, native confirm «إيقاف هذا الحساب؟ …» | `User.status='suspended'`; audits `user.suspended` (detail from/to). Their open sessions end at their next page load (DEV-48). Refuses admins and self with «حساب المدير لا يُوقف من هنا.» |
 | «إعادة تفعيل الحساب» (status = suspended) | `setUserStatus(id,'active')` | `User.status='active'`; audits `user.reactivated` |
 | «افتح في الطلبات» (each order) | plain `<a>` | → `/admin/orders?q={orderNumber}` — refunds (and so ownership withdrawal) live there |
 | «رسائل التواصل» link (when there are messages) | plain `<a>` | → `/admin/messages` |

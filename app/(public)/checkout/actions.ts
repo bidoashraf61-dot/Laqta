@@ -1,5 +1,6 @@
 'use server'
 
+import { LIMITS, hit } from '@/lib/rate-limit'
 import { z } from 'zod'
 import { requireUser } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -29,6 +30,11 @@ export type PlaceOrderResult =
 
 export async function placeOrder(formData: FormData): Promise<PlaceOrderResult> {
   const user = await requireUser()
+  // DEV-48: orders per account — every attempt creates rows and, with Paymob
+  // on, a payment intention.
+  if (!hit('checkout', user.id, LIMITS.checkoutPerUser.limit, LIMITS.checkoutPerUser.windowMs).ok) {
+    return { ok: false, messageKey: 'auth.rateLimited' }
+  }
 
   const parsed = schema.safeParse({
     billingEntityType: formData.get('billingEntityType'),
@@ -127,6 +133,10 @@ export type PromoPreview =
  */
 export async function previewPromo(rawCode: string): Promise<PromoPreview> {
   const user = await requireUser()
+  // DEV-48: guessing codes one «تطبيق» at a time.
+  if (!hit('promo', user.id, LIMITS.promoPerUser.limit, LIMITS.promoPerUser.windowMs).ok) {
+    return { ok: false, messageKey: 'auth.rateLimited' }
+  }
   const cart = await db.cart.findUnique({ where: { userId: user.id }, include: { items: true } })
   if (!cart || cart.items.length === 0) return { ok: false, messageKey: 'cart.empty' }
   const albums = await db.album.findMany({

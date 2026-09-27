@@ -92,8 +92,13 @@ export function isPublicMediaKey(value: string): boolean {
  * writes these and the app reads them back, so they are named once.
  */
 export const MEDIA_KEYS = {
-  heroDesktop: 'hero/hero-web.mp4',
-  heroMobile: 'hero/hero-web-m.mp4',
+  /*
+   * Versioned names (DEV-39): the film is cached for a year, so a new encode
+   * must be a new name — bump `-v2` → `-v3` here, in the upload script, and
+   * in the file names, never overwrite.
+   */
+  heroDesktop: 'hero/hero-web-v2.mp4',
+  heroMobile: 'hero/hero-web-m-v2.mp4',
   preview: (clipSlug: string) => `previews/${clipSlug}.mp4`,
   poster: (clipSlug: string) => `posters/${clipSlug}.jpg`,
   trailer: (albumSlug: string) => `trailers/${albumSlug}.mp4`,
@@ -106,6 +111,6 @@ export const MEDIA_KEYS = {
  */
 export function heroFilmUrl(mobile: boolean): string {
   const key = mobile ? MEDIA_KEYS.heroMobile : MEDIA_KEYS.heroDesktop
-  const local = mobile ? '/hero/vid/hero-web-m.mp4' : '/hero/vid/hero-web.mp4'
+  const local = mobile ? '/hero/vid/hero-web-m-v2.mp4' : '/hero/vid/hero-web-v2.mp4'
   return mediaCdnConfigured() ? (mediaUrl(key) ?? local) : local
 }

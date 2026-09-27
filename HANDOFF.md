@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-33 done — English pages indexed on their own)_
+_Last updated: 2026-09-27 (DEV-39 done — lighter hero film, caching, phone poster)_
 
 ---
 
@@ -503,11 +503,32 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - New gate `npm run verify:seo` (needs the server; fetches as Googlebot —
   Next streams metadata into the body for normal browsers).
 
-## 29. Where to pick up
+## 29. Session — 2026-09-27 (DEV-39)
 
-Next ⛔ with no dependency: DEV-39 (page speed — hero film 31 MB, caching,
-fonts). DEV-22 (clip-count grammar) is a quick non-⛔ one. Many ⛔ tasks wait
-on the owner's accounts (BIZ-02/03/04/06/07/13).
+- **DEV-39 done — page speed.** Hero film re-encoded from `film-full.mp4`:
+  desktop 1600×900 **13 MB** (was 31 MB), phones 720p **7.5 MB** (was 12 MB),
+  visually the same; keyframes kept every 8 frames for the scrub. New
+  versioned names `hero-web-v2.mp4` / `hero-web-m-v2.mp4` (in the
+  gitignored `public/hero/vid/`; `lib/media.ts#MEDIA_KEYS`).
+- `/hero/*` and `/fonts/*` now cached one year (`next.config.mjs#headers`)
+  — before, every visit re-downloaded the film, stills and 15 font files.
+  S3 uploads of the hero also get a one-year cache (`scripts/media-upload.ts`).
+- Phones get the 27 KB hero still instead of the 157 KB one (`<picture>`
+  under the video). Thmanyah Sans Regular + Serif Display Bold preloaded.
+- **When AWS is set up (DEV-15):** run `npm run media:upload` — it now pushes
+  the `-v2` film; the old `hero/hero-web.mp4` keys are no longer read.
+- **Rule:** never overwrite a file in `public/hero` or `public/fonts` under
+  the same name — browsers keep them a year. New content = new file name.
+
+## 30. Where to pick up
+
+Next ⛔ with no dependency: **DEV-47** (production seed — real taxonomy,
+bands, licence, admin; no demo albums). Fold in two findings: the dev seed
+creates 2 albums without a licence (task chip raised), and `Album.origin`
+defaults to `captured` — make the production path always set it. Quick
+non-⛔ one: DEV-22 (clip-count grammar). The remaining ⛔ tasks wait on the owner's
+accounts: BIZ-02/03 (lawyer, accountant → DEV-26/27/28), BIZ-04 (Paymob),
+BIZ-06/13 (AWS, Resend → DEV-15/16), BIZ-07 (hosting → DEV-14).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

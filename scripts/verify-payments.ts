@@ -22,7 +22,9 @@
  */
 import { randomBytes } from 'node:crypto'
 import { checkout, getLibrary, settleOrder } from '../lib/orders'
-import { availableMethods } from '../lib/payments'
+import { availableMethods, PAYMENT_METHODS } from '../lib/payments'
+import ar from '../messages/ar.json'
+import en from '../messages/en.json'
 import {
   createPaymobIntention,
   paymobConfig,
@@ -127,6 +129,16 @@ async function main() {
   report(
     'mada / Tabby / Tamara are never offered',
     !offered.some((method) => ['mada', 'tabby', 'tamara'].includes(method)),
+  )
+  // DEV-29: not even as dormant labels — the checkout must not name a rail
+  // that does not exist, and must not say card payment is "being switched on".
+  report(
+    'mada / Tabby / Tamara are not payment methods at all',
+    !(PAYMENT_METHODS as readonly string[]).some((method) => ['mada', 'tabby', 'tamara'].includes(method)),
+  )
+  report(
+    'no mada / Tabby / Tamara or "being activated" copy in either dictionary',
+    !/methodMada|methodTabby|methodTamara|قيد التفعيل|being switched on/.test(JSON.stringify([ar, en])),
   )
   report('currency defaults to USD', paymobConfig()?.currency === 'USD')
   for (const key of Object.keys(process.env)) if (key.startsWith('PAYMOB_')) delete process.env[key]

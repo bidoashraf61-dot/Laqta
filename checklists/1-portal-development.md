@@ -61,7 +61,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-26** ⛔ Legal pages rewrite after the lawyer: Terms, Privacy, Licences, Content policy (30–70 clips not "eight", AI section, Egyptian company, holy-sites rule, VAT line) — 🤖 · 1–2 days · *needs BIZ-02, BIZ-03*
 - [ ] **DEV-27** ⛔ Licence certificate: real licence text (today 2 sentences), singular labels, licensor company line, drop "(optional)" — 🤝 · ½ day · *needs BIZ-02*
 - [ ] **DEV-28** ⛔ Checkout VAT set per accountant (today adds 15% Saudi VAT; **D7: keep 15% until BIZ-03 answers**); FAQ invoice promise fixed or invoice PDF built — 🤖 · 2 hrs – 2 days · *needs D7 / BIZ-03*
-- [ ] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min
+- [x] **DEV-29** Remove "being activated" mada / Tabby / Tamara labels from checkout — 🤖 · 30 min — done 2026-09-27 (mada/Tabby/Tamara removed as payment methods and as copy; the «الدفع بالبطاقة قيد التفعيل» note is gone — bank-transfer-only checkout just shows bank transfer; the forged-method refusal reworded; `verify:payments` checks both)
 - [ ] **DEV-30** Missing emails: verify-email on the template system (today Arabic-only), new sale to creator, payout paid, card failed/pending, bank-transfer reminder, contact + footage-request acknowledgements, creator added, launch notice — 🤖 · 1–2 days
 - [ ] **DEV-31** Refresh the writer briefs in `docs/content/` (still contain refunds, 10–24 clips, «مصوّر», SAR) — 🤖 · ½ day
 - [ ] **DEV-32** Contact details shown on `/contact` and in site data — 🤖 · 30 min · *needs BIZ-10*

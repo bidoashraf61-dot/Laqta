@@ -2,7 +2,7 @@ import { rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { db } from '@/lib/db'
 import { MEDIA_KEYS } from '@/lib/media'
-import { MEDIA_OUT, encodePreviewAndPoster, hasBinary, probeVideo } from '@/lib/media-pipeline'
+import { MEDIA_OUT, encodePreviewAndPoster, hasBinary, perceptualHashOf, probeVideo } from '@/lib/media-pipeline'
 import { ACCEPTED_CODECS, materialiseMaster, publishPublicMedia, refreshAlbumTotals } from '@/lib/uploads'
 
 /**
@@ -115,9 +115,13 @@ export async function processClip(clipId: string): Promise<'ready' | IngestFailu
       throw new IngestError('preview', (error as Error).message)
     }
 
+    // The fingerprint the review queue's duplicate check compares (DEV-18).
+    // Best effort: without it the clip is simply not matched.
+    const perceptualHash = await perceptualHashOf(master.path, specs.durationS)
+
     await db.clip.update({
       where: { id: clip.id },
-      data: { ingestStatus: 'ready', ingestError: null, previewKey, thumbnailKeys: [posterKey] },
+      data: { ingestStatus: 'ready', ingestError: null, previewKey, thumbnailKeys: [posterKey], perceptualHash },
     })
     await refreshAlbumTotals(clip.albumId)
     return 'ready'

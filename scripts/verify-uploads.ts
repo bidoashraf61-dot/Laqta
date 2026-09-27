@@ -188,6 +188,7 @@ async function main() {
     check('codec from the file', clip.codec === 'H.264', String(clip.codec))
     check('colour from the file', clip.colourProfile === 'Rec.709', String(clip.colourProfile))
     check('aspect ratio', clip.aspectRatio === '16:9', String(clip.aspectRatio))
+    check('perceptual hash computed at ingest (DEV-18)', /^[0-9a-f]{16}$/.test(clip.perceptualHash ?? ''), String(clip.perceptualHash))
     const previewFile = clip.previewKey?.startsWith('/') ? join(process.cwd(), 'public', clip.previewKey) : null
     check('watermarked preview published', Boolean(previewFile && existsSync(previewFile)), String(clip.previewKey))
     check('poster published', clip.thumbnailKeys.length === 1 && existsSync(join(process.cwd(), 'public', clip.thumbnailKeys[0])))

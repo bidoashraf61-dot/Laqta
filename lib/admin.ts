@@ -1,4 +1,5 @@
 import { translate } from '@/lib/i18n'
+import { isSameShot } from '@/lib/phash'
 import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
 import { bandForCount, parseAlbumPrice } from '@/lib/price-bands'
@@ -36,13 +37,11 @@ export async function findDuplicates(albumId: string) {
   })
   if (clips.length === 0) return []
 
-  const hashes = clips.map((clip) => clip.perceptualHash!) as string[]
-
-  const matches = await db.clip.findMany({
-    where: {
-      perceptualHash: { in: hashes },
-      albumId: { not: albumId },
-    },
+  // Near matches, not only equal hashes (DEV-18): a re-encode or a light grade
+  // moves a few bits. Every hashed clip outside this album is compared — a
+  // 64-bit XOR each, cheap at catalogue scale.
+  const others = await db.clip.findMany({
+    where: { perceptualHash: { not: null }, albumId: { not: albumId } },
     select: {
       id: true,
       titleAr: true,
@@ -56,7 +55,7 @@ export async function findDuplicates(albumId: string) {
   return clips
     .map((clip) => ({
       clip,
-      matches: matches.filter((match) => match.perceptualHash === clip.perceptualHash),
+      matches: others.filter((match) => isSameShot(match.perceptualHash!, clip.perceptualHash!)),
     }))
     .filter((row) => row.matches.length > 0)
 }

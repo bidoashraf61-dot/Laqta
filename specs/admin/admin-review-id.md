@@ -13,9 +13,10 @@ the clip contact sheet, and the nine-check checklist that gates approval.
   (id, type, fileKey, fileName, fileUploadedAt, authority, referenceNumber,
   verification, validTo).
 - `lib/admin.findDuplicates(albumId)` — reads `Clip.perceptualHash` for this album, then
-  finds `Clip` rows in **other** albums sharing a hash, with their album slug/title and
-  creator handle. Perceptual-hash equality, not checksum; matches are surfaced, never
-  auto-rejected.
+  compares it with every hashed `Clip` in **other** albums and lists those within
+  `DUPLICATE_DISTANCE` (6) differing bits (`lib/phash.ts#isSameShot`) — a re-encode or
+  light grade still matches — with their album slug/title and creator handle. The hash is
+  computed at ingest (DEV-18). Matches are surfaced, never auto-rejected.
 - `lib/studio.analyseConsistency(clips)` — pure function over fps / colourProfile /
   width×height; flags `mixedFrameRate`, `mixedProfile`, `mixedResolution`.
 - `lib/review-checklist.normaliseChecklist(task.checklist)` — the stored JSON, backfilled

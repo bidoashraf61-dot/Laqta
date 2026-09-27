@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-26 (DEV-01)_
+_Last updated: 2026-09-27 (end of session — DEV-61 done, DEV-64a next)_
 
 ---
 
@@ -342,8 +342,44 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   audited `album.price.set`. Rules in `lib/album-price.ts`; checks in
   `verify:offers`.
 
-**Next (owner's order):** DEV-64 (every word editable, three phases); DEV-62
-bundles needs the discount decision. Owner: approve the creator
+## 22. Where to pick up — DEV-64a (not started; owner closed the session 2026-09-27)
+
+**Owner's order of work:** DEV-64a → 64b → 64c (every word editable). DEV-62
+(bundles) waits on the owner's decision: does Laqta cover a bundle discount
+from its share, or is it shared with creators pro-rata?
+
+**DEV-64a plan (legal & long-form pages editable from admin):**
+- Today: Terms, Privacy, Licences, Content policy, About, Contact are
+  `DocumentSection[]` constants in `content/legal.ts` (type in
+  `components/layout/document-page.tsx`: heading/headingEn, body/bodyEn[],
+  list/listEn[]); pages under `app/(public)/{terms,privacy,licences,
+  content-policy,about,contact}` import them; one `EFFECTIVE_FROM` for all.
+- Design doc: `docs/decisions/2026-08-20-content-control-design.md` — code
+  stays the default layer; published DB versions override; previous versions
+  stay readable ("these terms took effect on X"). It suggests `CmsEntry`
+  (kind `legal`, exists, unused) — a dedicated versioned model
+  (e.g. `DocumentVersion { docKey, sections Json, publishedAt, publishedBy,
+  note }`) fits the sections shape better; decide and record it.
+- Build: `lib/documents.ts#loadDocument(key)` (latest published version or the
+  code default; validated shape); pages read it and show that version's
+  effective date; `/admin/content` list + `/admin/content/[key]` editor
+  (sections AR/EN, paragraphs, lists, add/remove/reorder, live preview,
+  publish with note, version history with «استرجاع»); admin nav link.
+- Safety: Arabic required (English falls back), no empty section, and the
+  banned-claim patterns in `scripts/verify-licence.ts` (CONTRADICTIONS /
+  OVERCLAIMS) moved to a shared lib and enforced at publish; `verify:licence`
+  must also scan published DB versions. New gate for load/publish/restore.
+- Hard rules: Impeccable for the new admin UI, spec per new route
+  (`specs/admin/`), update `specs/admin/README.md`.
+
+**Open issues to remember:**
+- `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the
+  studio clip list's `router.refresh()` poll sometimes doesn't commit
+  (separate task created in the desktop app).
+- Email verification link still returned to the browser in production when no
+  mail provider is set (separate task created earlier).
+- `VAT_RATE` 15% stays until the accountant answers (D7).
+- The GitHub repo is PUBLIC by owner choice; demo password in `prisma/seed.ts`. Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

@@ -24,7 +24,7 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [x] **DEV-09c** Owner controls the price calculator from admin — done 2026-09-27: dropdowns only (owner): importance grade low/medium/high for resolution, footage type and quality; price limits $29/$49/$69 – $199/$249/$299; creator margin ±10/15/20%; live example; audited
 - [x] **DEV-10** Releases can link to any clip; per-clip "shows people / faces" toggle — 🤖 · ½ day — done 2026-09-27 (clip menu on the album page: «فيها أشخاص» / «وجوه واضحة» checkboxes, kept consistent, audited; faces clips flagged «تحتاج تصريح نموذج»; the release linker lists every clip of the creator, faces first, each marked)
 - [ ] **DEV-11** 2FA required for creators before they reach the studio — 🤖 · ½ day
-- [ ] **DEV-12** Bulk edit of clip titles (today each defaults to the file name) — 🤖 · 1 day
+- [x] **DEV-12** Bulk edit of clip titles (today each defaults to the file name) — 🤖 · 1 day — done 2026-09-27 («تعديل كل العناوين» on the studio album page: every clip in one grid, Arabic + English side by side with the file name under each, one save in one transaction, only changed rows written, missing titles marked red)
 - [ ] **DEV-13** Creator guide page: spec sheet, pre-start checklist, example album, linked from the upload area — 🤖 · ½ day · *needs ALB-20*
 - [ ] **DEV-14** ⛔ Hosting: Dockerfile (Node + ffmpeg + Chromium), health check, migrations on deploy, daily database backups — 🤖 · 1 day · *needs BIZ-07*
 - [ ] **DEV-15** ⛔ S3 buckets + CORS + CloudFront wired; Resend switched on — 🤝 · 1 day · *needs BIZ-06, BIZ-13*

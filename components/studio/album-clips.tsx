@@ -19,6 +19,7 @@ import { toast } from '@/components/ui/toast'
 import { useT } from '@/lib/i18n-client'
 import { cn } from '@/lib/utils'
 import { deleteClip, moveClip, setAlbumCover, setClipPeople, updateClipTitles } from '@/app/(studio)/studio/actions'
+import { BulkTitles } from './bulk-titles'
 import { UploadError, cancelUpload, formatBytes, uploadMaster, type UploadProgress } from './upload-engine'
 
 export type StudioClip = {
@@ -82,6 +83,7 @@ export function AlbumClips({
   const router = useRouter()
   const [locals, setLocals] = useState<Local[]>([])
   const [dragging, setDragging] = useState(false)
+  const [bulk, setBulk] = useState(false)
   const picker = useRef<HTMLInputElement>(null)
   const running = useRef(0)
   const queue = useRef<Local[]>([])
@@ -174,9 +176,16 @@ export function AlbumClips({
           {t('studio.clips')}
         </h2>
         {clips.length > 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t('studio.upload.readyCount', { ready, total: clips.length })}
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-sm text-muted-foreground">
+              {t('studio.upload.readyCount', { ready, total: clips.length })}
+            </p>
+            {editable && !bulk ? (
+              <Button type="button" size="sm" variant="outline" onClick={() => setBulk(true)}>
+                {t('studio.upload.bulkOpen')}
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
@@ -248,6 +257,8 @@ export function AlbumClips({
 
       {clips.length === 0 ? (
         <EmptyState title={t('studio.upload.empty')} description={t('studio.upload.emptyBody')} />
+      ) : bulk && editable ? (
+        <BulkTitles albumId={albumId} clips={clips} onDone={() => setBulk(false)} />
       ) : (
         <ol className="divide-y rounded-lg border bg-card">
           {clips.map((clip, index) => (

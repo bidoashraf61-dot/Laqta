@@ -7,7 +7,8 @@ import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
 import { getEarnings, submitForReview, MIN_PAYOUT_USD } from '@/lib/studio'
 import { recordAudit } from '@/lib/audit'
-import { actionT } from '@/lib/locale-request'
+import { actionT, requestLocale } from '@/lib/locale-request'
+import { countIn } from '@/lib/i18n'
 import { destroyClip, editableAlbum, editableClip, renumberClips } from '@/lib/uploads'
 import { parseAlbumDetailsForm, saveAlbumDetails } from '@/lib/album-details'
 
@@ -171,6 +172,51 @@ export async function setClipPeople(
   revalidatePath(`/studio/albums/${clip.albumId}`)
   revalidatePath('/studio/releases')
   return { ok: true, message: tr('dash.saved') }
+}
+
+/**
+ * Rename many clips at once (DEV-12). Every clip starts titled after its file
+ * name («DJI_0042»), and renaming fifty one row at a time is where creators
+ * gave up. One transaction: either every title saves or none does, so the
+ * list the creator sees after saving is exactly what they typed.
+ */
+export async function updateClipTitlesBulk(
+  albumId: string,
+  rows: Array<{ id: string; titleAr: string; titleEn: string }>,
+): Promise<Result & { invalid?: string[] }> {
+  const tr = await actionT()
+  const user = await requireCreator()
+  const { error } = await editableAlbum(user, albumId)
+  if (error) return clipRefusal(error)
+  if (!Array.isArray(rows) || rows.length === 0 || rows.length > 200) return { ok: false, message: tr('state.error') }
+
+  const clean = rows.map((row) => ({
+    id: String(row?.id ?? ''),
+    titleAr: String(row?.titleAr ?? '').trim().slice(0, 160),
+    titleEn: String(row?.titleEn ?? '').trim().slice(0, 160),
+  }))
+  const invalid = clean.filter((row) => !row.titleAr || !row.titleEn).map((row) => row.id)
+  if (invalid.length > 0) return { ok: false, message: tr('studio.upload.bulkMissing'), invalid }
+
+  // Only this album's clips — ids in the payload are guessable.
+  const owned = await db.clip.findMany({
+    where: { id: { in: clean.map((row) => row.id) }, albumId },
+    select: { id: true, titleAr: true, titleEn: true },
+  })
+  const current = new Map(owned.map((clip) => [clip.id, clip]))
+  const changed = clean.filter((row) => {
+    const was = current.get(row.id)
+    return was && (was.titleAr !== row.titleAr || was.titleEn !== row.titleEn)
+  })
+  if (changed.length === 0) return { ok: true, message: tr('studio.upload.bulkNothing') }
+
+  await db.$transaction(
+    changed.map((row) => db.clip.update({ where: { id: row.id }, data: { titleAr: row.titleAr, titleEn: row.titleEn } })),
+  )
+  await recordAudit({ actorId: user.id, action: 'clip.rename_bulk', entity: 'Album', entityId: albumId, detail: { count: changed.length } })
+  revalidatePath(`/studio/albums/${albumId}`)
+  const locale = await requestLocale()
+  return { ok: true, message: tr('studio.upload.bulkSaved', { count: countIn(locale, 'clip', changed.length) }) }
 }
 
 /** Swap a clip with its neighbour. Order is what the album page and the ZIP follow. */

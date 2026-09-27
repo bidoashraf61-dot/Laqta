@@ -8,6 +8,7 @@ Tell crawlers every indexable page, in both languages, with nothing that 404s �
 ## Data in
 - `Album` where `status='live'` → `/albums/[creator]/[slug]` (0.8, weekly).
 - `Taxonomy` where `isActive`, **`kind` in (`location`, `category`)**, and at least one live album → `/locations/[slug]` (0.85) and `/categories/[slug]` (0.7). **Themes and tags are never listed** — they have no public route; they used to be sent to `/collections/<slug>`, which looks up a `Collection` row and 404s (DEV-34).
+- `Taxonomy` `kind='theme'` for the five occasions (`OCCASION_SLUGS`), active and with a live album → `/occasions/[slug]` (0.7) (DEV-42).
 - `Collection` where `isPublished` and at least one live album → `/collections/[slug]` (0.6).
 - `Clip` whose album is live → `/footage/[slug]` (0.5, monthly) (DEV-34). Each clip entry carries a `<video:video>` block when the clip has a poster (`thumbnailKeys[0]`): title and description in that entry's language (description falls back to «لقطة من ألبوم «…» على لقطة.» / "A clip from the album … on Laqta."), `thumbnail_loc`, `content_loc` = the public **watermarked** preview (`previewKey`, never the master or the buyer's proxy), duration in whole seconds, `publication_date`, `family_friendly=yes`, `requires_subscription=no`. Media URLs go through `lib/media.ts#mediaUrl`; "/"-rooted keys are made absolute with `siteOrigin()`. A clip without a poster is listed without a video block.
 - `Creator` where `status='approved'` → `/creators/[handle]` (0.5).

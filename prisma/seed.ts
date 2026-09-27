@@ -1496,6 +1496,20 @@ async function main() {
   }
   console.log(`  collections — ${SHELVES.length} shelves populated`)
 
+  // Demo page text for one hub (DEV-41), so the intro, the FAQ block and its
+  // JSON-LD render on /locations/alula in every browser gate.
+  await db.taxonomy.updateMany({
+    where: { kind: 'location', slug: 'alula' },
+    data: {
+      introAr: 'العلا في شمال غرب السعودية: واحات النخيل، والجبال الرملية الحمراء، ومدائن صالح. هنا ألبومات لقطاتها، جاهزة للمونتاج بترخيص تجاري دائم.',
+      introEn: 'AlUla, in north-west Saudi Arabia: palm oases, red sandstone mountains and Hegra. Here are the albums shot or generated there, edit-ready under a permanent commercial licence.',
+      faqs: [
+        { qAr: 'هل لقطات العلا مصرّح بها للاستخدام التجاري؟', aAr: 'كل ألبوم يوضح في صفحته هل هو مرخّص للاستخدام التجاري، وما التصاريح المرفقة به.', qEn: 'Is AlUla footage cleared for commercial use?', aEn: 'Each album states on its page whether it is cleared for commercial use, and which permits come with it.' },
+        { qAr: 'أي أوقات اليوم تغطيها الألبومات؟', aAr: 'يختلف من ألبوم لآخر: الفجر والغروب والليل مذكورة في وصف كل ألبوم.', qEn: 'Which times of day do the albums cover?', aEn: 'It varies by album: dawn, sunset and night are listed on each album page.' },
+      ],
+    },
+  })
+
   console.log('Seed complete.')
 }
 

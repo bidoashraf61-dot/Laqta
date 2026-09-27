@@ -78,11 +78,11 @@ album's price, and no way to edit site wording without a developer.
 - [x] **DEV-40** `SITE_ORIGIN` / `AUTH_URL` set together so links never fall back to localhost — 🤖 · 30 min — done 2026-09-27 (one `siteOrigin()` in `lib/site.ts` for every absolute URL — layout metadataBase, sitemap, robots, JSON-LD, email-verification link no longer read the Host header; mismatch warned; production with neither set throws; `verify:mail` checks it; `.env.example` + README)
 
 ### Hub pages and blog
-- [ ] **DEV-41** Admin fields to write text for location and category pages; hub shows intro, 3 FAQs, albums first, related hubs — 🤖 · 2 days
-- [ ] **DEV-42** Occasions pages `/occasions/[slug]` (Ramadan, Eid, Founding Day, National Day, Riyadh Season) — 🤖 · 1 day
+- [x] **DEV-41** Admin fields to write text for location and category pages; hub shows intro, 3 FAQs, albums first, related hubs — 🤖 · 2 days — done 2026-09-27 («نص الصفحة» on each location/category in `/admin/taxonomy` → an editor for SEO title + description, intro and 3 Q&As in both languages; the hub now reads: intro, albums first, clips, FAQs with FAQPage JSON-LD, «تصفّح أيضاً» related hubs)
+- [x] **DEV-42** Occasions pages `/occasions/[slug]` (Ramadan, Eid, Founding Day, National Day, Riyadh Season) — 🤖 · 1 day — done 2026-09-27 (`/occasions/ramadan|eid|founding-day|national-day|riyadh-season` on the hub layout — albums, clips, intro/FAQs written from `/admin/taxonomy`, related hubs; in the sitemap; the landing's seasonal shelf links to the running occasion; search gained a `theme` filter)
 - [ ] **DEV-43** Blog: `/blog`, article page, categories, RSS, sitemap, Article structured data — through Impeccable — 🤖 · 2 days
 - [ ] **DEV-44** Blog admin: editor with Arabic preview, drafts, scheduling, SEO fields, "embed album" block — 🤖 · 2 days
-- [ ] **DEV-45** Proper waitlist: its own table, consent line, language, source, unsubscribe, export/sync to Resend Audiences — 🤖 · 1–2 days
+- [x] **DEV-45** Proper waitlist: its own table, consent line, language, source, unsubscribe, export/sync to Resend Audiences — 🤖 · 1–2 days — done 2026-09-27 (`WaitlistEntry` table, old rows migrated; consent line + version, language, source, IP hash, rate limit; unsubscribe page (POST, scanner-safe); `/admin/waitlist` with counts, CSV export, «أرسل إشعار الإطلاق» once per person, Resend audience sync (dormant without `RESEND_AUDIENCE_ID`); the form shows on the landing page while `SITE_MODE=prelaunch`. **Owner:** set `SITE_MODE=prelaunch` to collect sign-ups before launch)
 - [ ] **DEV-46** **Google Analytics** (D10) + UTM tracking, loaded only after consent via a cookie banner; privacy policy updated — 🤖 · ½ day · *needs BIZ-12 (banner decision)*
 
 ## M5 — Rehearsal · by 21 Nov

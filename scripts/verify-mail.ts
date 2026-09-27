@@ -439,6 +439,44 @@ async function idempotency() {
     const digests = await db.mailOutbox.count({ where: { template: 'operator.digest', toEmail: operator } })
     if (digests !== 1) fail(`the digest ran twice on one day and queued ${digests}`)
     else pass('the operator digest is queued once a day, to MAIL_OPERATOR_TO')
+
+    // ── DEV-45: the waitlist ─────────────────────────────────────────────
+    const waitlist = await import('../lib/waitlist')
+    const wl = `verify-wl-${stamp}@laqta.test`
+    const wlOut = `verify-wl-out-${stamp}@laqta.test`
+    try {
+      await waitlist.joinWaitlist({ email: wl.toUpperCase(), locale: 'en', source: 'landing' })
+      await waitlist.joinWaitlist({ email: wl, locale: 'en', source: 'sample' })
+      const rowsFor = await db.waitlistEntry.findMany({ where: { email: wl } })
+      if (rowsFor.length !== 1 || rowsFor[0].locale !== 'en' || rowsFor[0].consentText !== waitlist.WAITLIST_CONSENT_VERSION) {
+        fail('joining the waitlist twice did not leave one row with its language and consent')
+      } else pass('joining twice → one waitlist row, with language and the consent version')
+
+      await waitlist.joinWaitlist({ email: wlOut, locale: 'ar', source: 'landing' })
+      const out = await db.waitlistEntry.findUniqueOrThrow({ where: { email: wlOut } })
+      await waitlist.unsubscribeByToken(out.unsubscribeToken)
+      const gone = await db.waitlistEntry.findUniqueOrThrow({ where: { email: wlOut } })
+      if (!gone.unsubscribedAt) fail('the unsubscribe token did not unsubscribe')
+      else pass('the unsubscribe link takes the address off the list (kept, marked)')
+
+      await waitlist.notifyWaitlistOfLaunch()
+      await waitlist.notifyWaitlistOfLaunch()
+      const notices = await db.mailOutbox.count({ where: { template: 'launch.notice', toEmail: wl } })
+      const leaked = await db.mailOutbox.count({ where: { template: 'launch.notice', toEmail: wlOut } })
+      const notice = await db.mailOutbox.findFirst({ where: { template: 'launch.notice', toEmail: wl } })
+      if (notices !== 1 || leaked !== 0) fail(`launch notice: ${notices} to the member, ${leaked} to the unsubscribed`)
+      else pass('the launch notice goes once to each member, never to someone who left')
+      if (notice?.locale !== 'en' || !String((notice?.payload as { unsubscribeUrl?: string })?.unsubscribeUrl).includes('/en/waitlist/unsubscribe?token=')) {
+        fail('the launch notice is not in the member\'s language with their unsubscribe link')
+      } else pass('…in their language, carrying their unsubscribe link')
+
+      const csv = await waitlist.waitlistCsv()
+      if (!csv.startsWith('email,language,source') || !csv.includes(wl)) fail('the CSV export is missing its header or a member')
+      else pass('the CSV export lists the members')
+    } finally {
+      await db.mailOutbox.deleteMany({ where: { toEmail: { in: [wl, wlOut] } } })
+      await db.waitlistEntry.deleteMany({ where: { email: { in: [wl, wlOut] } } })
+    }
   } finally {
     await db.mailOutbox.deleteMany({ where: { toEmail: { in: [email, operator] } } })
     await db.invoice.deleteMany({ where: { orderId: { in: orders } } })

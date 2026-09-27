@@ -22,7 +22,8 @@
       "forbidden": "This page is not available to your account.",
       "board": "A shared board on Laqta: a set of clips someone picked out for you.",
       "hubLocation": "Stock footage of {name} in edit-ready albums, under one full commercial licence, paid for once.",
-      "hubCategory": "{name} stock footage from Saudi Arabia in edit-ready albums, under one full commercial licence, paid for once."
+      "hubCategory": "{name} stock footage from Saudi Arabia in edit-ready albums, under one full commercial licence, paid for once.",
+      "hubOccasion": "Saudi {name} stock footage in edit-ready albums for your seasonal campaign, under a permanent commercial licence."
     }
   },
   "nav": {
@@ -338,7 +339,10 @@
     "usp3Note": "No cap on views, on any platform",
     "usp4": "Reviewed before it is published",
     "usp4Note": "Location, dress and detail, checked before it reaches you",
-    "uspRailLabel": "Why Laqta"
+    "uspRailLabel": "Why Laqta",
+    "waitlistConsent": "We'll only email you about Laqta's launch, and you can unsubscribe from any email.",
+    "waitlistPrivacy": "Privacy policy",
+    "seasonViewAll": "All {name} albums"
   },
   "catalogue": {
     "footageTitle": "The Saudi footage library",
@@ -450,7 +454,12 @@
     "timeNight": "Night",
     "loadMore": "Show more",
     "endOfResults": "You've reached the end of the results",
-    "hubTitle": "{name} stock footage"
+    "hubTitle": "{name} stock footage",
+    "hubAlbums": "{name} albums",
+    "hubClips": "Clips",
+    "hubFaq": "About {name}",
+    "hubRelated": "Browse also",
+    "occasionsTitle": "Occasions"
   },
   "sell": {
     "title": "Sell your footage on Laqta",
@@ -1501,5 +1510,12 @@
     "unavailable": "This bundle isn't available right now.",
     "onAlbum": "Part of the bundle",
     "onAlbumSave": "— save"
+  },
+  "waitlist": {
+    "title": "Unsubscribe",
+    "confirm": "Leave the Laqta waitlist? We won't email you about the launch after this.",
+    "cta": "Unsubscribe",
+    "done": "You're off the list. We won't email you.",
+    "invalid": "This link no longer works. To leave the list, write to us from the contact page."
   }
 }

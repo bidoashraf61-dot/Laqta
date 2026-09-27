@@ -6,6 +6,7 @@ import { TheCollection } from '@/components/landing/collection'
 import { LicensingRights } from '@/components/landing/licensing'
 import { PricingValue } from '@/components/landing/pricing-value'
 import { LandingFaq } from '@/components/landing/faq'
+import { EmailCapture } from '@/components/landing/email-capture'
 import { FinalCta } from '@/components/landing/final-cta'
 import { HowItWorks } from '@/components/landing/sections'
 import { ScrollDeck } from '@/components/landing/scroll-deck'
@@ -119,6 +120,10 @@ export default async function HomePage() {
         <LandingFaq />
       </ScrollDeck>
       <RequestFootage />
+      {/* The launch waitlist (DEV-45) — only before launch. With
+          SITE_MODE=prelaunch on the server, visitors can leave an address to be
+          told the day buying opens; after launch the section disappears. */}
+      {process.env.SITE_MODE === 'prelaunch' ? <EmailCapture source="landing" /> : null}
       <FinalCta />
     </>
   )

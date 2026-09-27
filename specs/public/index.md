@@ -24,6 +24,7 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 6. `HowItWorks` — three steps (`components/landing/sections.tsx`).
 7. `PricingValue` — value case + three points + buy CTA (`components/landing/pricing-value.tsx`), `accent` (gold-tint) ground. Each point carries an **ink** icon on a paper disc (∞, clock, palette) — ink, not gold, because the section already spends gold on the buy button.
 8. `LandingFaq` — ten Q&A (`landing.faq1`–`faq10`: single clip, licence scope, subscription, tax invoice, what you download; and since DEV-24: AI-generated or filmed ("some of each, labelled on every album"), news/documentary use (covered, but an AI clip is never presented as real footage of an event), team use (licence is the buyer's; shared team accounts not yet), vertical footage (landscape albums; verticals as separate vertical albums), custom subject ("use the form below" — the `RequestFootage` section that follows; no price promised)) + `FAQPage` JSON-LD. Arabic questions in the Saudi spoken register (DEV-23). **Numbered** in the reader's own digits (١–١٠ in Arabic, 1–10 in English) inside each `<dt>`, with a hanging indent so answers align under the question. On two columns the reading order zig-zags; the number makes it visible.
+- **Waitlist (DEV-45)** — only while `SITE_MODE=prelaunch`: `EmailCapture source="landing"` between `RequestFootage` and `FinalCta` — «نبلّغك يوم الإطلاق», email + «بلّغني», and the consent line «نراسلك عن إطلاق لقطة فقط، وتقدر تلغي الاشتراك من أي رسالة.» with a link to /privacy. `captureEmail` → `joinWaitlist` (language of the page, source, consent version, IP hash; 20 per IP per hour). Hidden after launch (the default).
 9. `RequestFootage` — request a custom album.
 10. `FinalCta` — closing buyer push (`components/landing/final-cta.tsx`), `olive` ground.
 11. `CreatorCta` — creator invite, last.
@@ -40,7 +41,7 @@ Sell the albums-only model to a first-time buyer, framed around the buyer's job:
 | Footage-wall "view all" | Link | `/footage` |
 | Album poster in the collection (stretched link) | Link | `/albums/{creatorHandle}/{slug}` |
 | Creator name on a poster (sibling link, lifted above the stretch) | Link | `/creators/{creatorHandle}` |
-| Collection «عرض كل الألبومات» (`landing.collectionViewAll`) | Link | `/albums` |
+| Collection «عرض كل الألبومات» (`landing.collectionViewAll`) | Link | `/albums` — or, while the shelf shows one of the five occasions, «كل ألبومات {name}» (`landing.seasonViewAll`) → `/occasions/{slug}` (DEV-42) |
 | Trailer list row (`<button aria-pressed>`) | Client state | Swaps the featured player, poster, title, count, price and album link to that album; plays it unless reduced motion is set or nothing is in view |
 | Trailer play/pause | Client | Toggles the player; a reader's pause is sticky (the in-view observer never overrides it) |
 | Trailer mute/unmute (`aria-pressed`) | Client | Starts muted; the reader may turn sound on |

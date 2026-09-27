@@ -1,3 +1,4 @@
+import { isOccasion } from '@/lib/occasions'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -76,8 +77,16 @@ export function TheCollection({
       )}
 
       <div className="mt-12 flex justify-center">
+        {/* In an occasion's season, the button opens that occasion's page
+            (DEV-42) — the shelf is six albums, the page is all of them. */}
         <Button asChild variant="gold" size="lg">
-          <Link href="/albums">{t('landing.collectionViewAll')}</Link>
+          {season && isOccasion(season.slug) ? (
+            <Link href={`/occasions/${season.slug}`}>
+              {t('landing.seasonViewAll', { name: pickLocalised(season.nameAr, season.nameEn) ?? '' })}
+            </Link>
+          ) : (
+            <Link href="/albums">{t('landing.collectionViewAll')}</Link>
+          )}
         </Button>
       </div>
     </Section>

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { db } from '@/lib/db'
 import { ClipCard } from '@/components/catalogue/clip-card'
 import { EmptyState } from '@/components/ui/state'
@@ -57,7 +58,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
                   status: true,
                   titleAr: true,
                   titleEn: true,
-                  priceStandard: true,
+                  ...OFFER_SELECT,
                   currency: true,
                   clipCount: true,
                   origin: true,
@@ -92,7 +93,7 @@ export default async function SharedBoardPage({ params }: { params: Promise<{ to
         slug: clip.album.slug,
         titleAr: clip.album.titleAr,
         titleEn: clip.album.titleEn,
-        priceStandard: Number(clip.album.priceStandard),
+        priceStandard: priceNow(clip.album).priceStandard,
         currency: clip.album.currency,
         clipCount: clip.album.clipCount,
         origin: clip.album.origin,

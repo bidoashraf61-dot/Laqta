@@ -19,8 +19,10 @@ import { FilterChips, SearchBox, Toolbar } from '@/components/dashboard/toolbar'
 import { StatusBadge, statusLabel, statusValues } from '@/components/dashboard/status'
 import { ActionButton } from '@/components/dashboard/form'
 import { TrailerEditor } from '@/components/admin/trailer-editor'
+import { OfferEditor } from '@/components/admin/offer-editor'
+import { OFFER_SELECT, offerRunning } from '@/lib/offers'
 import { setAlbumStatus, toggleAlbumFeatured } from '@/app/(admin)/admin/actions'
-import { formatMoney, formatNumber, t } from '@/lib/i18n'
+import { formatDate, formatMoney, formatNumber, t } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { BandEditor, type EditableBand } from '@/components/admin/band-editor'
 import { PricingSettings } from '@/components/admin/pricing-settings'
@@ -84,6 +86,12 @@ export default async function AdminCataloguePage({
   }
 
   const pricingChoices = await loadPricingChoices()
+  // Every album with an offer set, whatever its state (DEV-60).
+  const offers = await db.album.findMany({
+    where: { offerPrice: { not: null }, status: { not: 'delisted' } },
+    orderBy: [{ offerEndsAt: 'asc' }, { titleAr: 'asc' }],
+    select: { id: true, titleAr: true, titleEn: true, currency: true, ...OFFER_SELECT },
+  })
   const [albums, counts, bands] = await Promise.all([
     db.album.findMany({
       where,
@@ -96,12 +104,12 @@ export default async function AdminCataloguePage({
         titleEn: true,
         status: true,
         clipCount: true,
-        priceStandard: true,
         currency: true,
         isFeatured: true,
         salesCount: true,
         clearedForCommercial: true,
         trailerKey: true,
+        ...OFFER_SELECT,
         creator: { select: { handle: true, displayNameAr: true, displayNameEn: true } },
       },
     }),
@@ -227,8 +235,18 @@ export default async function AdminCataloguePage({
                       <TableCell className="numeric text-end text-muted-foreground">
                         {formatNumber(compsByAlbum.get(album.id) ?? 0)}
                       </TableCell>
-                      <TableCell className="numeric text-end text-gold">
-                        {formatMoney(Number(album.priceStandard), album.currency)}
+                      <TableCell className="text-end">
+                        {/* Regular price, and the offer under it with its state
+                            (running / scheduled / ended) — DEV-60. */}
+                        <span className="numeric block text-gold">
+                          {formatMoney(Number(album.priceStandard), album.currency)}
+                        </span>
+                        {album.offerPrice !== null ? (
+                          <span className="block text-xs text-muted-foreground">
+                            <span className="numeric">{formatMoney(Number(album.offerPrice), album.currency)}</span>{' '}
+                            {t(`dash.offer.state.${offerState(album)}`)}
+                          </span>
+                        ) : null}
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap justify-end gap-1.5">
@@ -237,6 +255,19 @@ export default async function AdminCataloguePage({
                             albumSlug={album.slug}
                             trailerKey={album.trailerKey}
                           />
+                          {album.status !== 'delisted' ? (
+                            <OfferEditor
+                              albumId={album.id}
+                              regularPrice={Number(album.priceStandard)}
+                              offer={{
+                                price: album.offerPrice === null ? null : Number(album.offerPrice),
+                                labelAr: album.offerLabelAr,
+                                labelEn: album.offerLabelEn,
+                                startsAt: album.offerStartsAt?.toISOString() ?? null,
+                                endsAt: album.offerEndsAt?.toISOString() ?? null,
+                              }}
+                            />
+                          ) : null}
                           {album.status === 'live' ? (
                             <ActionButton
                               action={setAlbumStatus.bind(null, album.id, 'paused')}
@@ -277,6 +308,49 @@ export default async function AdminCataloguePage({
           )}
         </div>
 
+        {/* Offers (DEV-60): what is on sale now, what is coming, what has
+            ended — each set or removed from its row in the table. */}
+        <Panel title={t('dash.offer.listTitle')}>
+          {offers.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t('dash.offer.none')}</p>
+          ) : (
+            <ul className="divide-y">
+              {offers.map((row) => (
+                <li key={row.id} className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-sm">
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">
+                      <Bilingual ar={row.titleAr} en={row.titleEn} />
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {row.offerStartsAt ? (
+                        <>
+                          {t('dash.offer.from')} <span className="numeric">{formatDate(row.offerStartsAt)}</span>{' '}
+                        </>
+                      ) : null}
+                      {row.offerEndsAt ? (
+                        <>
+                          {t('dash.offer.until')} <span className="numeric">{formatDate(row.offerEndsAt)}</span>
+                        </>
+                      ) : (
+                        t('dash.offer.noEnd')
+                      )}
+                    </span>
+                  </span>
+                  <span className="text-end">
+                    <span className="numeric block">
+                      {formatMoney(Number(row.offerPrice), row.currency)}{' '}
+                      <s className="text-muted-foreground">{formatMoney(Number(row.priceStandard), row.currency)}</s>
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {t(`dash.offer.state.${offerState(row)}`)}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
         {/* The bands are the pricing policy in one place. Editing one changes
             the price new albums are created at — nothing else; the hint says
             so in words (lib/price-bands.ts). */}
@@ -305,4 +379,16 @@ export default async function AdminCataloguePage({
       </div>
     </>
   )
+}
+
+/** An offer's state for the owner: running now, not started yet, or over. */
+function offerState(album: {
+  priceStandard: unknown
+  offerPrice: unknown
+  offerStartsAt: Date | null
+  offerEndsAt: Date | null
+}) {
+  if (offerRunning(album)) return 'running' as const
+  if (album.offerStartsAt && album.offerStartsAt > new Date()) return 'scheduled' as const
+  return 'ended' as const
 }

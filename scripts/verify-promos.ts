@@ -11,6 +11,7 @@
 import { checkout } from '../lib/orders'
 import { evaluatePromo } from '../lib/promos'
 import { db } from '../lib/db'
+import { OFFER_SELECT, priceNow } from '../lib/offers'
 
 let failures = 0
 function report(label: string, ok: boolean, detail = '') {
@@ -26,11 +27,12 @@ async function main() {
     where: { status: 'live', priceStandard: { gt: 0 } },
     orderBy: { priceStandard: 'desc' },
     take: 2,
-    select: { id: true, priceStandard: true },
+    select: { id: true, ...OFFER_SELECT },
   })
   if (!a || !b) throw new Error('need two live priced albums — npm run db:seed')
-  const priceA = Number(a.priceStandard)
-  const priceB = Number(b.priceStandard)
+  // What checkout charges before the code: the price NOW, offer included.
+  const priceA = priceNow(a).priceStandard
+  const priceB = priceNow(b).priceStandard
   const lines = [
     { albumId: a.id, gross: priceA },
     { albumId: b.id, gross: priceB },

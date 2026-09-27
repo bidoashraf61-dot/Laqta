@@ -82,9 +82,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Dead ends worth knowing
 
-- **Album offers have no editor.** `Album.compareAtPrice` / `offerLabelAr/En` render on
-  public cards, but only seed data sets them (DEV-60). A live album's price cannot be changed
-  from admin either (DEV-61).
+- A live album's **regular** price cannot be changed from admin yet (DEV-61); offers can
+  (DEV-60, `/admin/catalogue`).
 
 - `saveSlot` can create a slot, but no control on `/admin/merchandising` submits the `key`
   it needs — only editing existing slots is reachable.

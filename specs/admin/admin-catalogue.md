@@ -43,6 +43,27 @@ trailer, the price band editor, and the price calculator's settings (DEV-09c).
 | Band form → «حذف» | `deletePriceBand(id)`, native confirm «حذف هذه الشريحة؟ لن تُقترح بعد الآن، والألبومات تحتفظ بسعرها.» | Deletes the `PriceBand`; audits `priceband.delete` with the old values. That clip range then has no suggested price on the review page |
 | «إضافة شريحة» (only while a tier has no band) | opens the new-band form, with a «الفئة» select of the free tiers | `savePriceBand` without an id → `PriceBand.create` with `currency: 'USD'`; audits `priceband.create`. When all four tiers have bands the button is replaced by «كل الفئات الأربع لها شرائح. عدّل واحدة أو احذفها.» |
 
+## Offers (DEV-60)
+An offer is a sale price on one album with optional dates: `Album.offerPrice`,
+`offerStartsAt` (NULL = now), `offerEndsAt` (NULL = until removed), `offerLabelAr/En`.
+`priceStandard` is always the **regular** price. Whether an offer is running is decided at
+read time by `lib/offers.ts` (`priceNow`, `offerRunning`, `offerRunningWhere`) — no job
+flips it, so it starts and ends on its dates. (Migration `album_offers` moved the old
+`compareAtPrice` model over: the sale price to `offerPrice`, the regular to `priceStandard`.)
+
+| Control | Action | Effect |
+|---|---|---|
+| Row «عرض» / «تعديل العرض» (every non-delisted album) | opens `OfferEditor` popover (`components/admin/offer-editor.tsx`; scrolls inside itself, `max-h` = available height) | Fields: «سعر العرض (دولار)» (required, > 0 and < regular; hint «أقل من السعر المعتاد: {price} دولار.»), «وسم العرض بالعربي» (required, ≤40), «وسم العرض بالإنجليزي» (optional, falls back to Arabic), «يبدأ» / «ينتهي» (`datetime-local` in the owner's clock, sent as ISO instants in hidden fields; blank = now / no end) |
+| «حفظ العرض» | `saveAlbumOffer` | Refuses a price outside (0, regular) «سعر العرض أكبر من صفر وأقل من السعر المعتاد…», a missing Arabic label, an end not after the start or not in the future «تاريخ النهاية يكون بعد البداية وفي المستقبل.»; writes the five columns; audits `album.offer.set` (before/after); revalidates the catalogue and the storefront; «حُفظ العرض.» |
+| «إنهاء العرض» (when an offer is set; native confirm «إنهاء العرض الآن؟ يرجع الألبوم لسعره المعتاد.») | `removeAlbumOffer(albumId)` | Clears the five columns; audits `album.offer.remove`; «انتهى العرض، ورجع الألبوم لسعره المعتاد.» |
+| Price column | — | The regular price (gold) and, when an offer is set, its price and state «جارٍ الآن» / «مجدول» / «انتهى» |
+| Panel «العروض» | — | Every non-delisted album with an offer set, ordered by end date: title, «من {date}» / «حتى {date}» or «بلا تاريخ نهاية», the offer price with the regular struck, and its state. Empty: «ما فيه ألبوم عليه عرض. أضف عرضاً من صف الألبوم في الجدول.» |
+
+The storefront (album cards, album page, landing offers rail, clip pages, boards, search),
+the cart and `checkout()` all read `priceNow`: inside the window a buyer sees and pays the
+offer price with the regular struck; outside it the regular price. Past orders keep what
+they paid. Price sorting and the price filter in search still use the regular price.
+
 ## Price calculator settings (DEV-09c)
 Panel «حاسبة السعر» under the bands (`components/admin/pricing-settings.tsx`). **All
 dropdowns — no typed numbers** (owner, 2026-09-27). Read from
@@ -115,7 +136,7 @@ DEV-60 – DEV-63.
 - Every mutation writes an `AuditLog` row.
 
 ## Verified by
-`verify:pricing` (settings: default choices equal the agreed numbers; none saved → defaults; a saved grade applies and unknown values fall back; the calculator follows a grade; the dropdowns parse and refuse values outside their lists; a custom range moves what may be approved). `verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
+`verify:offers` (none / open / scheduled / ended / at-or-above-regular on plain values; the running filter; checkout charges the offer inside its dates and the regular price before and after). `verify:pricing` (settings: default choices equal the agreed numbers; none saved → defaults; a saved grade applies and unknown values fall back; the calculator follows a grade; the dropdowns parse and refuse values outside their lists; a custom range moves what may be approved). `verify:arabic`, `audit`, `verify:flows` (filter-chip navigation on `/admin/catalogue`;
 band editor: min > max refused with nothing written, a price edit persists, no album's
 price and no order total moves, the edit is audited, and the price restores).
 The entitlement snapshot rule is covered by `verify:entitlement`. The trailer key

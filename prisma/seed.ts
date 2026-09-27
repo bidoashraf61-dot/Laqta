@@ -566,8 +566,9 @@ async function main() {
      * may have deliberately renamed an album while testing.
      */
     update: {
-      priceStandard: 399,
-      compareAtPrice: 599,
+      priceStandard: 599,
+
+      offerPrice: 399,
       offerLabelAr: 'عرض الإطلاق',
       offerLabelEn: 'Launch offer',
       origin: 'captured',
@@ -586,8 +587,9 @@ async function main() {
         'Twenty-two aerial shots of AlUla captured across four golden-hour flights. All 4K, 24p, LOG, graded to cut together in a single timeline without regrading.',
       status: 'live',
       tier: 'pro',
-      priceStandard: 399,
-      compareAtPrice: 599,
+      priceStandard: 599,
+
+      offerPrice: 399,
       offerLabelAr: 'عرض الإطلاق',
       offerLabelEn: 'Launch offer',
       origin: 'captured',
@@ -618,8 +620,9 @@ async function main() {
      * may have deliberately renamed an album while testing.
      */
     update: {
-      priceStandard: 79,
-      compareAtPrice: 119,
+      priceStandard: 119,
+
+      offerPrice: 79,
       offerLabelAr: 'عرض الإطلاق',
       offerLabelEn: 'Launch offer',
       origin: 'captured',
@@ -634,8 +637,9 @@ async function main() {
       descriptionEn: 'Aerial dune fields at dawn and after sunset.',
       status: 'draft',
       tier: 'mini',
-      priceStandard: 79,
-      compareAtPrice: 119,
+      priceStandard: 119,
+
+      offerPrice: 79,
       offerLabelAr: 'عرض الإطلاق',
       offerLabelEn: 'Launch offer',
       origin: 'captured',
@@ -657,8 +661,9 @@ async function main() {
      * may have deliberately renamed an album while testing.
      */
     update: {
-      priceStandard: 199,
-      compareAtPrice: 299,
+      priceStandard: 299,
+
+      offerPrice: 199,
       offerLabelAr: 'عرض الإطلاق',
       offerLabelEn: 'Launch offer',
       origin: 'captured',
@@ -673,8 +678,9 @@ async function main() {
       descriptionEn: 'Night driving plates in and around north Riyadh.',
       status: 'in_review',
       tier: 'standard',
-      priceStandard: 199,
-      compareAtPrice: 299,
+      priceStandard: 299,
+
+      offerPrice: 199,
       offerLabelAr: 'عرض الإطلاق',
       offerLabelEn: 'Launch offer',
       origin: 'captured',
@@ -1199,7 +1205,7 @@ async function main() {
   // are placeholders with real posters, real clip rows and real taxonomy
   // links, so the grids, filters and offer pricing can all be exercised.
   //
-  // Every album carries a launch offer, and every `compareAtPrice` below is a
+  // Every album carries a launch offer, and every `compareAt` below is a
   // real regular price rather than a number invented to make a strike-through
   // appear. That is the whole reason it is stored per album instead of derived
   // from a percentage: the struck number a buyer sees is the number the album
@@ -1411,8 +1417,10 @@ async function main() {
       await db.album.update({
         where: { id: existing.id },
         data: {
-          priceStandard: a.price,
-          compareAtPrice: a.compareAt ?? null,
+          // Regular price, and the offer price when the album is on offer
+          // (DEV-60: priceStandard is always the REGULAR price).
+          priceStandard: a.compareAt ?? a.price,
+          offerPrice: a.compareAt ? a.price : null,
           offerLabelAr: a.offerAr ?? null,
           offerLabelEn: a.offerEn ?? null,
           origin: a.origin,
@@ -1461,10 +1469,10 @@ async function main() {
         descriptionEn: a.titleEn,
         status: 'live',
         tier: 'pro',
-        priceStandard: a.price,
+        priceStandard: a.compareAt ?? a.price,
+        offerPrice: a.compareAt ? a.price : null,
         origin: a.origin,
         orientation: a.orientation,
-        compareAtPrice: a.compareAt ?? null,
         // No trailer. A hero segment standing in as "the album's trailer" is
         // the site pretending: the page leads with the album's own cover
         // still until a real cut is set from /admin/catalogue or uploaded by

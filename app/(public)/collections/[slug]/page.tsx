@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { AlbumCard, type AlbumCardData } from '@/components/catalogue/album-card'
@@ -22,10 +23,7 @@ async function getCollection(slug: string) {
               status: true,
               titleAr: true,
               titleEn: true,
-              priceStandard: true,
-              compareAtPrice: true,
-              offerLabelAr: true,
-              offerLabelEn: true,
+              ...OFFER_SELECT,
               currency: true,
               clipCount: true,
               totalRuntimeS: true,
@@ -98,10 +96,8 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
     creatorNameEn: album.creator.displayNameEn,
     titleAr: album.titleAr,
     titleEn: album.titleEn,
-    priceStandard: Number(album.priceStandard),
-    compareAtPrice: album.compareAtPrice == null ? null : Number(album.compareAtPrice),
-    offerLabelAr: album.offerLabelAr,
-    offerLabelEn: album.offerLabelEn,
+    // The price paid NOW and the struck regular price, per the offer's dates (lib/offers.ts).
+    ...priceNow(album),
     currency: album.currency,
     clipCount: album.clipCount,
     totalRuntimeS: album.totalRuntimeS,

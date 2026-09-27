@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { OFFER_SELECT, priceNow } from '@/lib/offers'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { vatOn } from '@/lib/commission'
@@ -20,7 +21,7 @@ export async function addToCart(albumSlugPath: string) {
   const [handle, slug] = albumSlugPath.split('/')
   const album = await db.album.findFirst({
     where: { slug, status: 'live', creator: { handle } },
-    select: { id: true, priceStandard: true },
+    select: { id: true, ...OFFER_SELECT },
   })
   if (!album) return { ok: false, messageKey: 'cart.unavailable' }
 
@@ -30,7 +31,9 @@ export async function addToCart(albumSlugPath: string) {
     create: { userId: session.user.id },
   })
 
-  const unitPrice = Number(album.priceStandard)
+  // The price NOW, offer included (DEV-60). Display only — checkout prices
+  // the album again when the order is placed.
+  const unitPrice = priceNow(album).priceStandard
 
   await db.cartItem.upsert({
     where: { cartId_albumId: { cartId: cart.id, albumId: album.id } },

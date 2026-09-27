@@ -22,6 +22,7 @@ Review the albums about to be bought, change licence tier in place, and go to ch
 | "إتمام الشراء" | Link | `/checkout` |
 
 ## States
+- **Price added** (DEV-60) — `addToCart` stores the price NOW (`priceNow`, offer included) as `unitPrice` for display; `checkout()` prices every album again when the order is placed, so an offer that ends in between is not charged.
 - **Signed out** — `redirect('/sign-in?callbackUrl=/cart')` before any data is read.
 - **Empty cart** — `EmptyState` with `cart.empty` / `cart.emptyHint` and a link to `/albums`; the totals card and checkout button are not rendered.
 - **Pending mutation** — tier chips and the remove button are disabled while the transition runs.

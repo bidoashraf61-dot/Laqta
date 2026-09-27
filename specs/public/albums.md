@@ -20,6 +20,7 @@ The full shelf of live albums as poster cards, each showing its price.
 Read-only. **There is no sort UI on this page** — the `?sort` parameter is honoured by the query but no control renders it; it only works if typed into the URL or arrived at from an external link.
 
 ## States
+- **On offer** (DEV-60) — a card shows the offer price, the regular struck and «{n}% خصم» + the label only while the offer runs (`lib/offers.priceNow`); a scheduled or ended offer shows the regular price.
 - **Empty** — `EmptyState` with `state.empty`.
 - **Album count** — rendered in the subheading via `formatNumber(albums.length)`, i.e. the number of live albums returned, not a total.
 - **No cover clip / unresolvable key** — `AlbumCard.CoverImage` falls back to a themed gradient with the wordmark rather than a broken image.

@@ -317,6 +317,7 @@ model User {
   passwordResets  PasswordResetToken[]
 
   @@index([role, status])
+  blogPosts BlogPost[] @relation("BlogAuthor")
 }
 
 // Auth.js adapter models.
@@ -1936,4 +1937,60 @@ model WaitlistEntry {
   updatedAt DateTime @updatedAt
 
   @@index([unsubscribedAt, createdAt])
+}
+
+enum BlogPostStatus {
+  draft
+  scheduled
+  published
+}
+
+/// Blog categories (DEV-43) — "دليل المونتاج", "مواسم الحملات"… Few, owner-made.
+model BlogCategory {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  nameAr    String
+  nameEn    String
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+  posts     BlogPost[]
+}
+
+/// A blog article (DEV-43/44). Bodies are Laqta's own light markup —
+/// paragraphs, `## ` headings, `- ` lists, `> ` quotes, **bold**, [links](…)
+/// and `[[album:handle/slug]]` embeds — rendered by lib/blog-render.ts. Never
+/// HTML: the editor is a textarea, and nothing typed there reaches the page raw.
+model BlogPost {
+  id         String         @id @default(cuid())
+  slug       String         @unique
+  status     BlogPostStatus @default(draft)
+  categoryId String?
+
+  titleAr   String
+  titleEn   String  @default("")
+  excerptAr String  @default("")
+  excerptEn String  @default("")
+  bodyAr    String  @default("")
+  bodyEn    String  @default("")
+  /// A public media key or "/"-rooted path, through lib/media.ts#mediaUrl.
+  coverKey  String?
+
+  seoTitleAr String?
+  seoTitleEn String?
+  seoDescAr  String?
+  seoDescEn  String?
+
+  /// When it goes (or went) live. A `scheduled` post appears once this passes;
+  /// no job flips the status — the public query compares the clock.
+  publishAt DateTime?
+  authorId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  author   User?         @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([status, publishAt])
+  @@index([categoryId, publishAt])
 }

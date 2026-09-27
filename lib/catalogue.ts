@@ -418,3 +418,21 @@ export async function getRelatedHubs(taxonomyId: string, take = 6) {
     .slice(0, take)
     .map(({ term }) => term)
 }
+
+/**
+ * Album cards for `[[album:handle/slug]]` embeds in a blog post (DEV-43),
+ * keyed `handle/slug`. Live albums only — an embed of a paused album simply
+ * does not render.
+ */
+export async function getAlbumCardsByRef(refs: Array<{ handle: string; slug: string }>): Promise<Map<string, AlbumCardData>> {
+  if (refs.length === 0) return new Map()
+  const rows = await db.album.findMany({
+    where: {
+      status: 'live',
+      OR: refs.map((ref) => ({ slug: ref.slug, creator: { handle: ref.handle } })),
+    },
+    select: ALBUM_CARD_SELECT,
+  })
+  const cards = await toCards(rows as AlbumRow[])
+  return new Map(cards.map((card, i) => [`${(rows[i] as AlbumRow).creator.handle}/${card.slug}`, card]))
+}

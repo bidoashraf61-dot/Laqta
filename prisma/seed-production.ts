@@ -22,7 +22,7 @@
  */
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { DEMO_EMAILS, seedLicences, seedPriceBands, seedTaxonomy } from './seed-base'
+import { DEMO_EMAILS, seedLicences, seedPriceBands, seedTaxonomy, seedBlogCategories } from './seed-base'
 
 try {
   process.loadEnvFile('.env')
@@ -55,6 +55,7 @@ async function main() {
   await seedTaxonomy(db)
   await seedLicences(db)
   await seedPriceBands(db)
+  await seedBlogCategories(db)
 
   const existing = await db.user.findUnique({ where: { email }, select: { id: true } })
   const resetPassword = process.env.ADMIN_RESET_PASSWORD === '1'

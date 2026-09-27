@@ -37,6 +37,8 @@ export const ACCOUNT_NAV: NavItem[] = [
 
 export const FOOTER_LEGAL: NavItem[] = [
   { href: '/about', labelKey: 'footer.about' },
+  // The blog (DEV-43) — in the footer, not the header: the header is for buying.
+  { href: '/blog', labelKey: 'nav.blog' },
   { href: '/contact', labelKey: 'footer.contact' },
   { href: '/terms', labelKey: 'footer.terms' },
   { href: '/privacy', labelKey: 'footer.privacy' },

@@ -58,6 +58,9 @@ async function main() {
     category && `/categories/${category.slug}`,
     // An occasion page (DEV-42).
     '/occasions/ramadan',
+    // The blog (DEV-43).
+    '/blog',
+    '/blog/choosing-establishing-shots',
     '/terms',
   ].filter((p): p is string => Boolean(p))
 
@@ -125,6 +128,15 @@ async function main() {
     const hub = await (await fetch(`${BASE}/locations/${location.slug}`, { headers: { 'user-agent': GOOGLEBOT } })).text()
     const hasFaqText = /<dt[^>]*>[^<]+<\/dt>/.test(hub)
     report('a hub with FAQs carries FAQPage JSON-LD', !hasFaqText || hub.includes('"FAQPage"'), hasFaqText ? 'faq present' : 'no faq on this hub')
+  }
+
+  // DEV-43: an article carries Article JSON-LD; the feed answers in both languages.
+  {
+    const article = await (await fetch(`${BASE}/blog/choosing-establishing-shots`, { headers: { 'user-agent': GOOGLEBOT } })).text()
+    report('a blog article carries Article JSON-LD', article.includes('"@type":"Article"'))
+    const feed = await fetch(`${BASE}/blog/rss.xml`)
+    const feedEn = await (await fetch(`${BASE}/blog/rss.xml?lang=en`)).text()
+    report('the blog feed answers, Arabic and English', feed.status === 200 && (await feed.text()).includes('<rss') && feedEn.includes('<language>en</language>'))
   }
 
   const robots = await (await fetch(`${BASE}/robots.txt`)).text()

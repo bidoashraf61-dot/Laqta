@@ -57,6 +57,7 @@ export function BulkTitles({
 
   return (
     <form
+      data-bulk-titles
       className="rounded-lg border bg-card"
       onSubmit={(event) => {
         event.preventDefault()

@@ -57,6 +57,13 @@ export type ParkedIdentity = {
   name: string | null
   email: string | null
   picture: string | null
+  /**
+   * The admin's `tfa` claim. Parked so ending a view hands back an enrolled
+   * admin — the target's claim (a buyer's `false`) must not leak out of the
+   * view and send the admin to the 2FA page. Absent on views opened before it
+   * existed; restoring then drops the claim and the layout reads the database.
+   */
+  twoFactorEnabled?: boolean
 }
 
 export type ImpersonationClaim = {
@@ -83,6 +90,8 @@ export function restoreAdmin<T extends object>(input: T): T {
   token.name = imp.admin.name
   token.email = imp.admin.email
   token.picture = imp.admin.picture
+  if (typeof imp.admin.twoFactorEnabled === 'boolean') token.tfa = imp.admin.twoFactorEnabled
+  else delete token.tfa
   delete token.imp
   delete token.impersonatedBy
   return input

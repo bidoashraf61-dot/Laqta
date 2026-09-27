@@ -27,6 +27,7 @@ import { decode, encode } from 'next-auth/jwt'
 import { PrismaClient } from '@prisma/client'
 import { viewRefusal } from '../lib/impersonation'
 import { expireIfDue } from '../lib/impersonation-shared'
+import { submitSignIn } from './two-factor-fixture.mjs'
 
 try {
   process.loadEnvFile('.env')
@@ -49,9 +50,8 @@ async function signIn(browser: Browser, email: string) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } })
   const page = await context.newPage()
   await page.goto(`${BASE}/sign-in`, { waitUntil: 'domcontentloaded' })
-  await page.fill('input[name="email"]', email)
-  await page.fill('input[name="password"]', 'Laqta!2026')
-  await page.click('button[type="submit"]')
+  // Creator and admin answer the 2FA step too (scripts/two-factor-fixture.mjs).
+  await submitSignIn(page, email, 'Laqta!2026')
   await page.waitForURL((url) => !url.pathname.includes('/sign-in'), { timeout: 20_000 }).catch(() => {})
   await page.close()
   return context
@@ -106,6 +106,24 @@ async function main() {
     } as Record<string, unknown>
     expireIfDue(token)
     report('an expired token is the admin again', token.uid === admin.id && token.role === 'admin' && !token.imp)
+  }
+  // Mandatory 2FA: the admin's `tfa` claim is parked with them and comes back
+  // with them — the viewed buyer's `false` must not send the admin to the
+  // enrolment page when the view ends.
+  {
+    const token = {
+      uid: buyer.id,
+      role: 'buyer',
+      tfa: false,
+      imp: {
+        id: 'x',
+        expiresAt: Date.now() - 1,
+        targetName: 'x',
+        admin: { uid: admin.id, role: 'admin', locale: 'ar', creatorId: null, name: null, email: admin.email, picture: null, twoFactorEnabled: true },
+      },
+    } as Record<string, unknown>
+    expireIfDue(token)
+    report('the admin\'s 2FA claim comes back with them', token.tfa === true)
   }
 
   const browser = await chromium.launch({ channel: 'chrome', headless: true })
@@ -223,6 +241,13 @@ async function main() {
       report('the banner is gone', (await page.locator('[data-impersonation-banner]').count()) === 0)
       const back = await page.evaluate(async () => (await fetch('/api/auth/session')).json())
       report('the admin has their own session back', back?.user?.id === admin.id && back?.user?.role === 'admin')
+      report('  …still enrolled in 2FA', back?.user?.twoFactorEnabled === true)
+      await page.goto(`${BASE}/admin`, { waitUntil: 'domcontentloaded' })
+      report(
+        '  …and /admin opens, not the 2FA page',
+        new URL(page.url()).pathname === '/admin',
+        new URL(page.url()).pathname,
+      )
       await page.close()
     }
 
@@ -254,6 +279,7 @@ async function main() {
       report('an expired view shows no banner', (await view.locator('[data-impersonation-banner]').count()) === 0)
       const after = await view.evaluate(async () => (await fetch('/api/auth/session')).json())
       report('an expired view is the admin again', after?.user?.id === admin.id && !after?.user?.impersonatedBy)
+      report('  …still enrolled in 2FA', after?.user?.twoFactorEnabled === true)
 
       await view.goto(`${BASE}/admin/users/${buyer.id}`, { waitUntil: 'domcontentloaded' })
       const closed = open ? await db.impersonation.findUnique({ where: { id: open.id } }) : null

@@ -34,6 +34,7 @@ export const authConfig = {
         session.user.role = (token.role as Role) ?? 'buyer'
         session.user.locale = (token.locale as string) ?? 'ar'
         session.user.creatorId = (token.creatorId as string | null) ?? null
+        session.user.twoFactorEnabled = twoFactorClaim(token)
         applyImpersonationToSession(session.user, token)
       }
       return session
@@ -58,6 +59,15 @@ export function applyImpersonationToSession(
     expiresAt: new Date(imp.expiresAt).toISOString(),
     targetName: imp.targetName,
   }
+}
+
+/**
+ * The `tfa` claim: whether the account has enrolled in two-factor. Undefined
+ * on a cookie minted before the claim existed — middleware leaves those to the
+ * layout, which reads the database (lib/two-factor.ts).
+ */
+export function twoFactorClaim(token: Record<string, unknown>): boolean | undefined {
+  return typeof token.tfa === 'boolean' ? token.tfa : undefined
 }
 
 export type SessionImpersonation = { id: string; expiresAt: string; targetName: string }

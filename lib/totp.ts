@@ -122,9 +122,6 @@ function base32Decode(input: string) {
   return Buffer.from(bytes)
 }
 
-/** Roles for which 2FA is mandatory, per Brief 01 §5. */
-export const TWO_FACTOR_REQUIRED_ROLES = ['creator', 'admin'] as const
-
-export function twoFactorRequired(role: string) {
-  return (TWO_FACTOR_REQUIRED_ROLES as readonly string[]).includes(role)
-}
+// The role rule lives in the edge-safe `lib/two-factor.ts`; re-exported for
+// the callers that already import it from here.
+export { TWO_FACTOR_REQUIRED_ROLES, twoFactorRequired } from '@/lib/two-factor'

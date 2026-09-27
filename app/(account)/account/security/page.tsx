@@ -1,6 +1,6 @@
 import { requireUser } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { twoFactorRequired } from '@/lib/totp'
+import { safeDashboardReturn, twoFactorRequired } from '@/lib/two-factor'
 import { t } from '@/lib/i18n'
 import { TwoFactorCard } from './two-factor-card'
 import { PageTitle } from '@/components/ui/typography'
@@ -17,7 +17,11 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function SecurityPage() {
+export default async function SecurityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string | string[] }>
+}) {
   // Resolve the locale before rendering anything.
   //
   // Not inherited from the root layout: a route segment sits inside a Suspense
@@ -31,16 +35,20 @@ export default async function SecurityPage() {
   const sessionUser = await requireUser()
   const user = await db.user.findUnique({
     where: { id: sessionUser.id },
-    select: { twoFactorEnabled: true, role: true },
+    select: { twoFactorEnabled: true, twoFactorSecret: true, role: true },
   })
+  const enabled = Boolean(user?.twoFactorEnabled && user.twoFactorSecret)
+  const mandatory = twoFactorRequired(user?.role ?? 'buyer')
+
+  // Where the 2FA hold came from (middleware / the dashboard layouts). Only a
+  // dashboard path is honoured — see safeDashboardReturn.
+  const raw = (await searchParams).next
+  const next = mandatory ? safeDashboardReturn(Array.isArray(raw) ? raw[0] : raw) : null
 
   return (
     <div className="max-w-2xl space-y-6">
       <PageTitle>{t('security.title')}</PageTitle>
-      <TwoFactorCard
-        enabled={Boolean(user?.twoFactorEnabled)}
-        mandatory={twoFactorRequired(user?.role ?? 'buyer')}
-      />
+      <TwoFactorCard enabled={enabled} mandatory={mandatory} next={next} />
     </div>
   )
 }

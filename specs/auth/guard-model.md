@@ -14,7 +14,12 @@ hole cannot leak a guarded page.
   edge-safe half — `session: { strategy: 'jwt' }`, `providers: []`, no Prisma,
   no bcrypt. **Zero database reads in middleware.**
 - **Layouts**: `auth()` from `lib/auth.ts`, again JWT-only. The session shape is
-  `{ id, role, locale, creatorId, impersonatedBy?, impersonation?, name, email, image }`.
+  `{ id, role, locale, creatorId, twoFactorEnabled?, impersonatedBy?, impersonation?, name, email, image }`.
+- **`twoFactorEnabled` (the `tfa` claim)** — stamped at sign-in (flag **and** secret
+  present), re-read from the database on every node `auth()` with the same `User` read,
+  and on `update()`. In middleware it is the cookie's copy: `undefined` on a cookie minted
+  before the claim existed. Parked with the admin during a view-as-user and restored when
+  it ends (`lib/impersonation-shared.ts`).
 - **Token refresh**: the node `jwt` callback reads `User` (role, status,
   `passwordChangedAt`, `creator.id`) on every `auth()` call and applies role and
   `creatorId` to the session (DEV-05), so layouts and actions see a promotion or
@@ -35,7 +40,9 @@ decision tables.
 | Legacy locale prefix `/(ar\|en)(/…)?` | `NextResponse.redirect(url, 308)` | Strips the segment: `/ar/albums → /albums`, `/en → /`. 308 (not 301) so a POST keeps its method. |
 | Guarded path, no session | `NextResponse.redirect('/sign-in?callbackUrl=…')` | `callbackUrl` is `encodeURIComponent(pathname + search)`. |
 | Guarded path, wrong role | `NextResponse.rewrite('/forbidden')` | **Rewrite, not redirect** — the typed URL stays in the address bar, and the response is HTTP 200 carrying `app/(public)/forbidden/page.tsx` («لا تملك صلاحية الوصول»). |
+| `/admin*` or `/studio*`, creator/admin with `tfa === false` | `NextResponse.redirect(enrolmentUrl(locale, pathname + search))` | Mandatory 2FA (`lib/two-factor.ts`): `/account/security?next=%2Fadmin%2F…`, or `/en/account/security?next=%2Fen%2F…` under English. Only an explicit `false`; an unknown claim is left to the layout. `/account/*` is never held. |
 | Layout re-check | `redirect('/sign-in?callbackUrl=…')` or `redirect('/forbidden')` | Same decision, taken again server-side before any page below fetches data. |
+| Layout 2FA lock (`(admin)`, `(studio)`) | `redirect(enrolmentUrl(locale, '/admin' \| '/studio'))` | `twoFactorOwed(session.user)` on the **database** value — catches a pre-claim cookie and 2FA removed mid-session. Streams as a 200 carrying `NEXT_REDIRECT`, like the other layout redirects. |
 
 ### Path → required access (`requiredAccess`, middleware)
 
@@ -64,8 +71,8 @@ non-throwing checks inside pages and actions.
 |---|---|---|
 | `app/(public)/layout.tsx` | none — reads the session only to render `SiteChrome` | — |
 | `app/(account)/layout.tsx` | `!session?.user` | `redirect('/sign-in?callbackUrl=/account')` |
-| `app/(studio)/layout.tsx` | `!session?.user`; then `role !== 'creator' && role !== 'admin'` | `redirect('/sign-in?callbackUrl=/studio')` / `redirect('/forbidden')` |
-| `app/(admin)/layout.tsx` | `!session?.user`; then `role !== 'admin'` | `redirect('/sign-in?callbackUrl=/admin')` / `redirect('/forbidden')` |
+| `app/(studio)/layout.tsx` | `!session?.user`; then `role !== 'creator' && role !== 'admin'`; then `twoFactorOwed` | `redirect('/sign-in?callbackUrl=/studio')` / `redirect('/forbidden')` / `redirect('/account/security?next=/studio')` |
+| `app/(admin)/layout.tsx` | `!session?.user`; then `role !== 'admin'`; then `twoFactorOwed` | `redirect('/sign-in?callbackUrl=/admin')` / `redirect('/forbidden')` / `redirect('/account/security?next=/admin')` |
 
 Note the layouts **redirect** to `/forbidden` where middleware **rewrites** —
 a wrong-role user who somehow bypassed the matcher loses the URL they typed.
@@ -73,8 +80,11 @@ a wrong-role user who somehow bypassed the matcher loses the URL they typed.
 ### Server-side helpers (`lib/auth.ts`)
 
 `getCurrentUser()` (nullable), `requireUser()` (throws `UNAUTHENTICATED`),
-`requireRole(...roles)` (throws `FORBIDDEN`), `requireAdmin()`,
-`requireCreator()` = `requireRole('creator', 'admin')`. Server actions use these;
+`requireRole(...roles)` (throws `FORBIDDEN`, then `TWO_FACTOR_REQUIRED` for a creator or
+admin who has not enrolled), `requireAdmin()`,
+`requireCreator()` = `requireRole('creator', 'admin')`. `lib/route-auth.ts#studioActor()`
+does the same for the `/api/studio` upload routes (403 `two_factor_required`), which sit
+outside the middleware matcher. Server actions use these;
 they throw rather than redirect, so they pair with — not replace — the layout guard.
 
 ## States
@@ -91,6 +101,12 @@ they throw rather than redirect, so they pair with — not replace — the layou
 - **Role changed mid-session** → the JWT still carries the old role until an
   explicit `update` trigger refreshes it from the DB. Middleware, which reads
   only the token, will keep enforcing the stale role.
+- **Creator/admin without 2FA** → signs in normally (refusing them would leave no way
+  to reach enrolment), then is held on `/account/security?next=…` for every `/admin*` and
+  `/studio*` request, in the language they were reading. After enrolling, the cookie is
+  re-issued (`unstable_update`) and they go back to `next`. A cookie from another browser,
+  minted before enrolment, is held until «المتابعة» (or any `/api/auth/session` fetch)
+  refreshes it from the database.
 - **Suspended user** → blocked at `authorize` time (no new session), *not* by
   the guard. An already-issued JWT for a user suspended afterwards keeps working
   until it expires.
@@ -114,6 +130,10 @@ they throw rather than redirect, so they pair with — not replace — the layou
 - The guard runs before any route handler — an unauthorised request must never
   reach data-fetching code. The layout check is not a substitute; both must stay.
 - The wrong-role response is a rewrite, never a redirect, from middleware.
+- Two-factor is mandatory for `creator` and `admin` on `/admin*` and `/studio*`, held by
+  middleware (cookie), the layouts (database) and `requireRole`/`studioActor` (actions and
+  upload routes). There is no bypass — not in development either: the demo accounts are
+  enrolled by the seed, and the gates type the code (`scripts/two-factor-fixture.mjs`).
 - `callbackUrl` is only ever honoured through `safeRedirect` (same-origin path,
   no protocol-relative `//`) in the sign-in actions.
 - Guards decide access only. They never read or write money, entitlements or
@@ -124,6 +144,8 @@ they throw rather than redirect, so they pair with — not replace — the layou
 
 `verify:auth` — the whole matrix, over HTTP, against a running server: anonymous
 redirects for `/account`, `/studio`, `/admin`, plus buyer/creator/admin against
-each. Also `verify:arabic` for the `/en/*` and `/ar/*` 308 redirects. `audit`
+each, and the mandatory-2FA hold (middleware redirect with `next` in both languages,
+`/account/*` and sign-out open, the stale-cookie case, the layout lock, the upload-route
+403). Also `verify:arabic` for the `/en/*` and `/ar/*` 308 redirects. `audit`
 walks every route in real Chrome and would catch a guard that renders an error
 boundary at 200.

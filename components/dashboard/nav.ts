@@ -95,6 +95,7 @@ export const ADMIN_NAV: DashboardSection[] = [
       { href: '/admin/creators', labelKey: 'admin.creators', icon: Laqta.Creator },
       { href: '/admin/disputes', labelKey: 'admin.disputes', icon: Laqta.Dispute },
       { href: '/admin/requests', labelKey: 'request.adminTitle', icon: Laqta.Search },
+      { href: '/admin/waitlist', labelKey: 'dash.waitlistTitle', icon: Inbox },
       { href: '/admin/messages', labelKey: 'dash.messagesTitle', icon: Inbox },
     ],
   },

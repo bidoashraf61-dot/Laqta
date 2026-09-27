@@ -104,6 +104,7 @@ const ROUTES = [
   '/admin/creators',
   '/admin/disputes',
   '/admin/messages',
+  '/admin/waitlist',
   '/admin/users',
   '/admin/catalogue',
   '/admin/taxonomy',

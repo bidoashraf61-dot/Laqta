@@ -338,7 +338,9 @@
     "usp3Note": "No cap on views, on any platform",
     "usp4": "Reviewed before it is published",
     "usp4Note": "Location, dress and detail, checked before it reaches you",
-    "uspRailLabel": "Why Laqta"
+    "uspRailLabel": "Why Laqta",
+    "waitlistConsent": "We'll only email you about Laqta's launch, and you can unsubscribe from any email.",
+    "waitlistPrivacy": "Privacy policy"
   },
   "catalogue": {
     "footageTitle": "The Saudi footage library",
@@ -1501,5 +1503,12 @@
     "unavailable": "This bundle isn't available right now.",
     "onAlbum": "Part of the bundle",
     "onAlbumSave": "— save"
+  },
+  "waitlist": {
+    "title": "Unsubscribe",
+    "confirm": "Leave the Laqta waitlist? We won't email you about the launch after this.",
+    "cta": "Unsubscribe",
+    "done": "You're off the list. We won't email you.",
+    "invalid": "This link no longer works. To leave the list, write to us from the contact page."
   }
 }

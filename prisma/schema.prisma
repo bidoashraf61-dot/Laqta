@@ -1901,3 +1901,32 @@ model SampleClip {
   @@unique([sampleId, clipId])
   @@index([sampleId, orderIndex])
 }
+
+/// The launch waiting list (DEV-45). Its own table — it used to be CmsEntry
+/// rows of kind `landing_copy` with the address in the body. One row per
+/// address; an unsubscribe is a timestamp, never a delete, so a re-import
+/// cannot quietly re-add someone who asked to leave.
+model WaitlistEntry {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  /// The language of the page they signed up on — the launch notice uses it.
+  locale           String    @default("ar")
+  /// Where the form was: `landing`, `sample`, `footer`, `import`…
+  source           String    @default("landing")
+  /// When they agreed, and to which wording (`landing.waitlistConsent` v1).
+  consentAt        DateTime  @default(now())
+  consentText      String
+  /// Salted hash of the sender IP, for abuse only.
+  ipHash           String?
+  /// The secret in the unsubscribe link.
+  unsubscribeToken String    @unique @default(cuid())
+  unsubscribedAt   DateTime?
+  launchNotifiedAt DateTime?
+  /// Last successful push to the Resend audience, when configured.
+  syncedAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([unsubscribedAt, createdAt])
+}

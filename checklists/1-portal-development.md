@@ -82,7 +82,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-42** Occasions pages `/occasions/[slug]` (Ramadan, Eid, Founding Day, National Day, Riyadh Season) — 🤖 · 1 day
 - [ ] **DEV-43** Blog: `/blog`, article page, categories, RSS, sitemap, Article structured data — through Impeccable — 🤖 · 2 days
 - [ ] **DEV-44** Blog admin: editor with Arabic preview, drafts, scheduling, SEO fields, "embed album" block — 🤖 · 2 days
-- [ ] **DEV-45** Proper waitlist: its own table, consent line, language, source, unsubscribe, export/sync to Resend Audiences — 🤖 · 1–2 days
+- [x] **DEV-45** Proper waitlist: its own table, consent line, language, source, unsubscribe, export/sync to Resend Audiences — 🤖 · 1–2 days — done 2026-09-27 (`WaitlistEntry` table, old rows migrated; consent line + version, language, source, IP hash, rate limit; unsubscribe page (POST, scanner-safe); `/admin/waitlist` with counts, CSV export, «أرسل إشعار الإطلاق» once per person, Resend audience sync (dormant without `RESEND_AUDIENCE_ID`); the form shows on the landing page while `SITE_MODE=prelaunch`. **Owner:** set `SITE_MODE=prelaunch` to collect sign-ups before launch)
 - [ ] **DEV-46** **Google Analytics** (D10) + UTM tracking, loaded only after consent via a cookie banner; privacy policy updated — 🤖 · ½ day · *needs BIZ-12 (banner decision)*
 
 ## M5 — Rehearsal · by 21 Nov

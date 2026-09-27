@@ -11,15 +11,18 @@ import { requestLocale } from '@/lib/locale-request'
 import { notifyContactMessage, notifyContactReceived, notifyRequestReceived } from '@/lib/notifications'
 import { CONTACT_TOPICS } from '@/content/contact'
 import { translate } from '@/lib/i18n'
+import { joinWaitlist, waitlistSource } from '@/lib/waitlist'
+import { hit } from '@/lib/rate-limit'
 
 const emailSchema = z.string().email()
 
 /**
- * Launch waiting list.
+ * Launch waiting list (DEV-45) — `lib/waitlist.ts`.
  *
  * Idempotent by email so a double submit is not a duplicate, and it never
  * reports whether an address was already on the list — that would turn the
- * form into an email-enumeration oracle.
+ * form into an email-enumeration oracle. Records the page's language, where
+ * the form was, and the consent wording shown under it.
  */
 export async function captureEmail(
   formData: FormData,
@@ -27,21 +30,15 @@ export async function captureEmail(
   const parsed = emailSchema.safeParse(formData.get('email'))
   if (!parsed.success) return { ok: false, messageKey: 'landing.notifyInvalid' }
 
-  const email = parsed.data.toLowerCase()
+  const ipHash = await senderIpHash()
+  if (ipHash && !hit('waitlist', ipHash, 20, 60 * 60_000).ok) return { ok: false, messageKey: 'auth.rateLimited' }
 
   try {
-    await db.cmsEntry.upsert({
-      where: { kind_slug: { kind: 'landing_copy', slug: `waitlist:${email}` } },
-      update: {},
-      create: {
-        kind: 'landing_copy',
-        slug: `waitlist:${email}`,
-        status: 'draft',
-        titleAr: 'تسجيل في قائمة الانتظار',
-        titleEn: 'Launch waiting list signup',
-        bodyAr: email,
-        bodyEn: email,
-      },
+    await joinWaitlist({
+      email: parsed.data,
+      locale: await requestLocale(),
+      source: waitlistSource(formData.get('source')),
+      ipHash,
     })
   } catch {
     // A storage failure must not tell the visitor their address is invalid.

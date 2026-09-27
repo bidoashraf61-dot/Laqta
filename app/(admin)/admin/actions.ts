@@ -21,6 +21,7 @@ import {
 import { ALBUM_TIERS, parseBandForm, validateBand } from '@/lib/price-bands'
 import { COUNTRIES } from '@/lib/countries'
 import { parseAlbumDetailsForm, saveAlbumDetails } from '@/lib/album-details'
+import { hasDocument } from '@/lib/uploads'
 import { setRegularPrice } from '@/lib/album-price'
 import { loadPricingConfig, parsePricingForm, savePricingChoices } from '@/lib/pricing-config'
 
@@ -375,6 +376,54 @@ export async function setCreatorCommission(
 }
 
 /** Pause, resume or delist a published album from the catalogue. */
+/**
+ * Verify or reject a creator's release (DEV-19). Until now nothing moved a
+ * release out of `pending`, so every model release stayed "pending" forever
+ * and the album gate — which only refuses a REJECTED one — never met a
+ * decision. Verifying needs the scan: a reviewer does not vouch for paperwork
+ * they have not seen. A rejection needs a reason — the creator reads it on
+ * /studio/releases, and replacing the scan sends it back to pending.
+ */
+export async function decideRelease(
+  releaseId: string,
+  decision: 'verified' | 'rejected',
+  reason?: string,
+): Promise<Result> {
+  const tr = await actionT()
+  const admin = await requireAdmin()
+  if (decision !== 'verified' && decision !== 'rejected') return { ok: false, message: tr('state.error') }
+
+  const release = await db.release.findUnique({
+    where: { id: releaseId },
+    select: { id: true, fileKey: true, fileUploadedAt: true, verification: true },
+  })
+  if (!release) return { ok: false, message: tr('state.notFound') }
+
+  const rejectionReason = String(reason ?? '').trim().slice(0, 500)
+  if (decision === 'verified' && !hasDocument(release)) return { ok: false, message: tr('admin.releaseNeedsDocument') }
+  if (decision === 'rejected' && !rejectionReason) return { ok: false, message: tr('admin.releaseReasonRequired') }
+
+  await db.release.update({
+    where: { id: release.id },
+    data: {
+      verification: decision,
+      verifiedById: admin.id,
+      verifiedAt: new Date(),
+      rejectionReason: decision === 'rejected' ? rejectionReason : null,
+    },
+  })
+  await recordAudit({
+    actorId: admin.id,
+    action: `release.${decision === 'verified' ? 'verify' : 'reject'}`,
+    entity: 'Release',
+    entityId: release.id,
+    detail: { from: release.verification, ...(decision === 'rejected' ? { reason: rejectionReason } : {}) },
+  })
+  revalidatePath('/admin/review', 'layout')
+  revalidatePath('/studio/releases')
+  return { ok: true, message: tr(decision === 'verified' ? 'admin.releaseVerified' : 'admin.releaseRejected') }
+}
+
 export async function setAlbumStatus(
   albumId: string,
   status: 'live' | 'paused' | 'delisted',

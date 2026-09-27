@@ -48,7 +48,7 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin` | Work-queue depths, overdue reviews, 30-day platform totals. | [admin.md](admin.md) |
 | `/admin/analytics` | Platform trends, funnel, category split and top albums over 7/30/90 days. | [admin-analytics.md](admin-analytics.md) |
 | `/admin/review` | Albums awaiting a decision, ordered by SLA. | [admin-review.md](admin-review.md) |
-| `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 8-check gated checklist. | [admin-review-id.md](admin-review-id.md) |
+| `/admin/review/[id]` | Review one album: duplicate + consistency reports, releases, clips, the 9-check gated checklist (in Arabic; AI accuracy blocking, DEV-17). | [admin-review-id.md](admin-review-id.md) |
 | `/admin/users` | Find any account by email, name or phone; role, status, joined, order count. | [admin-users.md](admin-users.md) |
 | `/admin/users/[id]` | One account: profile, suspend/reactivate, orders, library, preview downloads, contact messages, sample claim, creator link, and read-only audited view-as-user. | [admin-users-id.md](admin-users-id.md) |
 | `/admin/creators` | Creator roster: approve, suspend, reinstate, set tier / commission override. | [admin-creators.md](admin-creators.md) |

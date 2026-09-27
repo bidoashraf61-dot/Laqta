@@ -23,8 +23,8 @@ describe('mediaUrl — no CDN configured', () => {
   })
 
   it('falls back to the local hero film', () => {
-    expect(heroFilmUrl(false)).toBe('/hero/vid/hero-web.mp4')
-    expect(heroFilmUrl(true)).toBe('/hero/vid/hero-web-m.mp4')
+    expect(heroFilmUrl(false)).toBe('/hero/vid/hero-web-v2.mp4')
+    expect(heroFilmUrl(true)).toBe('/hero/vid/hero-web-m-v2.mp4')
   })
 })
 
@@ -32,7 +32,7 @@ describe('mediaUrl — CDN configured', () => {
   it('resolves bucket keys against the CDN, trailing slash tolerated', () => {
     process.env.NEXT_PUBLIC_MEDIA_CDN_URL = `${CDN}/`
     expect(mediaUrl('previews/alula-01.mp4')).toBe(`${CDN}/previews/alula-01.mp4`)
-    expect(heroFilmUrl(false)).toBe(`${CDN}/hero/hero-web.mp4`)
+    expect(heroFilmUrl(false)).toBe(`${CDN}/hero/hero-web-v2.mp4`)
   })
 
   it('refuses private prefixes — a master never gets a public URL', () => {

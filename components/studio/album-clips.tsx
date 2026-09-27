@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { EmptyState, Spinner } from '@/components/ui/state'
 import {
+  DropdownMenuCheckboxItem,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -17,7 +18,8 @@ import {
 import { toast } from '@/components/ui/toast'
 import { useT } from '@/lib/i18n-client'
 import { cn } from '@/lib/utils'
-import { deleteClip, moveClip, setAlbumCover, updateClipTitles } from '@/app/(studio)/studio/actions'
+import { deleteClip, moveClip, setAlbumCover, setClipPeople, updateClipTitles } from '@/app/(studio)/studio/actions'
+import { BulkTitles } from './bulk-titles'
 import { UploadError, cancelUpload, formatBytes, uploadMaster, type UploadProgress } from './upload-engine'
 
 export type StudioClip = {
@@ -36,6 +38,7 @@ export type StudioClip = {
   posterUrl: string | null
   originalFilename: string | null
   identifiableFaces: boolean
+  hasPeople: boolean
   movement: string | null
 }
 
@@ -80,6 +83,7 @@ export function AlbumClips({
   const router = useRouter()
   const [locals, setLocals] = useState<Local[]>([])
   const [dragging, setDragging] = useState(false)
+  const [bulk, setBulk] = useState(false)
   const picker = useRef<HTMLInputElement>(null)
   const running = useRef(0)
   const queue = useRef<Local[]>([])
@@ -172,9 +176,16 @@ export function AlbumClips({
           {t('studio.clips')}
         </h2>
         {clips.length > 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t('studio.upload.readyCount', { ready, total: clips.length })}
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-sm text-muted-foreground">
+              {t('studio.upload.readyCount', { ready, total: clips.length })}
+            </p>
+            {editable && !bulk ? (
+              <Button type="button" size="sm" variant="outline" onClick={() => setBulk(true)}>
+                {t('studio.upload.bulkOpen')}
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
@@ -246,6 +257,8 @@ export function AlbumClips({
 
       {clips.length === 0 ? (
         <EmptyState title={t('studio.upload.empty')} description={t('studio.upload.emptyBody')} />
+      ) : bulk && editable ? (
+        <BulkTitles albumId={albumId} clips={clips} onDone={() => setBulk(false)} />
       ) : (
         <ol className="divide-y rounded-lg border bg-card">
           {clips.map((clip, index) => (
@@ -520,6 +533,27 @@ function ClipRow({
                         {t('studio.upload.makeCover')}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
+                      {/*
+                        Who is in the shot (DEV-10). Clear faces need a model
+                        release before the album can be submitted, so the
+                        creator marks them here and links the release on
+                        /studio/releases.
+                      */}
+                      <DropdownMenuCheckboxItem
+                        checked={clip.hasPeople}
+                        disabled={pending}
+                        onCheckedChange={(value) => run(() => setClipPeople(clip.id, 'hasPeople', value === true))}
+                      >
+                        {t('catalogue.peopleWith')}
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={clip.identifiableFaces}
+                        disabled={pending}
+                        onCheckedChange={(value) => run(() => setClipPeople(clip.id, 'identifiableFaces', value === true))}
+                      >
+                        {t('catalogue.identifiableFaces')}
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onSelect={() => {
@@ -539,8 +573,13 @@ function ClipRow({
         </div>
       </div>
       {clip.identifiableFaces ? (
-        <p className="mt-2 ps-9">
+        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 ps-9">
           <Badge variant="warning">{t('catalogue.identifiableFaces')}</Badge>
+          <span className="text-xs text-muted-foreground">{t('studio.upload.facesNeedRelease')}</span>
+        </p>
+      ) : clip.hasPeople ? (
+        <p className="mt-2 ps-9">
+          <Badge variant="neutral">{t('catalogue.peopleWith')}</Badge>
         </p>
       ) : null}
     </li>

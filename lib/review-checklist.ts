@@ -5,9 +5,10 @@
  * migration — but always written through `emptyChecklist` / `setCheck` so the
  * shape stays stable and old tasks stay readable.
  *
- * Every album passes through these eight checks before it can go live. Two of
- * them are blocking: an album cannot be approved while `releases` or
- * `cultural` is failing, because both are direct legal exposure.
+ * Every album passes through these nine checks before it can go live. Three
+ * are blocking: an album cannot be approved while `releases` or `cultural` is
+ * failing, because both are direct legal exposure, or while `aiAccuracy` is —
+ * a generated album that gets Saudi Arabia wrong breaks the product's promise.
  */
 
 export const CHECK_KEYS = [
@@ -17,6 +18,7 @@ export const CHECK_KEYS = [
   'releases',
   'coherence',
   'quality',
+  'aiAccuracy',
   'cultural',
   'thirdPartyIp',
 ] as const
@@ -33,118 +35,35 @@ export type CheckEntry = {
 
 export type Checklist = Record<CheckKey, CheckEntry>
 
+/**
+ * The words live in the dictionary (DEV-17: the operator reads Arabic):
+ * `reviewCheck.<key>.label`, `.why` and `.p1`…`.pN` — the prompts the
+ * reviewer must actually look at. `label` here is the English name kept for
+ * logs and the gate's plain-text reason.
+ */
 export type CheckDefinition = {
   key: CheckKey
   label: string
-  why: string
   /** Approval is refused while a blocking check is failing. */
   blocking: boolean
-  /** Prompts the reviewer must actually look at, not prose. */
-  prompts: string[]
+  /** How many prompts `reviewCheck.<key>.p1…pN` holds. */
+  prompts: number
 }
 
 export const CHECK_DEFINITIONS: CheckDefinition[] = [
-  {
-    key: 'technical',
-    label: 'Technical consistency',
-    why: 'Mixed 24p LOG + 60p Rec.709 in one album is a refund magnet.',
-    blocking: false,
-    prompts: [
-      'Frame rates consistent across the album',
-      'Colour profile consistent (all LOG or all Rec.709)',
-      'Resolution floor met — no upscaled or soft clips',
-      'No dropped frames, macro-blocking or rolling-shutter wobble',
-      'Audio muted or intentional; no stray camera noise',
-    ],
-  },
-  {
-    key: 'duplicate',
-    label: 'Duplicate detection',
-    why: 'Stolen or re-listed footage.',
-    blocking: false,
-    prompts: [
-      'Perceptual-hash matches reviewed',
-      'No clip already live under another creator',
-      'Not a re-upload of a previously rejected album',
-      'Reverse-searched any suspiciously polished clip',
-    ],
-  },
-  {
-    key: 'metadata',
-    label: 'Metadata accuracy — both languages',
-    why: 'Search quality depends on it.',
-    blocking: false,
-    prompts: [
-      'Arabic title and description present and idiomatic (not machine output)',
-      'English title and description present',
-      'Location tag matches what is actually on screen',
-      'Category and tags accurate; no keyword stuffing',
-      'Technical fields match the probe report',
-    ],
-  },
-  {
-    key: 'releases',
-    label: 'Releases & permits complete',
-    why: 'Direct legal exposure. Foreign creators are likelier to have shot without a Saudi permit.',
-    blocking: true,
-    prompts: [
-      'Model release on file for every identifiable face',
-      'Property release for private or branded premises',
-      'Filming permit on file, with the issuing authority named',
-      'Permit covers the shoot dates and the specific site',
-      'Site-authority permit where required — RCU (AlUla), Diriyah Gate, NEOM, Red Sea Global, airports, military/government',
-      'No footage of the two Holy Mosques without explicit written authorisation',
-    ],
-  },
-  {
-    key: 'coherence',
-    label: 'Album coherence',
-    why: 'One theme, not a dumping ground.',
-    blocking: false,
-    prompts: [
-      'Single clear theme, location or subject',
-      'Between 30 and 70 clips, all around one subject',
-      'No filler or near-identical repeats padding the count',
-      'Cover clip represents the album',
-    ],
-  },
-  {
-    key: 'quality',
-    label: 'Quality bar',
-    why: "The catalogue's reputation.",
-    blocking: false,
-    prompts: [
-      'Exposure, focus and stabilisation are broadcast-usable',
-      'Composition is deliberate',
-      'Clip lengths usable for editing (not 2-second fragments)',
-      'Grade is neutral enough to be re-graded by the buyer',
-    ],
-  },
-  {
-    key: 'cultural',
-    label: 'Cultural & regulatory appropriateness',
-    why: 'Saudi decency and content standards (GCAM). Pre-vetted content is a core reason buyers choose us over global libraries.',
-    blocking: true,
-    prompts: [
-      'Dress and conduct appropriate for the Saudi market',
-      'No alcohol, gambling, or other prohibited subject matter',
-      'Religious sites and practices handled respectfully and within policy',
-      'No content that could read as political or security-sensitive',
-      'Military, government and border facilities absent unless permitted',
-    ],
-  },
-  {
-    key: 'thirdPartyIp',
-    label: 'No third-party logos / IP',
-    why: 'Licensing risk.',
-    blocking: false,
-    prompts: [
-      'No prominent brand logos or trade dress',
-      'No copyrighted artwork, signage or architecture requiring clearance',
-      'No recognisable third-party products as the subject',
-      'Any incidental logo is small, unfocused and non-central',
-    ],
-  },
+  { key: 'technical', label: 'Technical consistency', blocking: false, prompts: 5 },
+  { key: 'duplicate', label: 'Duplicate detection', blocking: false, prompts: 4 },
+  { key: 'metadata', label: 'Metadata accuracy — both languages', blocking: false, prompts: 5 },
+  { key: 'releases', label: 'Releases & permits complete', blocking: true, prompts: 6 },
+  { key: 'coherence', label: 'Album coherence', blocking: false, prompts: 4 },
+  { key: 'quality', label: 'Quality bar', blocking: false, prompts: 4 },
+  // DEV-17. The reason a buyer picks Laqta over a global library is a Saudi
+  // look that is RIGHT; a generated album with a warped minaret, garbled
+  // Arabic on a shopfront or a thobe worn wrong fails that promise. Blocking,
+  // like releases and cultural: a filmed album is marked «لا ينطبق».
+  { key: 'aiAccuracy', label: 'AI accuracy', blocking: true, prompts: 5 },
+  { key: 'cultural', label: 'Cultural & regulatory appropriateness', blocking: true, prompts: 5 },
+  { key: 'thirdPartyIp', label: 'No third-party logos / IP', blocking: false, prompts: 4 },
 ]
 
 export const CHECK_BY_KEY: Record<CheckKey, CheckDefinition> = Object.fromEntries(
@@ -218,13 +137,23 @@ export function checklistProgress(checklist: Checklist) {
 export function canApprove(checklist: Checklist) {
   const progress = checklistProgress(checklist)
   if (!progress.complete) {
-    return { ok: false as const, reason: 'Every check must be decided before approving.' }
+    return {
+      ok: false as const,
+      reason: 'Every check must be decided before approving.',
+      reasonKey: 'admin.gateUndecided',
+      failing: [] as CheckKey[],
+    }
   }
   if (progress.blockingFailures.length > 0) {
     const labels = progress.blockingFailures.map((key) => CHECK_BY_KEY[key].label).join(', ')
-    return { ok: false as const, reason: `Blocking check failing: ${labels}.` }
+    return {
+      ok: false as const,
+      reason: `Blocking check failing: ${labels}.`,
+      reasonKey: 'admin.gateBlocking',
+      failing: progress.blockingFailures,
+    }
   }
-  return { ok: true as const, reason: null }
+  return { ok: true as const, reason: null, reasonKey: null, failing: [] as CheckKey[] }
 }
 
 /**

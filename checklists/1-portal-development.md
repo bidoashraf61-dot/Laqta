@@ -22,16 +22,17 @@ Today nobody can become a creator, and creator albums would sell with a blank li
 - [x] **DEV-09** ⛔ Price control: admin sets the album price at approval; creators stop choosing a band. Re-cut price bands to 30–70 clips. Fix `/sell` FAQ + studio hint. — 🤖 · 1 day · *needs D4* — done 2026-09-27 ($49–$249 at approval; bands 30–39 $79 · 40–49 $119 · 50–59 $159 · 60–70 $199 as suggestions; `verify:pricing`)
 - [x] **DEV-09b** ⛔ Price in the review round: approving the album approves its price (built); «طلب تعديل» can carry the owner's proposed price with the feedback; the creator sees both in the studio, updates the details (recommended price pre-filled with the proposal) and resubmits. No separate price-acceptance step (owner, 2026-09-27). Approve then sells at the creator's recommended price — a different price goes back as a proposal, not straight live — 🤖 · ½–1 day — done 2026-09-27 (`ReviewTask.proposedPrice`; approve sells at the recommendation; proposal disables approve; `verify:pricing`)
 - [x] **DEV-09c** Owner controls the price calculator from admin — done 2026-09-27: dropdowns only (owner): importance grade low/medium/high for resolution, footage type and quality; price limits $29/$49/$69 – $199/$249/$299; creator margin ±10/15/20%; live example; audited
-- [ ] **DEV-10** Releases can link to any clip; per-clip "shows people / faces" toggle — 🤖 · ½ day
+- [x] **DEV-10** Releases can link to any clip; per-clip "shows people / faces" toggle — 🤖 · ½ day — done 2026-09-27 (clip menu on the album page: «فيها أشخاص» / «وجوه واضحة» checkboxes, kept consistent, audited; faces clips flagged «تحتاج تصريح نموذج»; the release linker lists every clip of the creator, faces first, each marked)
 - [x] **DEV-11** 2FA required for creators before they reach the studio — 🤖 · ½ day — done 2026-09-27 (creators **and admins**: unenrolled, `/studio` and `/admin` send them to `/account/security` and back; `verify:auth`)
-- [ ] **DEV-12** Bulk edit of clip titles (today each defaults to the file name) — 🤖 · 1 day
+- [x] **DEV-12** Bulk edit of clip titles (today each defaults to the file name) — 🤖 · 1 day — done 2026-09-27 («تعديل كل العناوين» on the studio album page: every clip in one grid, Arabic + English side by side with the file name under each, one save in one transaction, only changed rows written, missing titles marked red)
+
 - [ ] **DEV-13** Creator guide page: spec sheet, pre-start checklist, example album, linked from the upload area — 🤖 · ½ day · *needs ALB-20*
 - [ ] **DEV-14** ⛔ Hosting: Dockerfile (Node + ffmpeg + Chromium), health check, migrations on deploy, daily database backups — 🤖 · 1 day · *needs BIZ-07*
 - [ ] **DEV-15** ⛔ S3 buckets + CORS + CloudFront wired; Resend switched on — 🤝 · 1 day · *needs BIZ-06, BIZ-13*
 - [ ] **DEV-16** ⛔ **Test site online** + upload one real multi-GB 4K master through S3 → processing → review → approval — 🤝 · 1 day · *needs DEV-14, DEV-15*
-- [ ] **DEV-17** AI-accuracy check added to the review checklist (warped buildings, garbled Arabic text, wrong dress, morphing, flicker) + translate the checklist to Arabic — 🤖 · 3 hrs
+- [x] **DEV-17** AI-accuracy check added to the review checklist (warped buildings, garbled Arabic text, wrong dress, morphing, flicker) + translate the checklist to Arabic — 🤖 · 3 hrs — done 2026-09-27 (ninth check «دقة الذكاء الاصطناعي», blocking, «لا ينطبق» for filmed albums; every check's name, reason and prompts now Arabic from the dictionary; approval refusals read in Arabic; unit tests for the check and the copy)
 - [ ] **DEV-18** Duplicate detection: compute the perceptual hash during processing — 🤖 · ½ day
-- [ ] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs
+- [x] **DEV-19** Admin can mark a release verified / rejected — 🤖 · 2 hrs — done 2026-09-27 («اعتماد» / «رفض» per release on the review page; verify needs the scan, reject needs a reason the creator reads; audited; `verify:flows` verifies one)
 
 ## Owner controls — requested 2026-09-27 (owner picks the timing)
 

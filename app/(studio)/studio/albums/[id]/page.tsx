@@ -84,6 +84,7 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
     posterUrl: mediaUrl(clip.thumbnailKeys[0]),
     originalFilename: clip.originalFilename,
     identifiableFaces: clip.identifiableFaces,
+    hasPeople: clip.hasPeople,
     movement: specLabel('movement', clip.cameraMovement) ?? null,
   }))
   const gate = await canSubmit(album.id)

@@ -10,7 +10,7 @@ submission gate and the reviewer read.
 ## Data in
 - `Release.findMany` where `creatorId`, `orderBy [{ verification: 'asc' }, { createdAt: 'desc' }]`, including `clipLinks { clipId }`. Renders `subjectName`, `type`, `authority`, `referenceNumber`, `validFrom`/`validTo`, link count, `verification`, `rejectionReason`, and the scan: `fileName`, `fileSizeBytes`, with "attached" decided by `lib/uploads.ts#hasDocument` (`fileUploadedAt` set and `fileKey` under `documents/`).
 - `maxDocumentBytes()` (`UPLOAD_MAX_DOCUMENT_BYTES`, default 15 MiB).
-- `Clip.findMany` where `album.creatorId` = this creator AND (`identifiableFaces` OR `hasPeople`), `orderBy createdAt desc`, `take 200`; selects `id, titleAr, identifiableFaces, album.titleAr`. This is the linkable-clip pool for every release on the page.
+- `Clip.findMany` where `album.creatorId` = this creator — **every** clip, not only people/faces ones (DEV-10: a property release or permit covers clips with nobody in them, and nothing used to set the flags, so the pool was always empty). `orderBy [identifiableFaces desc, hasPeople desc, album.createdAt desc, orderIndex asc]`, `take 500`; selects `id, titleAr, identifiableFaces, hasPeople, album.titleAr`. Each row in the linker shows «وجوه واضحة» (warning colour) or «فيها أشخاص» beside the title. The flags are set per clip on `/studio/albums/[id]`.
 
 ## Controls
 | Control | Action | Effect |
@@ -32,7 +32,7 @@ There is still no edit and no delete for a release itself — only for its scan.
 - **No releases** — `EmptyState` (`dash.noReleases`); the create panel stays.
 - **No linkable clips** — `ReleaseLinker` renders `dash.noLinkableClips` instead of the disclosure.
 - **Rejected release** — `rejectionReason` renders in a destructive alert on the card.
-- **Verification badge** — `pending` / `verified` / `rejected` via `StatusBadge domain="release"`; only a reviewer can move it, never this page.
+- **Verification badge** — `pending` / `verified` / `rejected` via `StatusBadge domain="release"`; only a reviewer can move it, never this page — with «اعتماد» / «رفض» on `/admin/review/[id]` (DEV-19); a rejection's reason shows here.
 - **No scan** — the card's «المستند» strip shows «إرفاق المستند» and «لم يُرفق المستند بعد. المراجع لا يعتمد تصريحاً بلا نسخة منه.» with the accepted formats (`PDF · JPG · PNG`, isolated) and the cap.
 - **Scan attached** — file name (link) and size, with «استبدال» and «إزالة».
 - **Verified** — the scan shows without controls, and «اعتُمد هذا التصريح، فلا يُستبدل مستنده.»; the route refuses PUT/DELETE with `verified` too.
@@ -49,4 +49,4 @@ There is still no edit and no delete for a release itself — only for its scan.
 - A scan is never public: private storage (`documents/` in the masters bucket, or `.documents/` locally), opened only through the authenticated route, refused by `mediaUrl()`.
 
 ## Verified by
-`verify:arabic`, `audit`. `verify:flows` attaches a PDF through a fixture release's card and has an admin open it through the private route; `verify:uploads` covers the type/size/ownership/verified rules and that the scan is never under `public/`. The linker and the create form are not exercised by `verify:flows`.
+`verify:arabic`, `audit`. `verify:flows` attaches a PDF through a fixture release's card, has an admin open it through the private route, then verify it from the review page (DEV-19); `verify:uploads` covers the type/size/ownership/verified rules and that the scan is never under `public/`. The linker and the create form are not exercised by `verify:flows`.

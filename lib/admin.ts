@@ -1,3 +1,4 @@
+import { translate } from '@/lib/i18n'
 import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
 import { bandForCount, parseAlbumPrice } from '@/lib/price-bands'
@@ -136,8 +137,14 @@ export async function decideReview(input: ReviewDecisionInput) {
     const bands = await db.priceBand.findMany({ select: { tier: true, minClips: true, maxClips: true } })
     tier = bandForCount(task.album.clipCount, bands)?.tier
     const gate = canApprove(checklist)
-    if (!gate.ok)
-      return { ok: false as const, messageKey: 'admin.cannotApprove', detail: gate.reason }
+    if (!gate.ok) {
+      // In the operator's language (DEV-17) — the dashboard is Arabic-only —
+      // not the English log string. `translate` rather than `actionT`: the
+      // verify scripts call this outside a request.
+      const tr = (key: string, vars?: Record<string, string>) => translate('ar', key, vars)
+      const labels = gate.failing.map((key) => tr(`reviewCheck.${key}.label`)).join('، ')
+      return { ok: false as const, messageKey: 'admin.cannotApprove', detail: tr(gate.reasonKey, { labels }) }
+    }
     licenceVersionId = await currentLicenceId()
     if (!licenceVersionId)
       return {

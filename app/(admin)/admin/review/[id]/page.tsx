@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/state'
 import { Bilingual, UserText } from '@/components/ui/bilingual'
 import { ReviewChecklist } from '@/components/admin/review-checklist'
+import { ReleaseDecision } from '@/components/admin/release-decision'
+import { StatusBadge } from '@/components/dashboard/status'
 import { BackLink } from '@/components/dashboard/primitives'
 import { countOf, formatMoney, t } from '@/lib/i18n'
 import { formatDuration } from '@/lib/utils'
@@ -21,6 +23,12 @@ import { loadPricingConfig } from '@/lib/pricing-config'
 import { loadAlbumDetails } from '@/lib/album-details'
 import { AlbumDetailsForm } from '@/components/studio/album-details-form'
 import { adminSaveAlbumDetails } from '@/app/(admin)/admin/actions'
+
+const RELEASE_TYPE: Record<string, string> = {
+  model: 'dash.releaseModel',
+  property: 'dash.releaseProperty',
+  permit: 'dash.releasePermit',
+}
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   // Resolve the locale before rendering anything.
@@ -51,6 +59,8 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                     select: {
                       id: true,
                       type: true,
+                      subjectName: true,
+                      rejectionReason: true,
                       fileKey: true,
                       fileName: true,
                       fileUploadedAt: true,
@@ -160,7 +170,12 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           <ul className="divide-y rounded-lg border">
             {uniqueReleases.map((release) => (
               <li key={release.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
-                <span className="flex-1">{release.type}</span>
+                <span className="flex-1">
+                  {t(RELEASE_TYPE[release.type] ?? release.type)}
+                  {release.subjectName ? (
+                    <span className="text-muted-foreground"> — <UserText>{release.subjectName}</UserText></span>
+                  ) : null}
+                </span>
                 {release.authority ? (
                   <span className="ltr-island text-muted-foreground">{release.authority}</span>
                 ) : null}
@@ -188,9 +203,17 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                 ) : (
                   <span className="text-xs text-muted-foreground">{t('admin.releaseNoDocument')}</span>
                 )}
-                <Badge variant={release.verification === 'verified' ? 'success' : 'warning'}>
-                  {release.verification}
-                </Badge>
+                <StatusBadge domain="release" value={release.verification} />
+                <ReleaseDecision
+                  releaseId={release.id}
+                  verification={release.verification}
+                  hasScan={hasDocument(release)}
+                />
+                {release.verification === 'rejected' && release.rejectionReason ? (
+                  <p className="w-full text-xs text-destructive">
+                    {t('admin.releaseRejectedBecause')} <UserText>{release.rejectionReason}</UserText>
+                  </p>
+                ) : null}
               </li>
             ))}
           </ul>

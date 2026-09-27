@@ -14,6 +14,7 @@ export type LinkableClip = {
   titleAr: string
   albumTitleAr: string
   identifiableFaces: boolean
+  hasPeople: boolean
 }
 
 /**
@@ -78,6 +79,11 @@ export function ReleaseLinker({
                     onCheckedChange={() => toggle(clip.id)}
                   />
                   <span className="min-w-0 flex-1 truncate">{clip.titleAr}</span>
+                  {clip.identifiableFaces ? (
+                    <span className="shrink-0 text-xs font-medium text-warning">{t('catalogue.identifiableFaces')}</span>
+                  ) : clip.hasPeople ? (
+                    <span className="shrink-0 text-xs text-muted-foreground">{t('catalogue.peopleWith')}</span>
+                  ) : null}
                   <span className="shrink-0 truncate text-xs text-muted-foreground">
                     {clip.albumTitleAr}
                   </span>

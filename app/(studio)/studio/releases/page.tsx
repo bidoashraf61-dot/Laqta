@@ -65,13 +65,19 @@ export default async function StudioReleasesPage() {
       },
     }),
     db.clip.findMany({
-      where: { album: { creatorId }, OR: [{ identifiableFaces: true }, { hasPeople: true }] },
-      orderBy: { createdAt: 'desc' },
-      take: 200,
+      // EVERY clip of this creator (DEV-10). A property release or a location
+      // permit covers clips with nobody in them, so filtering to people/faces
+      // left those releases with nothing to link to — and since no control
+      // set the flags, every creator's list was empty. Clips with clear faces
+      // sort first: they are the ones the submission gate blocks.
+      where: { album: { creatorId } },
+      orderBy: [{ identifiableFaces: 'desc' }, { hasPeople: 'desc' }, { album: { createdAt: 'desc' } }, { orderIndex: 'asc' }],
+      take: 500,
       select: {
         id: true,
         titleAr: true,
         identifiableFaces: true,
+        hasPeople: true,
         album: { select: { titleAr: true } },
       },
     }),
@@ -82,6 +88,7 @@ export default async function StudioReleasesPage() {
     titleAr: clip.titleAr,
     albumTitleAr: clip.album.titleAr,
     identifiableFaces: clip.identifiableFaces,
+    hasPeople: clip.hasPeople,
   }))
 
   return (

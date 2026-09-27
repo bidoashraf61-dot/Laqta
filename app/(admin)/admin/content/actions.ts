@@ -11,7 +11,6 @@ import {
   type PublishResult,
 } from '@/lib/editable-documents'
 import { publishCopy, saveCopyPreview, undoCopyBatch, type CopyPublishResult } from '@/lib/copy-overrides'
-import { COPY_GROUPS } from '@/lib/copy-rules'
 
 /**
  * Publish and restore the long-form pages — `/admin/content/[key]` (DEV-64a).
@@ -71,14 +70,9 @@ export type CopyActionResult = {
 async function finishCopy(result: CopyPublishResult, okKey: string): Promise<CopyActionResult> {
   const tr = await actionT()
   if (!result.ok) return { ok: false, message: tr(result.error.key, result.error.vars), at: result.error.at }
-  // The edited copy is read inside translate() on every page, so every page
-  // that shows it is stale — the landing, /sell, both languages.
-  for (const group of Object.values(COPY_GROUPS)) {
-    if (group.path) {
-      revalidatePath(group.path)
-      revalidatePath(`/en${group.path === '/' ? '' : group.path}`)
-    }
-  }
+  // Edited copy is read inside translate() on every page — menus, footer,
+  // checkout — so the whole site is stale, both languages.
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/content', 'layout')
   return { ok: true, message: tr(okKey) }
 }

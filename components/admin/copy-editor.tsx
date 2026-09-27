@@ -11,7 +11,7 @@ import { Alert, AlertDescription, Spinner } from '@/components/ui/state'
 import { toast } from '@/components/ui/toast'
 import { Panel } from '@/components/dashboard/primitives'
 import { previewCopyAction, publishCopyAction, undoCopyBatchAction } from '@/app/(admin)/admin/content/actions'
-import { COPY_GROUPS, validateCopy, type CopyGroup } from '@/lib/copy-rules'
+import { COPY_GROUPS, sectionOf, validateCopy, type CopyGroup } from '@/lib/copy-rules'
 import { useLocale, useT } from '@/lib/i18n-client'
 import type { Locale } from '@/lib/locale'
 import { cn } from '@/lib/utils'
@@ -94,7 +94,9 @@ export function CopyEditor({
   const t = useT()
   const uiLocale = useLocale()
   const router = useRouter()
-  const prefix = COPY_GROUPS[group].prefix
+  // One-section groups show keys without the section; mixed groups show it.
+  const single = COPY_GROUPS[group].sections.length === 1
+  const shortKey = (key: string) => (single ? key.slice(key.indexOf('.') + 1) : key)
 
   const baseline = useMemo(() => {
     const map: Record<string, string> = {}
@@ -327,16 +329,22 @@ export function CopyEditor({
           <p className="py-10 text-center text-sm text-muted-foreground">{t('dash.copy.noMatch')}</p>
         ) : (
           <ul className="-mb-2 divide-y divide-border/60">
-            {visible.map((row) => {
+            {visible.map((row, index) => {
               const cells = LOCALES.map((l) => id(l, row.key))
+              // Mixed groups get a heading where a new part of the site begins.
+              const section = sectionOf(row.key)
+              const opensSection = !single && (index === 0 || sectionOf(visible[index - 1].key) !== section)
               const isPublished = cells.some((cell) => sides[cell].published !== null)
               const isDraft = cells.some((cell) => changed.includes(cell))
               return (
                 <li key={row.key} className="space-y-3 py-5">
+                  {opensSection ? (
+                    <h2 className="-mt-1 pb-2 font-medium">{t(`dash.copy.section.${section}`)}</h2>
+                  ) : null}
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-xs text-muted-foreground">
                       <span className="ltr-island" dir="ltr">
-                        {row.key.slice(prefix.length)}
+                        {shortKey(row.key)}
                       </span>
                     </p>
                     <span className="flex gap-1.5">
@@ -496,7 +504,7 @@ export function CopyEditor({
                       <li key={`${change.locale}:${change.key}`} className="rounded-md bg-muted/50 px-3 py-2">
                         <p className="text-xs text-muted-foreground">
                           <span className="ltr-island" dir="ltr">
-                            {change.key.slice(prefix.length)} · {change.locale}
+                            {shortKey(change.key)} · {change.locale}
                           </span>
                         </p>
                         <p dir={change.locale === 'en' ? 'ltr' : 'rtl'} className="mt-1 text-muted-foreground line-through">

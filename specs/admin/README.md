@@ -52,8 +52,8 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 | `/admin/orders` | Find orders, settle a bank transfer, see Paymob reference / source and gateway flags, refund a line at its frozen rate. | [admin-orders.md](admin-orders.md) |
 | `/admin/payouts` | Approve payout requests (freezing the destination), batch approved ones into a payout run with one export file per rail, and mark a run (or a single payout) paid. | [admin-payouts.md](admin-payouts.md) |
 | `/admin/promos` | Create, edit and switch promo codes on or off. | [admin-promos.md](admin-promos.md) |
-| `/admin/content` | Hub for the owner's words: site copy (landing + FAQ, `/sell`, emails) and the long-form pages; what each shows now, open its editor. | [admin-content.md](admin-content.md) |
-| `/admin/content/copy/[group]` | Edit landing / `/sell` / email copy in Arabic and English with live rule checks, preview on the real page, publish, undo a publish. | [admin-copy-group.md](admin-copy-group.md) |
+| `/admin/content` | Hub for the owner's words: every visitor-facing copy group and the long-form pages; what each shows now, open its editor. | [admin-content.md](admin-content.md) |
+| `/admin/content/copy/[group]` | Edit any visitor-facing copy (8 groups: landing, sell, email, site, catalogue, checkout, account, contact) in Arabic and English with live rule checks, preview on the real page, publish, undo a publish. | [admin-copy-group.md](admin-copy-group.md) |
 | `/admin/content/copy/email/preview` | One email rendered with sample data, with or without unpublished edits. | [admin-copy-email-preview.md](admin-copy-email-preview.md) |
 | `/admin/content/[key]` | Edit one page in Arabic and English with a live preview, publish with a note, restore any earlier version or the original text. | [admin-content-key.md](admin-content-key.md) |
 | `/admin/reports` | Zero-result search report plus the last 50 audit entries. Read-only. | [admin-reports.md](admin-reports.md) |
@@ -61,9 +61,10 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 
 ## Coverage
 
-- `verify:arabic` and `audit` cover 19 routes (now including `/admin/messages`,
+- `verify:arabic` and `audit` cover 20 routes (now including `/admin/messages`,
   `/admin/users`, `/admin/content`, `/admin/content/terms`,
-  `/admin/content/copy/landing` and `/admin/content/copy/email/preview`). `/admin/users/[id]` is in neither (it needs an id).
+  `/admin/content/copy/landing`, `/admin/content/copy/catalogue` and
+  `/admin/content/copy/email/preview`). `/admin/users/[id]` is in neither (it needs an id).
   `/admin/requests` is in neither. **`/admin/review/[id]` is in
   neither** — the surface where the review gate actually lives is unexercised by any gate.
 - `verify:flows` drives filter chips on `/admin/catalogue`, `/admin/creators`,
@@ -109,9 +110,11 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The trailer field on `/admin/catalogue` takes a media-bucket **key**; there is no upload
   control. Files reach the bucket through `npm run media:upload` (`docs/tech/media-aws.md`).
   `saveAlbumTrailer` is exercised by no gate — `verify:flows` does not open the popover.
-- Editable from admin: the six long-form pages (DEV-64a) and `landing.*`, `sell.*`,
-  `email.*` (DEV-64b). Every other interface string (DEV-64c — nav, catalogue, checkout,
-  account, studio, dashboards…) still lives in `messages/*.json` and needs a code change.
+- Editable from admin: the six long-form pages (DEV-64a) and every visitor-facing string
+  (DEV-64b/c). **Not editable, by the owner's decision (2026-09-27):** the admin and
+  studio labels (`dash.*`, `studio.*`, `admin.*`, `payoutRun.*`, `security.*`) and
+  `brand.name` — they need a code change. `actions.*` / `state.*` are shared, so an edit
+  there also changes the dashboards' buttons and messages.
 - A published copy edit reaches a second server instance within 15 s (per-process map,
   `lib/copy-overrides.ts`); only the publishing process updates at once.
 - The shell's `<main>` is `overflow-x-clip` (was `overflow-y-auto`, which silently

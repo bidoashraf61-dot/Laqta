@@ -4,8 +4,9 @@
 
 ## Purpose
 The hub for every word the owner edits from admin, in two panels:
-- **«نصوص الموقع»** (DEV-64b) — the landing page and FAQ, the `/sell` page, the emails:
-  how many strings, how many edited, when last published; opens
+- **«نصوص الموقع»** (DEV-64b/c) — everything a visitor reads, in eight groups (landing +
+  FAQ, `/sell`, emails, menus/footer/site messages, catalogue, cart/checkout,
+  sign-in/account, contact): how many strings, how many edited, when last published; opens
   [`/admin/content/copy/[group]`](admin-copy-group.md).
 - **«الصفحات الطويلة»** (DEV-64a) — Terms, Privacy, Licences, Content policy, About,
   Contact: the original text or the newest published version; opens
@@ -18,9 +19,9 @@ The hub for every word the owner edits from admin, in two panels:
 - `DocumentVersion.findMany({ distinct: ['docKey'], orderBy: [{ docKey }, { publishedAt: 'desc' }] })`
   — the newest version per page — and `groupBy(['docKey'])` for the version count.
 - Publisher names: `User.findMany` on the publishers' ids (`name`, else `email`).
-- Per copy group (`COPY_GROUPS` in `lib/copy-rules.ts`): `groupKeys(group).length`,
-  `CopyOverride.findMany({ distinct: ['key'] })` under the prefix (edited strings), and the
-  newest `CopyRevision.publishedAt` under the prefix.
+- Per copy group (`COPY_GROUPS` in `lib/copy-rules.ts`): `groupKeys(group).length`, and
+  `copyGroupStats(groupPrefixes(group))` — distinct edited keys and the newest
+  `CopyRevision.publishedAt` under the group's sections.
 
 Takes no `searchParams`.
 
@@ -29,7 +30,7 @@ Takes no `searchParams`.
 | Control | Action | Effect |
 | --- | --- | --- |
 | Copy group title / «تعديل» | plain `<a>` → `/admin/content/copy/[group]` | opens the copy editor |
-| Copy group «عرض الصفحة» | plain `<a>`, new tab | `/` or `/sell` (none for email) |
+| Copy group «عرض الصفحة» | plain `<a>`, new tab | the group's page (`/`, `/sell`, `/albums`, `/cart`, `/account`, `/contact`; none for email) |
 | Page title (row) | plain `<a>` (`Anchor`) → `/admin/content/[key]` | opens the editor |
 | «عرض الصفحة» (row) | plain `<a>`, new tab | the public page (`/terms`, …) |
 | «تعديل» (row) | plain `<a>` → `/admin/content/[key]` | opens the editor |
@@ -43,7 +44,7 @@ CLAUDE.md says must never be a soft client push.
   «النسخ المنشورة: {count}».
 - **Copy group** — success badge «المعدّلة: N» when any string is edited; then
   «N نصاً · آخر نشر {date}» or «… · لم يُعدَّل شيء بعد.»
-- No empty state: the three copy rows and six page rows always exist.
+- No empty state: the eight copy rows and six page rows always exist.
 - **Loading / error** — no route-level `loading.tsx` or `error.tsx`.
 
 ## Invariants

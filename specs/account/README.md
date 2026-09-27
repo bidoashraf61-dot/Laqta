@@ -1,5 +1,12 @@
 # Buyer authenticated area — `/account/*`
 
+**Copy is editable from admin (DEV-64b/c).** Every string on these routes comes from
+`messages/*.json` through `translate()`, and the owner can override any of it at
+[`/admin/content/copy`](../admin/admin-copy-group.md) — published edits show everywhere
+within 15 s, `?copyPreview=<id>` shows an admin unpublished drafts. A spec that quotes a
+string quotes the **default**; the live page may show an edit. The rules an edit must meet
+(placeholders, length, direction, banned claims) are in that spec.
+
 Everything a signed-in buyer gets after purchase: what they own, what they paid,
 what they pulled, their boards, and their two-factor setting.
 

@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-64b done — landing, /sell, FAQ and email copy editable from admin; DEV-64c next)_
+_Last updated: 2026-09-27 (DEV-64 done — every visitor-facing word editable from admin)_
 
 ---
 
@@ -43,7 +43,7 @@ orders, refunds, payouts + payout runs with bank/Wise/Payoneer exports,
 users + read-only view-as-user, price-band editor, taxonomy, reports,
 album offers / special prices / promo codes, the page-text editor for
 Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a — and the
-site-copy editor for the landing page + FAQ, `/sell` and every email — DEV-64b),
+site-copy editor for every string a visitor reads — DEV-64b/c),
 English site under `/en`, transactional email outbox.
 
 **Built but switched off — waiting for the owner's accounts/keys:**
@@ -411,20 +411,31 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - Gates: all green on a production build (the flaky upload flow failed once,
   passed on rerun).
 
-## 24. Where to pick up — DEV-64c
+## 24. Session — 2026-09-27 (DEV-64c)
 
-**Owner's order of work:** DEV-64c — every remaining interface string
-(~1,600 lines: nav, catalogue, checkout, account, studio, dashboards).
-DEV-62 (bundles) still waits on the owner's decision: does Laqta cover a
-bundle discount from its share, or is it shared with creators pro-rata?
+- **DEV-64c done — every word a visitor reads is editable.** Owner decision
+  (2026-09-27): **visitor-facing only** — admin and creator-studio labels
+  (`dash.*`, `studio.*`, `admin.*`, `payoutRun.*`, `security.*`) stay in code;
+  `brand.name` is locked. Five more groups on `/admin/content/copy`: menus,
+  footer and site messages (75), catalogue and album pages (195), cart and
+  checkout (64), sign-in/account/library (129), contact (39) — 766 strings
+  in total with 64b's three groups.
+- A group is now a list of `messages` sections (`lib/copy-rules.ts`);
+  mixed groups show section headings in the editor. Buttons and badges
+  (≤ 12 characters) get a tight length cap. Publish revalidates the whole
+  site. `actions.*` / `state.*` are shared with the dashboards.
+- `verify:copy` extended (admin/studio not editable, brand name locked, no key
+  in two groups, button cap, plural `{count}` kept). All 28 gates green on a
+  production build.
 
-**DEV-64c notes:** the machinery is built — widen `COPY_GROUPS` in
-`lib/copy-rules.ts` (a group per top-level `messages` section) and the editor
-works as is. What 64c must add: (1) length caps tuned for labels/buttons
-(today derived from the original's length), (2) care with keys used as
-`aria-label`/metadata, (3) maybe a per-page grouping for the ~600 `dash.*`
-keys, (4) whether admin/studio labels should be editable at all (ask the
-owner — they are not public copy).
+## 25. Where to pick up
+
+DEV-64 is finished. **DEV-62 (bundles)** still waits on the owner: does Laqta
+cover a bundle discount from its share, or is it shared with creators
+pro-rata? Otherwise pick from `checklists/` — the ⛔ tasks with no
+dependency are DEV-20 (AI vs filmed wording, «4K» claims), DEV-33 (English
+pages indexed separately), DEV-39 (page speed). Many ⛔ tasks wait on the
+owner's accounts (BIZ-02/03/04/06/07/13).
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

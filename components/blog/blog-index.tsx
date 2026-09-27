@@ -27,6 +27,7 @@ export async function BlogIndex({ categorySlug, page }: { categorySlug?: string;
     <div className="container py-16">
       <header className="mb-10 max-w-2xl space-y-4">
         <Headline
+          as="h1"
           lead={t('blog.lead')}
           bold={category ? (pickLocalised(category.nameAr, category.nameEn) ?? category.nameAr) : t('blog.bold')}
           size="lg"

@@ -95,7 +95,7 @@ album's price, and no way to edit site wording without a developer.
 - [ ] **DEV-52** Privacy features as decided (deletion/export by email or a button) — 🤖 · ½–2 days · *needs BIZ-12*
 - [ ] **DEV-53** ⛔ Full rehearsal on the test site: buyer (card + bank transfer, emails, download, licence PDF) and creator (upload → review → live → sale email) — 🤝 · ½ day
 - [ ] **DEV-54** Emails land in the inbox (Gmail + Outlook, Arabic + English) — 🤝 · 1 hr
-- [ ] **DEV-55** Phone + desktop pass of every page in both languages; landing on a real iPhone — 🤖 · ½ day
+- [ ] **DEV-55** Phone + desktop pass of every page in both languages; landing on a real iPhone — 🤖 · ½ day — **partly done 2026-09-27:** `npm run audit` now drives every route at desktop 1440 and phone 390 in Arabic AND English — its first English pass found `/en/locations` and `/en/categories` 404ing and /blog without an h1, all fixed; new pages (blog, occasions) also looked at by eye on a phone. **Owner still owes:** open the landing page on a real iPhone (Safari) — the one check a browser gate cannot do
 - [ ] **DEV-56** Restore a database backup once — 🤝 · 1 hr
 - [x] **DEV-57** Operator daily digest email (queue, unsettled transfers, failed mail, messages) — 🤖 · 1 day — done 2026-09-27 (Arabic morning email to MAIL_OPERATOR_TO: review queue + overdue, unconfirmed transfers + oldest, payout requests, open messages, new footage requests, failed mail; once a day via `npm run jobs:daily` or `POST /api/cron/daily` with `CRON_SECRET`)
 

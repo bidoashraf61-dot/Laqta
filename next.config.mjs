@@ -112,6 +112,9 @@ const nextConfig = {
     return [
       { source: '/locations', destination: '/footage', permanent: true },
       { source: '/categories', destination: '/footage', permanent: true },
+      // The English indexes too (DEV-55: the bilingual audit found them 404ing).
+      { source: '/en/locations', destination: '/en/footage', permanent: true },
+      { source: '/en/categories', destination: '/en/footage', permanent: true },
     ]
   },
   eslint: {

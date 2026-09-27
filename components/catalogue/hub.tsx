@@ -167,9 +167,11 @@ export async function TaxonomyHub({
           {t('nav.home')}
         </Link>
         {' / '}
-        {/* Occasions have no index page: their middle crumb is the shots page. */}
-        <Link href={kind === 'theme' ? '/footage' : BASE[kind]} className="hover:text-foreground">
-          {kind === 'theme' ? t('nav.footage') : t(TITLE_KEY[kind])}
+        {/* The middle crumb is the shots page for every hub: the location and
+            category indexes only redirect there, and occasions have none. A
+            link through a redirect cost a prefetch 404 under /en (DEV-55). */}
+        <Link href="/footage" className="hover:text-foreground">
+          {t('nav.footage')}
         </Link>
         {' / '}
         <span className="text-foreground">{name}</span>

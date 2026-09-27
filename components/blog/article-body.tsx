@@ -11,7 +11,7 @@ import type { Block, Inline } from '@/lib/blog-render'
  */
 export function ArticleBody({ blocks, albums }: { blocks: Block[]; albums: Map<string, AlbumCardData> }) {
   return (
-    <div className="space-y-6 font-serif text-[1.1rem] leading-[1.95] text-foreground/85">
+    <div className="space-y-6 font-serif text-lg leading-[1.95] text-foreground/85">
       {blocks.map((block, i) => {
         switch (block.kind) {
           case 'h2':

@@ -20,7 +20,7 @@ campaigns, the licence. Read mode, in the site's editorial voice.
 | «الأحدث» / «الأقدم» + `n / N` | plain `<a>` | `?page=n` |
 
 ## States
-- Header: two-cut headline «من مدونة لقطة، / دليل من يصنع محتوى سعودي.» (on a category page the bold line is the category name) and an intro in serif.
+- Header (the page's `<h1>`, DEV-55): two-cut headline «من مدونة لقطة، / دليل من يصنع محتوى سعودي.» (on a category page the bold line is the category name) and an intro in serif.
 - Page 1: the newest post leads wide (cover 3fr beside the text), the rest in two columns; later pages: two columns.
 - **No posts** — «ما فيه مقالات بعد» / «أول المقالات قريباً.»
 - Card: 16:9 cover when set (`mediaUrl`), category and date, title, excerpt.

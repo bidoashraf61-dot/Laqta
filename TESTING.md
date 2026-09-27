@@ -37,6 +37,8 @@ others, which is why they all exist.
 |---|---|---|
 | `npm run test:unit` | Is the pure logic right? | no |
 | `npm run verify:migrations` | Does a fresh `migrate deploy` build the schema the app uses? | no (db only; creates and drops a throwaway database) |
+| `npm run verify:production-seed` | Does the production seed give a fresh database real data only — taxonomy, licence, bands, one admin — idempotently, and refuse weak passwords and demo databases? Does the demo seed refuse a remote database? | no (db only; creates and drops a throwaway database) |
+| `npm run verify:seo` | Is every indexable page its own page in each language (canonical, hreflang, og:locale, title)? | **yes** |
 | `npm run verify:i18n` | Is the copy complete and correctly formatted? | no |
 | `npm run verify:search` | Does Arabic search fold and match? | no (db only) |
 | `npm run verify:entitlement` | Does "buy once, own forever" hold? | no (db only) |

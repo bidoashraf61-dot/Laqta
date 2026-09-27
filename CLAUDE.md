@@ -157,6 +157,9 @@ directions**.
 - `verify:arabic` — no English leaking into an Arabic route, and no Arabic
   leaking into an English one; plus the shell, the `/ar` 308s, and that `/en`
   serves 200 without bypassing a role guard
+- `verify:production-seed` — the production seed gives a fresh database real
+  data only; the demo seed refuses a remote database
+- `verify:seo` — each language of every indexable page is its own page
 - `verify:hero` — the cinematic mounts, scrubs both ways, survives a flick
 - `verify:flows` — dashboard controls actually mutate and navigate
 - `audit` — every route in real Chrome at desktop + phone: script errors,

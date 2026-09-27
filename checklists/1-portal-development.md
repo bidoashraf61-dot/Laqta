@@ -86,7 +86,7 @@ album's price, and no way to edit site wording without a developer.
 
 ## M5 — Rehearsal · by 21 Nov
 
-- [ ] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day
+- [x] **DEV-47** ⛔ Production seed with real data only (taxonomy, bands, licence, admin) — no demo albums, fake ratings or view counts — 🤖 · ½ day — done 2026-09-27 (`npm run db:seed:production` with ADMIN_EMAIL/ADMIN_PASSWORD; shared real data in `prisma/seed-base.ts`; demo seed refuses non-local databases; demo seed's missing-licence bug fixed; `verify:production-seed`)
 - [ ] **DEV-48** Security: suspended users logged out at once; rate limits on sign-in, sign-up, checkout; Content-Security-Policy — 🤖 · 1 day
 - [ ] **DEV-49** Remove or finish half-wired controls: "Add to board" on the clip page; promo codes (wire or hide) — 🤖 · ½ day
 - [ ] **DEV-50** Sentry error reporting wired — 🤖 · ½ day · *needs BIZ-08*

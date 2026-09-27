@@ -4,7 +4,7 @@ Everything the next session (or person) needs to pick up this project cold.
 **Refresh the "Current state" and "Last session" sections at the end of every
 session.** Rules live in `CLAUDE.md`; the task lists live in `checklists/`.
 
-_Last updated: 2026-09-27 (DEV-39 done — lighter hero film, caching, phone poster)_
+_Last updated: 2026-09-27 (DEV-47 done — production seed)_
 
 ---
 
@@ -520,15 +520,32 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
 - **Rule:** never overwrite a file in `public/hero` or `public/fonts` under
   the same name — browsers keep them a year. New content = new file name.
 
-## 30. Where to pick up
+## 30. Session — 2026-09-27 (DEV-47)
 
-Next ⛔ with no dependency: **DEV-47** (production seed — real taxonomy,
-bands, licence, admin; no demo albums). Fold in two findings: the dev seed
-creates 2 albums without a licence (task chip raised), and `Album.origin`
-defaults to `captured` — make the production path always set it. Quick
-non-⛔ one: DEV-22 (clip-count grammar). The remaining ⛔ tasks wait on the owner's
-accounts: BIZ-02/03 (lawyer, accountant → DEV-26/27/28), BIZ-04 (Paymob),
-BIZ-06/13 (AWS, Resend → DEV-15/16), BIZ-07 (hosting → DEV-14).
+- **DEV-47 done — production seed.** `npm run db:seed:production` with
+  `ADMIN_EMAIL` and `ADMIN_PASSWORD` (≥12 chars, never printed): the Saudi
+  taxonomy + search synonyms, licence `commercial-v1`, the 4 price bands, one
+  admin. No albums, creators, orders, reviews, collections or stats. Re-runnable;
+  refuses a demo password/email and a database that holds demo accounts.
+  Shared real data moved to `prisma/seed-base.ts`.
+- The **demo** seed (`npm run db:seed`) now refuses any non-local database
+  (override `SEED_DEMO=1`), and no longer creates two albums without a
+  licence (checked on a fresh database).
+- New gate `npm run verify:production-seed` (throwaway database, 17 checks).
+- **Found:** two-step sign-in is described as required for admin and
+  creators (Terms, studio copy, README) but not enforced anywhere — a task
+  chip was raised ("Enforce two-step sign-in for admin and creators").
+  Worth doing before launch.
+- Owner, at launch: run the production seed against the production database
+  (DEV-58), sign in, enable 2FA at `/account/security`.
+
+## 31. Where to pick up
+
+Every ⛔ portal task that does not wait on the owner is done. Suggested next:
+the 2FA-enforcement chip (security), then DEV-22 (clip-count grammar). The
+rest wait on the owner's accounts: BIZ-02/03 (lawyer, accountant →
+DEV-26/27/28), BIZ-04 (Paymob), BIZ-06/13 (AWS, Resend → DEV-15/16), BIZ-07
+(hosting → DEV-14), then DEV-53/58.
 
 **Open issues to remember:**
 - `verify:flows` "an uploaded clip reaches «جاهزة»" fails intermittently — the

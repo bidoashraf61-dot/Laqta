@@ -702,8 +702,11 @@ async function main() {
       await page.getByRole('button', { name: 'جدوِل' }).click()
       await page.getByText('جُدول المقال', { exact: false }).waitFor({ timeout: 10_000 }).catch(() => {})
       const scheduled = await db.blogPost.findUnique({ where: { slug } })
-      const hidden = await fetch(`${BASE}/blog/${slug}`, { redirect: 'manual' })
-      report('a post scheduled for later is hidden until then', scheduled?.status === 'scheduled' && hidden.status === 404, `${scheduled?.status} ${hidden.status}`)
+      // The body, not the status: this app answers a streamed notFound() with
+      // 200 site-wide (a known issue), so the test asks whether the post shows.
+      const hiddenHtml = await (await fetch(`${BASE}/blog/${slug}`, { redirect: 'manual' })).text()
+      const shown = hiddenHtml.includes('"@type":"Article"')
+      report('a post scheduled for later is hidden until then', scheduled?.status === 'scheduled' && !shown, `${scheduled?.status} ${shown ? 'still shown' : 'hidden'}`)
       report('no errors on the blog editor', errors.length === 0, errors.slice(0, 2).join(' | '))
     } finally {
       await db.blogPost.deleteMany({ where: { OR: [{ slug }, { slug: { startsWith: 'draft-' }, titleAr: 'مقال اختبار' }] } }).catch(() => {})

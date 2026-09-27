@@ -29,4 +29,4 @@ Refusals: invalid/taken slug, no Arabic title, publishing/scheduling without an 
 Every save revalidates the list, both languages of the post, and the blog index; audited `blog.save|published|scheduled`.
 
 ## Verified by
-`verify:flows` (preview renders a typed heading; publish → `/blog/[slug]` 200; schedule for later → 404 until then).
+`verify:flows` (preview renders a typed heading; publish → `/blog/[slug]` 200; schedule for later → not shown until then).

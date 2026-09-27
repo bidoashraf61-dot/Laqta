@@ -22,7 +22,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   await requestLocale()
   const { slug } = await params
   const post = await getPublicPost(slug)
-  if (!post) return { title: t('state.notFound') }
+  // notFound() here, not only in the page: the route group streams a loading
+  // state, and a page-level notFound() after streaming starts answers 200.
+  // A draft or a post scheduled for later must be a real 404.
+  if (!post) notFound()
   const en = currentLocale() === 'en'
   const title = (en ? post.seoTitleEn : post.seoTitleAr) || pickLocalised(post.titleAr, post.titleEn) || post.titleAr
   const description =

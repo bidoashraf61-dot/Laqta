@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
 import {
   CHECK_KEYS,
+  CHECK_BY_KEY,
   CHECK_DEFINITIONS,
   emptyChecklist,
   normaliseChecklist,
@@ -138,5 +140,35 @@ describe('permitAuthorityLabel', () => {
   it('degrades gracefully on null/unknown', () => {
     expect(() => permitAuthorityLabel(null)).not.toThrow()
     expect(() => permitAuthorityLabel('who-knows')).not.toThrow()
+  })
+})
+
+describe('the AI-accuracy check (DEV-17)', () => {
+  it('is a blocking check — a generated album that gets Saudi Arabia wrong cannot be approved', () => {
+    expect(CHECK_BY_KEY.aiAccuracy.blocking).toBe(true)
+    expect(canApprove(checklistWith({ aiAccuracy: 'fail' })).ok).toBe(false)
+  })
+
+  it('can be marked not applicable for a filmed album', () => {
+    expect(canApprove(checklistWith({ aiAccuracy: 'not_applicable' })).ok).toBe(true)
+  })
+
+  it('names the failing check by key so the page can say it in Arabic', () => {
+    const gate = canApprove(checklistWith({ aiAccuracy: 'fail' }))
+    expect(gate.reasonKey).toBe('admin.gateBlocking')
+    expect(gate.failing).toEqual(['aiAccuracy'])
+  })
+})
+
+describe('the checklist copy (DEV-17)', () => {
+  it('has an Arabic label, reason and every prompt for every check', () => {
+    const ar = JSON.parse(readFileSync('messages/ar.json', 'utf8')) as { reviewCheck: Record<string, Record<string, string>> }
+    for (const definition of CHECK_DEFINITIONS) {
+      const copy = ar.reviewCheck[definition.key]
+      expect(copy?.label, definition.key).toBeTruthy()
+      expect(copy?.why, definition.key).toBeTruthy()
+      for (let i = 1; i <= definition.prompts; i++) expect(copy[`p${i}`], `${definition.key}.p${i}`).toBeTruthy()
+      expect(copy[`p${definition.prompts + 1}`], `${definition.key} has no extra prompt`).toBeUndefined()
+    }
   })
 })

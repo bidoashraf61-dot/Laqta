@@ -97,16 +97,16 @@ export function ReviewChecklist({
           return (
             <div key={definition.key} className="space-y-2 border-b pb-4 last:border-0">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="font-medium">{definition.label}</p>
+                <p className="font-medium">{t(`reviewCheck.${definition.key}.label`)}</p>
                 {definition.blocking ? (
                   <Badge variant="destructive">{t('admin.blocking')}</Badge>
                 ) : null}
               </div>
-              <p className="text-sm text-muted-foreground">{definition.why}</p>
+              <p className="text-sm text-muted-foreground">{t(`reviewCheck.${definition.key}.why`)}</p>
 
               <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
-                {definition.prompts.map((prompt) => (
-                  <li key={prompt}>{prompt}</li>
+                {Array.from({ length: definition.prompts }, (_, i) => (
+                  <li key={i}>{t(`reviewCheck.${definition.key}.p${i + 1}`)}</li>
                 ))}
               </ul>
 
@@ -219,7 +219,11 @@ export function ReviewChecklist({
 
         {!gate.ok ? (
           <Alert variant="warning">
-            <AlertDescription>{gate.reason}</AlertDescription>
+            <AlertDescription>
+              {gate.reasonKey
+                ? t(gate.reasonKey, { labels: gate.failing.map((key) => t(`reviewCheck.${key}.label`)).join('، ') })
+                : null}
+            </AlertDescription>
           </Alert>
         ) : null}
 

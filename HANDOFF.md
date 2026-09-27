@@ -307,7 +307,18 @@ decisions; `brand/` = logo and type; `production/` = footage-making files
   on who pays the discount), DEV-63 (promo codes at checkout, ⛔), DEV-64a–c
   (every word editable, 6–8 days).
 
-**Next:** owner picks the order among the remaining M2 tasks and DEV-60 – 64. Owner: approve the creator
+## 19. Session — 2026-09-27 (DEV-63)
+
+- **DEV-63 done — promo codes work.** «كود الخصم» on `/checkout` previews the
+  discount and new total; `checkout()` re-checks the code (active, dates, cap,
+  minimum, album limits), splits the discount across lines, pays creators on
+  the price paid, and takes the redemption atomically. `Order.promoCode /
+  promoCodeId / discountAmount` + `OrderItem.discountAmount` (migration
+  `order_promo`); the `order.confirmed` email shows the discount. New gate
+  `npm run verify:promos` (in `npm run verify`).
+
+**Next (owner's order):** DEV-60 (album offers), DEV-61 (special price), then
+DEV-64 in three phases; DEV-62 bundles needs the discount decision. Owner: approve the creator
 brief, send BIZ-02/03/04. Claude's remaining M1
 work waits on those (MKT-02 needs MKT-01; MKT-04 competitor price sheet and
 ALB-20 creator brief draft can start any time).

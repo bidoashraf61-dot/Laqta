@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { currentLicenceId } from '@/lib/licence'
+import { evaluatePromo, redeem } from '@/lib/promos'
 import { resolveCommission, vatOn } from '@/lib/commission'
 import { createPaymentIntent, type PaymentMethod } from '@/lib/payments'
 import { drainSoon } from '@/lib/outbox'
@@ -76,6 +77,7 @@ export async function checkout({
   billing,
   method,
   locale,
+  promoCode,
 }: {
   userId: string
   lines: CheckoutLine[]
@@ -83,6 +85,8 @@ export async function checkout({
   method: PaymentMethod
   /** The buyer's reading language, for the gateway's return URL. */
   locale?: string
+  /** A promo code typed at checkout (DEV-63). */
+  promoCode?: string | null
 }): Promise<CheckoutResult> {
   if (lines.length === 0) return { ok: false, messageKey: 'cart.empty' }
 
@@ -115,6 +119,18 @@ export async function checkout({
 
   if (albums.length !== lines.length) return { ok: false, messageKey: 'cart.unavailable' }
 
+  // The promo code, re-evaluated here against the albums as they are now —
+  // the preview on the page is not the boundary (lib/promos.ts).
+  let promo: Extract<Awaited<ReturnType<typeof evaluatePromo>>, { ok: true }> | null = null
+  if (promoCode && promoCode.trim()) {
+    const evaluated = await evaluatePromo(
+      promoCode,
+      albums.map((album) => ({ albumId: album.id, gross: Number(album.priceStandard) })),
+    )
+    if (!evaluated.ok) return { ok: false, messageKey: evaluated.error }
+    promo = evaluated
+  }
+
   const orderNumber = await nextOrderNumber()
 
   // One transaction: an order that exists without its entitlements is worse
@@ -122,6 +138,10 @@ export async function checkout({
   const order = await db.$transaction(async (tx) => {
     let subtotal = 0
     let vatAmount = 0
+
+    // One use of the code, against its cap, in the same transaction as the
+    // order — two buyers cannot both take the last use.
+    if (promo && !(await redeem(tx, promo.promoId))) throw new Error('PROMO_EXHAUSTED')
 
     const created = await tx.order.create({
       data: {
@@ -150,7 +170,10 @@ export async function checkout({
       const album = albums.find((candidate) => candidate.id === line.albumId)
       if (!album) throw new Error('ALBUM_UNAVAILABLE')
 
-      const gross = Number(album.priceStandard)
+      // The price actually paid: list price less this line's share of the
+      // promo discount. Commission, VAT and refunds all run on it (DEV-63).
+      const lineDiscount = promo?.discounts[album.id] ?? 0
+      const gross = Math.round((Number(album.priceStandard) - lineDiscount) * 100) / 100
       const lineVat = vatOn(gross, VAT_RATE)
 
       const commission = resolveCommission({
@@ -169,6 +192,7 @@ export async function checkout({
           creatorId: album.creator.id,
           licenceVersionId,
           grossAmount: gross,
+          discountAmount: lineDiscount,
           vatAmount: lineVat,
           commissionRate: commission.rate,
           commissionAmount: commission.commissionAmount,
@@ -203,9 +227,19 @@ export async function checkout({
 
     return tx.order.update({
       where: { id: created.id },
-      data: { subtotal, vatAmount, total: subtotal + vatAmount },
+      data: {
+        subtotal,
+        vatAmount,
+        total: subtotal + vatAmount,
+        ...(promo ? { promoCodeId: promo.promoId, promoCode: promo.code, discountAmount: promo.total } : {}),
+      },
     })
+  }).catch((error: unknown) => {
+    // The code's last use went to someone else between evaluate and redeem.
+    if (error instanceof Error && error.message === 'PROMO_EXHAUSTED') return null
+    throw error
   })
+  if (!order) return { ok: false, messageKey: 'promo.exhausted' }
 
   const buyer = await db.user.findUnique({
     where: { id: userId },

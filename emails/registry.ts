@@ -141,6 +141,16 @@ export function renderTemplate(name: TemplateName, locale: Locale, payload: Payl
       const totals =
         payload.total !== undefined
           ? [
+              // The promo discount line, when the order had one (DEV-63). The
+              // subtotal is already after it.
+              ...(raw(payload, 'discountAmount')
+                ? [
+                    {
+                      label: tr('email.labelDiscount', { code: raw(payload, 'promoCode') }),
+                      value: `−${money('discountAmount')}`,
+                    },
+                  ]
+                : []),
               { label: tr('email.labelSubtotal'), value: money('subtotal') },
               { label: tr('email.labelVat'), value: money('vatAmount') },
               { label: tr('email.labelTotal'), value: money('total') },

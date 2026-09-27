@@ -39,7 +39,7 @@ Read-only surface. Every interactive element is navigation.
   repeats the redirect.
 - **Signed in, role ≠ admin** → middleware *rewrites* to `/forbidden` (URL preserved);
   the layout would `redirect('/forbidden')`.
-- **Empty queue** — the panel renders `dash.queueEmpty` ("القائمة فارغة — لا يوجد ما يُراجع")
+- **Empty queue** — the panel renders `dash.queueEmpty` ("القائمة فاضية — ما فيه شي للمراجعة")
   instead of a list.
 - **No analytics history** (`trend` all zeros) — the revenue panel renders `EmptyState`
   with `dash.noData` / `dash.noDataHint` rather than a flat chart.

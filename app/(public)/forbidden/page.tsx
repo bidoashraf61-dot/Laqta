@@ -10,7 +10,12 @@ import { requestLocale } from '@/lib/locale-request'
  * Never in a search index (DEV-33): a shared board is a private link, and the
  * forbidden page renders in place of a guarded one.
  */
-export const metadata: Metadata = { robots: { index: false, follow: false } }
+export async function generateMetadata(): Promise<Metadata> {
+  await requestLocale()
+  // A description even on a private page (DEV-38): a board link pasted into
+  // WhatsApp otherwise previews as the site's generic promise.
+  return { description: t('brand.seo.forbidden'), robots: { index: false, follow: false } }
+}
 
 /**
  * 403. middleware.ts *rewrites* here rather than redirecting, so the URL the

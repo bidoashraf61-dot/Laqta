@@ -20,6 +20,8 @@ built but shut until an SMS provider exists (`phoneSignInEnabled()` in
   - `PhoneOtp` — `deleteMany({ where: { phone, consumedAt: null } })` then
     `create` on issue; `findFirst({ where: { phone, consumedAt: null, expiresAt: { gt: now } }, orderBy: { createdAt: 'desc' } })` on consume.
 
+- **Meta description (DEV-38)** — `brand.seo.signIn`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

@@ -22,6 +22,8 @@ link on `/forgot-password`).
   - then one transaction: `User.update({ passwordHash: bcrypt(12),
     passwordChangedAt: now })` and every other live token of the user burned.
 
+- **Meta description (DEV-38)** — `brand.seo.resetPassword`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

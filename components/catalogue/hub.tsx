@@ -39,10 +39,15 @@ export async function hubMetadata(kind: Kind, slug: string): Promise<Metadata> {
   if (!entry) return { title: t('state.notFound') }
 
   const name = pickLocalised(entry.nameAr, entry.nameEn)
-  const title = pickLocalised(entry.seoTitleAr, entry.seoTitleEn) ?? `${t('nav.footage')} ${name}`
+  // A natural title in each language (DEV-38): «لقطات الرياض» / "Riyadh stock
+  // footage" — how people search — not "Footage Riyadh". An owner-written SEO
+  // title wins, but only in its OWN language: an English page must not fall
+  // back to the Arabic SEO title when a generated English one reads fine.
+  const ownTitle = currentLocale() === 'en' ? entry.seoTitleEn : entry.seoTitleAr
+  const title = ownTitle || t('catalogue.hubTitle', { name })
+  const ownDescription = currentLocale() === 'en' ? entry.seoDescEn : entry.seoDescAr
   const description =
-    pickLocalised(entry.seoDescAr, entry.seoDescEn) ??
-    `${t('brand.tagline')} — ${name}. ${t('brand.promise')}`
+    ownDescription || t(kind === 'location' ? 'brand.seo.hubLocation' : 'brand.seo.hubCategory', { name })
 
   return {
     title,
@@ -141,7 +146,7 @@ export async function TaxonomyHub({
 
       <header className="mb-6 space-y-2">
         <PageTitle>
-          {t('nav.footage')} <Bilingual ar={entry.nameAr} en={entry.nameEn} />
+          {t('catalogue.hubTitle', { name: pickLocalised(entry.nameAr, entry.nameEn) })}
         </PageTitle>
         {entry.seoDescAr ? (
           <p className="max-w-prose font-serif text-base text-muted-foreground">

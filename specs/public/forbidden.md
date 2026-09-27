@@ -10,6 +10,8 @@ Tell a signed-in user that their role does not permit the URL they requested, wi
 
 - **Not indexed (DEV-33)** — `metadata.robots = { index: false, follow: false }`.
 
+- **Meta description (DEV-38)** — `brand.seo.forbidden`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

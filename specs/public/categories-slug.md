@@ -10,6 +10,7 @@ An SEO landing page for one category: Arabic metadata, breadcrumb, editorial cop
 - `search({ category: slug, page, perPage: 24 })` from `lib/search.ts` — matches `Clip` where either `ClipTaxonomy` or the parent `Album`'s `AlbumTaxonomy` carries a `category` taxonomy with this slug, and `album.status='live'`, `ingestStatus='ready'`.
 - Metadata falls back to `"{nav.footage} {nameAr}"` and `"{brand.tagline} — {nameAr}. {brand.promise}"` when the SEO fields are unset.
 
+- **Title and H1 (DEV-38)** — `catalogue.hubTitle`: «لقطات {name}» / "{name} stock footage" (e.g. «لقطات الرياض», "Riyadh stock footage"). The `<title>` uses the owner's `seoTitleAr`/`seoTitleEn` **in the page's own language only** — an English page with no `seoTitleEn` gets the generated English title, not the Arabic SEO title. The meta description likewise: own-language `seoDesc*`, else `brand.seo.hubCategory` («لقطات {name} سعودية في ألبومات جاهزة للمونتاج…» / "{name} stock footage from Saudi Arabia in edit-ready albums…").
 - **SEO (DEV-33)** — `alternates: localeAlternates(path)`: canonical is this page in this language, hreflang names both; `og:locale` via `ogLocale()`; `generateMetadata` resolves the locale first. Checked by `verify:seo`.
 
 ## Controls

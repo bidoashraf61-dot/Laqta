@@ -11,6 +11,8 @@ Where Paymob's hosted checkout sends the buyer back. It tells the buyer honestly
 - `Order.findFirst` scoped to **this buyer**: by `orderNumber = merchant_order_id`; if Paymob omits it, the buyer's latest `card` / `apple_pay` order from the last two hours. Selects `orderNumber`, `status` and the most recent `PaymentEvent.outcome`.
 - `paymobConfig()` — only to verify the redirect's own HMAC (`redirectHmac`, GET field names `id` and `order`/`order_id`).
 
+- **Meta description (DEV-38)** — `brand.seo.checkoutReturn`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

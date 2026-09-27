@@ -29,6 +29,8 @@ whether the address has an account.
   - IP: first `x-forwarded-for` hop, else `x-real-ip`, else the literal
     `unknown` bucket.
 
+- **Meta description (DEV-38)** — `brand.seo.forgotPassword`, in the page's language.
+
 ## Controls
 
 | Control | Action | Effect |

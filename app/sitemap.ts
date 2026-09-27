@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { localePath } from '@/lib/locale'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 /**
  * Revalidate hourly.
@@ -69,8 +68,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     rest: Omit<MetadataRoute.Sitemap[number], 'url' | 'alternates'>,
   ): MetadataRoute.Sitemap {
     const languages = {
-      ar: `${SITE_URL}${path}`,
-      en: `${SITE_URL}${localePath('en', path)}`,
+      ar: `${siteOrigin()}${path}`,
+      en: `${siteOrigin()}${localePath('en', path)}`,
     }
     return [
       { ...rest, url: languages.ar, alternates: { languages } },

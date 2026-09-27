@@ -24,8 +24,7 @@ import { requestLocale } from '@/lib/locale-request'
 import { auth } from '@/lib/auth'
 import { previewDeliverable } from '@/lib/previews'
 import { CompDownload, compNotice } from '@/components/catalogue/comp-download'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 /**
  * Clip detail.
@@ -165,7 +164,7 @@ export default async function ClipPage({
 
   return (
     <div className="container-tight py-16">
-      <VideoJsonLd clip={clip} url={`${SITE_URL}${localePath(currentLocale(), `/footage/${slug}`)}`} />
+      <VideoJsonLd clip={clip} url={`${siteOrigin()}${localePath(currentLocale(), `/footage/${slug}`)}`} />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-6">

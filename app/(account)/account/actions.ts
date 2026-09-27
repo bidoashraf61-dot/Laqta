@@ -7,9 +7,9 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { actionT } from '@/lib/locale-request'
 import type { ActionResult } from '@/components/dashboard/form'
-import { headers } from 'next/headers'
 import { issueEmailVerification } from '@/lib/mail'
 import { issueOtp, consumeOtp, phoneSignInEnabled } from '@/lib/otp'
+import { siteOrigin } from '@/lib/site'
 
 /**
  * Edit the account's own details.
@@ -162,17 +162,10 @@ export async function sendEmailVerification(): Promise<ActionResult & { devLink?
   if (!user?.email) return { ok: false, message: tr('account.verifyNoEmail') }
   if (user.emailVerified) return { ok: true, message: tr('account.verifyAlready') }
 
-  const headerList = await headers()
-  // The link has to be absolute, and it has to point at the host the reader is
-  // actually on — not a build-time constant that is wrong on every other one.
-  const host = headerList.get('x-forwarded-host') ?? headerList.get('host') ?? 'localhost:3000'
-  const protocol = headerList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https')
-
-  const { delivered, devLink } = await issueEmailVerification(
-    session.user.id,
-    user.email,
-    `${protocol}://${host}`,
-  )
+  // The link has to be absolute. It comes from the configured origin
+  // (DEV-40), not the Host header: behind a proxy that header can be an
+  // internal name, and the old fallback guessed 'localhost:3000'.
+  const { delivered, devLink } = await issueEmailVerification(session.user.id, user.email, siteOrigin())
 
   return delivered
     ? { ok: true, message: tr('account.verifyEmailSent') }

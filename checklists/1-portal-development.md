@@ -74,7 +74,7 @@ album's price, and no way to edit site wording without a developer.
 - [x] **DEV-37** Hide private pages from Google in English too (`/en/account`, `/en/studio`, `/en/admin`, `/checkout`, `/boards`); noindex empty hubs — 🤖 · 1 hr — done 2026-09-27 in DEV-33 (robots.txt disallows the private pages under `/en` too, plus checkout and password pages)
 - [ ] **DEV-38** Missing page descriptions (~10 routes) + natural English hub titles ("Riyadh stock footage") — 🤖 · 2 hrs
 - [x] **DEV-39** ⛔ Page speed: hero film is 31 MB and never cached — lighter encode, long cache headers, phone poster; preload fonts, cache them — 🤖 · 1 day — done 2026-09-27 (film 31 → 13 MB desktop, 12 → 7.5 MB phone, same look; versioned names cached 1 year; `/hero` and `/fonts` immutable; phone poster 27 KB via `<picture>`; 2 fonts preloaded)
-- [ ] **DEV-40** `SITE_ORIGIN` / `AUTH_URL` set together so links never fall back to localhost — 🤖 · 30 min
+- [x] **DEV-40** `SITE_ORIGIN` / `AUTH_URL` set together so links never fall back to localhost — 🤖 · 30 min — done 2026-09-27 (one `siteOrigin()` in `lib/site.ts` for every absolute URL — layout metadataBase, sitemap, robots, JSON-LD, email-verification link no longer read the Host header; mismatch warned; production with neither set throws; `verify:mail` checks it; `.env.example` + README)
 
 ### Hub pages and blog
 - [ ] **DEV-41** Admin fields to write text for location and category pages; hub shows intro, 3 FAQs, albums first, related hubs — 🤖 · 2 days

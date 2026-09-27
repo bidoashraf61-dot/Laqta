@@ -38,6 +38,7 @@ import { sendMail, RESEND_ENDPOINT } from '../lib/mail'
 import type { Locale } from '../lib/locale'
 import { SAMPLE_PAYLOAD as PAYLOAD } from '../emails/sample-payload'
 import { MAIL_BANS, SITE_BANS } from '../lib/copy-claims'
+import { SiteOriginMissingError, siteOrigin } from '../lib/site'
 
 const ar = JSON.parse(readFileSync('messages/ar.json', 'utf8'))
 const en = JSON.parse(readFileSync('messages/en.json', 'utf8'))
@@ -191,6 +192,27 @@ const missingAr = enKeys.filter((key) => !arKeys.includes(key))
 if (missingEn.length) fail(`missing from en.json: ${missingEn.join(', ')}`)
 if (missingAr.length) fail(`missing from ar.json: ${missingAr.join(', ')}`)
 if (!missingEn.length && !missingAr.length) pass(`${arKeys.length} keys, both languages`)
+
+console.log('\nEvery link has one origin, and production refuses to guess it (DEV-40)')
+{
+  const env = (vars: Record<string, string>) => ({ NODE_ENV: 'development', ...vars }) as unknown as NodeJS.ProcessEnv
+  const check = (ok: boolean, message: string) => (ok ? pass(message) : fail(message))
+  check(siteOrigin(env({ SITE_ORIGIN: 'https://laqta.sa/' })) === 'https://laqta.sa', 'SITE_ORIGIN is used, trailing slash dropped')
+  check(siteOrigin(env({ AUTH_URL: 'https://laqta.sa' })) === 'https://laqta.sa', 'AUTH_URL alone is enough')
+  check(
+    siteOrigin(env({ SITE_ORIGIN: 'https://laqta.sa', AUTH_URL: 'https://auth.example.test' })) === 'https://laqta.sa',
+    'SITE_ORIGIN wins over AUTH_URL (and the mismatch is warned about)',
+  )
+  check(siteOrigin(env({})) === 'http://localhost:3000', 'development without either falls back to localhost')
+  let threw: unknown = null
+  try {
+    siteOrigin({ NODE_ENV: 'production' } as unknown as NodeJS.ProcessEnv)
+  } catch (error) {
+    threw = error
+  }
+  check(threw instanceof SiteOriginMissingError, 'production without SITE_ORIGIN or AUTH_URL throws instead of linking to localhost')
+  check(siteOrigin(env({ SITE_ORIGIN: '  ' , AUTH_URL: 'https://laqta.sa' })) === 'https://laqta.sa', 'a blank SITE_ORIGIN counts as unset')
+}
 
 console.log('\nEvery template a caller enqueues actually exists')
 

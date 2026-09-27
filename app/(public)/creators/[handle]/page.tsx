@@ -12,8 +12,7 @@ import { PageTitle, SubHeadline } from '@/components/ui/typography'
 import { currentLocale, localeAlternates, localePath, pickLocalised } from '@/lib/locale'
 import { REVEAL } from '@/lib/motion'
 import { requestLocale } from '@/lib/locale-request'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 async function getCreator(handle: string) {
   return db.creator.findFirst({
@@ -188,7 +187,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
       '@type': 'Person',
       name: pickLocalised(creator.displayNameAr, creator.displayNameEn),
       alternateName: creator.displayNameEn,
-      url: `${SITE_URL}${localePath(currentLocale(), `/creators/${creator.handle}`)}`,
+      url: `${siteOrigin()}${localePath(currentLocale(), `/creators/${creator.handle}`)}`,
       ...(pickLocalised(creator.bioAr, creator.bioEn)
         ? { description: pickLocalised(creator.bioAr, creator.bioEn) as string }
         : {}),
@@ -201,7 +200,7 @@ export default async function CreatorPage({ params }: { params: Promise<{ handle
             },
           }
         : {}),
-      worksFor: { '@type': 'Organization', name: t('brand.name'), url: SITE_URL },
+      worksFor: { '@type': 'Organization', name: t('brand.name'), url: siteOrigin() },
     },
   }
 

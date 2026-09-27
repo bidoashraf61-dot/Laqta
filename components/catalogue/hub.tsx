@@ -10,6 +10,7 @@ import { countOf, formatNumber, t } from '@/lib/i18n'
 import { PageTitle } from '@/components/ui/typography'
 import { localeAlternates, ogLocale, pickLocalised } from '@/lib/locale'
 import { requestLocale } from '@/lib/locale-request'
+import { siteOrigin } from '@/lib/site'
 
 /**
  * Taxonomy hubs — `/locations/[slug]` and `/categories/[slug]`.
@@ -20,8 +21,6 @@ import { requestLocale } from '@/lib/locale-request'
  * server-side. Hence real Arabic metadata, a breadcrumb trail and copy above
  * the grid rather than a bare list of tiles.
  */
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
 
 type Kind = 'location' | 'category'
 
@@ -181,7 +180,7 @@ function BreadcrumbJsonLd({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: t('nav.home'), item: SITE_URL },
+      { '@type': 'ListItem', position: 1, name: t('nav.home'), item: siteOrigin() },
       {
         // The middle crumb points at the SHOTS page, not at `/locations` or
         // `/categories`. Those indexes now 301 to it, and a breadcrumb that
@@ -191,13 +190,13 @@ function BreadcrumbJsonLd({
         '@type': 'ListItem',
         position: 2,
         name: t('nav.footage'),
-        item: `${SITE_URL}/footage`,
+        item: `${siteOrigin()}/footage`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: entry.nameAr,
-        item: `${SITE_URL}${BASE[kind]}/${entry.slug}`,
+        item: `${siteOrigin()}${BASE[kind]}/${entry.slug}`,
       },
     ],
   }

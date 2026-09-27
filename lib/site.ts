@@ -1,31 +1,70 @@
 /**
- * The public origin of this deployment.
+ * The public origin of this deployment — the ONE source for every absolute
+ * URL the product writes: email links, the sitemap, robots.txt, `metadataBase`
+ * (canonical, hreflang, Open Graph), JSON-LD, the Paymob callback and return
+ * addresses, and the email-verification link (DEV-40).
  *
  * ── Why this cannot read the request ────────────────────────────────────────
  * Mail is rendered by a background drain, not by a request. There is no host
- * header to read, so a link in an email has to come from configuration. Every
- * other absolute URL in the product — the sitemap, JSON-LD, a verification
- * link — has the same problem and should use this.
+ * header to read, so a link in an email has to come from configuration. The
+ * sitemap and robots.txt are built ahead of any request. And behind a proxy
+ * the host header is whatever the proxy says — often an internal name.
  *
- * ── Why the fallback is localhost, loudly ───────────────────────────────────
+ * ── Resolution ──────────────────────────────────────────────────────────────
+ *   SITE_ORIGIN → AUTH_URL → NEXTAUTH_URL → (development only) localhost:3000
+ *
+ * Set SITE_ORIGIN and AUTH_URL together, to the same public https origin.
+ * AUTH_URL is what Auth.js builds its own callback links from; SITE_ORIGIN is
+ * what everything else uses. Either alone works (each falls back to the
+ * other); two different values are warned about, because sign-in links and
+ * every other link would then point at different sites.
+ *
+ * ── Why production fails loud ───────────────────────────────────────────────
  * A wrong origin is worse than a missing one: it produces links that look
- * right and go nowhere, in email nobody can recall. So an unset variable in
- * production is warned about once, rather than silently guessed at, and the
- * fallback is obviously a development value rather than a plausible domain.
+ * right and go nowhere, in email nobody can recall, and a sitemap that tells
+ * Google the whole site lives on localhost. So a production build or server
+ * with neither variable set THROWS instead of guessing. Development (and the
+ * verify scripts, which run outside `next`) still get localhost.
  */
-let warned = false
+const DEV_ORIGIN = 'http://localhost:3000'
 
-export function siteOrigin() {
-  const configured = process.env.SITE_ORIGIN ?? process.env.AUTH_URL
-  if (configured) return configured.replace(/\/$/, '')
+let warnedMismatch = false
 
-  if (process.env.NODE_ENV === 'production' && !warned) {
-    warned = true
+const clean = (value: string | undefined) => value?.trim().replace(/\/+$/, '') || undefined
+
+export class SiteOriginMissingError extends Error {
+  constructor() {
+    super(
+      '[site] Neither SITE_ORIGIN nor AUTH_URL is set. In production every link in email, ' +
+        'the sitemap, canonical tags and payment callbacks would point at localhost. ' +
+        'Set both to the public origin, e.g. SITE_ORIGIN="https://laqta.sa" and AUTH_URL="https://laqta.sa".',
+    )
+    this.name = 'SiteOriginMissingError'
+  }
+}
+
+/** The configured origin, or null — no fallback, no throw. For checks. */
+export function configuredSiteOrigin(env: NodeJS.ProcessEnv = process.env): string | null {
+  return clean(env.SITE_ORIGIN) ?? clean(env.AUTH_URL) ?? clean(env.NEXTAUTH_URL) ?? null
+}
+
+export function siteOrigin(env: NodeJS.ProcessEnv = process.env): string {
+  const site = clean(env.SITE_ORIGIN)
+  const auth = clean(env.AUTH_URL) ?? clean(env.NEXTAUTH_URL)
+
+  if (site && auth && site !== auth && !warnedMismatch) {
+    warnedMismatch = true
     console.warn(
-      '[site] SITE_ORIGIN is not set. Links in email and metadata will point at localhost.',
+      `[site] SITE_ORIGIN (${site}) and AUTH_URL (${auth}) differ. Links use SITE_ORIGIN; ` +
+        'sign-in callbacks use AUTH_URL. Set them to the same origin.',
     )
   }
-  return 'http://localhost:3000'
+
+  const configured = site ?? auth
+  if (configured) return configured
+
+  if (env.NODE_ENV === 'production') throw new SiteOriginMissingError()
+  return DEV_ORIGIN
 }
 
 /**

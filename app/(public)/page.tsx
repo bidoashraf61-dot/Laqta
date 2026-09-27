@@ -16,8 +16,7 @@ import { t } from '@/lib/i18n'
 import { LOGO_PATH, LOGO_SIZE, SOCIAL } from '@/lib/brand'
 import { requestLocale } from '@/lib/locale-request'
 import { currentLocale, localeAlternates, localePath, ogLocale } from '@/lib/locale'
-
-const SITE_URL = process.env.AUTH_URL ?? 'http://localhost:3000'
+import { siteOrigin } from '@/lib/site'
 
 export async function generateMetadata(): Promise<Metadata> {
   // Metadata is generated outside the layout's render, so it cannot rely
@@ -134,8 +133,8 @@ function StructuredData() {
     '@graph': [
       {
         '@type': 'WebSite',
-        '@id': `${SITE_URL}/#website`,
-        url: SITE_URL,
+        '@id': `${siteOrigin()}/#website`,
+        url: siteOrigin(),
         name: t('brand.name'),
         alternateName: 'Laqta',
         description: t('brand.promise'),
@@ -144,17 +143,17 @@ function StructuredData() {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: `${SITE_URL}/footage?q={search_term_string}`,
+            urlTemplate: `${siteOrigin()}/footage?q={search_term_string}`,
           },
           'query-input': 'required name=search_term_string',
         },
       },
       {
         '@type': 'Organization',
-        '@id': `${SITE_URL}/#organization`,
+        '@id': `${siteOrigin()}/#organization`,
         name: t('brand.name'),
         alternateName: 'Laqta',
-        url: SITE_URL,
+        url: siteOrigin(),
         slogan: t('brand.tagline'),
         // The two fields whose absence was the biggest GEO gap in the audit.
         // `sameAs` is what lets an engine bind "لقطة" to an actual entity
@@ -162,7 +161,7 @@ function StructuredData() {
         // panel and rich results have nothing to show.
         logo: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}${LOGO_PATH}`,
+          url: `${siteOrigin()}${LOGO_PATH}`,
           width: LOGO_SIZE,
           height: LOGO_SIZE,
         },

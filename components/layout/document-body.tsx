@@ -56,7 +56,7 @@ export function DocumentBody({
       {sections.map((section, index) => {
         const list = section.list ? pick(section.list, section.listEn) : []
         return (
-          <section key={index}>
+          <section key={index} id={section.id} className="scroll-mt-24">
             <h2 className="font-subhead text-xl font-bold">{pick(section.heading, section.headingEn)}</h2>
             {pick(section.body, section.bodyEn).map((paragraph, i) => (
               <p key={i} className="mt-3 font-serif leading-[1.9] text-foreground/85">

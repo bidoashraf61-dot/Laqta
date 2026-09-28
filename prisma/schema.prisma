@@ -293,6 +293,12 @@ model User {
   /// `lib/auth.ts`, which is how a reset signs out every other session.
   passwordChangedAt DateTime?
 
+  /// Set when the account holder deletes their own account (DEV-52). The row
+  /// stays — orders, invoices and licence certificates point at it and are
+  /// kept for tax — but every personal field is cleared and the `jwt`
+  /// callback signs the account out everywhere. See lib/account-privacy.ts.
+  deletedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -11,6 +11,7 @@ import { RevealScope } from '@/components/ui/reveal'
 import { Toaster } from '@/components/ui/toast'
 import { ImpersonationBanner } from '@/components/layout/impersonation-banner'
 import { CopyPreviewBanner } from '@/components/layout/copy-preview-banner'
+import { AnalyticsConsent } from '@/components/layout/analytics-consent'
 import '@/styles/globals.css'
 import { THEME_SCRIPT } from '@/lib/theme'
 import { siteOrigin } from '@/lib/site'
@@ -139,6 +140,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <RevealScope />
             <RouteProgress />
             <Toaster />
+            {/* Google Analytics, only after the visitor agrees (DEV-46).
+                Renders nothing without NEXT_PUBLIC_GA_MEASUREMENT_ID. */}
+            <AnalyticsConsent />
           </Providers>
         </LocaleProvider>
       </body>

@@ -113,6 +113,9 @@ export function normaliseSections(input: unknown): DocumentSection[] {
   return input.map((raw) => {
     const s = (raw ?? {}) as Record<string, unknown>
     const section: DocumentSection = { heading: clean(s.heading), body: lines(s.body) }
+    // An anchor (e.g. #cookies) survives a publish from the admin editor.
+    const id = clean(s.id)
+    if (/^[a-z][a-z0-9-]{0,40}$/.test(id)) section.id = id
     const list = lines(s.list)
     const headingEn = clean(s.headingEn)
     const bodyEn = lines(s.bodyEn)

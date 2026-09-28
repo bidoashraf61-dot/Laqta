@@ -217,6 +217,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
           where: { id: token.uid as string },
           select: {
             passwordChangedAt: true,
+            deletedAt: true,
             status: true,
             role: true,
             twoFactorEnabled: true,
@@ -225,6 +226,8 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
           },
         })
         if (!account) return null
+        // DEV-52: a deleted account is signed out everywhere, at once.
+        if (account.deletedAt) return null
         // DEV-48: a suspension signs the account out everywhere, at the next
         // server render — not when the JWT happens to expire.
         if (account.status === 'suspended') return null

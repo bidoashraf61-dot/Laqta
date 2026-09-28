@@ -162,6 +162,9 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The shell's `<main>` is `overflow-x-clip` (was `overflow-y-auto`, which silently
   disabled every `position: sticky` in the dashboards); wide content is clipped rather
   than scrollable inside `<main>` — give a wide table its own scroll wrapper.
+- A buyer who deleted their own account (DEV-52) stays on `/admin/users` as a
+  **nameless suspended row** — name, email and mobile are cleared by design, and the
+  list has no «حساب محذوف» label yet. The row's orders are intact.
 - A **partial** refund done in the Paymob dashboard is only *flagged* on `/admin/orders`
   (`refund_needs_review`); the operator reverses it with the refund control. (A whole
   refund or a void reverses automatically since DEV-51.)

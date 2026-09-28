@@ -225,3 +225,34 @@ export async function confirmPhoneCode(
   revalidatePath('/account')
   redirect('/account')
 }
+
+/**
+ * Delete the signed-in account (DEV-52). The rules — who may, what is kept,
+ * what is cleared — live in lib/account-privacy.ts. On success the session is
+ * ended here and the reader lands on the home page in their own language; the
+ * `jwt` callback would refuse the cookie at the next render anyway.
+ */
+export async function deleteAccount(_previous: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const tr = await actionT()
+  const session = await auth()
+  if (!session?.user?.id) return { ok: false, message: tr('state.error') }
+  // An admin "viewing as" a buyer must never be able to delete them.
+  if (session.user.impersonatedBy) return { ok: false, message: tr('account.deleteImpersonating') }
+
+  const { deleteOwnAccount } = await import('@/lib/account-privacy')
+  const result = await deleteOwnAccount(session.user.id, String(formData.get('confirm') ?? ''))
+  if (!result.ok) {
+    const key =
+      result.reason === 'not_buyer'
+        ? 'account.deleteNotBuyer'
+        : result.reason === 'confirm_mismatch'
+          ? 'account.deleteMismatch'
+          : 'state.error'
+    return { ok: false, message: tr(key) }
+  }
+
+  const locale = await requestLocale()
+  const { signOut } = await import('@/lib/auth')
+  await signOut({ redirectTo: locale === 'en' ? '/en' : '/' })
+  return { ok: true }
+}

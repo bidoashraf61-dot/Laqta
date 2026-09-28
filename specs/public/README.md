@@ -24,6 +24,24 @@ Three kinds of surface share this group:
 - **Marketing and policy** — `/`, `/sell`, and the seven document pages, which render
   compile-time prose from `content/legal.ts` through `components/layout/document-page.tsx`.
 
+**Analytics consent (DEV-46, decision D10).** `components/layout/analytics-consent.tsx`,
+mounted once in the root layout, so it covers the public and account areas (hidden on
+`/admin` and `/studio`, where no analytics loads either). Renders **nothing** unless
+`NEXT_PUBLIC_GA_MEASUREMENT_ID` is a `G-…` id. With one set:
+- First visit: a strip at the foot of the viewport (`data-consent="banner"`, a region, not a
+  modal) — «تحليلات الموقع» / "Site analytics", `consent.body`, a link to
+  `/privacy#cookies`, and «موافق» / «لا، شكرًا» as two **equal outline buttons** (neither
+  gold, same size — a nudged consent is not consent).
+- The answer is kept in the first-party `laqta_consent` cookie (`granted|denied`, 182 days,
+  `lib/consent.ts`). **Nothing from Google is requested until it reads `granted`.** Then
+  `gtag.js` loads and one `config` is sent; client navigations are counted by GA4's own
+  history tracking. UTM tags on the landing URL are kept in `sessionStorage` and sent as
+  `campaign_*` parameters, so a visitor who accepts after browsing is still attributed.
+- The footer's «إعدادات التتبّع» / "Tracking settings" button (only when an id is set)
+  reopens the strip. Withdrawing sets `ga-disable-<id>`, deletes `_ga*` cookies and reloads;
+  a `denied` visit clears any `_ga*` cookie again on load.
+- CSP (`next.config.mjs`) already allows `googletagmanager.com` and `*.google-analytics.com`.
+
 Cross-cutting rules that apply to every route here: Arabic on the bare path and
 English under `/en` (see [`../localisation.md`](../localisation.md)), RTL for
 Arabic and LTR for English, logical properties only;

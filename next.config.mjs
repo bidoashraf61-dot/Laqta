@@ -1,4 +1,5 @@
-import { withSentryConfig } from '@sentry/nextjs'
+// Sentry 11 ships the build wrapper on its own entry point.
+import { withSentryConfig } from '@sentry/nextjs/config'
 
 /**
  * Content-Security-Policy and the other security headers (DEV-48).

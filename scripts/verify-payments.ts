@@ -500,6 +500,12 @@ async function main() {
           payload: { path: ['orderNumber'], equals: orderNumber },
         },
       })
+      // The creator's «بيع جديد» mail is keyed `${orderNumber}:${creatorId}`
+      // and deduplicated on that key: left behind, it makes the NEXT order to
+      // reuse this number look already announced (verify:money caught it).
+      await db.mailOutbox.deleteMany({
+        where: { template: 'creator.sale', payload: { path: ['saleKey'], string_starts_with: `${orderNumber}:` } },
+      })
     }
     await db.creator.update({ where: { id: album.creatorId }, data: creatorBefore })
     await db.album.update({ where: { id: album.id }, data: { salesCount: salesBefore } })

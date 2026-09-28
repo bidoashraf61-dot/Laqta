@@ -138,7 +138,12 @@ async function main() {
       await db.invoice.deleteMany({ where: { orderId } })
       await db.orderItem.deleteMany({ where: { orderId } })
       await db.order.delete({ where: { id: orderId } })
-      if (orderNumber) await db.mailOutbox.deleteMany({ where: { payload: { path: ['orderNumber'], equals: orderNumber } } })
+      if (orderNumber) {
+        await db.mailOutbox.deleteMany({ where: { payload: { path: ['orderNumber'], equals: orderNumber } } })
+        await db.mailOutbox.deleteMany({
+          where: { template: 'creator.sale', payload: { path: ['saleKey'], string_starts_with: `${orderNumber}:` } },
+        })
+      }
     }
     await db.waitlistEntry.deleteMany({ where: { email } })
     await db.auditLog.deleteMany({ where: { actorId: buyer.id } })

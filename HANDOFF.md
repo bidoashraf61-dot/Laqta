@@ -31,7 +31,7 @@ _Last updated: 2026-09-28 (overnight run: 25 portal tasks in six batches — see
 - **No refund copy anywhere public** — not a policy, not "no refunds".
 - Plain claims over metaphor (`docs/content/brand-voice-ar.md`).
 
-## 2. Current state (2026-09-27)
+## 2. Current state (2026-09-28)
 
 **Built and working locally (all verify gates green at last merge):**
 public catalogue + landing (hero cinematic, footage wall, trailers section),
@@ -46,7 +46,10 @@ album offers / special prices / promo codes, the page-text editor for
 Terms, Privacy, Licences, Content policy, About and Contact — DEV-64a — and the
 site-copy editor for every string a visitor reads — DEV-64b/c),
 English site under `/en`, transactional email outbox, **mandatory two-factor
-for creator and admin accounts** (DEV-11 — enforced, not just promised).
+for creator and admin accounts** (DEV-11 — enforced, not just promised),
+**buyer privacy controls** — download my data / delete my account on
+«تعديل بياناتك» (DEV-52), and **Paymob refunds reversing Laqta's records**
+(DEV-51: whole refund or void automatic, partial flagged).
 
 **Built but switched off — waiting for the owner's accounts/keys:**
 
@@ -55,9 +58,10 @@ for creator and admin accounts** (DEV-11 — enforced, not just promised).
 | Paymob card + Apple Pay | code done, dormant | `PAYMOB_*` env — BIZ-04 |
 | Resend email | code done, mail queues in outbox | account + DNS + key — BIZ-13 |
 | AWS S3 + CloudFront | drivers done, local fallback | AWS setup — BIZ-06, DEV-15 |
-| Sentry | privacy scrubber only; SDK not installed | BIZ-08 + DEV-50 |
+| Sentry | SDK wired, sends nothing until a DSN is set (DEV-50) | BIZ-08: DSN in the host settings |
+| Google Analytics + cookie banner | built (DEV-46); no id = no banner, no analytics | GA4 id in `NEXT_PUBLIC_GA_MEASUREMENT_ID` |
 | SMS for phone sign-in | **not built** — phone sign-in switched off (DEV-01 done); email only | an SMS provider (post-launch) |
-| Hosting / deploy | **nothing exists** — no Dockerfile, CI or server | BIZ-07 + DEV-14 |
+| Hosting / deploy | **package built, never run on a host** — `Dockerfile`, `/api/health`, migrations on start, `db:backup`/`db:restore`, `docker-compose.yml`, `docs/tech/hosting.md` (DEV-14) | BIZ-07 (host choice + region) |
 
 **Launch blockers (details in `checklists/`):**
 1. ~~Phone sign-in hole~~ — **closed 2026-09-26 (DEV-01).** Phone sign-in is
@@ -71,7 +75,9 @@ for creator and admin accounts** (DEV-11 — enforced, not just promised).
 3. No real footage — every album is seed/demo data; previews are hero-film
    stand-ins, no trailers. Phase 3.
 4. Legal text unreviewed; accountant answers missing; contact details empty.
-5. No hosting, no production database, no production seed.
+5. No host chosen yet, so no production database — the deploy package is
+   ready (DEV-14). The logo and site icons were missing from git (a deploy
+   from GitHub would have had none); fixed 2026-09-28.
 
 ## 3. Key decisions already made (do not re-open without the owner)
 
@@ -651,4 +657,33 @@ DEV-55); set `SITE_MODE=prelaunch` before launch if collecting sign-ups;
 **Portal tasks still open:** DEV-55 (iPhone step), and those waiting on the
 owner / accounts: DEV-07, 13, 14, 15, 16, 25, 26, 27, 28, 32, 46, 50–54, 56,
 58, 59; DEV-60 after launch.
+
+## 34. Session — 2026-09-28 (the 21 remaining portal tasks: what can be built now)
+
+The owner asked to finish the last 21 portal tasks. Honest split given to them:
+~7 unlock with their answers/accounts, ~6 wait on the lawyer, accountant and
+Paymob, ~8 are tests on the real site. Answers collected: **privacy = a button
+in the account** (BIZ-12, part); hosting + region **deferred**; lawyer and
+accountant **contacted**, Paymob **not yet applied**. Still owed in chat:
+company name/address/CR, support email, WhatsApp, domain, About-page founder
+lines, creator-brief approval.
+
+Branch `feat/batch7-dormant`, four commits:
+- **DEV-50** Sentry wired (`instrumentation*.ts`, `sentry.*.config.ts`,
+  `withSentryConfig` from `@sentry/nextjs/config` — v11 moved it; the root
+  import breaks `next.config.mjs`), `app/global-error.tsx` added.
+- **DEV-51** `lib/paymob-callback.ts#reverseAtGateway`. Also fixed: order
+  numbers were `count + 1` and collided after any deleted order.
+- **DEV-52** `lib/account-privacy.ts`, `User.deletedAt` (migration
+  `20260928090000_user_deleted_at`), `/account/data-export`, `verify:privacy`.
+  A deleted buyer shows on `/admin/users` as a nameless row (dead end noted).
+- **DEV-46** `components/layout/analytics-consent.tsx`, `lib/consent.ts`,
+  privacy policy `#cookies`. Section anchors now survive the admin editor.
+- **DEV-14** built but **not ticked** — tick when the image serves on the host.
+
+`.claude/launch.json` has `laqta-ga-3003` (dev server with a fake GA id) to see
+the banner locally.
+
+**Portal tasks still open (17):** DEV-07, 13, 14 (built), 15, 16, 25, 26, 27,
+28, 32, 53, 54, 55 (iPhone step), 56, 58, 59, 60 (after launch).
 

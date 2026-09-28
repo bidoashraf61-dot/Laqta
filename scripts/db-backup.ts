@@ -22,7 +22,7 @@ import { spawn } from 'node:child_process'
 import { createReadStream } from 'node:fs'
 import { mkdir, readdir, rm, stat } from 'node:fs/promises'
 import { isAbsolute, join } from 'node:path'
-import { s3Client } from '../lib/storage'
+import { s3Client, serverSideEncryption } from '../lib/storage'
 
 function run(cmd: string, args: string[]) {
   return new Promise<void>((resolve, reject) => {
@@ -64,7 +64,7 @@ async function main() {
         Body: createReadStream(file),
         ContentLength: size,
         ContentType: 'application/octet-stream',
-        ServerSideEncryption: 'AES256',
+        ...serverSideEncryption(),
       }),
     )
     console.log(`[backup] copied to s3://${bucket}/${key}`)

@@ -28,6 +28,7 @@ Read-only. Linked from the landing page's licensing band (`landing.licenseCta`).
 - The grants described here must match what `LicencePicker` states and what `checkout()` freezes as `licenceVersionId` on the `OrderItem`.
 - There is exactly one licence. No surface may imply a tier, an upgrade, or a view cap.
 - Effective date must always render.
+- **«اللقطات المولّدة بالذكاء الاصطناعي» / "AI-generated footage"** (DEV-26, 2026-09-28): same licence for AI albums; model and filming permits do not apply to them (no real person, no real site) and an accuracy review replaces them; one extra limit — an AI-generated clip may not be presented as real footage of an actual event, person or place. Flagged for counsel.
 
 ## Verified by
 `verify:arabic`, `audit`, `verify:documents` (load, publish, restore, fall-back), `verify:licence` (scans the published version).

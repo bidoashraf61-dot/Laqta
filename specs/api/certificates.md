@@ -28,6 +28,20 @@ None — a GET that returns a document. Linked from `/account/library/[id]`.
   failed at purchase and orders that predate the feature.
 - **Render fails** — `503`, and the library page still shows every download.
 
+## The document (DEV-27, 2026-09-28)
+Title «شهادة ترخيص» / "Licence certificate" and the number, then one row each:
+«المرخَّص له» (licensee), **«المرخِّص» (licensor)** — `licensorLine()`: the brand, plus
+the registered company name and CR number once `CONTACT_COMPANY_NAME_*` /
+`CONTACT_CR_NUMBER` are set (the brand alone until then, never a placeholder),
+«الألبوم», **«طريقة الإنتاج»** (filmed / AI-generated, from `Album.origin`),
+«صانع المحتوى», «عدد اللقطات», «رقم الطلب», «تاريخ الإصدار», «نوع الترخيص»; then
+«نص الترخيص» — the `LicenceVersion` body frozen on the order item — and the footer
+`email.certificateFooter`. Labels are the `certificate.*` keys: singular, and no
+«(اختياري)» (the old rows borrowed checkout and catalogue labels). Numbers are
+inline isolated spans, so they sit on the reading side in Arabic.
+**Still open (DEV-27):** the licence text itself is the short `LicenceVersion`
+body until the lawyer's full text is published as a new version.
+
 ## Invariants
 - **Never public.** Certificates name the buyer's legal entity and what they
   bought, so they live outside `public/` and ownership is re-checked here — the

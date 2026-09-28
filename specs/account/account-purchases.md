@@ -17,12 +17,11 @@ and payment status.
   `createdAt` with `formatDate`.
 
 ## Controls
-Read-only. The table contains no links, buttons, filters or forms — no invoice
-download, no order detail route, no reorder.
+No filters, forms, order detail route or reorder.
 
 | Control | Action | Effect |
 | --- | --- | --- |
-| — | — | None; the surface is read-only |
+| Invoice number (a link) | Plain `<a target="_blank">` → `/account/invoices/[orderId]` | Opens the order's invoice PDF (DEV-28, [`../api/invoices.md`](../api/invoices.md)). `aria-label` «الفاتورة INV-…». Orders without an invoice show `—`. |
 
 ## States
 - Empty: `EmptyState` with the generic «لا يوجد شيء هنا بعد» (`state.empty`) —

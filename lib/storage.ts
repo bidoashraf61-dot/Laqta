@@ -191,6 +191,16 @@ export async function resolveDownload(key: string): Promise<string> {
 
 let client: import('@aws-sdk/client-s3').S3Client | null = null
 
+/**
+ * The server-side encryption header, for AWS only. S3-compatible stores
+ * (Cloudflare R2 — the recommended production store, docs/tech/hosting.md —
+ * MinIO, LocalStack) encrypt at rest themselves and reject or ignore the AWS
+ * header, so with S3_ENDPOINT set it is left out.
+ */
+export function serverSideEncryption(): { ServerSideEncryption?: 'AES256' } {
+  return process.env.S3_ENDPOINT?.trim() ? {} : { ServerSideEncryption: 'AES256' }
+}
+
 /** One client per process. Also used by the media scripts. */
 export async function s3Client() {
   if (client) return client
@@ -198,7 +208,9 @@ export async function s3Client() {
   const endpoint = process.env.S3_ENDPOINT?.trim()
   client = new S3Client({
     region: awsRegion() || 'us-east-1',
-    // Only for an S3-compatible stand-in (MinIO, LocalStack) in development.
+    // An S3-compatible store: Cloudflare R2 in production (AWS_REGION=auto,
+    // S3_ENDPOINT=https://<account>.r2.cloudflarestorage.com), MinIO or
+    // LocalStack in development.
     ...(endpoint ? { endpoint, forcePathStyle: true } : {}),
   })
   return client

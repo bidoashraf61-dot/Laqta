@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { translate } from '@/lib/i18n'
 import { renderPdf } from '@/lib/documents'
 import type { Locale } from '@/lib/locale'
+import { contactChannels } from '@/content/contact'
 
 /**
  * The licence certificate.
@@ -27,7 +28,7 @@ import type { Locale } from '@/lib/locale'
  * `Thmanyah Serif Display` — not a shortened alias. A document that invents its
  * own family name is a second type system nobody maintains.
  */
-async function fontFace(family: string, file: string, weight: number) {
+export async function fontFace(family: string, file: string, weight: number) {
   try {
     // Anchored to the project root. A relative path resolves against the
     // process working directory, which is not the repo under a standalone
@@ -51,6 +52,10 @@ export type CertificateData = {
   albumTitle: string
   creatorName: string
   clipCount: number
+  /** How the footage was made — a buyer answering a claim needs to say. */
+  origin: 'captured' | 'generated'
+  /** Who grants the licence: the company, once its name is configured. */
+  licensor: string
   licenceTitle: string
   licenceBody: string
 }
@@ -81,7 +86,7 @@ export async function certificateHtml(data: CertificateData, locale: Locale) {
   const row = (label: string, value: string, numeric = false) => `
     <tr>
       <th>${label}</th>
-      <td${numeric ? ' dir="ltr" class="numeric"' : ''}>${escapeHtml(value)}</td>
+      <td>${numeric ? `<span class="numeric">${escapeHtml(value)}</span>` : escapeHtml(value)}</td>
     </tr>`
 
   return `<!doctype html>
@@ -107,7 +112,9 @@ export async function certificateHtml(data: CertificateData, locale: Locale) {
   th { width:34%; font-weight:400; color:var(--muted); }
   td { font-weight:700; }
   /* A Latin run inside Arabic needs isolating or the punctuation migrates. */
-  .numeric { direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums; }
+  /* An inline span, so the run keeps its own direction while the cell keeps
+     the page's alignment — a block-level ltr cell sat on the wrong side. */
+  .numeric { display:inline-block; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums; }
   .grant { background:#faf8f2; border:1px solid var(--line); border-radius:6px; padding:16px 18px; }
   .grant h2 { font-size:11pt; margin:0 0 8px; }
   .grant p { margin:0; white-space:pre-wrap; }
@@ -120,21 +127,23 @@ export async function certificateHtml(data: CertificateData, locale: Locale) {
     <div class="kind">${tr('brand.tagline')}</div>
   </header>
 
-  <h1>${tr('library.licencesTitle')}</h1>
-  <div class="number numeric">${escapeHtml(data.certificateNumber)}</div>
+  <h1>${tr('certificate.title')}</h1>
+  <div class="number"><span class="numeric">${escapeHtml(data.certificateNumber)}</span></div>
 
   <table>
-    ${row(tr('checkout.legalName'), data.licenseeName)}
-    ${row(tr('commerce.album'), data.albumTitle)}
-    ${row(tr('catalogue.creatorsTitle'), data.creatorName)}
-    ${row(tr('catalogue.clipCountLabel'), String(data.clipCount), true)}
-    ${row(tr('checkout.orderNumber'), data.orderNumber, true)}
-    ${row(tr('library.purchasedOn'), date)}
-    ${row(tr('commerce.licence'), data.licenceTitle)}
+    ${row(tr('certificate.licensee'), data.licenseeName)}
+    ${row(tr('certificate.licensor'), data.licensor)}
+    ${row(tr('certificate.album'), data.albumTitle)}
+    ${row(tr('catalogue.origin'), tr(data.origin === 'generated' ? 'catalogue.originGenerated' : 'catalogue.originCaptured'))}
+    ${row(tr('certificate.creator'), data.creatorName)}
+    ${row(tr('certificate.clips'), String(data.clipCount), true)}
+    ${row(tr('certificate.order'), data.orderNumber, true)}
+    ${row(tr('certificate.issued'), date)}
+    ${row(tr('certificate.licence'), data.licenceTitle)}
   </table>
 
   <div class="grant">
-    <h2>${tr('catalogue.licenceDetails')}</h2>
+    <h2>${tr('certificate.terms')}</h2>
     <p>${escapeHtml(data.licenceBody)}</p>
   </div>
 
@@ -142,7 +151,21 @@ export async function certificateHtml(data: CertificateData, locale: Locale) {
 </body></html>`
 }
 
-function escapeHtml(value: string) {
+/**
+ * «المرخِّص»: the brand, and the registered company behind it once its name
+ * and CR number are configured (content/contact.ts — BIZ-10). Until then the
+ * brand alone, never a placeholder company.
+ */
+export function licensorLine(locale: Locale) {
+  const { company } = contactChannels()
+  const brand = translate(locale, 'brand.name')
+  const name = locale === 'en' ? company.nameEn || company.nameAr : company.nameAr
+  if (!name) return brand
+  const cr = company.crNumber ? ` · ${locale === 'en' ? 'CR' : 'س.ت'} ${company.crNumber}` : ''
+  return `${brand} — ${name}${cr}`
+}
+
+export function escapeHtml(value: string) {
   return value.replace(
     /[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!,
@@ -199,7 +222,7 @@ async function renderCertificate(orderItemId: string, locale: Locale) {
           user: { select: { name: true, email: true } },
         },
       },
-      album: { select: { titleAr: true, titleEn: true } },
+      album: { select: { titleAr: true, titleEn: true, origin: true } },
       creator: { select: { displayNameAr: true, displayNameEn: true } },
       licenceVersion: { select: { titleAr: true, titleEn: true, bodyAr: true, bodyEn: true } },
     },
@@ -225,6 +248,8 @@ async function renderCertificate(orderItemId: string, locale: Locale) {
       albumTitle: pick(item.album.titleAr, item.album.titleEn),
       creatorName: pick(item.creator?.displayNameAr, item.creator?.displayNameEn),
       clipCount: manifest.length,
+      origin: item.album.origin,
+      licensor: licensorLine(locale),
       licenceTitle: pick(item.licenceVersion?.titleAr, item.licenceVersion?.titleEn),
       licenceBody: pick(item.licenceVersion?.bodyAr, item.licenceVersion?.bodyEn),
     },

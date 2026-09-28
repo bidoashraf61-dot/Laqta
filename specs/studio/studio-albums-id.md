@@ -119,3 +119,8 @@ Every clip action re-checks ownership and editability server-side (`lib/uploads.
 
 ## Verified by
 `verify:pricing` — calculator values, floor/ceiling, the under-30 basis, details refused without a save, an out-of-range recommendation refused, an in-range one landing as columns + 6 taxonomy links, a forged category refused. `verify:flows` — a fixture draft album: a real mp4 uploaded through the page's file input reaches «جاهزة», its specs match the file, and the rename form lands (plus the older rejected-album checks on this route). `verify:uploads` — the upload protocol, ingest, gate reasons, totals, cover and delete at the library layer. `audit` and `verify:arabic` still do not visit this parameterised route.
+
+## Delivery guide link (DEV-13)
+While the album is editable (`draft` / `changes_requested`), a muted link «قبل الرفع: راجع
+دليل التسليم» (`BookOpen`, plain `<a>`) sits directly above the clip uploader and opens
+[`/studio/guide`](./studio-guide.md).

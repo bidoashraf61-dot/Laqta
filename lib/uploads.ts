@@ -5,7 +5,7 @@ import { dirname, extname, isAbsolute, join } from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import { Readable } from 'node:stream'
 import { db } from '@/lib/db'
-import { documentPath, s3Client, storageDriver } from '@/lib/storage'
+import { documentPath, s3Client, serverSideEncryption, storageDriver } from '@/lib/storage'
 import { MAX_ALBUM_CLIPS } from '@/lib/studio'
 
 /**
@@ -529,7 +529,7 @@ export async function putDocument(key: string, bytes: Uint8Array, mime: Document
       Key: key,
       Body: bytes,
       ContentType: mime,
-      ServerSideEncryption: 'AES256',
+      ...serverSideEncryption(),
     }),
   )
 }

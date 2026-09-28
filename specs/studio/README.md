@@ -22,6 +22,7 @@ or entitlement directly: it requests, and an admin settles.
 | `/studio/albums/new` | Create a draft album from a title and a price band | [studio-albums-new.md](./studio-albums-new.md) |
 | `/studio/albums/[id]` | Upload, name, order and delete an album's clips, pick the cover, see per-clip processing state and spec consistency, and submit for review | [studio-albums-id.md](./studio-albums-id.md) |
 | `/studio/releases` | Declare model/property/permit releases, attach the scanned document, and link them to the clips they cover | [studio-releases.md](./studio-releases.md) |
+| `/studio/guide` | The delivery guide: pre-start checklist, specifications, Saudi accuracy, AI and filmed requirements, file naming, the quality log (DEV-13) | [studio-guide.md](./studio-guide.md) |
 | `/studio/earnings` | The creator ledger: available, held with its release date, lifetime | [studio-earnings.md](./studio-earnings.md) |
 | `/studio/payouts` | Request a transfer of the available balance; past requests | [studio-payouts.md](./studio-payouts.md) |
 | `/studio/settings` | Public profile, payout rail, and the current revenue share | [studio-settings.md](./studio-settings.md) |

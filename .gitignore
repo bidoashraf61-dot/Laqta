@@ -66,3 +66,4 @@ build/
 
 # Agent worktrees (local only)
 .claude/worktrees/
+.playwright-mcp/

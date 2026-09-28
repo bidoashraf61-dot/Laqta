@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { AlertTriangle, BookOpen, CheckCircle2, XCircle } from 'lucide-react'
 import { requireCreator } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { analyseConsistency, canSubmit } from '@/lib/studio'
@@ -280,6 +280,21 @@ export default async function StudioAlbumPage({ params }: { params: Promise<{ id
             ))}
           </ol>
         </section>
+      ) : null}
+
+      {/* The delivery guide (DEV-13), right above the uploader: this is where
+          "what exactly do you need from me?" gets asked. Only while clips can
+          still change. A plain anchor, per the router-commit rule. */}
+      {editable ? (
+        <p className="text-sm">
+          <a
+            href="/studio/guide"
+            className="inline-flex items-center gap-2 text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+          >
+            <BookOpen aria-hidden className="size-4" />
+            {t('studio.guideLink')}
+          </a>
+        </p>
       ) : null}
 
       <AlbumClips

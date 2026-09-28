@@ -60,6 +60,7 @@ const ROUTES = [
   '/studio/albums',
   '/studio/albums/new',
   '/studio/releases',
+  '/studio/guide',
   '/studio/earnings',
   '/studio/payouts',
   '/studio/settings',

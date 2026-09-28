@@ -1,3 +1,5 @@
+import { withSentryConfig } from '@sentry/nextjs'
+
 /**
  * Content-Security-Policy and the other security headers (DEV-48).
  *
@@ -123,4 +125,16 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+/*
+ * Sentry (DEV-50). The wrapper only adds build-time wiring; with no DSN the SDK
+ * is disabled at runtime. Source maps upload only when SENTRY_AUTH_TOKEN is set
+ * — without it the build passes and simply skips the upload.
+ */
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+  telemetry: false,
+})

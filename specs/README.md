@@ -37,9 +37,12 @@ downloads restates them, and no surface may work around them:
 Errors (only) are to be reported to Sentry, inert with no DSN; see
 `docs/tech/sentry.md`. Every rule about what may leave the site — no user, IP,
 cookies, bodies or query strings — lives in `lib/observability.ts` and is
-unit-tested. **As of 2026-09-24 the SDK itself is not yet installed or wired**;
-`app/error.tsx` still only logs to the console. No surface's behaviour changes
-when it is.
+unit-tested. The SDK is wired (DEV-50, 2026-09-28): `app/error.tsx` and the
+root-level `app/global-error.tsx` capture, server and edge errors go through
+`instrumentation.ts`. With no DSN set it sends nothing. No surface's behaviour
+changes either way; `app/global-error.tsx` is the one new screen — shown only
+when the root layout itself fails, with the three `state.*` strings read from
+the message files and the language taken from the path.
 
 ## Index
 

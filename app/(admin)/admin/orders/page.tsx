@@ -20,6 +20,7 @@ const FLAGGED_OUTCOMES = [
   'amount_mismatch',
   'integration_mismatch',
   'reversed_at_gateway',
+  'refund_needs_review',
   'order_not_pending',
 ] as const
 

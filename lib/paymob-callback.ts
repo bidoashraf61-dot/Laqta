@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { settleOrder } from '@/lib/orders'
+import { refundOrderItem } from '@/lib/admin'
 import {
   hmacMatches,
   paymobConfig,
@@ -36,6 +37,8 @@ export type CallbackResult = {
     | 'order_not_pending'
     | 'unknown_order'
     | 'reversed_at_gateway'
+    | 'refunded'
+    | 'refund_needs_review'
     | 'error'
   orderId?: string
 }
@@ -48,6 +51,7 @@ type TransactionObj = Record<string, unknown> & {
   is_voided?: boolean
   error_occured?: boolean
   amount_cents?: number
+  refunded_amount_cents?: number
   currency?: string
   integration_id?: number
   order?: { id?: number; merchant_order_id?: string | null }
@@ -75,6 +79,9 @@ function transactionState(obj: TransactionObj) {
  *                             frozen order exactly; anything else is recorded
  *                             and NOT settled.
  *   5. settleOrder()        — the one paid path, shared with the admin.
+ *
+ * A refund or void made in the Paymob dashboard (DEV-51) comes back through
+ * the same callback and is reversed by `reverseAtGateway` below.
  */
 export async function handlePaymobCallback(
   body: unknown,
@@ -142,9 +149,16 @@ export async function handlePaymobCallback(
 
   // ── Decide ───────────────────────────────────────────────────────────────
   if (state === 'refunded' || state === 'voided') {
-    // Money moved back at the gateway. Laqta's refund tooling lives in the
-    // admin and reverses at the frozen rate; it is not triggered from here.
-    return record('reversed_at_gateway', order.id)
+    try {
+      const outcome = await reverseAtGateway(order, obj, state, transactionId)
+      return record(outcome, order.id)
+    } catch (error) {
+      // Some lines may already be reversed; a retry reverses only what is
+      // left (each line refunds its remainder), so release the claim.
+      await db.paymentEvent.delete({ where: { id: eventId } }).catch(() => undefined)
+      console.error(`[paymob] refund reversal failed for ${order.orderNumber}:`, error)
+      return { httpStatus: 500, outcome: 'error', orderId: order.id }
+    }
   }
   // The buyer hears about both (DEV-30) — once per order and state.
   if (state === 'pending') {
@@ -201,6 +215,56 @@ export async function handlePaymobCallback(
     .catch((error) => console.error('[paymob] could not clear the cart:', error))
 
   return record('settled', order.id)
+}
+
+/**
+ * Money moved back at Paymob (DEV-51): mirror it in Laqta's records.
+ *
+ * Only a WHOLE refund or a void is reversed automatically — every line's
+ * remainder, through `refundOrderItem`, the same path the admin uses, so the
+ * commission reverses at the rate frozen at purchase and the entitlement is
+ * revoked. A partial refund cannot be split across lines without a person
+ * deciding which album it was for, so it is flagged for the operator
+ * (`refund_needs_review`) and nothing is touched. An order that was never paid
+ * (a void of a pending payment) has nothing to reverse and is only recorded.
+ */
+async function reverseAtGateway(
+  order: { id: string; status: string; total: Prisma.Decimal | number },
+  obj: TransactionObj,
+  state: 'refunded' | 'voided',
+  transactionId: string,
+): Promise<CallbackResult['outcome']> {
+  if (order.status !== 'paid' && order.status !== 'partially_refunded') return 'reversed_at_gateway'
+
+  const totalCents = toMinorUnits(Number(order.total))
+  // Paymob reports the refund on the original transaction: amount_cents stays
+  // the charge, refunded_amount_cents is what went back (cumulative).
+  const refundedCents =
+    state === 'voided'
+      ? totalCents
+      : typeof obj.refunded_amount_cents === 'number'
+        ? obj.refunded_amount_cents
+        : Number(obj.amount_cents ?? 0)
+  if (refundedCents < totalCents) return 'refund_needs_review'
+
+  const items = await db.orderItem.findMany({
+    where: { orderId: order.id },
+    select: { id: true, grossAmount: true, refundedAmount: true },
+  })
+  for (const item of items) {
+    const remaining = Number(item.grossAmount) - Number(item.refundedAmount)
+    if (remaining <= 0) continue
+    const result = await refundOrderItem({
+      orderItemId: item.id,
+      amount: remaining,
+      reason: `Paymob ${state === 'voided' ? 'void' : 'refund'} ${transactionId}`,
+      policyBasis: 'gateway_refund',
+      actorId: null,
+      gatewayRef: `PAYMOB-${transactionId}`,
+    })
+    if (!result.ok) throw new Error(`refundOrderItem refused ${item.id}: ${result.messageKey}`)
+  }
+  return 'refunded'
 }
 
 /** How an order became paid, for the admin. Derived, never stored twice. */

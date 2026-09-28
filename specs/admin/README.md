@@ -162,5 +162,6 @@ the `OrderItem` at purchase. Neither is configurable anywhere in this area.
 - The shell's `<main>` is `overflow-x-clip` (was `overflow-y-auto`, which silently
   disabled every `position: sticky` in the dashboards); wide content is clipped rather
   than scrollable inside `<main>` — give a wide table its own scroll wrapper.
-- A refund or void done in the Paymob dashboard is only *flagged* on `/admin/orders`
-  (`reversed_at_gateway`); nothing reverses the Laqta ledger automatically.
+- A **partial** refund done in the Paymob dashboard is only *flagged* on `/admin/orders`
+  (`refund_needs_review`); the operator reverses it with the refund control. (A whole
+  refund or a void reverses automatically since DEV-51.)

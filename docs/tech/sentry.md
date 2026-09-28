@@ -5,14 +5,14 @@ rate is set, and **no session replay** — no analytics or consent decision has
 been made, and a replay is a recording of the visitor. With no DSN set the SDK
 is disabled and sends nothing.
 
-## Status (2026-09-24)
+## Status (2026-09-28)
 
 | Part | State |
 | --- | --- |
 | Privacy scrubber + shared options — `lib/observability.ts` | Done, unit-tested (`tests/unit/observability.test.ts`) |
 | Env vars — `.env.example` | Done |
 | Privacy-policy sentence (AR + EN) — `content/legal.ts` `PRIVACY` | Done, **flagged for counsel** |
-| `@sentry/nextjs` dependency + SDK wiring | **Not done** — the package could not be installed from the build session (npm registry TLS failed there). See "Finishing the wiring". |
+| `@sentry/nextjs` dependency + SDK wiring | **Done** (DEV-50): `instrumentation.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts`, `withSentryConfig` in `next.config.mjs`, `app/error.tsx` + `app/global-error.tsx` capture. Inert until the DSN is set (owner setup below). |
 
 ## What leaves the site, and what never does
 
@@ -44,10 +44,9 @@ email, IP or phone number appearing in an error message, breadcrumb or extra.
 6. Have counsel review the privacy sentence added under «من يطّلع على بياناتك»
    (it names no vendor or transfer country; they may want both).
 
-## Finishing the wiring
+## How it is wired (done 2026-09-28)
 
-On a machine that can reach the npm registry: `npm install @sentry/nextjs`,
-then add, per the current Sentry Next.js App Router manual setup:
+Per the Sentry Next.js App Router manual setup:
 
 - `instrumentation.ts` — `register()` imports `sentry.server.config` (nodejs)
   or `sentry.edge.config` (edge); `export const onRequestError = Sentry.captureRequestError`.
@@ -61,4 +60,4 @@ then add, per the current Sentry Next.js App Router manual setup:
   currently only `console.error`s); add an `app/global-error.tsx` that does the
   same for root-layout failures.
 
-Then `npm run build` with no Sentry env must still pass.
+`npm run build` with no Sentry env passes; with no DSN nothing is sent.

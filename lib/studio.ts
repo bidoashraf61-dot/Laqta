@@ -44,6 +44,8 @@ export const MIN_ALBUM_CLIPS = 30
 export const MAX_ALBUM_CLIPS = 70
 
 export const MIN_PAYOUT_USD = 100
+/** The review turnaround promised to creators; also the queue task's SLA. */
+export const REVIEW_SLA_BUSINESS_DAYS = 3
 
 export function analyseConsistency(
   clips: Array<{ fps: unknown; colourProfile: string | null; width: number; height: number }>,
@@ -160,7 +162,7 @@ export async function submitForReview(albumId: string) {
         submittedAt,
         // Three business days. Saudi and Egypt both run a Friday–Saturday
         // weekend, which addBusinessDays accounts for.
-        slaDueAt: addBusinessDays(submittedAt, 3),
+        slaDueAt: addBusinessDays(submittedAt, REVIEW_SLA_BUSINESS_DAYS),
       },
     }),
   ])

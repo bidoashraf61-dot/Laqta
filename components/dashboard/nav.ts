@@ -1,5 +1,6 @@
 import type { ComponentType, SVGProps } from 'react'
 import {
+  BookOpen,
   FileText,
   Gauge,
   Image,
@@ -63,6 +64,7 @@ export const STUDIO_NAV: DashboardSection[] = [
     links: [
       { href: '/studio/albums', labelKey: 'studio.albums', icon: Laqta.Album },
       { href: '/studio/releases', labelKey: 'studio.releases', icon: Laqta.Licence },
+      { href: '/studio/guide', labelKey: 'studio.guide', icon: BookOpen },
     ],
   },
   {

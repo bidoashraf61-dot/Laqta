@@ -1482,6 +1482,11 @@
     }
   },
   "studio": {
+    "guide": "Delivery guide",
+    "guideDescription": "Everything your album needs to pass review the first time: specifications, Saudi accuracy, releases and the quality log.",
+    "guideQaTemplate": "Quality log template",
+    "guideContents": "Guide contents",
+    "guideLink": "Before you upload: read the delivery guide",
     "details": {
       "title": "Album details",
       "hint": "Buyers search by these details and Laqta's team reviews them. Save them before you send the album for review.",

@@ -1,0 +1,24 @@
+# Everything the image must NOT carry: secrets, local data, media, history.
+.git
+.env
+.env.*
+!.env.example
+node_modules
+.next
+.pgdata
+.media
+.documents
+.claude
+.playwright-mcp
+production
+brand
+tools
+docs
+checklists
+specs
+tests
+public/uploads
+public/hero/vid
+*.log
+.DS_Store
+.backups

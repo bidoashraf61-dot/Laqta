@@ -184,7 +184,8 @@ export const config = {
      * 16 MB+, a release scan up to 15 MB) and Next buffers any body the
      * middleware can see at 10 MB — so those JSON routes check the session
      * themselves (`lib/route-auth.ts#studioActor`) and sit outside.
+     * `api/health` is the host's probe (DEV-14): nothing but a database ping.
      */
-    '/((?!api/auth|api/payments|api/studio|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
+    '/((?!api/auth|api/payments|api/studio|api/health|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)',
   ],
 }

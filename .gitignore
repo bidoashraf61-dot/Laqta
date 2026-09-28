@@ -12,6 +12,10 @@
 *.jpeg
 *.webp
 !/production/prototypes/landing-scroll/assets/logo*.png
+# The site's own logo and icons ARE the website — a deploy from git needs them.
+!/public/brand/*.png
+!/app/icon.png
+!/app/apple-icon.png
 
 # OS / editor
 .DS_Store
@@ -31,6 +35,8 @@ build/
 
 # Local development Postgres cluster (npm run db:start)
 .pgdata/
+# Database dumps (npm run db:backup) — never in git
+.backups/
 
 # Env
 .env

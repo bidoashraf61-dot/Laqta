@@ -70,7 +70,23 @@ export default async function PurchasesPage() {
                   <TableCell className="numeric">
                     {formatMoney(Number(order.total), order.currency)}
                   </TableCell>
-                  <TableCell className="numeric">{order.invoice?.invoiceNumber ?? '—'}</TableCell>
+                  <TableCell>
+                    {/* The invoice document (DEV-28). A plain anchor: the
+                        answer is a PDF, opened in a new tab. */}
+                    {order.invoice ? (
+                      <a
+                        href={`/account/invoices/${order.id}`}
+                        target="_blank"
+                        rel="noopener"
+                        aria-label={`${t('invoice.download')} ${order.invoice.invoiceNumber}`}
+                        className="numeric underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                      >
+                        {order.invoice.invoiceNumber}
+                      </a>
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={order.status === 'paid' ? 'success' : 'warning'}>
                       {order.status === 'paid'

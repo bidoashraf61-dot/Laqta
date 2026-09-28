@@ -106,7 +106,7 @@ const nextConfig = {
       // a licence certificate PDF, a payout export — set their own headers,
       // and a document-level CSP (object-src 'none') can stop Chrome's PDF
       // viewer from opening them.
-      { source: '/((?!api/|account/certificates/|en/account/certificates/).*)', headers: securityHeaders() },
+      { source: '/((?!api/|account/certificates/|en/account/certificates/|account/invoices/|en/account/invoices/).*)', headers: securityHeaders() },
       { source: '/fonts/:path*', headers: year },
       { source: '/hero/:path*', headers: year },
     ]

@@ -25,6 +25,8 @@ Read-only.
 - Rendered through `DocumentPage` (shared by about, terms, privacy, licences, content-policy): the summary under the title is `<Prose>` (Serif Text 1.2rem / 1.85), matching the site-wide head composition.
 - Policy and marketing prose lives in `content/legal.ts` (the default) and published `DocumentVersion` rows, not in the message dictionary — these are reviewed and edited as whole documents, not as strings.
 - Measure capped at `62ch` so it tracks Arabic glyph width rather than a Latin assumption.
+- **«كيف تُصنع اللقطات» / "How the footage is made"** (DEV-25 part, 2026-09-28): the AI disclosure — some albums filmed, some AI-generated, labelled on every album and on the certificate, plus the extra accuracy check for generated albums. The founder, company and founding-date section is **not written yet** — it waits on the owner's details (BIZ-10).
+- «نموذج العمل» says «ترخيص دائم» (decision D2 — never "own forever") and «فاتورة», not «فاتورة ضريبية» (DEV-28).
 
 ## Verified by
 `verify:arabic`, `audit`, `verify:documents`, `verify:licence` (scans the published version).

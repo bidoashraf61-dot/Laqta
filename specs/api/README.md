@@ -32,3 +32,4 @@ Supporting modules: `lib/storage.ts` (HMAC signing; `s3`/`local` drivers; `resol
 `lib/orders.ts` (the frozen manifest that `/api/download` enforces),
 `lib/paymob.ts` + `lib/paymob-callback.ts` (the Paymob driver and callback).
 - [`certificates.md`](./certificates.md) — the licence certificate PDF, owner-only
+- [`invoices.md`](./invoices.md) — the invoice PDF for an order, owner-only (DEV-28)

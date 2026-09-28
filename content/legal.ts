@@ -50,14 +50,33 @@ export const TERMS: DocumentSection[] = [
     ],
   },
   {
+    // DEV-26 (decision D1: AI-generated AND filmed albums). ⚠️ FOR COUNSEL
+    // (BIZ-02): copyright in AI-generated material, and the AI-tool-terms
+    // warranty, are open questions on the lawyer's list.
+    heading: 'اللقطات المصوّرة والمولّدة بالذكاء الاصطناعي',
+    headingEn: 'Filmed and AI-generated footage',
+    bodyEn: [
+      'The catalogue holds two kinds of album: footage filmed with a camera, and footage made with generative AI tools. Every album states which it is on its page and on your licence certificate, before and after you buy.',
+      'For an AI-generated album, the creator confirms that the tools they used allow the output to be licensed for commercial use, and the album is reviewed for accuracy — architecture, Arabic lettering and dress — before it is published. The licence you buy is the same for both kinds.',
+      'Some jurisdictions give AI-generated material limited or no copyright protection. That does not change your right to use what you licensed, but it may mean others can use similar material too; do not rely on an AI-generated clip being exclusive to you.',
+    ],
+    body: [
+      'يضم الكتالوج نوعين من الألبومات: لقطات مصوّرة بالكاميرا، ولقطات مولّدة بأدوات الذكاء الاصطناعي. يُذكر نوع كل ألبوم على صفحته وفي شهادة ترخيصك، قبل الشراء وبعده.',
+      'في الألبوم المولّد بالذكاء الاصطناعي، يُقرّ الصانع بأن الأدوات التي استخدمها تسمح بترخيص مخرجاتها للاستخدام التجاري، ويُراجَع الألبوم قبل نشره من حيث الدقة: العمارة والخط العربي واللباس. والترخيص الذي تشتريه واحد في النوعين.',
+      'بعض الأنظمة القانونية تمنح المواد المولّدة بالذكاء الاصطناعي حماية محدودة لحق المؤلف أو لا تمنحها. هذا لا يغيّر حقك في استخدام ما رُخّص لك، لكنه قد يعني أن غيرك يستطيع استخدام مواد مشابهة؛ فلا تفترض أن اللقطة المولّدة حصرية لك.',
+    ],
+  },
+  {
     heading: 'الأسعار والدفع والفاتورة',
     headingEn: 'Prices, payment and invoicing',
     bodyEn: [
-      'Prices are shown in US dollars per album. An electronic invoice is issued for every purchase, and VAT is added for buyers inside the Kingdom as the regulations require.',
+      // DEV-26/28: must match lib/orders.ts — VAT_RATE (15%, decision D7) is
+      // added to EVERY order, whoever buys. ⚠️ FOR THE ACCOUNTANT (BIZ-03).
+      'Prices are shown in US dollars per album, before VAT. Value added tax at 15% is added to every order at checkout and shown separately before you pay. An invoice is issued for every purchase and can be downloaded from your orders.',
       "The platform's share of each sale is calculated at the rate in force at the moment of purchase, and that rate is frozen against the order. Any later change to the creator's tier or to the commission policy does not apply retroactively to an earlier order.",
     ],
     body: [
-      'الأسعار معروضة بالدولار الأمريكي لكل ألبوم. تصدر لك فاتورة إلكترونية عن كل عملية شراء، وتُضاف ضريبة القيمة المضافة للمشترين داخل المملكة وفق النظام.',
+      'الأسعار معروضة بالدولار الأمريكي لكل ألبوم، قبل الضريبة. تُضاف ضريبة القيمة المضافة بنسبة ١٥٪ إلى كل طلب عند إتمام الشراء، وتظهر منفصلةً قبل الدفع. تصدر فاتورة عن كل عملية شراء، ويمكن تنزيلها من صفحة الطلبات.',
       'يُحتسب نصيب المنصّة من كل عملية بيع بالنسبة السارية لحظة الشراء، وتُجمَّد تلك النسبة على الطلب. أي تغيير لاحق في شريحة الصانع أو في سياسة العمولة لا يسري بأثر رجعي على طلب سابق.',
     ],
   },
@@ -120,7 +139,7 @@ export const PRIVACY: DocumentSection[] = [
     bodyEn: ['We collect what the service genuinely needs, and no more:'],
     listEn: [
       'Account details: your name, email address, and mobile number if you choose to sign in with it.',
-      'Billing details: legal name, VAT number and address \u2014 the details a tax invoice requires.',
+      'Billing details: legal name, VAT number and address \u2014 the details an invoice requires.',
       'Your order and download history, because it is what proves your right to the material you bought.',
       'Searches made on the site. These improve results, and show us what buyers are looking for that we do not have.',
       'Basic technical session data, for security and to prevent abuse.',
@@ -279,6 +298,19 @@ export const LICENCES: DocumentSection[] = [
       'تصدر مع كل عملية شراء شهادة ترخيص تحمل رقماً وقائمة اللقطات المشمولة ونص الترخيص الساري لحظة الشراء. تعديل نص الترخيص لاحقاً لا يغيّر ما اشتريته: الشهادة تحفظ النص كما كان.',
     ],
   },
+  {
+    // DEV-26. ⚠️ FOR COUNSEL (BIZ-02) with the rest of this page.
+    heading: 'اللقطات المولّدة بالذكاء الاصطناعي',
+    headingEn: 'AI-generated footage',
+    bodyEn: [
+      'An AI-generated album is licensed on exactly the same terms. It shows no real person and was not filmed at a real site, so model and filming permits do not apply to it; the review checks it for accuracy instead.',
+      'One extra limit applies: do not present an AI-generated clip as real footage of an actual event, person or place — in news, in documentary, or in any context where a viewer would take it as a record of what happened.',
+    ],
+    body: [
+      'يُرخَّص الألبوم المولّد بالذكاء الاصطناعي بالشروط نفسها تماماً. لا يظهر فيه شخص حقيقي ولم يُصوَّر في موقع حقيقي، فلا تنطبق عليه تصاريح النماذج والتصوير، وتحلّ محلها مراجعة الدقة.',
+      'ويُضاف قيد واحد: لا تعرض لقطة مولّدة بالذكاء الاصطناعي على أنها تصوير حقيقي لحدث أو شخص أو مكان فعلي، في الأخبار أو الأعمال الوثائقية أو أي سياق يفهم منه المشاهد أنها توثيق لما حدث.',
+    ],
+  },
 ]
 
 export const CONTENT_POLICY: DocumentSection[] = [
@@ -287,9 +319,11 @@ export const CONTENT_POLICY: DocumentSection[] = [
     headingEn: 'What we accept',
     bodyEn: [
       'Saudi footage at 720p, 1080p or 4K — the resolution is stated on each album and reflected in its price — in coherent albums of 30 to 70 clips around one subject. Coherence is a requirement, not a preference: mixing frame rates or colour profiles within one album leaves the editor with material that will not cut together on one timeline, and it is the first thing that spoils an album for the person who bought it.',
+      'Albums are either filmed with a camera or made with generative AI tools, and each is labelled as one or the other. An AI-generated album must be made with tools whose terms allow commercial licensing, and is reviewed for accuracy: warped architecture, garbled Arabic lettering, and dress or landmarks that are wrong for the place.',
     ],
     body: [
       'لقطات سعودية بدقة 720p أو 1080p أو 4K، تُذكر دقة كل ألبوم عليه وتنعكس على سعره، ضمن ألبومات متناسقة من ٣٠ إلى ٧٠ لقطة حول موضوع واحد. التناسق شرط لا شكل: خلط معدلات الإطارات أو الملفات اللونية داخل ألبوم واحد يترك المونتير أمام مواد لا تُركّب على خط زمني واحد، وهو أول ما يُفسد الألبوم على من اشتراه.',
+      'الألبوم إما مصوّر بالكاميرا أو مولّد بأدوات الذكاء الاصطناعي، ويُوسم بأحدهما. ويُشترط في الألبوم المولّد أن تسمح شروط أدواته بالترخيص التجاري، ويُراجَع من حيث الدقة: العمارة المشوّهة، والخط العربي المختلّ، واللباس أو المعالم التي لا تناسب المكان.',
     ],
   },
   {
@@ -394,14 +428,28 @@ export const ABOUT: DocumentSection[] = [
     ],
   },
   {
+    // DEV-25 (AI disclosure; decision D1). The founder / company / founding
+    // date section waits on the owner's details (BIZ-10).
+    heading: 'كيف تُصنع اللقطات',
+    headingEn: 'How the footage is made',
+    bodyEn: [
+      'Some albums are filmed on location with a camera; others are made with generative AI tools. We say which on every album, in its details and on the licence certificate, because a buyer choosing footage for a campaign needs to know \u2014 and because presenting a generated scene as a filmed one is something we do not accept.',
+      'Both kinds pass the same review before publication. A generated album is also checked for the mistakes these tools make with Saudi places: warped buildings, broken Arabic lettering, the wrong dress or the wrong landmark.',
+    ],
+    body: [
+      'بعض الألبومات مصوّرة بالكاميرا في مواقعها، وبعضها مولّد بأدوات الذكاء الاصطناعي. نذكر ذلك على كل ألبوم، في تفاصيله وفي شهادة الترخيص، لأن من يختار لقطات لحملته يحتاج أن يعرف، ولأن عرض مشهد مولّد على أنه مصوّر أمر لا نقبله.',
+      'يمرّ النوعان بالمراجعة نفسها قبل النشر، ويُفحص الألبوم المولّد فوق ذلك بحثاً عن الأخطاء التي تقع فيها هذه الأدوات مع الأماكن السعودية: المباني المشوّهة، والخط العربي المكسور، واللباس الخطأ أو المعلم الخطأ.',
+    ],
+  },
+  {
     heading: 'نموذج العمل',
     headingEn: 'The business model',
     bodyEn: [
-      'You buy the album once and own its licence forever. No subscription, no allowance expiring at the end of the month, no surprises at renewal. A tax invoice comes with every purchase.',
+      'You buy the album once, with a permanent licence. No subscription, no allowance expiring at the end of the month, no surprises at renewal. An invoice comes with every purchase.',
       'The creator keeps the rights to their material and takes a share of every sale that rises with their total sales. Earnings from each sale are held for thirty days, then become withdrawable.',
     ],
     body: [
-      'تشتري الألبوم مرة واحدة وتملك ترخيصه للأبد. لا اشتراك، ولا رصيد ينتهي آخر الشهر، ولا مفاجآت عند التجديد. تصلك فاتورة ضريبية عن كل عملية.',
+      'تشتري الألبوم مرة واحدة بترخيص دائم. لا اشتراك، ولا رصيد ينتهي آخر الشهر، ولا مفاجآت عند التجديد. تصلك فاتورة عن كل عملية.',
       'يحتفظ صانع المحتوى بحقوق مادته، ويأخذ حصّة من كل عملية بيع ترتفع مع إجمالي مبيعاته. تُحجز أرباح كل عملية ثلاثين يوماً، ثم تصبح قابلة للسحب.',
     ],
   },

@@ -25,6 +25,9 @@ Read-only. No acceptance checkbox, no versioned consent record — agreeing to t
 ## Invariants
 - The prose describes how the product actually behaves — the frozen commission, entitlement served from the order snapshot, the 30-day payout hold, the review checklist. If code changes any of those, this document is wrong and must change with it.
 - A policy without a stated effective date is not a policy: the date must always render.
+- **«اللقطات المصوّرة والمولّدة بالذكاء الاصطناعي» / "Filmed and AI-generated footage"** (DEV-26, 2026-09-28; decision D1): both kinds are sold; each album states which on its page and on the certificate; the AI-tool commercial-licensing warranty; AI albums reviewed for accuracy; a plain warning that AI material may have limited copyright protection. **Flagged in-code for counsel (BIZ-02).**
+- **«الأسعار والدفع والفاتورة»** must match `lib/orders.ts`: prices in USD before VAT, **15% VAT (`VAT_RATE`, D7) added to every order** at checkout and shown separately, an invoice for every purchase downloadable from «طلباتي» (DEV-28). The old sentence ("VAT for buyers inside the Kingdom") was untrue of the code. Flagged for the accountant (BIZ-03).
+- The text is a **draft pending the lawyer** (DEV-26 stays open until BIZ-02 answers); the effective date is not moved until the reviewed text ships.
 
 ## Verified by
 `verify:arabic`, `audit`, `verify:documents` (load, publish, restore, fall-back), `verify:licence` (scans the published version).

@@ -687,3 +687,25 @@ the banner locally.
 **Portal tasks still open (17):** DEV-07, 13, 14 (built), 15, 16, 25, 26, 27,
 28, 32, 53, 54, 55 (iPhone step), 56, 58, 59, 60 (after launch).
 
+## 35. Session — 2026-09-28 (drafts for the lawyer and accountant, creator guide)
+
+Branch `feat/batch8-drafts`. The "can be done now" parts of five tasks — none is
+ticked, each note in the checklist says what it still waits on:
+- **DEV-26 (legal draft):** AI sections in Terms and Licences (flagged for counsel),
+  content policy lists the AI-accuracy review, the Terms VAT sentence now matches the
+  code (15% on every order — it used to say "buyers inside the Kingdom").
+- **DEV-27 (certificate):** `certificate.*` labels, Licensor row (`licensorLine()` —
+  company name + CR from `content/contact.ts` once set), production-method row.
+- **DEV-28 (invoice):** `lib/invoice.ts` + `/account/invoices/[orderId]`, linked from
+  «طلباتي». **«فاتورة ضريبية» → «فاتورة» site-wide** until the accountant confirms
+  Laqta can issue a Saudi tax invoice.
+- **DEV-25 (About):** «كيف تُصنع اللقطات» (AI disclosure). Founder section waits on BIZ-10.
+- **DEV-13 (creator guide):** `/studio/guide`, built from the DRAFT brief.
+- **Hosting research:** `docs/tech/hosting.md` → **Hetzner CX33 + Cloudflare R2 +
+  Cloudflare DNS/Registrar, ~$28/month at launch.** R2 compatibility fixed
+  (`serverSideEncryption()` in `lib/storage.ts`). The owner has not chosen yet.
+
+**Merging with the content session (`feat/pan-arab-content`):** both branches edit
+`content/legal.ts` and `messages/*.json`. Its About line «بترخيص دائم» matches ours
+except «فاتورة» — keep «فاتورة». Keep its MSA register (يمكنك, not تقدر).
+

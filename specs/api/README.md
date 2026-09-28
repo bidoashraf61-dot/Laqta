@@ -8,14 +8,15 @@ the only thing that can mark a card or Apple Pay order paid (dormant until the
 
 Every handler runs on the Node runtime and sits outside the middleware
 matcher's guard logic: `middleware.ts` explicitly excludes `api/auth`,
-`api/payments` and `api/studio` (upload bodies exceed the 10 MB Next buffers
-for middleware), and `requiredAccess()` returns `null` for any other `/api/*`
+`api/payments`, `api/studio` (upload bodies exceed the 10 MB Next buffers
+for middleware) and `api/health`, and `requiredAccess()` returns `null` for any other `/api/*`
 path. Each handler is therefore its own gate — the `/api/studio` ones through
 `lib/route-auth.ts#studioActor`.
 
 | Route | Purpose | Spec |
 | --- | --- | --- |
 | `/api/cron/daily` | POST with `CRON_SECRET`: bank-transfer reminders, the operator digest, an outbox drain (DEV-30/57). | [cron-daily.md](cron-daily.md) |
+| `/api/health` | GET: 200 when the database answers, 503 when not — the host's and the uptime monitor's probe (DEV-14). | [health.md](health.md) |
 | `/api/download` | Redeem a signed, short-lived token for a clip master, a proxy, or an album ZIP — re-checking the entitlement at redemption and logging the hit. | [download.md](download.md) |
 | `/api/preview/[clipId]`, `/api/preview/album/[albumId]` | Signed-in download of a clip's watermarked 720p preview, or an album's as a streamed ZIP — `previewKey` only, per-user limits, logged. | [preview-download.md](preview-download.md) |
 | `/api/studio/uploads/…` | A creator's master, uploaded in parts straight to private storage (S3 presigned multipart, or a local streaming route in development), resumable, then queued for ffprobe + preview ingest. | [studio-uploads.md](studio-uploads.md) |

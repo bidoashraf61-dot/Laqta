@@ -165,6 +165,24 @@ export const PRIVACY: DocumentSection[] = [
     ],
   },
   {
+    // DEV-46 (decision D10): Google Analytics, only with consent. ⚠️ FOR
+    // COUNSEL with the rest of this policy (BIZ-02): Google processes the data
+    // outside Saudi Arabia and Egypt; counsel to confirm the transfer wording.
+    id: 'cookies',
+    heading: 'ملفات تعريف الارتباط والتحليلات',
+    headingEn: 'Cookies and analytics',
+    bodyEn: [
+      'The site uses a small number of cookies it cannot work without: one keeps you signed in, one keeps your cart and your language, and one remembers your answer about analytics. These need no consent.',
+      'With your consent only, we use Google Analytics to understand how the site is used — which pages are visited, where visitors come from (including campaign links), and on which device. It sets its own cookies, and Google processes this data on our behalf. We never send it your name, email or purchases.',
+      'Until you choose, and if you decline, Google Analytics does not load at all. You can change your answer at any time from “Tracking settings” at the bottom of every page; withdrawing deletes its cookies.',
+    ],
+    body: [
+      'يستخدم الموقع عددًا محدودًا من ملفات تعريف الارتباط لا يعمل بدونها: واحد يُبقيك مسجّل الدخول، وآخر يحفظ سلتك ولغتك، وثالث يتذكّر جوابك عن التحليلات. هذه لا تحتاج موافقة.',
+      'وبموافقتك فقط نستخدم خدمة تحليلات جوجل لنفهم كيف يُستخدم الموقع: أي الصفحات تُزار، ومن أين يأتي الزوّار (ومنها روابط الحملات)، ومن أي جهاز. تضع الخدمة ملفات تعريف ارتباط خاصة بها، وتعالج جوجل هذه البيانات نيابةً عنّا. لا نرسل إليها اسمك ولا بريدك ولا مشترياتك.',
+      'قبل أن تختار، وإذا رفضت، لا تُحمَّل خدمة التحليلات أصلًا. تقدر تغيّر جوابك في أي وقت من «إعدادات التتبّع» أسفل كل صفحة، وسحب الموافقة يحذف ملفاتها.',
+    ],
+  },
+  {
     heading: 'مدة الحفظ',
     headingEn: 'How long we keep it',
     bodyEn: [
@@ -179,11 +197,13 @@ export const PRIVACY: DocumentSection[] = [
     headingEn: 'Your rights',
     bodyEn: [
       'You have the right to see your data, correct it, and ask for it to be deleted, within what the applicable personal data protection laws allow. Deletion does not extend to what we are legally required to keep, such as invoices.',
-      'To make any of these requests, get in touch through the contact page.',
+      'You can do both yourself from your account, under “Edit your details”: download a copy of everything we hold about you as one file, or delete your account. Deleting it clears your personal details and signs you out everywhere; orders, invoices and licence numbers are kept as tax records, and a licence you bought stays valid.',
+      'For anything else, get in touch through the contact page.',
     ],
     body: [
       'لك حق الاطلاع على بياناتك وتصحيحها وطلب حذفها، ضمن ما تسمح به قوانين حماية البيانات الشخصية الواجبة التطبيق. الحذف لا يشمل ما يلزمنا الاحتفاظ به نظاماً كالفواتير.',
-      'للتقدّم بأي من هذه الطلبات تواصل معنا عبر صفحة التواصل.',
+      'وتقدر تنفّذ الأمرين بنفسك من حسابك، في «تعديل بياناتك»: تنزيل نسخة من كل ما نحفظه عنك في ملف واحد، أو حذف حسابك. الحذف يمسح بياناتك الشخصية ويُخرجك من كل أجهزتك، ونحتفظ بالطلبات والفواتير وأرقام التراخيص سجلاتٍ ضريبية، ويبقى ترخيص ما اشتريته ساريًا.',
+      'ولأي طلب آخر تواصل معنا عبر صفحة التواصل.',
     ],
   },
 ]

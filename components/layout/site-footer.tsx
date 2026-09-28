@@ -3,6 +3,7 @@ import { Separator } from '@/components/ui/toggles'
 import { FOOTER_LEGAL } from '@/components/layout/nav'
 import { t } from '@/lib/i18n'
 import { SOCIAL } from '@/lib/brand'
+import { ConsentSettingsButton } from '@/components/layout/analytics-consent'
 
 export function SiteFooter() {
   const year = new Date().getFullYear()
@@ -36,6 +37,8 @@ export function SiteFooter() {
                 {t(item.labelKey)}
               </Link>
             ))}
+            {/* Reopens the analytics question (DEV-46); absent with no analytics. */}
+            <ConsentSettingsButton className="-my-1 py-1.5 text-start text-muted-foreground transition-colors duration-hover ease-lens hover:text-foreground" />
           </nav>
 
           <div className="space-y-3">

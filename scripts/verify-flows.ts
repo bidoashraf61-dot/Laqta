@@ -335,7 +335,9 @@ async function main() {
         report('no errors on the upload flow', errors.length === 0, errors.slice(0, 2).join(' | '))
 
         await page.goto(`${BASE}/studio/releases`, { waitUntil: 'networkidle' })
-        const card = page.locator('section', { hasText: 'تصريح اختبار الرفع' })
+        // The innermost section with that name: an outer page section also
+        // "has" the text, and holds every other pending release's file input.
+        const card = page.locator('section', { hasText: 'تصريح اختبار الرفع' }).last()
         await card.locator('input[type="file"]').setInputFiles(scan)
         await card.getByText('flow-permit.pdf').waitFor({ timeout: 15_000 }).catch(() => {})
         const withDoc = await db.release.findUnique({ where: { id: release.id } })

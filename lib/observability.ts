@@ -38,7 +38,6 @@ export type ScrubbableEvent = {
   extra?: Record<string, unknown>
   message?: string
   exception?: { values?: Array<{ value?: string }> }
-  [key: string]: unknown
 }
 
 const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi

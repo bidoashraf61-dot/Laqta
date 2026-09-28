@@ -414,6 +414,70 @@ async function main() {
         libraryA.clips.length === album.clips.length &&
         libraryB.clips.length === album.clips.length,
     )
+    // ── DEV-51: a refund made in the Paymob dashboard reverses Laqta ───────
+    const payAndSettle = async () => {
+      const c = await checkout({
+        userId: buyer.id,
+        lines: [{ albumId: album.id }],
+        billing: { billingEntityType: 'individual' },
+        // As order A: the order is created without calling Paymob; the signed
+        // callback is what settles it.
+        method: 'bank_transfer',
+      })
+      if (!c.ok) throw new Error(`checkout failed: ${c.messageKey}`)
+      orderIds.push(c.orderId)
+      cleanupNumbers.push(c.orderNumber)
+      const order = await db.order.findUniqueOrThrow({ where: { id: c.orderId } })
+      const orderCents = toMinorUnits(Number(order.total))
+      const charge = transaction(c.orderNumber, orderCents)
+      await handlePaymobCallback(envelope(charge), signed(charge), config)
+      return { ...c, charge, orderCents }
+    }
+
+    // Partial refund at Paymob: flagged, nothing reversed.
+    const p = await payAndSettle()
+    const partial = { ...p.charge, is_refunded: true, refunded_amount_cents: Math.floor(p.orderCents / 2) }
+    const partialResult = await handlePaymobCallback(envelope(partial), signed(partial), config)
+    const afterPartial = await db.order.findUniqueOrThrow({ where: { id: p.orderId } })
+    report(
+      'a partial Paymob refund is flagged for the operator, not reversed',
+      partialResult.outcome === 'refund_needs_review' && afterPartial.status === 'paid',
+      `${partialResult.outcome} / ${afterPartial.status}`,
+    )
+
+    // Whole refund at Paymob: order, ledger and entitlement all reverse.
+    const r = await payAndSettle()
+    const whole = { ...r.charge, is_refunded: true, refunded_amount_cents: r.orderCents }
+    const wholeResult = await handlePaymobCallback(envelope(whole), signed(whole), config)
+    const refundedOrder = await db.order.findUniqueOrThrow({
+      where: { id: r.orderId },
+      include: { items: true, refunds: true },
+    })
+    const refundedItem = refundedOrder.items[0]
+    const ledgerR = await db.creatorLedger.findMany({ where: { orderItemId: refundedItem.id } })
+    const netR = ledgerR.reduce((sum, row) => sum + Number(row.amount), 0)
+    const liveEntitlements = await db.entitlement.count({
+      where: { orderItemId: refundedItem.id, revokedAt: null },
+    })
+    report('a whole Paymob refund reverses the order', wholeResult.outcome === 'refunded' && refundedOrder.status === 'refunded', `${wholeResult.outcome} / ${refundedOrder.status}`)
+    report('the creator ledger nets to zero at the frozen rate', ledgerR.length === 2 && Math.abs(netR) < 0.005, `${ledgerR.length} rows, net ${netR}`)
+    report('the entitlement is revoked', liveEntitlements === 0)
+    report(
+      'the refund carries the Paymob reference and no operator',
+      refundedOrder.refunds.length === 1 &&
+        refundedOrder.refunds[0].gatewayRef === `PAYMOB-${r.charge.id}` &&
+        refundedOrder.refunds[0].processedById === null,
+    )
+    const refundReplay = await handlePaymobCallback(envelope(whole), signed(whole), config)
+    const refundsAfterReplay = await db.refund.count({ where: { orderId: r.orderId } })
+    report('a replayed refund callback reverses nothing twice', refundReplay.outcome === 'replay' && refundsAfterReplay === 1)
+
+    // Void at Paymob: same as a whole refund.
+    const v = await payAndSettle()
+    const voided = { ...v.charge, is_voided: true }
+    const voidResult = await handlePaymobCallback(envelope(voided), signed(voided), config)
+    const voidedOrder = await db.order.findUniqueOrThrow({ where: { id: v.orderId } })
+    report('a Paymob void reverses the order', voidResult.outcome === 'refunded' && voidedOrder.status === 'refunded', `${voidResult.outcome} / ${voidedOrder.status}`)
   } finally {
     // ── Clean up ──────────────────────────────────────────────────────────
     const items = await db.orderItem.findMany({
@@ -422,6 +486,7 @@ async function main() {
     })
     const itemIds = items.map((item) => item.id)
     await db.paymentEvent.deleteMany({ where: { orderId: { in: orderIds } } })
+    await db.refund.deleteMany({ where: { orderId: { in: orderIds } } })
     await db.creatorLedger.deleteMany({ where: { orderItemId: { in: itemIds } } })
     await db.entitlement.deleteMany({ where: { orderItemId: { in: itemIds } } })
     await db.licenceCertificate.deleteMany({ where: { orderItemId: { in: itemIds } } })
@@ -434,6 +499,12 @@ async function main() {
           template: 'order.confirmed',
           payload: { path: ['orderNumber'], equals: orderNumber },
         },
+      })
+      // The creator's «بيع جديد» mail is keyed `${orderNumber}:${creatorId}`
+      // and deduplicated on that key: left behind, it makes the NEXT order to
+      // reuse this number look already announced (verify:money caught it).
+      await db.mailOutbox.deleteMany({
+        where: { template: 'creator.sale', payload: { path: ['saleKey'], string_starts_with: `${orderNumber}:` } },
       })
     }
     await db.creator.update({ where: { id: album.creatorId }, data: creatorBefore })

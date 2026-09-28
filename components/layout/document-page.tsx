@@ -19,6 +19,8 @@ import { DocumentBody } from '@/components/layout/document-body'
 
 export type DocumentSection = {
   heading: string
+  /** Optional anchor, for a link straight to this section (e.g. /privacy#cookies). */
+  id?: string
   /**
    * The English side of the same section.
    *

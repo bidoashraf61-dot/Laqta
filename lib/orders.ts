@@ -69,8 +69,12 @@ const VAT_RATE = Number(process.env.VAT_RATE ?? 0.15)
 
 async function nextOrderNumber() {
   const year = new Date().getFullYear()
-  const count = await db.order.count()
-  return `LQ-${year}-${String(1000 + count + 1)}`
+  // The count is a starting guess, not the answer: once any order has been
+  // removed (an abandoned checkout cleaned up, a test order) count + 1 names a
+  // number that already exists. Step past taken numbers.
+  let n = 1000 + (await db.order.count()) + 1
+  while (await db.order.findUnique({ where: { orderNumber: `LQ-${year}-${n}` }, select: { id: true } })) n += 1
+  return `LQ-${year}-${n}`
 }
 
 export async function checkout({

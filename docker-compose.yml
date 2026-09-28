@@ -1,0 +1,48 @@
+# One-server deployment (DigitalOcean droplet or AWS Lightsail): the app and
+# its Postgres on the same machine. On Render you do NOT use this file — Render
+# builds the Dockerfile and provides the database. See docs/tech/hosting.md.
+#
+#   cp .env.example .env   # fill it in on the server, never in git
+#   docker compose up -d --build
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: laqta
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: laqta
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laqta"]
+      interval: 10s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      args:
+        SITE_ORIGIN: ${SITE_ORIGIN:?set SITE_ORIGIN in .env}
+        NEXT_PUBLIC_MEDIA_CDN_URL: ${NEXT_PUBLIC_MEDIA_CDN_URL:-}
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+        NEXT_PUBLIC_CONTACT_EMAIL: ${NEXT_PUBLIC_CONTACT_EMAIL:-}
+        NEXT_PUBLIC_CONTACT_WHATSAPP: ${NEXT_PUBLIC_CONTACT_WHATSAPP:-}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://laqta:${POSTGRES_PASSWORD}@db:5432/laqta?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"   # behind the reverse proxy (Caddy) that holds the SSL certificate
+    volumes:
+      - appdata:/data           # generated certificates/invoices + local backup copies
+      - media:/app/.media       # upload assembly and preview work files (large)
+
+volumes:
+  pgdata:
+  appdata:
+  media:

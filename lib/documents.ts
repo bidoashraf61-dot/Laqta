@@ -39,8 +39,11 @@ export async function renderPdf(html: string, key: string): Promise<string | nul
   try {
     // `channel: 'chrome'` uses the installed Chrome rather than a downloaded
     // build — the same choice the browser gates make, so a machine that can
-    // run `npm run audit` can render a document.
-    browser = await chromium.launch({ channel: 'chrome' })
+    // run `npm run audit` can render a document. The server image (Dockerfile,
+    // DEV-14) has no Google Chrome; it sets PDF_BROWSER_CHANNEL=bundled and
+    // ships Playwright's own Chromium instead.
+    const channel = process.env.PDF_BROWSER_CHANNEL?.trim() || 'chrome'
+    browser = await chromium.launch(channel === 'bundled' ? {} : { channel })
     const page = await browser.newPage()
 
     // `domcontentloaded` and not `networkidle`: the document is self-contained

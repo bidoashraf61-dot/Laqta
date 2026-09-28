@@ -15,7 +15,7 @@ arrives later. Key and milestones: [README](README.md).
 - [ ] **BIZ-07** ⛔ Hosting choice — Claude proposes 2 options with monthly cost, you pick — 🤝 · 1 hr
 - [ ] **BIZ-08** Sentry account (free) — 🧑 · 15 min
 - [ ] **BIZ-11** ⛔ USD bank account for the company; ask the bank about receiving international wires and sending USD abroad — 🧑 · weeks
-- [ ] **BIZ-12** Privacy decisions: account deletion / data export (email or a button), cookie banner, hosting region — 🧑 · 30 min
+- [ ] **BIZ-12** Privacy decisions: account deletion / data export (email or a button), cookie banner, hosting region — 🧑 · 30 min — **2026-09-28: deletion/export = a button in the account** (cookie banner + region still open)
 - [x] Make decisions **D1–D10** in the [README](README.md) — 🧑 · 2 hrs — done 2026-09-26
 
 ## M2 — Before creators sign · by 17 Oct

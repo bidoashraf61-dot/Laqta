@@ -51,6 +51,8 @@ export type EditorVersion = {
 
 type FormSection = {
   id: number
+  /** The section's page anchor (e.g. "cookies"), carried through untouched. */
+  anchor?: string
   heading: string
   headingEn: string
   body: string
@@ -65,6 +67,7 @@ const PARAGRAPH_BREAK = /\n\s*\n/
 function toForm(sections: DocumentSection[]): FormSection[] {
   return sections.map((s) => ({
     id: nextId++,
+    anchor: s.id,
     heading: s.heading,
     headingEn: s.headingEn ?? '',
     body: s.body.join('\n\n'),
@@ -92,6 +95,7 @@ function fromForm(form: FormSection[]): DocumentSection[] {
     if (headingEn) section.headingEn = headingEn
     if (bodyEn.length) section.bodyEn = bodyEn
     if (listEn.length) section.listEn = listEn
+    if (f.anchor) section.id = f.anchor
     return section
   })
 }

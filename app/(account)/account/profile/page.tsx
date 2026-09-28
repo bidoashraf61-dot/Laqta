@@ -10,7 +10,8 @@ import { Alert, AlertDescription } from '@/components/ui/state'
 import { PageTitle } from '@/components/ui/typography'
 import { BackLink } from '@/components/dashboard/primitives'
 import { requestLocale } from '@/lib/locale-request'
-import { updateProfile, sendEmailVerification, sendPhoneCode, confirmPhoneCode } from '../actions'
+import { updateProfile, sendEmailVerification, sendPhoneCode, confirmPhoneCode, deleteAccount } from '../actions'
+import { PrivacyControls } from '@/components/account/privacy-controls'
 import { VerifyEmail, VerifyPhone } from '@/components/account/verify-channel'
 import { Badge } from '@/components/ui/badge'
 import { COUNTRIES, countryName } from '@/lib/countries'
@@ -60,6 +61,8 @@ export default async function ProfilePage() {
       country: true,
       emailVerified: true,
       phoneVerified: true,
+      role: true,
+      creator: { select: { id: true } },
     },
   })
   if (!user) redirect('/account')
@@ -178,6 +181,15 @@ export default async function ProfilePage() {
           ) : null}
         </div>
       </section>
+
+      {/* Download everything, or delete the account (DEV-52). Last on the
+          page: the most consequential control sits furthest from the fields
+          people come here to edit. */}
+      <PrivacyControls
+        canDelete={user.role === 'buyer' && !user.creator}
+        confirmBy={user.email ? 'email' : 'phone'}
+        deleteAction={deleteAccount}
+      />
     </div>
   )
 }

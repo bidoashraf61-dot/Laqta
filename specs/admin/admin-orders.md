@@ -48,9 +48,12 @@ textarea (required, 500 chars).
   (`dash.settledWebhook`) or «يدوي من الإدارة» (`dash.settledManual`).
 - **Gateway flags** (clay, one line per distinct outcome) — «إشعار من بوابة الدفع يحتاج
   مراجعة: …» for `amount_mismatch` (`dash.gatewayOutcome_amount_mismatch`),
-  `integration_mismatch`, `reversed_at_gateway` (refunded/voided at Paymob — Laqta does
-  NOT reverse anything automatically; the operator decides and uses the refund control)
-  and `order_not_pending`. `declined`, `pending`, `already_paid`, `unknown_order` are
+  `integration_mismatch`, `reversed_at_gateway` (a void of an order that was never paid —
+  nothing to reverse), `refund_needs_review` (a **partial** refund at Paymob,
+  `dash.gatewayOutcome_refund_needs_review` — nothing reversed; the operator picks the
+  album and uses the refund control) and `order_not_pending`. A **whole** refund or void at
+  Paymob reverses the order automatically (DEV-51, `specs/api/payments-paymob.md`): the
+  order shows «مسترجع» and the refund row carries the Paymob reference. `declined`, `pending`, `already_paid`, `unknown_order` are
   routine and not shown.
 - **Pending card / Apple Pay order** — a muted hint `dash.gatewayCardPendingHint`: it
   settles automatically when Paymob's callback arrives; do not confirm it by hand before

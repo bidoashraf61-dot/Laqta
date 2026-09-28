@@ -246,12 +246,15 @@ export async function refundOrderItem({
   reason,
   policyBasis,
   actorId,
+  gatewayRef,
 }: {
   orderItemId: string
   amount: number
   reason: string
   policyBasis: string
-  actorId: string
+  /** null when the gateway, not an operator, refunded it (DEV-51). */
+  actorId: string | null
+  gatewayRef?: string
 }) {
   const item = await db.orderItem.findUnique({
     where: { id: orderItemId },
@@ -295,6 +298,7 @@ export async function refundOrderItem({
         policyBasis,
         isPartial,
         processedById: actorId,
+        gatewayRef: gatewayRef ?? null,
       },
     })
 

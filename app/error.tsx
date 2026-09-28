@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { ErrorState } from '@/components/ui/state'
 import { useT } from '@/lib/i18n-client'
 
@@ -14,7 +15,8 @@ export default function GlobalError({
   const t = useT()
 
   useEffect(() => {
-    // Replace with the real reporter once observability is picked.
+    // Sentry (DEV-50); a no-op until a DSN is set.
+    Sentry.captureException(error)
     console.error(error)
   }, [error])
 
